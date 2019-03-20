@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="ConsoleWindow.Views.AutoCompleteTextBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:views="clr-namespace:ConsoleWindow.Views">
+	<Grid>
+		<TextBox mah:TextBoxHelper.Watermark="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:AutoCompleteTextBox}},
+			Path=Watermark, Mode=OneWay}"
+                 x:Name="TextBox"
+                 x:FieldModifier="private"
+                 TextChanged="TextBox_OnTextChanged" />
+        <Popup AllowsTransparency="true" 
+               Placement="Top"
+               x:Name="Popup"
+               x:FieldModifier="private"
+               IsOpen="False"  
+               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+            <ListBox VerticalContentAlignment="Stretch" 
+                     HorizontalContentAlignment="Stretch"
+                     MaxHeight="120"
+                     MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:AutoCompleteTextBox}}, Path=ActualWidth}"
+                     x:Name="Suggestions"
+                     SelectionMode="Single"
+                     PreviewKeyDown="Suggestions_OnPreviewKeyDown"
+                     PreviewMouseDown="Suggestions_OnPreviewMouseDown"
+                     x:FieldModifier="private"
+                     ItemTemplate="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:AutoCompleteTextBox}},
+				Path=ItemTemplate, Mode=OneWay}" />
+        </Popup>
+    </Grid>
+</UserControl>

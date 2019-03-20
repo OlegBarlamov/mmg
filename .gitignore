@@ -1,0 +1,6 @@
+/packages
+bin
+.vs
+obj
+*.mgcb
+/MyMonoGame.sln.DotSettings.user
