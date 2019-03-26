@@ -1,9 +1,8 @@
 ﻿using System;
-using GameData;
-using GameData.Battle;
-using GameSDK;
-using GameSDK.Helpers;
-using GameSDK.Services;
+using FrameworkSDK;
+using FrameworkSDK.Helpers;
+using FrameworkSDK.Services;
+using HeroesData.Battle;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 

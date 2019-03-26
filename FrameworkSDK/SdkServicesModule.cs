@@ -1,10 +1,10 @@
 ﻿using System;
 using Autofac;
-using GameSDK.Implementations;
-using GameSDK.Services;
+using FrameworkSDK.Implementations;
+using FrameworkSDK.Services;
 using JetBrains.Annotations;
 
-namespace GameSDK
+namespace FrameworkSDK
 {
 	internal class SdkServicesModule : IServicesModule
 	{

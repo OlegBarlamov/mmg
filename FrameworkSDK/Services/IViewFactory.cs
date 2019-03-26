@@ -1,4 +1,4 @@
-﻿namespace GameSDK.Services
+﻿namespace FrameworkSDK.Services
 {
 	public interface IViewFactory
 	{

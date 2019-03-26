@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using GameSDK;
+using FrameworkSDK;
 
 namespace HeroesGame
 {

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Configuration;
-using GameSDK;
+using FrameworkSDK;
 
 namespace HeroesGame
 {

@@ -1,7 +1,7 @@
-﻿using GameSDK.Helpers;
+﻿using FrameworkSDK.Helpers;
 using Microsoft.Xna.Framework;
 
-namespace GameData.Battle
+namespace HeroesData.Battle
 {
 	public class BattleField
 	{

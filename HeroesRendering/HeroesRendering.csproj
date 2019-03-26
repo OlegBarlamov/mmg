@@ -49,15 +49,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GameData\GameData.csproj">
-      <Project>{6650817f-a08e-4e10-9fda-2cc5d25e51a7}</Project>
-      <Name>GameData</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GameSDK\GameSDK.csproj">
+    <ProjectReference Include="..\FrameworkSDK\FrameworkSDK.csproj">
       <Project>{317903b1-3130-43d1-bdf3-421ab6749379}</Project>
-      <Name>GameSDK</Name>
+      <Name>FrameworkSDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HeroesData\HeroesData.csproj">
+      <Project>{6650817f-a08e-4e10-9fda-2cc5d25e51a7}</Project>
+      <Name>HeroesData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\Logging\Logging.csproj">
+      <Project>{3fa53468-2750-459f-82f7-a607298376dc}</Project>
+      <Name>Logging</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

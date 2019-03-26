@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace GameSDK.Services
+namespace FrameworkSDK.Services
 {
 	public interface IGraphicsService
 	{

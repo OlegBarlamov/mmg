@@ -1,4 +1,4 @@
-﻿namespace GameSDK
+﻿namespace FrameworkSDK
 {
 	public class ApplicationSettings
 	{

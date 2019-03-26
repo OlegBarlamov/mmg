@@ -1,6 +1,6 @@
 ﻿using Autofac;
 
-namespace GameSDK
+namespace FrameworkSDK
 {
 	public interface IServicesModule
 	{

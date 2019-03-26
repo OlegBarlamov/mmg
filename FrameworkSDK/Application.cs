@@ -1,11 +1,11 @@
 ﻿using System;
 using Autofac;
-using GameSDK.TraceSystem;
+using FrameworkSDK.TraceSystem;
 using JetBrains.Annotations;
 using Logging;
 using Microsoft.Extensions.Logging;
 
-namespace GameSDK
+namespace FrameworkSDK
 {
 	//TODO Remove
 	public class ApplicationBase

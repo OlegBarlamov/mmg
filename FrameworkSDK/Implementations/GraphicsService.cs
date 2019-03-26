@@ -1,10 +1,10 @@
 ﻿using System;
-using GameSDK.Services;
+using FrameworkSDK.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace GameSDK.Implementations
+namespace FrameworkSDK.Implementations
 {
 	internal class GraphicsService : IGraphicsService
 	{

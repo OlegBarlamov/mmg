@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameSDK
+namespace FrameworkSDK
 {
 	public class GameSDKException : Exception
 	{

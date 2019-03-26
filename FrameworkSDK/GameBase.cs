@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace GameSDK
+namespace FrameworkSDK
 {
 	public abstract class GameBase : Game
 	{

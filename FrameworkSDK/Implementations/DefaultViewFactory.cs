@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using GameSDK.Services;
+using FrameworkSDK.Services;
 using JetBrains.Annotations;
 using Logging;
 using Microsoft.Extensions.Logging;
 
-namespace GameSDK.Implementations
+namespace FrameworkSDK.Implementations
 {
 	public class DefaultViewFactory : IViewFactory
 	{

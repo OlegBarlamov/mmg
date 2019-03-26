@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace GameSDK.Helpers
+namespace FrameworkSDK.Helpers
 {
 	public static class PointExtensions
 	{

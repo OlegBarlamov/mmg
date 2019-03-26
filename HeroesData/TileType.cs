@@ -1,4 +1,4 @@
-﻿namespace GameData
+﻿namespace HeroesData
 {
 	public abstract class TileType
 	{

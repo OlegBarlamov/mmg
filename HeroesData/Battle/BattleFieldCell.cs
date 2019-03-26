@@ -1,9 +1,8 @@
 ﻿using System;
-using GameData.Battle;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
-namespace GameData
+namespace HeroesData.Battle
 {
 	public class BattleFieldCell
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace GameSDK.Helpers
+namespace FrameworkSDK.Helpers
 {
 	public static class ArrayExtensions
 	{
@@ -22,10 +22,10 @@ namespace GameSDK.Helpers
 			var m = array.GetLength(1);
 			for (int i = 0; i < n; i++)
 			for (int j = 0; j < m; j++)
-				{
-					if (action(array[i, j], i, j))
-						return;
-				}
+			{
+				if (action(array[i, j], i, j))
+					return;
+			}
 		}
 
 		public static TOut[,] Select<TIn, TOut>(this TIn[,] array, [NotNull] Func<TIn, int, int, TOut> factory)
@@ -35,7 +35,7 @@ namespace GameSDK.Helpers
 			var n = array.GetLength(0);
 			var m = array.GetLength(1);
 
-			var result = new TOut[n,m];
+			var result = new TOut[n, m];
 
 			for (int i = 0; i < n; i++)
 			for (int j = 0; j < m; j++)

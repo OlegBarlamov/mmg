@@ -1,4 +1,4 @@
-﻿namespace GameSDK.TraceSystem
+﻿namespace FrameworkSDK.TraceSystem
 {
 	class TraceSettings
 	{

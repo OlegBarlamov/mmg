@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using Logging;
 using Microsoft.Extensions.Logging;
 
-namespace GameSDK.TraceSystem
+namespace FrameworkSDK.TraceSystem
 {
 	internal class TraceSubSystem : IDisposable
 	{
