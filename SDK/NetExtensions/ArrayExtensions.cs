@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Helpers
+namespace NetExtensions
 {
 	public static class ArrayExtensions
 	{

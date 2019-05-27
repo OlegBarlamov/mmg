@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace FrameworkSDK.Helpers
+namespace MonoGameExtensions
 {
 	public static class PointExtensions
 	{

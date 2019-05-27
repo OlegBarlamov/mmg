@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FrameworkSDK")]
+[assembly: AssemblyTitle("NetExtensions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FrameworkSDK")]
+[assembly: AssemblyProduct("NetExtensions")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1c9a9c3f-5163-4f5a-b1cb-c43876980910")]
+[assembly: Guid("4f0dfc01-8178-46a2-aafe-dd8ee8afab1c")]
 
 // Version information for an assembly consists of the following four values:
 //

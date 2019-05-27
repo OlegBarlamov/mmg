@@ -72,10 +72,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FrameworkSDK\FrameworkSDK.csproj">
-      <Project>{317903b1-3130-43d1-bdf3-421ab6749379}</Project>
-      <Name>FrameworkSDK</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HeroesData\HeroesData.csproj">
       <Project>{6650817f-a08e-4e10-9fda-2cc5d25e51a7}</Project>
       <Name>HeroesData</Name>

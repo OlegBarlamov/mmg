@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FrameworkSDK")]
+[assembly: AssemblyTitle("MonoGameExtensions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FrameworkSDK")]
+[assembly: AssemblyProduct("MonoGameExtensions")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1c9a9c3f-5163-4f5a-b1cb-c43876980910")]
+[assembly: Guid("87a799e0-4be1-4241-9d17-192f517bc734")]
 
 // Version information for an assembly consists of the following four values:
 //
