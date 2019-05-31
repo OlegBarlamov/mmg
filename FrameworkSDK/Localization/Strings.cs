@@ -9,12 +9,15 @@
             public static string LogRegistered => Localization.GetString();
             public static string LocalizationRegistered => Localization.GetString();
             public static string IoCRegistered => Localization.GetString();
+            public static string SubsystemsFound => Localization.GetString();
+            public static string SubsystemInitialize => Localization.GetString();
         }
 
         public static class Exceptions
         {
             public static string AppInitialization => Localization.GetString();
             public static string ConstructionStateFinished => Localization.GetString();
+            public static string SubsystemInitializeException => Localization.GetString();
         }
     }
 }

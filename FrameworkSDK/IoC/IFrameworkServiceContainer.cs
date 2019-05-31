@@ -1,7 +1,9 @@
-﻿namespace FrameworkSDK.IoC
+﻿using JetBrains.Annotations;
+
+namespace FrameworkSDK.IoC
 {
     public interface IFrameworkServiceContainer : IServiceRegistrator
     {
-        IServiceLocator BuildContainer();
+        [NotNull] IServiceLocator BuildContainer();
     }
 }

@@ -10,18 +10,17 @@ namespace FrameworkSDK
 {
 	public abstract class Application : IApplication
 	{
-		private readonly GameShell _gameShell;
-        private readonly List<ISubsystem> _registeredSubsystems = new List<ISubsystem>();
-
         private LocalizationShell Localization { get; }
         private LoggerShell LoggerShell { get; }
 	    private ServiceContainerShell ServiceContainerShell { get; }
-
         private ModuleLogger Logger { get; }
+
+	    private IServiceLocator ServiceLocator { get; set; }
+
+	    [NotNull, ItemNotNull] private readonly List<ISubsystem> _registeredSubsystems = new List<ISubsystem>();
 
         public Application()
 		{
-			_gameShell = new GameShell();
             Localization = new LocalizationShell();
 		    LoggerShell = new LoggerShell();
 		    Logger = new ModuleLogger(LoggerShell, FrameworkLogModule.Application);
@@ -36,20 +35,23 @@ namespace FrameworkSDK
                 SetupLogSystem();
                 SetupIoC();
                 
-		        using (var constructor = new AppConstructor(this))
+		        using (var constructor = new AppConstructor(this, ServiceContainerShell))
 		        {
 		            Construct(constructor);
 		        }
 
-		        InitializeSubsystems(_registeredSubsystems);
+		        ServiceLocator = BuildContainer();
 
-		        Start();
+		        InitializeSubsystems(_registeredSubsystems);
 		    }
 		    catch (Exception e)
 		    {
+
                 throw new FrameworkException(Strings.Exceptions.AppInitialization, e);
 		    }
-		}
+
+		    Start(ServiceLocator);
+        }
 
 	    [CanBeNull]
         protected virtual ILocalization GetLocalization()
@@ -93,14 +95,33 @@ namespace FrameworkSDK
 	        Logger.Info(Strings.Info.IoCRegistered);
         }
 
-        private void InitializeSubsystems(IEnumerable<ISubsystem> subsystems)
+	    [NotNull] private IServiceLocator BuildContainer()
 	    {
-
+	        return ServiceContainerShell.BuildContainer();
 	    }
 
-	    private void Start()
+        private void InitializeSubsystems(IReadOnlyList<ISubsystem> subsystems)
 	    {
-	        _gameShell.Run();
+            Logger.Info(string.Format(Strings.Info.SubsystemsFound, subsystems.Count));
+
+	        foreach (var subsystem in subsystems)
+	        {
+	            Logger.Info(string.Format(Strings.Info.SubsystemInitialize, subsystem.Name));
+
+                try
+	            {
+	                subsystem.Initialize();
+                }
+	            catch (Exception e)
+	            {
+	                Logger.Info(string.Format(Strings.Exceptions.SubsystemInitializeException, e));
+                }
+	        }
+	    }
+
+	    private void Start(IServiceLocator serviceLocator)
+	    {
+
         }
 
 	    void IApplication.RegisterSubsystem([NotNull] ISubsystem subsystem)
