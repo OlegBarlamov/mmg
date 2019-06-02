@@ -10,39 +10,42 @@ namespace FrameworkSDK
 {
 	public abstract class Application : IApplication
 	{
-        private LocalizationShell Localization { get; }
-        private LoggerShell LoggerShell { get; }
-	    private ServiceContainerShell ServiceContainerShell { get; }
-        private ModuleLogger Logger { get; }
+        [NotNull] private LocalizationShell Localization { get; }
+		[NotNull] private LoggerShell LoggerShell { get; }
+		[NotNull] private ModuleLogger Logger { get; }
 
-	    private IServiceLocator ServiceLocator { get; set; }
-
-	    [NotNull, ItemNotNull] private readonly List<ISubsystem> _registeredSubsystems = new List<ISubsystem>();
+		[NotNull, ItemNotNull] private readonly List<ISubsystem> _registeredSubsystems = new List<ISubsystem>();
 
         public Application()
 		{
             Localization = new LocalizationShell();
 		    LoggerShell = new LoggerShell();
 		    Logger = new ModuleLogger(LoggerShell, FrameworkLogModule.Application);
-		    ServiceContainerShell = new ServiceContainerShell();
         }
 		
 		public void Run()
 		{
-		    try
+			IServiceLocator serviceLocator;
+
+			try
 		    {
-                SetupLocalization();
-                SetupLogSystem();
-                SetupIoC();
-                
-		        using (var constructor = new AppConstructor(this, ServiceContainerShell))
-		        {
-		            Construct(constructor);
-		        }
+			    using (var serviceContainerShell = new ServiceContainerShell())
+			    {
+				    SetupLocalization();
+				    SetupLogSystem();
+				    SetupIoC(serviceContainerShell);
 
-		        ServiceLocator = BuildContainer();
+					Logger.Info(Strings.Info.ConstructingStart);
+				    using (var constructor = new AppConstructor(this, serviceContainerShell))
+				    {
+					    Construct(constructor);
+				    }
 
-		        InitializeSubsystems(_registeredSubsystems);
+					serviceLocator = BuildContainer(serviceContainerShell);
+				}
+
+			    Logger.Info(Strings.Info.ConstructingEnd);
+				InitializeSubsystems(_registeredSubsystems);
 		    }
 		    catch (Exception e)
 		    {
@@ -50,7 +53,7 @@ namespace FrameworkSDK
                 throw new FrameworkException(Strings.Exceptions.AppInitialization, e);
 		    }
 
-		    Start(ServiceLocator);
+		    Start(serviceLocator);
         }
 
 	    [CanBeNull]
@@ -89,15 +92,20 @@ namespace FrameworkSDK
 	            Logger.Info(Strings.Info.LocalizationRegistered);
         }
 
-	    private void SetupIoC()
-	    {
-            ServiceContainerShell.SetupServiceContainer(GetServiceContainer());
+	    private void SetupIoC([NotNull] ServiceContainerShell serviceContainerShell)
+		{
+			if (serviceContainerShell == null) throw new ArgumentNullException(nameof(serviceContainerShell));
+
+			serviceContainerShell.SetupServiceContainer(GetServiceContainer());
 	        Logger.Info(Strings.Info.IoCRegistered);
         }
 
-	    [NotNull] private IServiceLocator BuildContainer()
+	    [NotNull] private IServiceLocator BuildContainer([NotNull] ServiceContainerShell serviceContainerShell)
 	    {
-	        return ServiceContainerShell.BuildContainer();
+		    if (serviceContainerShell == null) throw new ArgumentNullException(nameof(serviceContainerShell));
+
+		    Logger.Info(Strings.Info.BuildContainer);
+			return serviceContainerShell.BuildContainer();
 	    }
 
         private void InitializeSubsystems(IReadOnlyList<ISubsystem> subsystems)

@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using FrameworkSDK.IoC.Default;
+using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
 {
@@ -15,19 +16,24 @@ namespace FrameworkSDK.IoC
             ActiveServiceContainer.RegisterInstance(instance);
         }
 
-        public void SetupServiceContainer([CanBeNull] IFrameworkServiceContainer serviceContainer)
+	    public void RegisterType<TService, TImpl>(ResolveType resolveType = ResolveType.Singletone)
+	    {
+			ActiveServiceContainer.RegisterType<TService, TImpl>(resolveType);
+	    }
+
+	    public void SetupServiceContainer([CanBeNull] IFrameworkServiceContainer serviceContainer)
         {
             CustomServiceContainer = serviceContainer;
-        }
-
-        public void RegisterType<TService, TImpl>()
-        {
-            ActiveServiceContainer.RegisterType<TService, TImpl>();
         }
 
         public IServiceLocator BuildContainer()
         {
             return ActiveServiceContainer.BuildContainer();
         }
+
+	    public void Dispose()
+	    {
+		    ActiveServiceContainer.Dispose();
+	    }
     }
 }
