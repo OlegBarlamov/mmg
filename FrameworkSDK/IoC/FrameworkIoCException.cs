@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.IoC
 {
-	public class FrameworkIoCException : FrameworkException
+	public sealed class FrameworkIoCException : FrameworkException
 	{
 		public FrameworkIoCException()
 		{

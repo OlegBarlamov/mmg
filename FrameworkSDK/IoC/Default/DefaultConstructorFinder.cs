@@ -8,12 +8,7 @@ namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultConstructorFinder : IConstructorFinder
 	{
-		private IServiceLocator ServiceLocator { get; }
-
-		public DefaultConstructorFinder([NotNull] IServiceLocator serviceLocator)
-		{
-			ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
-		}
+		public IServiceLocator ServiceLocator { get; set; }
 
 		public ConstructorInfo FindConstructor(Type type)
 		{

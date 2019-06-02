@@ -12,9 +12,11 @@
             public static string SubsystemsFound => Localization.GetString();
             public static string SubsystemInitialize => Localization.GetString();
 
-	        public static string ConstructingStart => Localization.GetString();
+	        public static string DefaultServices => Localization.GetString();
+			public static string ConstructingStart => Localization.GetString();
 	        public static string ConstructingEnd => Localization.GetString();
 	        public static string BuildContainer => Localization.GetString();
+	        public static string AppRunning => Localization.GetString();
 		}
 
         public static class Exceptions

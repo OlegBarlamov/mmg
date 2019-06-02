@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FrameworkSDK.Localization;
-using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultDependencyResolver : IDependencyResolver
 	{
-		private IServiceLocator ServiceLocator { get; }
-
-		public DefaultDependencyResolver([NotNull] IServiceLocator serviceLocator)
-		{
-			ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
-		}
+		public IServiceLocator ServiceLocator { get; set; }
 
 		public object[] ResolveDependencies(ConstructorInfo constructor)
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.IoC;
+using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
@@ -10,18 +11,23 @@ namespace FrameworkSDK
 {
 	public abstract class Application : IApplication
 	{
+		[NotNull] protected GameParameters GameDefaultParameters { get; } = new GameParameters();
+
         [NotNull] private LocalizationShell Localization { get; }
 		[NotNull] private LoggerShell LoggerShell { get; }
+		[NotNull] private GameShell GameShell { get; }
 		[NotNull] private ModuleLogger Logger { get; }
 
 		[NotNull, ItemNotNull] private readonly List<ISubsystem> _registeredSubsystems = new List<ISubsystem>();
+		[NotNull, ItemNotNull] private readonly List<ISubsystem> _subsystems = new List<ISubsystem>();
 
-        public Application()
+		public Application()
 		{
             Localization = new LocalizationShell();
 		    LoggerShell = new LoggerShell();
-		    Logger = new ModuleLogger(LoggerShell, FrameworkLogModule.Application);
-        }
+			GameShell = new GameShell(LoggerShell);
+			Logger = new ModuleLogger(LoggerShell, FrameworkLogModule.Application);
+		}
 		
 		public void Run()
 		{
@@ -35,13 +41,19 @@ namespace FrameworkSDK
 				    SetupLogSystem();
 				    SetupIoC(serviceContainerShell);
 
+				    Logger.Info(Strings.Info.DefaultServices);
+					RegisterCoreServices(serviceContainerShell);
+
 					Logger.Info(Strings.Info.ConstructingStart);
 				    using (var constructor = new AppConstructor(this, serviceContainerShell))
 				    {
 					    Construct(constructor);
 				    }
 
+					GameShell.SetupParameters(GameDefaultParameters);
+
 					serviceLocator = BuildContainer(serviceContainerShell);
+				    GameShell.ResolveDependencies(serviceLocator);
 				}
 
 			    Logger.Info(Strings.Info.ConstructingEnd);
@@ -100,6 +112,17 @@ namespace FrameworkSDK
 	        Logger.Info(Strings.Info.IoCRegistered);
         }
 
+		private void RegisterCoreServices(IServiceRegistrator serviceRegistrator)
+		{
+			serviceRegistrator.RegisterInstance<ILocalization>(Localization);
+			serviceRegistrator.RegisterInstance<IFrameworkLogger>(Logger);
+
+			serviceRegistrator.RegisterInstance<IDependencyResolver>(new DefaultDependencyResolver());
+			serviceRegistrator.RegisterInstance<IConstructorFinder>(new DefaultConstructorFinder());
+
+			GameShell.RegisterServices(serviceRegistrator);
+		}
+
 	    [NotNull] private IServiceLocator BuildContainer([NotNull] ServiceContainerShell serviceContainerShell)
 	    {
 		    if (serviceContainerShell == null) throw new ArgumentNullException(nameof(serviceContainerShell));
@@ -119,7 +142,8 @@ namespace FrameworkSDK
                 try
 	            {
 	                subsystem.Initialize();
-                }
+		            _subsystems.Add(subsystem);
+				}
 	            catch (Exception e)
 	            {
 	                Logger.Info(string.Format(Strings.Exceptions.SubsystemInitializeException, e));
@@ -129,8 +153,29 @@ namespace FrameworkSDK
 
 	    private void Start(IServiceLocator serviceLocator)
 	    {
+			Logger.Info(Strings.Info.AppRunning);
 
+		    GameShell.Subsystems.AddRange(_subsystems);
+
+		    try
+		    {
+			    GameShell.Run();
+		    }
+		    catch (Exception e)
+		    {
+			    //TODO FATAL ERROR
+			    throw;
+		    }
+		    finally
+		    {
+			    Stop();
+		    }
         }
+
+		private void Stop()
+		{
+			
+		}
 
 	    void IApplication.RegisterSubsystem([NotNull] ISubsystem subsystem)
 	    {

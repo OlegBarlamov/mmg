@@ -8,15 +8,19 @@ namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultServiceLocator : IServiceLocator
 	{
-		private readonly IConstructorFinder _constructorFinder;
-		private readonly IDependencyResolver _dependencyResolver;
+		private IConstructorFinder ConstructorFinder { get; }
+		private IDependencyResolver DependencyResolver { get; }
+
 		private readonly Dictionary<int, List<RegistrationInfo>> _mapping = new Dictionary<int, List<RegistrationInfo>>();
 
 		private bool _isDisposed;
 
-		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyList<RegistrationInfo> registrations)
+		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyList<RegistrationInfo> registrations,
+			[NotNull] IConstructorFinder constructorFinder, [NotNull] IDependencyResolver dependencyResolver)
 		{
 			if (registrations == null) throw new ArgumentNullException(nameof(registrations));
+			ConstructorFinder = constructorFinder ?? throw new ArgumentNullException(nameof(constructorFinder));
+			DependencyResolver = dependencyResolver ?? throw new ArgumentNullException(nameof(dependencyResolver));
 
 			foreach (var registrationInfo in registrations)
 			{
@@ -26,10 +30,6 @@ namespace FrameworkSDK.IoC.Default
 
 				_mapping[code].Add(registrationInfo);
 			}
-
-			//TODO не заменяемый. Себя передает в конструктор.
-			_constructorFinder = new DefaultConstructorFinder(this);
-			_dependencyResolver = new DefaultDependencyResolver(this);
 		}
 
 		public void Dispose()
