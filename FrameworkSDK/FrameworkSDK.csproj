@@ -51,6 +51,7 @@
     <Compile Include="Constructing\IAppConstructor.cs" />
     <Compile Include="Constructing\IApplication.cs" />
     <Compile Include="Common\INamed.cs" />
+    <Compile Include="IoC\DefaultServiceContainer.cs" />
     <Compile Include="IoC\IFrameworkServiceContainer.cs" />
     <Compile Include="IoC\IServiceLocator.cs" />
     <Compile Include="IoC\IServiceRegistrator.cs" />

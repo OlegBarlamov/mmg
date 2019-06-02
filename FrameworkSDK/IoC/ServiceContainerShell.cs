@@ -6,9 +6,9 @@ namespace FrameworkSDK.IoC
     {
         [CanBeNull] private IFrameworkServiceContainer CustomServiceContainer { get; set; }
 
-        [NotNull] private IFrameworkServiceContainer ActiveServiceContainer => CustomServiceContainer ?? ActiveServiceContainer;
+        [NotNull] private IFrameworkServiceContainer ActiveServiceContainer => CustomServiceContainer ?? _defaultServiceContainer;
 
-        [NotNull] private IFrameworkServiceContainer _defaultServiceContainer;//TODO
+        [NotNull] private readonly IFrameworkServiceContainer _defaultServiceContainer = new DefaultServiceContainer();
 
         public void RegisterInstance<T>(T instance)
         {
