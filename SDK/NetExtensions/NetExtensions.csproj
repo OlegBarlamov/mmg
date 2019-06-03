@@ -42,6 +42,9 @@
   <ItemGroup>
     <Compile Include="Annotations.cs" />
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="ConcurrentList.cs" />
+    <Compile Include="IConcurrentList.cs" />
+    <Compile Include="Int32Size.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

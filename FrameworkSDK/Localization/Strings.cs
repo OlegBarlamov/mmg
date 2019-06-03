@@ -24,8 +24,9 @@
             public static string AppInitialization => Localization.GetString();
             public static string ConstructionStateFinished => Localization.GetString();
             public static string SubsystemInitializeException => Localization.GetString();
+            public static string FatalException => Localization.GetString();
 
-	        public static class Ioc
+            public static class Ioc
 	        {
 		        public static string NoPublicConstructorsException => Localization.GetString();
 		        public static string DependencyNotResolvedException => Localization.GetString();

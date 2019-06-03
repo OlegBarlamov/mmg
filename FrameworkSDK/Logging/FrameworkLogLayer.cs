@@ -3,5 +3,6 @@
     public enum FrameworkLogModule
     {
         Application,
+        GameCore,
     }
 }

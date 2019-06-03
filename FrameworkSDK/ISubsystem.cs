@@ -9,5 +9,13 @@ namespace FrameworkSDK
 	public interface ISubsystem : INamed, IDisposable
 	{
 		void Initialize();
+
+	    void OnActivated();
+
+	    void OnDeactivated();
+
+	    void Start();
+
+	    void Stop();
 	}
 }

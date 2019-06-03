@@ -11,7 +11,7 @@ namespace FrameworkSDK
 {
 	public abstract class Application : IApplication
 	{
-		[NotNull] protected GameParameters GameDefaultParameters { get; } = new GameParameters();
+		[NotNull] protected GameStartParameters GameStartParameters { get; } = new GameStartParameters();
 
         [NotNull] private LocalizationShell Localization { get; }
 		[NotNull] private LoggerShell LoggerShell { get; }
@@ -50,7 +50,7 @@ namespace FrameworkSDK
 					    Construct(constructor);
 				    }
 
-					GameShell.SetupParameters(GameDefaultParameters);
+					GameShell.SetupParameters(GameStartParameters);
 
 					serviceLocator = BuildContainer(serviceContainerShell);
 				    GameShell.ResolveDependencies(serviceLocator);
@@ -163,18 +163,23 @@ namespace FrameworkSDK
 		    }
 		    catch (Exception e)
 		    {
-			    //TODO FATAL ERROR
-			    throw;
+			    throw new FrameworkException(Strings.Exceptions.FatalException, e);
 		    }
 		    finally
 		    {
-			    Stop();
+			    Stop(serviceLocator);
 		    }
         }
 
-		private void Stop()
+		private void Stop(IServiceLocator serviceLocator)
 		{
-			
+			GameShell.Stop();
+            GameShell.Dispose();
+
+		    foreach (var subsystem in _subsystems)
+		        subsystem.Dispose();
+
+            serviceLocator.Dispose();
 		}
 
 	    void IApplication.RegisterSubsystem([NotNull] ISubsystem subsystem)
