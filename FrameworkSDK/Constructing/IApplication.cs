@@ -1,8 +1,13 @@
-﻿
+﻿using FrameworkSDK.Game;
+using FrameworkSDK.Game.Scenes;
+using JetBrains.Annotations;
+
 namespace FrameworkSDK.Constructing
 {
-    internal interface IApplication
+    internal interface IApplication : IUpdatable
     {
-        void RegisterSubsystem(ISubsystem subsystem);
+	    [CanBeNull] Scene CurrentScene { get; }
+
+		void RegisterSubsystem([NotNull] ISubsystem subsystem);
     }
 }

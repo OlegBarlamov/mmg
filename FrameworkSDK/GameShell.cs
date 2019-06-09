@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using FrameworkSDK.Common;
+using FrameworkSDK.Constructing;
+using FrameworkSDK.Game;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
@@ -10,19 +13,26 @@ namespace FrameworkSDK
 {
 	internal sealed class GameShell : Microsoft.Xna.Framework.Game
 	{
+		[NotNull]
 		public List<ISubsystem> Subsystems { get; } = new List<ISubsystem>();
-
+		[NotNull]
+		private IApplication Application { get; }
+		[NotNull]
 		private GraphicsDeviceManager GraphicsDeviceManager { get; }
+		[NotNull]
+		private ModuleLogger Logger { get; }
 
+		[NotNull]
+		private IScenesController ScenesController { get; set; }
+		[NotNull]
 		private SpriteBatch SpriteBatch { get; set; }
 
-	    private ModuleLogger Logger { get; }
-
-		public GameShell([NotNull] IFrameworkLogger logger)
+		public GameShell([NotNull] IApplication application, [NotNull] IFrameworkLogger logger)
 		{
 		    if (logger == null) throw new ArgumentNullException(nameof(logger));
+			Application = application ?? throw new ArgumentNullException(nameof(application));
 
-		    GraphicsDeviceManager = new GraphicsDeviceManager(this);
+			GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
 		    Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
         }
@@ -48,6 +58,8 @@ namespace FrameworkSDK
 	        }
 
 	        GraphicsDeviceManager.Dispose();
+
+			Logger.Dispose();
         }
 
 		public void RegisterServices(IServiceRegistrator serviceRegistrator)
@@ -57,7 +69,9 @@ namespace FrameworkSDK
 
 		public void ResolveDependencies(IServiceLocator serviceLocator)
 		{
-			
+			ScenesController = serviceLocator.Resolve<IScenesController>();
+
+			RandomShell.Setup(serviceLocator.Resolve<IRandomService>());
 		}
 
 		protected override void Initialize()
@@ -81,25 +95,32 @@ namespace FrameworkSDK
 			SpriteBatch = new SpriteBatch(GraphicsDevice);
 		}
 
-	    protected override void Update(GameTime gameTime)
+		protected override void UnloadContent()
+		{
+			Logger.Info("Unloading content...");
+
+			SpriteBatch.Dispose();
+
+			base.UnloadContent();
+		}
+
+		protected override void Update(GameTime gameTime)
 	    {
-	        base.Update(gameTime);
+			Application.Update(gameTime);
+
+		    if (ScenesController.CanSceneChanged)
+			    ScenesController.CurrentScene = Application.CurrentScene;
+
+		    ScenesController.Update(gameTime);
+
+			base.Update(gameTime);
 	    }
 
 	    protected override void Draw(GameTime gameTime)
 	    {
+		    ScenesController.Draw(gameTime);
+
 	        base.Draw(gameTime);
-	    }
-
-	    protected override void UnloadContent()
-	    {
-	        Logger.Info("Unloading content...");
-
-            SpriteBatch.Dispose();
-
-            base.UnloadContent();
-	    }
-
-	    
+	    }	    
 	}
 }

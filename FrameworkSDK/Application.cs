@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using FrameworkSDK.Common;
 using FrameworkSDK.Constructing;
+using FrameworkSDK.Game;
+using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.IoC;
 using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
+using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK
 {
-	public abstract class Application : IApplication
+	public abstract class Application : IApplication, IDisposable
 	{
 		[NotNull] protected GameStartParameters GameStartParameters { get; } = new GameStartParameters();
 
@@ -21,11 +25,15 @@ namespace FrameworkSDK
 		[NotNull, ItemNotNull] private readonly List<ISubsystem> _registeredSubsystems = new List<ISubsystem>();
 		[NotNull, ItemNotNull] private readonly List<ISubsystem> _subsystems = new List<ISubsystem>();
 
+		Scene IApplication.CurrentScene => GetCurrentScene();
+
+		[CanBeNull] private IServiceLocator _serviceLocator;
+
 		public Application()
 		{
             Localization = new LocalizationShell();
 		    LoggerShell = new LoggerShell();
-			GameShell = new GameShell(LoggerShell);
+			GameShell = new GameShell(this, LoggerShell);
 			Logger = new ModuleLogger(LoggerShell, FrameworkLogModule.Application);
 		}
 		
@@ -86,6 +94,14 @@ namespace FrameworkSDK
 	        return null;
 	    }
 
+		protected virtual void Update(GameTime gameTime)
+		{
+			
+		}
+
+		[CanBeNull]
+		protected abstract Scene GetCurrentScene();
+
 	    protected abstract void Construct([NotNull] IAppConstructor constructor);
 
 	    private void SetupLocalization()
@@ -119,6 +135,8 @@ namespace FrameworkSDK
 
 			serviceRegistrator.RegisterInstance<IDependencyResolver>(new DefaultDependencyResolver());
 			serviceRegistrator.RegisterInstance<IConstructorFinder>(new DefaultConstructorFinder());
+			serviceRegistrator.RegisterInstance<IScenesController>(new ScenesController(new EmptyScene(), LoggerShell));
+			serviceRegistrator.RegisterType<IRandomService, DefaultRandomService>();
 
 			GameShell.RegisterServices(serviceRegistrator);
 		}
@@ -151,8 +169,9 @@ namespace FrameworkSDK
 	        }
 	    }
 
-	    private void Start(IServiceLocator serviceLocator)
+	    private void Start([NotNull] IServiceLocator serviceLocator)
 	    {
+		    _serviceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
 			Logger.Info(Strings.Info.AppRunning);
 
 		    GameShell.Subsystems.AddRange(_subsystems);
@@ -167,26 +186,36 @@ namespace FrameworkSDK
 		    }
 		    finally
 		    {
-			    Stop(serviceLocator);
+			    Stop();
 		    }
         }
 
-		private void Stop(IServiceLocator serviceLocator)
+		private void Stop()
 		{
 			GameShell.Stop();
-            GameShell.Dispose();
-
-		    foreach (var subsystem in _subsystems)
-		        subsystem.Dispose();
-
-            serviceLocator.Dispose();
+            
 		}
 
-	    void IApplication.RegisterSubsystem([NotNull] ISubsystem subsystem)
+		void IApplication.RegisterSubsystem([NotNull] ISubsystem subsystem)
 	    {
 	        if (subsystem == null) throw new ArgumentNullException(nameof(subsystem));
 
             _registeredSubsystems.Add(subsystem);
 	    }
+
+		void IUpdatable.Update(GameTime gameTime)
+		{
+			Update(gameTime);
+		}
+
+		public void Dispose()
+		{
+			GameShell.Dispose();
+
+			foreach (var subsystem in _subsystems)
+				subsystem.Dispose();
+
+			_serviceLocator?.Dispose();
+		}
 	}
 }

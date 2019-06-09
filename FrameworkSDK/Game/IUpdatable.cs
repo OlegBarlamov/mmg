@@ -6,4 +6,9 @@ namespace FrameworkSDK.Game
     {
         void Update(GameTime gameTime);
     }
+
+	public interface IUpdatable<TState>
+	{
+		TState Update(GameTime gameTime);
+	}
 }

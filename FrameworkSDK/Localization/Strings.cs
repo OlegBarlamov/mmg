@@ -17,9 +17,18 @@
 	        public static string ConstructingEnd => Localization.GetString();
 	        public static string BuildContainer => Localization.GetString();
 	        public static string AppRunning => Localization.GetString();
+
+	        public static string SceneSwitchingState => Localization.GetString();
+	        public static string SceneSwitched => Localization.GetString();
 		}
 
-        public static class Exceptions
+	    public static class Errors
+	    {
+			public static string SceneChangingWhileNotAllowed => Localization.GetString();
+		}
+
+
+		public static class Exceptions
         {
             public static string AppInitialization => Localization.GetString();
             public static string ConstructionStateFinished => Localization.GetString();

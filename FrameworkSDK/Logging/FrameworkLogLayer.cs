@@ -4,5 +4,6 @@
     {
         Application,
         GameCore,
+		Scenes,
     }
 }
