@@ -23,6 +23,11 @@
 
 	        public static string AddControllerToScene => Localization.GetString();
 	        public static string RemovedControllerFromScene => Localization.GetString();
+	        public static string RemovingAllControllersFromScene => Localization.GetString();
+	        public static string RemovedMultipleControllersFromScene => Localization.GetString();
+
+			public static string AddViewToScene => Localization.GetString();
+	        public static string DestroyViewFromScene => Localization.GetString();
 		}
 
 	    public static class Errors
@@ -47,6 +52,12 @@
 		        public static string DisposeServicesException => Localization.GetString();
 		        public static string NoSuitablecConstructorsException => Localization.GetString();
 			}
-        }
+
+	        public static class Scenes
+	        {
+				public static string SceneComponentWrongOwner => Localization.GetString();
+			}
+
+		}
     }
 }

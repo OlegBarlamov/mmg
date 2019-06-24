@@ -4,8 +4,6 @@ namespace FrameworkSDK.Logging
 {
     internal class LoggerShell : IFrameworkLogger
     {
-		internal static IFrameworkLogger Logger { get; private set; }
-
         public bool IsUsedCustomLogger => CustomLogger != null;
 
         [CanBeNull] private IFrameworkLogger CustomLogger { get; set; }
@@ -16,7 +14,6 @@ namespace FrameworkSDK.Logging
 
         public void SetupLogger([CanBeNull] IFrameworkLogger logger)
         {
-	        Logger = this;
 			CustomLogger = logger;
         }
 

@@ -30,13 +30,7 @@ namespace FrameworkSDK.IoC.Default
 		{
 			CheckDisposed();
 
-			var dependencyResolver = new DefaultDependencyResolver();
-			var constructorFinder = new DefaultConstructorFinder();
-			var serviceLocator = new DefaultServiceLocator(_registrations, constructorFinder, dependencyResolver);
-			//TODO плохо это. Надо сделать инжектирование через функцию
-			dependencyResolver.ServiceLocator = serviceLocator;
-			constructorFinder.ServiceLocator = serviceLocator;
-			return serviceLocator;
+			return new DefaultServiceLocator(_registrations);
 		}
 
 		public void Dispose()

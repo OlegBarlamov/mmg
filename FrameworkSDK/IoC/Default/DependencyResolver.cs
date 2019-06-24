@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FrameworkSDK.Localization;
+using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC.Default
 {
-	internal class DefaultDependencyResolver : IDependencyResolver
+	internal class DependencyResolver
 	{
-		public IServiceLocator ServiceLocator { get; set; }
+		private IServiceLocator ServiceLocator { get; }
+
+		public DependencyResolver([NotNull] IServiceLocator serviceLocator)
+		{
+			ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
+		}
 
 		public object[] ResolveDependencies(ConstructorInfo constructor)
 		{
@@ -26,7 +32,7 @@ namespace FrameworkSDK.IoC.Default
 			foreach (var type in types)
 			{
 				if (!ServiceLocator.IsServiceRegistered(type))
-					throw new FrameworkIoCException(Strings.Exceptions.Ioc.DependencyNotResolvedException);
+					throw new FrameworkIocException(Strings.Exceptions.Ioc.DependencyNotResolvedException);
 			}
 		}
 	}

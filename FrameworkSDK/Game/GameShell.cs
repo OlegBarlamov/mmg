@@ -37,7 +37,7 @@ namespace FrameworkSDK
 		    Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
         }
 
-		public void SetupParameters([NotNull] GameStartParameters startParameters)
+		public void SetupParameters([NotNull] StartParameters startParameters)
 		{
 		    Logger.Info("Setup start parameters...");
 
