@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FrameworkSDK.Game
 {
-    public interface IController : IUpdatable
+    public interface IController : IUpdatable, INamed
     {
 
     }

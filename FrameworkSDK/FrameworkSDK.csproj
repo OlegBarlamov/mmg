@@ -58,7 +58,6 @@
     <Compile Include="Constructing\IApplication.cs" />
     <Compile Include="Common\INamed.cs" />
     <Compile Include="Game\Controller.cs" />
-    <Compile Include="Game\ControllersManager.cs" />
     <Compile Include="Game\IClosable.cs" />
     <Compile Include="Game\IController.cs" />
     <Compile Include="Game\IControllersManager.cs" />
@@ -67,6 +66,7 @@
     <Compile Include="Game\IUpdatable.cs" />
     <Compile Include="Game\Scenes\DefaultScene.cs" />
     <Compile Include="Game\Scenes\EmptyScene.cs" />
+    <Compile Include="Game\Scenes\IScene.cs" />
     <Compile Include="Game\Scenes\Scene.cs" />
     <Compile Include="Game\ClosingState.cs" />
     <Compile Include="Game\Scenes\ScenesController.cs" />
@@ -89,7 +89,7 @@
     <Compile Include="Localization\LocalizationExtension.cs" />
     <Compile Include="Localization\LocalizationShell.cs" />
     <Compile Include="Localization\Strings.cs" />
-    <Compile Include="Logging\LoggerFactoryShell.cs" />
+    <Compile Include="Logging\LoggerShell.cs" />
     <Compile Include="Logging\FrameworkLogLayer.cs" />
     <Compile Include="Logging\FrameworkLogLevel.cs" />
     <Compile Include="Logging\IFrameworkLogger.cs" />
@@ -113,6 +113,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
+      <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
+      <Name>MonoGameExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDK\NetExtensions\NetExtensions.csproj">
       <Project>{4f0dfc01-8178-46a2-aafe-dd8ee8afab1c}</Project>
       <Name>NetExtensions</Name>

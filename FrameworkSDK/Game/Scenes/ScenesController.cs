@@ -10,21 +10,21 @@ namespace FrameworkSDK.Game.Scenes
 	{
 		public bool CanSceneChanged { get; private set; }
 
-		public Scene CurrentScene
+		public IScene CurrentScene
 		{
 			get => GetCurrentScene();
 			set => SwitchScene(value);
 		}
 
-		[CanBeNull] private Scene _newScene;
-		[CanBeNull] private Scene _previousClosingScene;
-		[NotNull] private Scene _currentScene;
+		[CanBeNull] private IScene _newScene;
+		[CanBeNull] private IScene _previousClosingScene;
+		[NotNull] private IScene _currentScene;
 
 		private readonly object _sceneChangingLocker = new object();
 
 		private ModuleLogger Logger { get; }
 
-		public ScenesController([NotNull] Scene defaultScene, [NotNull] IFrameworkLogger coreLogger)
+		public ScenesController([NotNull] IScene defaultScene, [NotNull] IFrameworkLogger coreLogger)
 		{
 			if (coreLogger == null) throw new ArgumentNullException(nameof(coreLogger));
 			_currentScene = defaultScene ?? throw new ArgumentNullException(nameof(defaultScene));
@@ -48,12 +48,12 @@ namespace FrameworkSDK.Game.Scenes
 			_currentScene.Draw(gameTime);
 		}
 
-		private Scene GetCurrentScene()
+		private IScene GetCurrentScene()
 		{
 			return _currentScene;
 		}
 
-		private void ProcessScenesChanging([NotNull] IClosable oldScene, [NotNull] Scene newScene, GameTime gameTime)
+		private void ProcessScenesChanging([NotNull] IClosable oldScene, [NotNull] IScene newScene, GameTime gameTime)
 		{
 			if (oldScene == null) throw new ArgumentNullException(nameof(oldScene));
 			if (newScene == null) throw new ArgumentNullException(nameof(newScene));
@@ -64,12 +64,12 @@ namespace FrameworkSDK.Game.Scenes
 				Logger.Info(Strings.Info.SceneSwitchingState, oldScene, newScene);
 			}
 
-			var closeState = oldScene.Update(gameTime);
+			var closeState = oldScene.UpdateState(gameTime);
 			if (closeState.CanClose)
 				CloseAndSwitchScenes(oldScene, newScene);
 		}
 
-		private void CloseAndSwitchScenes([NotNull] IClosable oldScene, [NotNull] Scene newScene)
+		private void CloseAndSwitchScenes([NotNull] IClosable oldScene, [NotNull] IScene newScene)
 		{
 			oldScene.OnClosed();
 			_currentScene = newScene;
@@ -78,7 +78,7 @@ namespace FrameworkSDK.Game.Scenes
 			Logger.Info(Strings.Info.SceneSwitched, oldScene, newScene);
 		}
 
-		private void SwitchScene([NotNull] Scene newScene)
+		private void SwitchScene([NotNull] IScene newScene)
 		{
 			if (newScene == null) throw new ArgumentNullException(nameof(newScene));
 

@@ -20,6 +20,9 @@
 
 	        public static string SceneSwitchingState => Localization.GetString();
 	        public static string SceneSwitched => Localization.GetString();
+
+	        public static string AddControllerToScene => Localization.GetString();
+	        public static string RemovedControllerFromScene => Localization.GetString();
 		}
 
 	    public static class Errors
