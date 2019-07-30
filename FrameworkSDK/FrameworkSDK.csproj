@@ -60,6 +60,8 @@
     <Compile Include="Game\Scenes\ViewMapping.cs" />
     <Compile Include="Game\Views\IView.cs" />
     <Compile Include="IoC\Default\ConstructorFinder.cs" />
+    <Compile Include="IoC\ServiceLocatorExtension.cs" />
+    <Compile Include="IoC\ServiceRegistratorExtension.cs" />
     <Compile Include="StartParameters.cs" />
     <Compile Include="Game\GameShell.cs" />
     <Compile Include="Constructing\IAppConstructor.cs" />

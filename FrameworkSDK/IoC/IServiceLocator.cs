@@ -6,15 +6,9 @@ namespace FrameworkSDK.IoC
 {
     public interface IServiceLocator : IDisposable
     {
-	    [NotNull] T Resolve<T>();
-
 	    [NotNull] object Resolve([NotNull] Type type);
 
-	    [NotNull, ItemNotNull] IReadOnlyList<T> ResolveMultiple<T>();
-
-	    [NotNull, ItemNotNull] IReadOnlyList<object> ResolveMultiple(Type type);
-
-		bool IsServiceRegistered<T>();
+	    [NotNull, ItemNotNull] IReadOnlyList<object> ResolveMultiple([NotNull] Type type);
 
 	    bool IsServiceRegistered([NotNull] Type type);
 	}

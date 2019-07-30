@@ -5,8 +5,8 @@ namespace FrameworkSDK.IoC
 {
     public interface IServiceRegistrator : IDisposable
     {
-        void RegisterInstance<T>([NotNull] T instance);
+        void RegisterInstance([NotNull] Type serviceType, [NotNull] object instance);
 
-        void RegisterType<TService, TImpl>(ResolveType resolveType = ResolveType.Singletone);
+        void RegisterType([NotNull] Type serviceType, [NotNull] Type implType, ResolveType resolveType = ResolveType.Singletone);
     }
 }
