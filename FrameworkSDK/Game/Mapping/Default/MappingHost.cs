@@ -60,7 +60,7 @@ namespace FrameworkSDK.Game.Mapping.Default
         private void RegisterViews()
         {
             var viewTitle = nameof(View);
-            var views = _registeredTypes.Where(type => type.IsSubclassOf(typeof(IView)) &&
+            var views = _registeredTypes.Where(type => typeof(IView).IsAssignableFrom(type) &&
                                                        type.Name.EndsWith(viewTitle, StringComparison.InvariantCultureIgnoreCase));
 
             foreach (var view in views)
@@ -74,8 +74,8 @@ namespace FrameworkSDK.Game.Mapping.Default
 
         private void RegisterControllers()
         {
-            var controllerTitle = nameof(View);
-            var controllers = _registeredTypes.Where(type => type.IsSubclassOf(typeof(IController)) &&
+            var controllerTitle = nameof(Controller);
+            var controllers = _registeredTypes.Where(type => typeof(IController).IsAssignableFrom(type) &&
                                                              type.Name.EndsWith(controllerTitle, StringComparison.InvariantCultureIgnoreCase));
 
             foreach (var controller in controllers)
@@ -184,7 +184,11 @@ namespace FrameworkSDK.Game.Mapping.Default
 
             var type = model.GetType();
             modelName = type.Name;
-            return type.GetHashCode();
+            var modelTitle = "Model";
+            if (modelName.EndsWith(modelTitle, StringComparison.InvariantCultureIgnoreCase))
+                modelName = modelName.TrimEnd(modelTitle);
+
+            return modelName.GetHashCode();
         }
     }
 }

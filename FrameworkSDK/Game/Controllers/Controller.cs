@@ -33,7 +33,7 @@ namespace FrameworkSDK.Game
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
         }
 

@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Game.Controllers
 {
-    public class Controller<TModel> : Controller
+    public abstract class Controller<TModel> : Controller
     {
         protected TModel Model => (TModel)((IController)this).Model;
 
@@ -29,7 +29,7 @@ namespace FrameworkSDK.Game.Controllers
     }
 
     [Obsolete("Наверное не нужно использовать. Плохой паттерн")]
-    public class Controller<TModel, TView> : Controller
+    public abstract class Controller<TModel, TView> : Controller
     {
         protected TModel Model => (TModel)((IController)this).Model;
 

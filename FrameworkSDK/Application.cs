@@ -40,6 +40,7 @@ namespace FrameworkSDK
 			Logger = new ModuleLogger(LoggerShell, FrameworkLogModule.Application);
 		}
 		
+        //TODO Refactor. Сейчас компоненты не могут быть созданы в конструкторе приложения.
 		public void Run()
 		{
 			IServiceLocator serviceLocator;
@@ -73,7 +74,6 @@ namespace FrameworkSDK
 		    }
 		    catch (Exception e)
 		    {
-
                 throw new FrameworkException(Strings.Exceptions.AppInitialization, e);
 		    }
 
@@ -137,7 +137,7 @@ namespace FrameworkSDK
 			serviceRegistrator.RegisterInstance<ILocalization>(Localization);
 			serviceRegistrator.RegisterInstance<IFrameworkLogger>(Logger);
 
-			serviceRegistrator.RegisterInstance<IScenesController>(new ScenesController(new EmptyScene(), LoggerShell));
+			serviceRegistrator.RegisterInstance<IScenesController>(new ScenesController(LoggerShell));
 			serviceRegistrator.RegisterInstance<IRandomService>(new DefaultRandomService(new Random(Guid.NewGuid().GetHashCode())));
 
 		    var mappingHost = new MappingHost(CreateServiceContainer() ?? new DefaultServiceContainer(),

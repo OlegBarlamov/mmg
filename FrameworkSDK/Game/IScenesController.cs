@@ -5,7 +5,7 @@ namespace FrameworkSDK.Game
 {
 	internal interface IScenesController : IUpdatable, IDrawable, IDisposable
 	{
-		bool CanSceneChanged { get; }
+		bool CanSceneChange { get; }
 
 		IScene CurrentScene { get; set; }
 	}

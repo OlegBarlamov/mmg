@@ -8,7 +8,7 @@ namespace FrameworkSDK.Game.Scenes
 {
 	internal class ScenesController : IScenesController
 	{
-		public bool CanSceneChanged { get; private set; }
+	    public bool CanSceneChange { get; private set; } = true;
 
 		public IScene CurrentScene
 		{
@@ -16,19 +16,20 @@ namespace FrameworkSDK.Game.Scenes
 			set => SwitchScene(value);
 		}
 
+	    private static IScene DefaultScene => _defaultScene ?? (_defaultScene = new EmptyScene());
+	    private static IScene _defaultScene;
+
 		[CanBeNull] private IScene _newScene;
 		[CanBeNull] private IScene _previousClosingScene;
-		[NotNull] private IScene _currentScene;
+		[CanBeNull] private IScene _currentScene;
 
 		private readonly object _sceneChangingLocker = new object();
 
 		private ModuleLogger Logger { get; }
 
-		public ScenesController([NotNull] IScene defaultScene, [NotNull] IFrameworkLogger coreLogger)
+		public ScenesController([NotNull] IFrameworkLogger coreLogger)
 		{
 			if (coreLogger == null) throw new ArgumentNullException(nameof(coreLogger));
-			_currentScene = defaultScene ?? throw new ArgumentNullException(nameof(defaultScene));
-
 			Logger = new ModuleLogger(coreLogger, FrameworkLogModule.Scenes);
 		}
 
@@ -36,21 +37,21 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			if (_newScene != null)
 			{
-				ProcessScenesChanging(_currentScene, _newScene, gameTime);
+				ProcessScenesChanging(CurrentScene, _newScene, gameTime);
 				return;
 			}
 
-			_currentScene.Update(gameTime);
+		    CurrentScene.Update(gameTime);
 		}
 
 		public void Draw(GameTime gameTime)
 		{
-			_currentScene.Draw(gameTime);
+		    CurrentScene.Draw(gameTime);
 		}
 
 		private IScene GetCurrentScene()
 		{
-			return _currentScene;
+			return _currentScene ?? DefaultScene;
 		}
 
 		private void ProcessScenesChanging([NotNull] IClosable oldScene, [NotNull] IScene newScene, GameTime gameTime)
@@ -75,6 +76,7 @@ namespace FrameworkSDK.Game.Scenes
 			_currentScene = newScene;
 			_newScene = null;
 			newScene.OnOpened();
+		    CanSceneChange = true;
 			Logger.Info(Strings.Info.SceneSwitched, oldScene, newScene);
 		}
 
@@ -87,13 +89,13 @@ namespace FrameworkSDK.Game.Scenes
 				if (newScene == _currentScene)
 					return;
 
-				if (!CanSceneChanged)
+				if (!CanSceneChange)
 				{
 					Logger.Error(Strings.Errors.SceneChangingWhileNotAllowed, newScene);
 					return;
 				}
 
-				CanSceneChanged = false;
+				CanSceneChange = false;
 			}
 
 			_newScene = newScene;

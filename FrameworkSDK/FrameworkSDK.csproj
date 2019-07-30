@@ -49,6 +49,8 @@
     <Compile Include="Common\Services\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />
+    <Compile Include="Common\Services\Graphics\DefaultSpriteBatchProvider.cs" />
+    <Compile Include="Common\Services\Graphics\ISpriteBatchProvider.cs" />
     <Compile Include="Common\Services\IRandomService.cs" />
     <Compile Include="Common\NamesGenerator.cs" />
     <Compile Include="Constructing\AppConstructor.cs" />

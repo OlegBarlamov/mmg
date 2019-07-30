@@ -21,8 +21,8 @@ namespace FrameworkSDK.IoC.Default
 	        if (type == null) throw new ArgumentNullException(nameof(type));
 	        if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
 
-	        var constructors = type.GetConstructors(BindingFlags.Public);
-	        if (constructors.Length < 1)
+	        var constructors = GetConstructors(type);
+            if (constructors.Length < 1)
 	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
 
 	        var correctConstructor = FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
@@ -37,16 +37,16 @@ namespace FrameworkSDK.IoC.Default
 	        if (type == null) throw new ArgumentNullException(nameof(type));
 	        if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
 
-	        var constructors = type.GetConstructors(BindingFlags.Public);
-	        return constructors.Length < 1 ? null : FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
+	        var constructors = GetConstructors(type);
+            return constructors.Length < 1 ? null : FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
 	    }
 
         public ConstructorInfo GetConstructor(Type type)
 		{
 			if (type == null) throw new ArgumentNullException(nameof(type));
 
-			var constructors = type.GetConstructors(BindingFlags.Public);
-			if (constructors.Length < 1)
+			var constructors = GetConstructors(type);
+            if (constructors.Length < 1)
 				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
 
 			var correctConstructor = FilterConstructors(constructors).FirstOrDefault();
@@ -60,7 +60,7 @@ namespace FrameworkSDK.IoC.Default
 	    {
 	        if (type == null) throw new ArgumentNullException(nameof(type));
 
-	        var constructors = type.GetConstructors(BindingFlags.Public);
+	        var constructors = GetConstructors(type);
 	        return constructors.Length < 1 ? null : FilterConstructors(constructors).FirstOrDefault();
 	    }
 
@@ -91,6 +91,11 @@ namespace FrameworkSDK.IoC.Default
 
 	        var parameters = constructorInfo.GetParameters().Select(info => info.ParameterType);
 	        return parameters.All(type => type.IsAssignableFrom(parameterType) || ServiceLocator.IsServiceRegistered(type));
+	    }
+
+	    private static ConstructorInfo[] GetConstructors(Type targetType)
+	    {
+	        return targetType.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
 	    }
     }
 }

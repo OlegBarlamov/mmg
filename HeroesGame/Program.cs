@@ -1,5 +1,4 @@
 ﻿using System;
-using FrameworkSDK;
 
 namespace HeroesGame
 {
@@ -15,15 +14,9 @@ namespace HeroesGame
         [STAThread]
         static void Main()
         {
-			var appSettings = new ApplicationSettings
+			using (var app = new TestApplication())
 			{
-				GameName = "Heroes",
-				LogDirectoryPath = "Logs"
-			};
-
-			using (var app = new Application<GameRoot>(appSettings))
-			{
-				app.Start<RootModule>();
+				app.Run();
 			}
 		}
     }

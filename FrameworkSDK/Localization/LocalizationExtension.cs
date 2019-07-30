@@ -6,7 +6,7 @@ namespace FrameworkSDK.Localization
     {
         public static string GetString(this ILocalization localization, [CallerMemberName] string key = "")
         {
-            return localization.GetString(key);
+            return localization.GetString(key) ?? string.Empty;
         }
     }
 }

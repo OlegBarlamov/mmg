@@ -183,7 +183,7 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			if (sceneComponent == null) throw new ArgumentNullException(nameof(sceneComponent));
 
-			if (sceneComponent.OwnedScene != this)
+			if (sceneComponent.OwnedScene != null && sceneComponent.OwnedScene != this)
 				throw new ScenesException(string.Format(Strings.Exceptions.Scenes.SceneComponentWrongOwner, sceneComponent, this));
 		}
 

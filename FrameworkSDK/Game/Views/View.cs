@@ -35,7 +35,7 @@ namespace FrameworkSDK.Game.Views
             throw new NotImplementedException();
         }
 
-        public void Draw(GameTime gameTime)
+        public virtual void Draw(GameTime gameTime)
         {
 
         }

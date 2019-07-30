@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using FrameworkSDK.Common;
+using FrameworkSDK.Common.Services.Graphics;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.Game;
+using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
@@ -64,11 +66,14 @@ namespace FrameworkSDK
 
 		public void RegisterServices(IServiceRegistrator serviceRegistrator)
 		{
-			
+			serviceRegistrator.RegisterInstance<ISpriteBatchProvider>(new DefaultSpriteBatchProvider(() => SpriteBatch));
 		}
 
 		public void ResolveDependencies(IServiceLocator serviceLocator)
 		{
+		    serviceLocator.Resolve<IControllerResolver>().Initialize();
+            serviceLocator.Resolve<IViewResolver>().Initialize();
+
 			ScenesController = serviceLocator.Resolve<IScenesController>();
 
 			RandomShell.Setup(serviceLocator.Resolve<IRandomService>());
@@ -108,7 +113,7 @@ namespace FrameworkSDK
 	    {
 			Application.Update(gameTime);
 
-		    if (ScenesController.CanSceneChanged)
+		    if (ScenesController.CanSceneChange)
 			    ScenesController.CurrentScene = Application.CurrentScene;
 
 		    ScenesController.Update(gameTime);

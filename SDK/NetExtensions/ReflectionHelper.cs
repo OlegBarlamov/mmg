@@ -19,7 +19,18 @@ namespace NetExtensions
 
             foreach (var assembly in assemblies)
             {
-                var types = assembly.GetTypes();
+                Type[] types = new Type[0];
+
+                try
+                {
+                    types = assembly.GetTypes();
+                }
+                catch (Exception)
+                {
+                    //TODO log
+                    // ignored
+                }
+
                 foreach (var type in types)
                     yield return type;
             }

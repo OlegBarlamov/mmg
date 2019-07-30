@@ -51,16 +51,8 @@ namespace FrameworkSDK.IoC.Default
 				}
 			}
 
-			if (exceptions.Count < 1)
+			if (exceptions.Count > 0)
 				throw new AggregateException(Strings.Exceptions.Ioc.DisposeServicesException, exceptions);
-		}
-
-		public T Resolve<T>()
-		{
-			CheckDisposed();
-
-			var type = typeof(T);
-			return (T) Resolve(type);
 		}
 
 		public object Resolve(Type type)
@@ -82,20 +74,12 @@ namespace FrameworkSDK.IoC.Default
 
 	        var regInfos = GetRegInfos(type);
 	        var lastReg = regInfos.Last();
-	        if (lastReg.ResolveType != ResolveType.Singletone)
+	        if (lastReg.ResolveType == ResolveType.Singletone)
 	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name,
 	                parameter));
 
 	        return CreateInstanceWithParameter(lastReg.ImplType, parameter);
 	    }
-
-	    public IReadOnlyList<T> ResolveMultiple<T>()
-		{
-			CheckDisposed();
-
-			var type = typeof(T);
-			return ResolveMultiple(type).Cast<T>().ToArray();
-		}
 
 		public IReadOnlyList<object> ResolveMultiple([NotNull] Type type)
 		{
@@ -105,14 +89,6 @@ namespace FrameworkSDK.IoC.Default
 			var regInfos = GetRegInfos(type);
 			var result = regInfos.Select(ResolveRegInfo);
 			return result.ToArray();
-		}
-
-		public bool IsServiceRegistered<T>()
-		{
-			CheckDisposed();
-
-			var type = typeof(T);
-			return IsServiceRegistered(type);
 		}
 
 		public bool IsServiceRegistered(Type type)
