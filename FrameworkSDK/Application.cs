@@ -15,7 +15,7 @@ namespace FrameworkSDK
 {
 	public abstract class Application : IApplication, IDisposable
 	{
-		[NotNull] protected GameStartParameters GameStartParameters { get; } = new GameStartParameters();
+		[NotNull] protected StartParameters StartParameters { get; } = new StartParameters();
 
         [NotNull] private LocalizationShell Localization { get; }
 		[NotNull] private LoggerShell LoggerShell { get; }
@@ -58,10 +58,11 @@ namespace FrameworkSDK
 					    Construct(constructor);
 				    }
 
-					GameShell.SetupParameters(GameStartParameters);
+					GameShell.SetupParameters(StartParameters);
 
 					serviceLocator = BuildContainer(serviceContainerShell);
 				    GameShell.ResolveDependencies(serviceLocator);
+				    AppSingletone.Initialize(LoggerShell, serviceLocator);
 				}
 
 			    Logger.Info(Strings.Info.ConstructingEnd);
@@ -133,7 +134,7 @@ namespace FrameworkSDK
 			serviceRegistrator.RegisterInstance<ILocalization>(Localization);
 			serviceRegistrator.RegisterInstance<IFrameworkLogger>(Logger);
 
-			serviceRegistrator.RegisterInstance<IDependencyResolver>(new DefaultDependencyResolver());
+			serviceRegistrator.RegisterInstance<IDependencyResolver>(new DependencyResolver());
 			serviceRegistrator.RegisterInstance<IConstructorFinder>(new DefaultConstructorFinder());
 			serviceRegistrator.RegisterInstance<IScenesController>(new ScenesController(new EmptyScene(), LoggerShell));
 			serviceRegistrator.RegisterType<IRandomService, DefaultRandomService>();

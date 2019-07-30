@@ -6,9 +6,14 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC.Default
 {
-	internal class DefaultConstructorFinder : IConstructorFinder
+	internal class ConstructorFinder
 	{
-		public IServiceLocator ServiceLocator { get; set; }
+		private IServiceLocator ServiceLocator { get; }
+
+		public ConstructorFinder([NotNull] IServiceLocator serviceLocator)
+		{
+			ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
+		}
 
 		public ConstructorInfo FindConstructor(Type type)
 		{
@@ -16,12 +21,12 @@ namespace FrameworkSDK.IoC.Default
 
 			var constructors = type.GetConstructors(BindingFlags.Public);
 			if (constructors.Length < 1)
-				throw new FrameworkIoCException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
 
 			var sortedConstructors = constructors.OrderBy(info => info.GetParameters().Length);
 			var correctConstructor = sortedConstructors.FirstOrDefault(IsCorrectConstructor);
 			if (correctConstructor == null)
-				throw new FrameworkIoCException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException);
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException);
 
 			return correctConstructor;
 		}

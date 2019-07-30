@@ -8,19 +8,19 @@ namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultServiceLocator : IServiceLocator
 	{
-		private IConstructorFinder ConstructorFinder { get; }
-		private IDependencyResolver DependencyResolver { get; }
+		private ConstructorFinder ConstructorFinder { get; }
+		private DependencyResolver DependencyResolver { get; }
 
 		private readonly Dictionary<int, List<RegistrationInfo>> _mapping = new Dictionary<int, List<RegistrationInfo>>();
 
 		private bool _isDisposed;
 
-		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyList<RegistrationInfo> registrations,
-			[NotNull] IConstructorFinder constructorFinder, [NotNull] IDependencyResolver dependencyResolver)
+		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyList<RegistrationInfo> registrations)
 		{
 			if (registrations == null) throw new ArgumentNullException(nameof(registrations));
-			ConstructorFinder = constructorFinder ?? throw new ArgumentNullException(nameof(constructorFinder));
-			DependencyResolver = dependencyResolver ?? throw new ArgumentNullException(nameof(dependencyResolver));
+
+			ConstructorFinder = new ConstructorFinder(this);
+			DependencyResolver = new DependencyResolver(this);
 
 			foreach (var registrationInfo in registrations)
 			{
@@ -137,7 +137,7 @@ namespace FrameworkSDK.IoC.Default
 		{
 			var code = GetCode(type);
 			if (!_mapping.TryGetValue(code, out var regInfos) || regInfos.Count < 1)
-				throw new FrameworkIoCException(Strings.Exceptions.Ioc.TypeNotRegisteredException);
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.TypeNotRegisteredException);
 
 			return regInfos;
 		}
@@ -146,13 +146,13 @@ namespace FrameworkSDK.IoC.Default
 		{
 			try
 			{
-				var constructor = _constructorFinder.FindConstructor(type);
-				var dependencies = _dependencyResolver.ResolveDependencies(constructor);
+				var constructor = ConstructorFinder.FindConstructor(type);
+				var dependencies = DependencyResolver.ResolveDependencies(constructor);
 				return constructor.Invoke(dependencies);
 			}
 			catch (Exception e)
 			{
-				throw new FrameworkIoCException(Strings.Exceptions.Ioc.ResolvingTypeException, e);
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.ResolvingTypeException, e);
 			}
 		}
 

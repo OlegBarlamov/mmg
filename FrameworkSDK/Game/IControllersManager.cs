@@ -1,4 +1,6 @@
-﻿namespace FrameworkSDK.Game
+﻿using FrameworkSDK.Game.Controllers;
+
+namespace FrameworkSDK.Game
 {
     public interface IControllersManager
     {

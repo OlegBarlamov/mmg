@@ -18,7 +18,14 @@ namespace FrameworkSDK.Logging
             LogModule = logModule;
         }
 
-        public void Info(string message, params object[] args)
+	    public ModuleLogger(FrameworkLogModule logModule) 
+			: this(AppSingletone.Logger, logModule)
+	    {
+		    
+	    }
+
+
+		public void Info(string message, params object[] args)
         {
             Log(string.Format(message, args), FrameworkLogLevel.Info);
         }

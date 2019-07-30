@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FrameworkSDK.Game.Scenes;
 
 namespace FrameworkSDK.Game
@@ -11,6 +7,6 @@ namespace FrameworkSDK.Game
 	{
 		bool CanSceneChanged { get; }
 
-		Scene CurrentScene { get; set; }
+		IScene CurrentScene { get; set; }
 	}
 }

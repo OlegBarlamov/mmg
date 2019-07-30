@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSingletone.cs" />
     <Compile Include="Common\Services\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />
@@ -52,31 +53,35 @@
     <Compile Include="Constructing\AppConstructor.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="FrameworkException.cs" />
-    <Compile Include="GameStartParameters.cs" />
-    <Compile Include="GameShell.cs" />
+    <Compile Include="Game\Mapping\IControllerResolver.cs" />
+    <Compile Include="Game\Mapping\IViewResolver.cs" />
+    <Compile Include="Game\Scenes\ISceneComponent.cs" />
+    <Compile Include="Game\Scenes\ScenesException.cs" />
+    <Compile Include="Game\Scenes\ViewMapping.cs" />
+    <Compile Include="Game\Views\IView.cs" />
+    <Compile Include="IoC\Default\ConstructorFinder.cs" />
+    <Compile Include="StartParameters.cs" />
+    <Compile Include="Game\GameShell.cs" />
     <Compile Include="Constructing\IAppConstructor.cs" />
     <Compile Include="Constructing\IApplication.cs" />
     <Compile Include="Common\INamed.cs" />
-    <Compile Include="Game\Controller.cs" />
-    <Compile Include="Game\ControllersManager.cs" />
+    <Compile Include="Game\Controllers\Controller.cs" />
     <Compile Include="Game\IClosable.cs" />
-    <Compile Include="Game\IController.cs" />
+    <Compile Include="Game\Controllers\IController.cs" />
     <Compile Include="Game\IControllersManager.cs" />
     <Compile Include="Game\IDrawable.cs" />
     <Compile Include="Game\IScenesController.cs" />
     <Compile Include="Game\IUpdatable.cs" />
     <Compile Include="Game\Scenes\EmptyScene.cs" />
+    <Compile Include="Game\Scenes\IScene.cs" />
     <Compile Include="Game\Scenes\Scene.cs" />
     <Compile Include="Game\ClosingState.cs" />
     <Compile Include="Game\Scenes\ScenesController.cs" />
-    <Compile Include="IoC\Default\DefaultConstructorFinder.cs" />
-    <Compile Include="IoC\Default\DefaultDependencyResolver.cs" />
+    <Compile Include="IoC\Default\DependencyResolver.cs" />
     <Compile Include="IoC\Default\DefaultServiceContainer.cs" />
     <Compile Include="IoC\Default\DefaultServiceLocator.cs" />
     <Compile Include="IoC\Default\RegistrationInfo.cs" />
-    <Compile Include="IoC\FrameworkIoCException.cs" />
-    <Compile Include="IoC\IConstructorFinder.cs" />
-    <Compile Include="IoC\IDependencyResolver.cs" />
+    <Compile Include="IoC\FrameworkIocException.cs" />
     <Compile Include="IoC\IFrameworkServiceContainer.cs" />
     <Compile Include="IoC\IServiceLocator.cs" />
     <Compile Include="IoC\IServiceRegistrator.cs" />
@@ -88,7 +93,7 @@
     <Compile Include="Localization\LocalizationExtension.cs" />
     <Compile Include="Localization\LocalizationShell.cs" />
     <Compile Include="Localization\Strings.cs" />
-    <Compile Include="Logging\LoggerFactoryShell.cs" />
+    <Compile Include="Logging\LoggerShell.cs" />
     <Compile Include="Logging\FrameworkLogLayer.cs" />
     <Compile Include="Logging\FrameworkLogLevel.cs" />
     <Compile Include="Logging\IFrameworkLogger.cs" />
@@ -112,11 +117,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
+      <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
+      <Name>MonoGameExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDK\NetExtensions\NetExtensions.csproj">
       <Project>{4f0dfc01-8178-46a2-aafe-dd8ee8afab1c}</Project>
       <Name>NetExtensions</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Game\Mapping\Default\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

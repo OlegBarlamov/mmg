@@ -2,7 +2,7 @@
 
 namespace FrameworkSDK
 {
-	public class GameStartParameters
+	public class StartParameters
 	{
 		public string ContentRootDirectory { get; set; } = "Content";
 

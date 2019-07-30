@@ -14,7 +14,7 @@ namespace FrameworkSDK.Logging
 
         public void SetupLogger([CanBeNull] IFrameworkLogger logger)
         {
-            CustomLogger = logger;
+			CustomLogger = logger;
         }
 
         void IFrameworkLogger.Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
