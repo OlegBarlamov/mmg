@@ -21,7 +21,8 @@ namespace FrameworkSDK.Game.Mapping.Default
         private readonly IReadOnlyCollection<Type> _registeredTypes;
 
         private ConstructorFinder ConstructorFinder =>
-            _constructorFinder ?? (_constructorFinder = new ConstructorFinder(ServiceLocator));
+            //Резолвим зависимости используя общий serviceLocator
+            _constructorFinder ?? (_constructorFinder = new ConstructorFinder(AppSingletone.ServiceLocator));
         private IServiceLocator ServiceLocator =>
             _serviceLocator ?? (_serviceLocator = ServiceContainer.BuildContainer());
 
