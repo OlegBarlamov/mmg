@@ -65,7 +65,6 @@
     <Compile Include="Game\IDrawable.cs" />
     <Compile Include="Game\IScenesController.cs" />
     <Compile Include="Game\IUpdatable.cs" />
-    <Compile Include="Game\Scenes\DefaultScene.cs" />
     <Compile Include="Game\Scenes\EmptyScene.cs" />
     <Compile Include="Game\Scenes\Scene.cs" />
     <Compile Include="Game\ClosingState.cs" />
