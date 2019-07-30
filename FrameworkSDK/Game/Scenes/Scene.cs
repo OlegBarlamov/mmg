@@ -76,8 +76,7 @@ namespace FrameworkSDK.Game.Scenes
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
 			var controller = ControllerResolver.ResolveByModel(model);
-            if (controller.Model == null)
-		        controller.Model = model;
+		    controller.SetModel(model);
 
 			AddController(controller);
 		}
@@ -193,11 +192,9 @@ namespace FrameworkSDK.Game.Scenes
 			if (controller.Model != null && ViewResolver.IsModelHasView(controller.Model))
 			{
 				var view = ViewResolver.ResolveByModel(controller.Model);
-			    if (view.Controller != null)
-			        view.Controller = controller;
-			    if (view.DataModel != null)
-			        view.DataModel = controller.Model;
-			    controller.View = view;
+			    view.SetController(controller);
+			    view.SetDataModel(controller.Model);
+			    controller.SetView(view);
 				AddView(view, controller);
 			}
 		}
@@ -219,16 +216,16 @@ namespace FrameworkSDK.Game.Scenes
 
 			view.Destroy();
 
-			Logger.Info(Strings.Info.DestroyViewFromScene, controller.Name, view.Name, Name);
+			Logger.Info(Strings.Info.DestroyViewFromScene, controller?.Name, view.Name, Name);
 		}
 
-		private void AddView(IView view, IController controller)
+		private void AddView([NotNull] IView view, [CanBeNull] IController controller)
 		{
 			CheckOwner(view);
 			var mapping = new ViewMapping(view, controller);
 			Views.Add(mapping);
 
-			Logger.Info(Strings.Info.AddViewToScene, controller.Name, view.Name, Name);
+			Logger.Info(Strings.Info.AddViewToScene, controller?.Name, view.Name, Name);
 		}
 	}
 }

@@ -13,17 +13,9 @@ namespace FrameworkSDK.Game.Views
 
         Scene ISceneComponent.OwnedScene => _ownedScene;
 
-        object IView.DataModel
-        {
-            get => _dataModel;
-            set => _dataModel = value;
-        }
+        object IView.DataModel => _dataModel;
 
-        IController IView.Controller
-        {
-            get => _controller;
-            set => _controller = value;
-        }
+        IController IView.Controller => _controller;
 
         private object _dataModel;
         private IController _controller;
@@ -38,9 +30,24 @@ namespace FrameworkSDK.Game.Views
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
+        public void Destroy()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Draw(GameTime gameTime)
         {
 
+        }
+
+        protected virtual void SetDataModel([NotNull] object dataModel)
+        {
+            _dataModel = dataModel ?? throw new ArgumentNullException(nameof(dataModel));
+        }
+
+        protected virtual void SetController([NotNull] IController controller)
+        {
+            _controller = controller ?? throw new ArgumentNullException(nameof(controller));
         }
 
         void IView.SetOwner([NotNull] Scene ownedScene)
@@ -48,9 +55,16 @@ namespace FrameworkSDK.Game.Views
             _ownedScene = ownedScene ?? throw new ArgumentNullException(nameof(ownedScene));
         }
 
-        public void Destroy()
+        void IView.SetDataModel(object dataModel)
         {
-            throw new NotImplementedException();
+            if (_dataModel == null)
+                SetDataModel(dataModel);
+        }
+
+        void IView.SetController(IController controller)
+        {
+            if (_controller == null)
+                SetController(controller);
         }
     }
 }

@@ -13,15 +13,12 @@ namespace FrameworkSDK.Game
     {
         public string Name { get; protected set; }
 
-        IView IController.View { get; set; }
+        IView IController.View => _view;
 
-        object IController.Model
-        {
-            get => _model;
-            set => _model = value;
-        }
-
+        object IController.Model => _model;
+        
         private object _model;
+        private IView _view;
 
         Scene ISceneComponent.OwnedScene => _ownedScene;
 
@@ -45,9 +42,31 @@ namespace FrameworkSDK.Game
             return ReferenceEquals(model, _model);
         }
 
+        protected virtual void SetModel([NotNull] object model)
+        {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+        }
+
+        protected virtual void SetView([NotNull] IView view)
+        {
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+        }
+
         void IController.SetOwner([NotNull] Scene ownedScene)
         {
             _ownedScene = ownedScene ?? throw new ArgumentNullException(nameof(ownedScene));
+        }
+
+        void IController.SetModel(object model)
+        {
+            if (_model == null)
+                SetModel(model);
+        }
+
+        void IController.SetView(IView view)
+        {
+            if (_view == null)
+                SetView(view);
         }
     }
 }

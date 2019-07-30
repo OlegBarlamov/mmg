@@ -5,12 +5,16 @@ namespace FrameworkSDK.Game.Views
 {
 	public interface IView : IDrawable, INamed, ISceneComponent
 	{
-	    object DataModel { get; set; }
+	    object DataModel { get; }
 
-        IController Controller { get; set; }
+        IController Controller { get; }
 
 	    void SetOwner(Scene ownedScene);
 
         void Destroy();
+
+	    void SetDataModel(object dataModel);
+
+	    void SetController(IController controller);
 	}
 }

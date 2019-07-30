@@ -51,7 +51,8 @@
 		        public static string ResolvingTypeException => Localization.GetString();
 		        public static string DisposeServicesException => Localization.GetString();
 		        public static string NoSuitablecConstructorsException => Localization.GetString();
-			}
+	            public static string BadResolveStrategy => Localization.GetString();
+            }
 
             public static class Mapping
             {
@@ -59,6 +60,9 @@
                 public static string ControllerCreationError => Localization.GetString();
                 public static string ViewForModelNotFound => Localization.GetString();
                 public static string ViewCreationError => Localization.GetString();
+                public static string IncompatibleModelType => Localization.GetString();
+                public static string IncompatibleControllerType => Localization.GetString();
+                public static string IncompatibleViewType => Localization.GetString();
             }
 
             public static class Scenes

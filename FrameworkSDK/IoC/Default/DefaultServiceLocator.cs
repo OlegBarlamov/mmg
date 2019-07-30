@@ -74,7 +74,22 @@ namespace FrameworkSDK.IoC.Default
 			return ResolveRegInfo(lastReg);
 		}
 
-		public IReadOnlyList<T> ResolveMultiple<T>()
+	    public object ResolveWithParameter(Type type, [NotNull] object parameter)
+	    {
+	        if (type == null) throw new ArgumentNullException(nameof(type));
+	        if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+	        CheckDisposed();
+
+	        var regInfos = GetRegInfos(type);
+	        var lastReg = regInfos.Last();
+	        if (lastReg.ResolveType != ResolveType.Singletone)
+	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name,
+	                parameter));
+
+	        return CreateInstanceWithParameter(lastReg.ImplType, parameter);
+	    }
+
+	    public IReadOnlyList<T> ResolveMultiple<T>()
 		{
 			CheckDisposed();
 
@@ -121,7 +136,7 @@ namespace FrameworkSDK.IoC.Default
 			return disposableCashedObjects;
 		}
 
-		private object ResolveRegInfo(RegistrationInfo regIngo)
+        private object ResolveRegInfo(RegistrationInfo regIngo)
 		{
 			if (regIngo.CashedInstance != null && regIngo.ResolveType == ResolveType.Singletone)
 				return regIngo.CashedInstance;
@@ -142,7 +157,21 @@ namespace FrameworkSDK.IoC.Default
 			return regInfos;
 		}
 
-		private object CreateInstance(Type type)
+	    private object CreateInstanceWithParameter(Type type, object parameter)
+	    {
+	        try
+	        {
+	            var constructor = ConstructorFinder.GetConstructorWithParameter(type, parameter.GetType());
+	            var dependencies = DependencyResolver.ResolveDependenciesWithParameter(constructor, parameter);
+	            return constructor.Invoke(dependencies);
+	        }
+	        catch (Exception e)
+	        {
+	            throw new FrameworkIocException(Strings.Exceptions.Ioc.ResolvingTypeException, e);
+	        }
+	    }
+
+        private object CreateInstance(Type type)
 		{
 			try
 			{

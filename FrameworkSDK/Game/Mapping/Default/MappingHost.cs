@@ -67,6 +67,7 @@ namespace FrameworkSDK.Game.Mapping.Default
             {
                 var modelName = view.Name.TrimEnd(viewTitle);
                 var modelHash = modelName.GetHashCode();
+                ServiceContainer.RegisterType(view, view, ResolveType.InstancePerResolve);
                 _viewsDictionary.Add(modelHash, view);
             }
         }
@@ -81,6 +82,7 @@ namespace FrameworkSDK.Game.Mapping.Default
             {
                 var modelName = controller.Name.TrimEnd(controllerTitle);
                 var modelHash = modelName.GetHashCode();
+                ServiceContainer.RegisterType(controller, controller, ResolveType.InstancePerResolve);
                 _controllersDictionary.Add(modelHash, controller);
             }
         }
@@ -161,7 +163,7 @@ namespace FrameworkSDK.Game.Mapping.Default
             }
             catch (Exception e)
             {
-                throw new MappingException(Strings.Exceptions.Mapping.ControllerCreationError, e);
+                throw new MappingException(Strings.Exceptions.Mapping.ViewCreationError, e);
             }
         }
 

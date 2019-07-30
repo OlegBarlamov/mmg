@@ -7,13 +7,13 @@ namespace FrameworkSDK.Game.Scenes
 {
 	internal class ViewMapping
 	{
-		public IView View { get; }
-		public IController Controller { get; }
+	    [NotNull] public IView View { get; }
+		[CanBeNull] public IController Controller { get; }
 
-		public ViewMapping([NotNull] IView view, [NotNull] IController controller)
+		public ViewMapping([NotNull] IView view, [CanBeNull] IController controller)
 		{
 			View = view ?? throw new ArgumentNullException(nameof(view));
-			Controller = controller ?? throw new ArgumentNullException(nameof(controller));
+		    Controller = controller;
 		}
 
 		public bool IsMappedController([NotNull] IController controller)
