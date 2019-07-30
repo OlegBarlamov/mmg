@@ -5,6 +5,9 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK
 {
+    /// <summary>
+    /// Use only in static context.
+    /// </summary>
 	internal static class AppSingletone
 	{
 		public static IFrameworkLogger Logger { get; private set; }

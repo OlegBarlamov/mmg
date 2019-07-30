@@ -53,7 +53,15 @@
 		        public static string NoSuitablecConstructorsException => Localization.GetString();
 			}
 
-	        public static class Scenes
+            public static class Mapping
+            {
+                public static string ControllerForModelNotFound => Localization.GetString();
+                public static string ControllerCreationError => Localization.GetString();
+                public static string ViewForModelNotFound => Localization.GetString();
+                public static string ViewCreationError => Localization.GetString();
+            }
+
+            public static class Scenes
 	        {
 				public static string SceneComponentWrongOwner => Localization.GetString();
 			}

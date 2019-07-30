@@ -1,4 +1,5 @@
-﻿using FrameworkSDK.IoC.Default;
+﻿using System;
+using FrameworkSDK.IoC.Default;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
@@ -11,17 +12,17 @@ namespace FrameworkSDK.IoC
 
         [NotNull] private readonly IFrameworkServiceContainer _defaultServiceContainer = new DefaultServiceContainer();
 
-        public void RegisterInstance<T>(T instance)
+        public void RegisterInstance(Type serviceType, object instance)
         {
-            ActiveServiceContainer.RegisterInstance(instance);
+            ActiveServiceContainer.RegisterInstance(serviceType, instance);
         }
 
-	    public void RegisterType<TService, TImpl>(ResolveType resolveType = ResolveType.Singletone)
-	    {
-			ActiveServiceContainer.RegisterType<TService, TImpl>(resolveType);
-	    }
+        public void RegisterType(Type serviceType, Type implType, ResolveType resolveType = ResolveType.Singletone)
+        {
+            ActiveServiceContainer.RegisterType(serviceType, implType, resolveType);
+        }
 
-	    public void SetupServiceContainer([CanBeNull] IFrameworkServiceContainer serviceContainer)
+        public void SetupServiceContainer([CanBeNull] IFrameworkServiceContainer serviceContainer)
         {
             CustomServiceContainer = serviceContainer;
         }
@@ -35,5 +36,7 @@ namespace FrameworkSDK.IoC
 	    {
 		    ActiveServiceContainer.Dispose();
 	    }
+
+        
     }
 }

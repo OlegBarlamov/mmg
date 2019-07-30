@@ -53,12 +53,15 @@
     <Compile Include="Constructing\AppConstructor.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="FrameworkException.cs" />
+    <Compile Include="Game\Mapping\MappingException.cs" />
+    <Compile Include="Game\Mapping\Default\MappingHost.cs" />
     <Compile Include="Game\Mapping\IControllerResolver.cs" />
     <Compile Include="Game\Mapping\IViewResolver.cs" />
     <Compile Include="Game\Scenes\ISceneComponent.cs" />
     <Compile Include="Game\Scenes\ScenesException.cs" />
     <Compile Include="Game\Scenes\ViewMapping.cs" />
     <Compile Include="Game\Views\IView.cs" />
+    <Compile Include="Game\Views\View.cs" />
     <Compile Include="IoC\Default\ConstructorFinder.cs" />
     <Compile Include="IoC\ServiceLocatorExtension.cs" />
     <Compile Include="IoC\ServiceRegistratorExtension.cs" />
@@ -128,8 +131,6 @@
       <Name>NetExtensions</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Game\Mapping\Default\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

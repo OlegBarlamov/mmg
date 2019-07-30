@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using FrameworkSDK.Common;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.Game;
+using FrameworkSDK.Game.Mapping;
+using FrameworkSDK.Game.Mapping.Default;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.IoC;
 using FrameworkSDK.IoC.Default;
@@ -10,6 +12,7 @@ using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions;
 
 namespace FrameworkSDK
 {
@@ -90,7 +93,7 @@ namespace FrameworkSDK
 	    }
 
 	    [CanBeNull]
-        protected virtual IFrameworkServiceContainer GetServiceContainer()
+        protected virtual IFrameworkServiceContainer CreateServiceContainer()
 	    {
 	        return null;
 	    }
@@ -125,7 +128,7 @@ namespace FrameworkSDK
 		{
 			if (serviceContainerShell == null) throw new ArgumentNullException(nameof(serviceContainerShell));
 
-			serviceContainerShell.SetupServiceContainer(GetServiceContainer());
+			serviceContainerShell.SetupServiceContainer(CreateServiceContainer());
 	        Logger.Info(Strings.Info.IoCRegistered);
         }
 
@@ -134,12 +137,15 @@ namespace FrameworkSDK
 			serviceRegistrator.RegisterInstance<ILocalization>(Localization);
 			serviceRegistrator.RegisterInstance<IFrameworkLogger>(Logger);
 
-			serviceRegistrator.RegisterInstance<IDependencyResolver>(new DependencyResolver());
-			serviceRegistrator.RegisterInstance<IConstructorFinder>(new DefaultConstructorFinder());
 			serviceRegistrator.RegisterInstance<IScenesController>(new ScenesController(new EmptyScene(), LoggerShell));
-			serviceRegistrator.RegisterType<IRandomService, DefaultRandomService>();
+			serviceRegistrator.RegisterInstance<IRandomService>(new DefaultRandomService(new Random(Guid.NewGuid().GetHashCode())));
 
-			GameShell.RegisterServices(serviceRegistrator);
+		    var mappingHost = new MappingHost(CreateServiceContainer() ?? new DefaultServiceContainer(),
+		        AppDomain.CurrentDomain.GetAllTypes());
+            serviceRegistrator.RegisterInstance<IViewResolver>(mappingHost);
+		    serviceRegistrator.RegisterInstance<IControllerResolver>(mappingHost);
+
+            GameShell.RegisterServices(serviceRegistrator);
 		}
 
 	    [NotNull] private IServiceLocator BuildContainer([NotNull] ServiceContainerShell serviceContainerShell)

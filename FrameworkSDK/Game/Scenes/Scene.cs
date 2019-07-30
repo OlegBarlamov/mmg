@@ -5,6 +5,7 @@ using FrameworkSDK.Common;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.Game.Views;
+using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
@@ -40,7 +41,12 @@ namespace FrameworkSDK.Game.Scenes
 		{
 		}
 
-		public void AddController([NotNull] IController controller)
+	    public virtual void Dispose()
+	    {
+
+	    }
+
+        public void AddController([NotNull] IController controller)
 		{
 			if (controller == null) throw new ArgumentNullException(nameof(controller));
 
@@ -97,7 +103,7 @@ namespace FrameworkSDK.Game.Scenes
 			}
 			Controllers.Clear();
 
-			Logger.Info(Strings.Info.RemovedControllerFromScene, count, names.ToArray());
+			Logger.Info(Strings.Info.RemovedMultipleControllersFromScene, count, names.ToArray());
 		}
 
 		void IUpdatable.Update(GameTime gameTime)
@@ -167,11 +173,6 @@ namespace FrameworkSDK.Game.Scenes
 		}
 
 		protected virtual void OnControllerDetached([NotNull] IController controller)
-		{
-			
-		}
-
-		public virtual void Dispose()
 		{
 			
 		}

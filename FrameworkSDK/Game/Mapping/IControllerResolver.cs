@@ -8,5 +8,7 @@ namespace FrameworkSDK.Game.Mapping
 		[NotNull] IController ResolveByModel([NotNull] object model);
 
 		bool IsModelHasController([NotNull] object model);
+
+	    void Initialize();
 	}
 }

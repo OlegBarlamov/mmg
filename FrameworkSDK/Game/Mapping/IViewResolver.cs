@@ -8,5 +8,7 @@ namespace FrameworkSDK.Game.Mapping
 		[NotNull] IView ResolveByModel([NotNull] object model);
 
 		bool IsModelHasView([NotNull] object model);
-	}
+
+	    void Initialize();
+    }
 }

@@ -21,12 +21,13 @@ namespace FrameworkSDK.IoC.Default
 		}
 
 		[NotNull]
-		public static RegistrationInfo FromInstance([NotNull] object instance)
+		public static RegistrationInfo FromInstance([NotNull] Type serviceType, [NotNull] object instance)
 		{
-			if (instance == null) throw new ArgumentNullException(nameof(instance));
+		    if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
+		    if (instance == null) throw new ArgumentNullException(nameof(instance));
 
 			var type = instance.GetType();
-			return new RegistrationInfo(type, type, ResolveType.Singletone)
+			return new RegistrationInfo(serviceType, type, ResolveType.Singletone)
 			{
 				CashedInstance = instance
 			};

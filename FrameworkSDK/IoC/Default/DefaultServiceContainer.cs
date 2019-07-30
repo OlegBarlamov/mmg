@@ -8,23 +8,23 @@ namespace FrameworkSDK.IoC.Default
 		private bool _isDisposed;
 		private readonly List<RegistrationInfo> _registrations = new List<RegistrationInfo>();
 
-		public void RegisterInstance<T>(T instance)
-		{
-			if (instance == null) throw new ArgumentNullException(nameof(instance));
+	    public void RegisterInstance(Type serviceType, object instance)
+	    {
+	        if (instance == null) throw new ArgumentNullException(nameof(instance));
 
-			CheckDisposed();
+	        CheckDisposed();
 
-			var regInfo = RegistrationInfo.FromInstance(instance);
-			_registrations.Add(regInfo);
-		}
+	        var regInfo = RegistrationInfo.FromInstance(serviceType, instance);
+	        _registrations.Add(regInfo);
+        }
 
-		public void RegisterType<TService, TImpl>(ResolveType resolveType = ResolveType.Singletone)
-		{
-			CheckDisposed();
+	    public void RegisterType(Type serviceType, Type implType, ResolveType resolveType = ResolveType.Singletone)
+	    {
+	        CheckDisposed();
 
-			var regInfo = RegistrationInfo.FromType(typeof(TService), typeof(TImpl), resolveType);
-			_registrations.Add(regInfo);
-		}
+	        var regInfo = RegistrationInfo.FromType(serviceType, implType, resolveType);
+	        _registrations.Add(regInfo);
+        }
 
 		public IServiceLocator BuildContainer()
 		{

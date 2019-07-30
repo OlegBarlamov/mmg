@@ -5,9 +5,13 @@ namespace FrameworkSDK.Game
 {
     public abstract class Controller : IController
     {
+
+
         public void Update(GameTime gameTime)
         {
             
         }
+
+        public object Model { get; internal set; }
     }
 }
