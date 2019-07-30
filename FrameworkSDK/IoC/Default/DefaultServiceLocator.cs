@@ -146,7 +146,7 @@ namespace FrameworkSDK.IoC.Default
 		{
 			try
 			{
-				var constructor = ConstructorFinder.FindConstructor(type);
+				var constructor = ConstructorFinder.GetConstructor(type);
 				var dependencies = DependencyResolver.ResolveDependencies(constructor);
 				return constructor.Invoke(dependencies);
 			}

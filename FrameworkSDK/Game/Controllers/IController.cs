@@ -7,8 +7,10 @@ namespace FrameworkSDK.Game.Controllers
 	{
 		IView View { get; set; }
 
-		object Model { get; }
+		object Model { get; set; }
 
 	    bool IsOwnedModel(object model);
-    }
+
+	    void SetOwner(Scene ownedScene);
+	}
 }

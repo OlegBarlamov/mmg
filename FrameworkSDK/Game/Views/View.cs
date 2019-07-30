@@ -1,24 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FrameworkSDK.Common;
+using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Scenes;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.Game.Views
 {
     public abstract class View : IView
     {
-        public void Draw(GameTime gameTime)
+        public string Name { get; protected set; }
+
+        Scene ISceneComponent.OwnedScene => _ownedScene;
+
+        object IView.DataModel
         {
-            
+            get => _dataModel;
+            set => _dataModel = value;
         }
 
-        public object Model { get; internal set; }
+        IController IView.Controller
+        {
+            get => _controller;
+            set => _controller = value;
+        }
 
-        public string Name { get; }
-        public Scene OwnedScene { get; }
+        private object _dataModel;
+        private IController _controller;
+        private Scene _ownedScene;
+
+        protected View() : this(NamesGenerator.Hash(HashType.SmallGuid, nameof(Controller)))
+        {
+        }
+
+        protected View([NotNull] string name)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+
+        }
+
+        void IView.SetOwner([NotNull] Scene ownedScene)
+        {
+            _ownedScene = ownedScene ?? throw new ArgumentNullException(nameof(ownedScene));
+        }
+
         public void Destroy()
         {
             throw new NotImplementedException();

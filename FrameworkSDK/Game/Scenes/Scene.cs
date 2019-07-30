@@ -76,6 +76,9 @@ namespace FrameworkSDK.Game.Scenes
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
 			var controller = ControllerResolver.ResolveByModel(model);
+            if (controller.Model == null)
+		        controller.Model = model;
+
 			AddController(controller);
 		}
 
@@ -190,6 +193,11 @@ namespace FrameworkSDK.Game.Scenes
 			if (controller.Model != null && ViewResolver.IsModelHasView(controller.Model))
 			{
 				var view = ViewResolver.ResolveByModel(controller.Model);
+			    if (view.Controller != null)
+			        view.Controller = controller;
+			    if (view.DataModel != null)
+			        view.DataModel = controller.Model;
+			    controller.View = view;
 				AddView(view, controller);
 			}
 		}

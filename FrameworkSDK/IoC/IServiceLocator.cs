@@ -8,6 +8,8 @@ namespace FrameworkSDK.IoC
     {
 	    [NotNull] object Resolve([NotNull] Type type);
 
+        object ResolveWithParameter([NotNull] Type type, object parameter);
+
 	    [NotNull, ItemNotNull] IReadOnlyList<object> ResolveMultiple([NotNull] Type type);
 
 	    bool IsServiceRegistered([NotNull] Type type);

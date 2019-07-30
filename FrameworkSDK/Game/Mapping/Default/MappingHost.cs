@@ -4,6 +4,7 @@ using System.Linq;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Views;
 using FrameworkSDK.IoC;
+using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 using NetExtensions;
@@ -19,10 +20,13 @@ namespace FrameworkSDK.Game.Mapping.Default
 
         private readonly IReadOnlyCollection<Type> _registeredTypes;
 
+        private ConstructorFinder ConstructorFinder =>
+            _constructorFinder ?? (_constructorFinder = new ConstructorFinder(ServiceLocator));
         private IServiceLocator ServiceLocator =>
             _serviceLocator ?? (_serviceLocator = ServiceContainer.BuildContainer());
 
         private IServiceLocator _serviceLocator;
+        private ConstructorFinder _constructorFinder;
         private bool _disposed;
 
 
@@ -56,7 +60,7 @@ namespace FrameworkSDK.Game.Mapping.Default
         private void RegisterViews()
         {
             var viewTitle = nameof(View);
-            var views = _registeredTypes.Where(type => type.IsSubclassOf(typeof(View)) &&
+            var views = _registeredTypes.Where(type => type.IsSubclassOf(typeof(IView)) &&
                                                        type.Name.EndsWith(viewTitle, StringComparison.InvariantCultureIgnoreCase));
 
             foreach (var view in views)
@@ -70,7 +74,7 @@ namespace FrameworkSDK.Game.Mapping.Default
         private void RegisterControllers()
         {
             var controllerTitle = nameof(View);
-            var controllers = _registeredTypes.Where(type => type.IsSubclassOf(typeof(Controller)) &&
+            var controllers = _registeredTypes.Where(type => type.IsSubclassOf(typeof(IController)) &&
                                                              type.Name.EndsWith(controllerTitle, StringComparison.InvariantCultureIgnoreCase));
 
             foreach (var controller in controllers)
@@ -109,7 +113,7 @@ namespace FrameworkSDK.Game.Mapping.Default
                 var hash = GetModelHash(model, out var modelName);
                 var type = ResolveControllerTypeByModelHash(hash, modelName);
 
-                return (IController) ServiceLocator.Resolve(type);
+               return (IController) ResolveWithParameter(type, model);
             }
             catch (Exception e)
             {
@@ -153,12 +157,23 @@ namespace FrameworkSDK.Game.Mapping.Default
                 var hash = GetModelHash(model, out var modelName);
                 var type = ResolveViewTypeByModelHash(hash, modelName);
 
-                return (IView) ServiceLocator.Resolve(type);
+                return (IView) ResolveWithParameter(type, model);
             }
             catch (Exception e)
             {
                 throw new MappingException(Strings.Exceptions.Mapping.ControllerCreationError, e);
             }
+        }
+
+        private object ResolveWithParameter(Type type, [NotNull] object parameter)
+        {
+            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+
+            var constructor = ConstructorFinder.FindConstructorWithParameter(type, parameter.GetType());
+            if (constructor != null)
+                return ServiceLocator.ResolveWithParameter(type, parameter);
+
+            return ServiceLocator.Resolve(type);
         }
 
         private int GetModelHash([NotNull] object model, out string modelName)

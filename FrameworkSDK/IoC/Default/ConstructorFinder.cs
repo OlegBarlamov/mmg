@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FrameworkSDK.Localization;
@@ -15,7 +16,32 @@ namespace FrameworkSDK.IoC.Default
 			ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
 		}
 
-		public ConstructorInfo FindConstructor(Type type)
+	    public ConstructorInfo GetConstructorWithParameter([NotNull] Type type, [NotNull] Type parameterType)
+	    {
+	        if (type == null) throw new ArgumentNullException(nameof(type));
+	        if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
+
+	        var constructors = type.GetConstructors(BindingFlags.Public);
+	        if (constructors.Length < 1)
+	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
+
+	        var correctConstructor = FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
+            if (correctConstructor == null)
+	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException);
+
+	        return correctConstructor;
+        }
+
+	    public ConstructorInfo FindConstructorWithParameter([NotNull] Type type, [NotNull] Type parameterType)
+	    {
+	        if (type == null) throw new ArgumentNullException(nameof(type));
+	        if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
+
+	        var constructors = type.GetConstructors(BindingFlags.Public);
+	        return constructors.Length < 1 ? null : FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
+	    }
+
+        public ConstructorInfo GetConstructor(Type type)
 		{
 			if (type == null) throw new ArgumentNullException(nameof(type));
 
@@ -23,20 +49,48 @@ namespace FrameworkSDK.IoC.Default
 			if (constructors.Length < 1)
 				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
 
-			var sortedConstructors = constructors.OrderBy(info => info.GetParameters().Length);
-			var correctConstructor = sortedConstructors.FirstOrDefault(IsCorrectConstructor);
+			var correctConstructor = FilterConstructors(constructors).FirstOrDefault();
 			if (correctConstructor == null)
 				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException);
 
 			return correctConstructor;
 		}
 
-		private bool IsCorrectConstructor([NotNull] ConstructorInfo constructorInfo)
+	    public ConstructorInfo FindConstructor([NotNull] Type type)
+	    {
+	        if (type == null) throw new ArgumentNullException(nameof(type));
+
+	        var constructors = type.GetConstructors(BindingFlags.Public);
+	        return constructors.Length < 1 ? null : FilterConstructors(constructors).FirstOrDefault();
+	    }
+
+        private IEnumerable<ConstructorInfo> FilterConstructors(IEnumerable<ConstructorInfo> constructors)
+	    {
+	        return constructors.OrderBy(info => info.GetParameters().Length)
+	            .Where(IsCorrectConstructor);
+	    }
+
+	    private IEnumerable<ConstructorInfo> FilterConstructorsWithParameters(IEnumerable<ConstructorInfo> constructors, Type parameterType)
+	    {
+	        return constructors.OrderBy(info => info.GetParameters().Length)
+	            .Where(info => IsCorrectConstructorWithParameter(info, parameterType));
+	    }
+
+        private bool IsCorrectConstructor([NotNull] ConstructorInfo constructorInfo)
 		{
 			if (constructorInfo == null) throw new ArgumentNullException(nameof(constructorInfo));
 
 			var parameters = constructorInfo.GetParameters().Select(info => info.ParameterType);
 			return parameters.All(type => ServiceLocator.IsServiceRegistered(type));
 		}
-	}
+
+	    private bool IsCorrectConstructorWithParameter([NotNull] ConstructorInfo constructorInfo, [NotNull] Type parameterType)
+	    {
+	        if (constructorInfo == null) throw new ArgumentNullException(nameof(constructorInfo));
+	        if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
+
+	        var parameters = constructorInfo.GetParameters().Select(info => info.ParameterType);
+	        return parameters.All(type => type.IsAssignableFrom(parameterType) || ServiceLocator.IsServiceRegistered(type));
+	    }
+    }
 }
