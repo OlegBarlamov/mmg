@@ -45,15 +45,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="AppSingletone.cs" />
-    <Compile Include="Common\Services\DefaultRandomService.cs" />
+    <Compile Include="Configuration\ConfigurationProcessor.cs" />
+    <Compile Include="Configuration\NamedObjectsHeap.cs" />
+    <Compile Include="Constructing\AppConfigurationProcessor.cs" />
+    <Compile Include="Constructing\AppConfigureHandler.cs" />
+    <Compile Include="Constructing\DefaultConfigurationFactory.cs" />
+    <Compile Include="Constructing\DefaultConfigurationSteps.cs" />
+    <Compile Include="Constructing\IAppConfigurator.cs" />
+    <Compile Include="Constructing\IAppConfigureHandler.cs" />
+    <Compile Include="Constructing\SimpleConfigurationAction.cs" />
+    <Compile Include="Services\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />
-    <Compile Include="Common\Services\Graphics\DefaultSpriteBatchProvider.cs" />
-    <Compile Include="Common\Services\Graphics\ISpriteBatchProvider.cs" />
-    <Compile Include="Common\Services\IRandomService.cs" />
+    <Compile Include="Services\Graphics\DefaultSpriteBatchProvider.cs" />
+    <Compile Include="Services\Graphics\ISpriteBatchProvider.cs" />
+    <Compile Include="Services\IRandomService.cs" />
     <Compile Include="Common\NamesGenerator.cs" />
-    <Compile Include="Constructing\AppConstructor.cs" />
+    <Compile Include="Configuration\ConfigurationException.cs" />
+    <Compile Include="Configuration\ConfigurationPhase.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="FrameworkException.cs" />
     <Compile Include="Game\Controllers\ControllerGeneric.cs" />
@@ -71,13 +82,13 @@
     <Compile Include="Game\Views\IView.cs" />
     <Compile Include="Game\Views\View.cs" />
     <Compile Include="Game\Views\ViewGeneric.cs" />
+    <Compile Include="Configuration\IConfigurationPhaseAction.cs" />
     <Compile Include="IoC\Default\ConstructorFinder.cs" />
     <Compile Include="IoC\ServiceLocatorExtension.cs" />
     <Compile Include="IoC\ServiceRegistratorExtension.cs" />
+    <Compile Include="Configuration\PhaseConfiguration.cs" />
     <Compile Include="StartParameters.cs" />
     <Compile Include="Game\GameShell.cs" />
-    <Compile Include="Constructing\IAppConstructor.cs" />
-    <Compile Include="Constructing\IApplication.cs" />
     <Compile Include="Common\INamed.cs" />
     <Compile Include="Game\Controllers\Controller.cs" />
     <Compile Include="Game\IClosable.cs" />

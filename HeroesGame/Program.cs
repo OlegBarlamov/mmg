@@ -1,4 +1,5 @@
 ﻿using System;
+using FrameworkSDK;
 
 namespace HeroesGame
 {
@@ -14,10 +15,10 @@ namespace HeroesGame
         [STAThread]
         static void Main()
         {
-			using (var app = new TestApplication())
-			{
-				app.Run();
-			}
+            using (var app = App.Construct<TestApplication>())
+            {
+                app.Run();
+            }
 		}
     }
 #endif
