@@ -14,7 +14,7 @@ namespace FrameworkSDK.Configuration
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        [NotNull, ItemNotNull] protected IReadOnlyList<IConfigurationPhaseAction> Actions => _actions;
+        [NotNull, ItemNotNull] public IReadOnlyList<IConfigurationPhaseAction> Actions => _actions;
 
         private readonly List<IConfigurationPhaseAction> _actions = new List<IConfigurationPhaseAction>();
 

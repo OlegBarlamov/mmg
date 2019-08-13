@@ -4,16 +4,12 @@ namespace FrameworkSDK.Game.Mapping
 {
     public class IncompatibleViewTypeException : MappingException
     {
-        public IncompatibleViewTypeException()
-        {
-        }
-
-        public IncompatibleViewTypeException(string message)
+	    internal IncompatibleViewTypeException(string message)
             : base(message)
         {
         }
 
-        public IncompatibleViewTypeException(string message, Exception inner)
+	    internal IncompatibleViewTypeException(string message, Exception inner)
             : base(message, inner)
         {
         }

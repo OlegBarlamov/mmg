@@ -4,16 +4,12 @@ namespace FrameworkSDK.Game.Mapping
 {
     public class IncompatibleControllerTypeException : MappingException
     {
-        public IncompatibleControllerTypeException()
-        {
-        }
-
-        public IncompatibleControllerTypeException(string message)
+	    internal IncompatibleControllerTypeException(string message)
             : base(message)
         {
         }
 
-        public IncompatibleControllerTypeException(string message, Exception inner)
+	    internal IncompatibleControllerTypeException(string message, Exception inner)
             : base(message, inner)
         {
         }

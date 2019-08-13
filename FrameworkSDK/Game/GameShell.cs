@@ -27,7 +27,7 @@ namespace FrameworkSDK
 		[NotNull]
 		private IScenesController ScenesController { get; set; }
 		[NotNull]
-		private SpriteBatch SpriteBatch { get; set; }
+		internal SpriteBatch SpriteBatch { get; set; }
 
 		public GameShell([NotNull] IApplication application, [NotNull] IFrameworkLogger logger)
 		{
@@ -66,7 +66,7 @@ namespace FrameworkSDK
 
 		public void RegisterServices(IServiceRegistrator serviceRegistrator)
 		{
-			serviceRegistrator.RegisterInstance<ISpriteBatchProvider>(new DefaultSpriteBatchProvider(() => SpriteBatch));
+			
 		}
 
 		public void ResolveDependencies(IServiceLocator serviceLocator)

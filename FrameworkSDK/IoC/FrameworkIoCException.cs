@@ -5,16 +5,12 @@ namespace FrameworkSDK.IoC
 {
 	public sealed class FrameworkIocException : FrameworkException
 	{
-		public FrameworkIocException()
-		{
-		}
-
-		public FrameworkIocException(string message)
+		internal FrameworkIocException(string message)
 			: base(message)
 		{
 		}
 
-		public FrameworkIocException(string message, Exception inner)
+		internal FrameworkIocException(string message, Exception inner)
 			: base(message, inner)
 		{
 		}

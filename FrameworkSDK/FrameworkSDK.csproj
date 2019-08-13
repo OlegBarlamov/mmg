@@ -46,16 +46,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
-    <Compile Include="AppSingletone.cs" />
+    <Compile Include="AppContext.cs" />
     <Compile Include="Configuration\ConfigurationProcessor.cs" />
+    <Compile Include="Configuration\ConfigurationPhaseExtensions.cs" />
+    <Compile Include="Configuration\EmptyConfigurationPhaseAction.cs" />
     <Compile Include="Configuration\NamedObjectsHeap.cs" />
+    <Compile Include="Configuration\NamesObjectsHeapExtensions.cs" />
     <Compile Include="Constructing\AppConfigurationProcessor.cs" />
     <Compile Include="Constructing\AppConfigureHandler.cs" />
+    <Compile Include="Constructing\AppConstructingException.cs" />
     <Compile Include="Constructing\DefaultConfigurationFactory.cs" />
     <Compile Include="Constructing\DefaultConfigurationSteps.cs" />
     <Compile Include="Constructing\IAppConfigurator.cs" />
+    <Compile Include="Constructing\IAppConfigurator.Extensions.cs" />
+    <Compile Include="Constructing\IAppConfigurator.Application.cs" />
+    <Compile Include="Constructing\IAppConfigurator.Game.cs" />
     <Compile Include="Constructing\IAppConfigureHandler.cs" />
     <Compile Include="Constructing\SimpleConfigurationAction.cs" />
+    <Compile Include="Modules\CoreModule.cs" />
+    <Compile Include="IoC\IServicesModule.cs" />
+    <Compile Include="Modules\GameModule.cs" />
     <Compile Include="Services\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />

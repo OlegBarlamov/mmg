@@ -4,16 +4,12 @@ namespace FrameworkSDK.Game.Scenes
 {
 	public class ScenesException : FrameworkException
 	{
-		public ScenesException()
-		{
-		}
-
-		public ScenesException(string message)
+		internal ScenesException(string message)
 			: base(message)
 		{
 		}
 
-		public ScenesException(string message, Exception inner)
+		internal ScenesException(string message, Exception inner)
 			: base(message, inner)
 		{
 		}

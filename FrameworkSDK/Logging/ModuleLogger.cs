@@ -19,7 +19,7 @@ namespace FrameworkSDK.Logging
         }
 
 	    public ModuleLogger(FrameworkLogModule logModule) 
-			: this(AppSingletone.Logger, logModule)
+			: this(AppContext.Logger, logModule)
 	    {
 		    
 	    }

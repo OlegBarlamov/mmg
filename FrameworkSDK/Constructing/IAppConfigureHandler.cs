@@ -1,8 +1,9 @@
-﻿using FrameworkSDK.Configuration;
+﻿using System;
+using FrameworkSDK.Configuration;
 
 namespace FrameworkSDK.Constructing
 {
-    public interface IAppConfigureHandler
+    public interface IAppConfigureHandler : IDisposable
     {
         PhaseConfiguration Configuration { get; }
 

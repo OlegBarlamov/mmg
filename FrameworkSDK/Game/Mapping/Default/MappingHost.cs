@@ -22,7 +22,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 
         private ConstructorFinder ConstructorFinder =>
             //Резолвим зависимости используя общий serviceLocator
-            _constructorFinder ?? (_constructorFinder = new ConstructorFinder(AppSingletone.ServiceLocator));
+            _constructorFinder ?? (_constructorFinder = new ConstructorFinder(AppContext.ServiceLocator));
         private IServiceLocator ServiceLocator =>
             _serviceLocator ?? (_serviceLocator = ServiceContainer.BuildContainer());
 

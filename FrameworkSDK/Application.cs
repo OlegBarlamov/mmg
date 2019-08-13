@@ -66,7 +66,7 @@ namespace FrameworkSDK
 
 					serviceLocator = BuildContainer(serviceContainerShell);
 				    GameShell.ResolveDependencies(serviceLocator);
-				    AppSingletone.Initialize(LoggerShell, serviceLocator);
+				    AppContext.Initialize(LoggerShell, serviceLocator);
 				}
 
 			    Logger.Info(Strings.Info.ConstructingEnd);

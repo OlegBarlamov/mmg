@@ -28,8 +28,8 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			Name = name ?? throw new ArgumentNullException(nameof(name));
 
-			ViewResolver = AppSingletone.ServiceLocator.Resolve<IViewResolver>();
-			ControllerResolver = AppSingletone.ServiceLocator.Resolve<IControllerResolver>();
+			ViewResolver = AppContext.ServiceLocator.Resolve<IViewResolver>();
+			ControllerResolver = AppContext.ServiceLocator.Resolve<IControllerResolver>();
 
 			Logger = new ModuleLogger(FrameworkLogModule.Scenes);
 			Controllers = new UpdatableCollection<IController>();

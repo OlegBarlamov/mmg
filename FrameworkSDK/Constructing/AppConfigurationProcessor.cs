@@ -8,7 +8,7 @@ namespace FrameworkSDK.Constructing
 {
     internal class AppConfigurationProcessor : ConfigurationProcessor, IConfigurationProcessor
     {
-        private IFrameworkLogger Logger => (IFrameworkLogger)(Context["logger"] ?? _defaultLogger);
+        private IFrameworkLogger Logger => (IFrameworkLogger)(Context[DefaultConfigurationSteps.ContextKeys.Logger] ?? _defaultLogger);
 
         private readonly IFrameworkLogger _defaultLogger;
 
@@ -59,7 +59,7 @@ namespace FrameworkSDK.Constructing
 
         protected sealed override void OnConfigurationFinished()
         {
-            //Нужно провермить Context на пустату. Если что кинуть warning!
+            //Нужно проверить Context на пустоту. Если что кинуть warning!
             throw new NotImplementedException();
         }
     }

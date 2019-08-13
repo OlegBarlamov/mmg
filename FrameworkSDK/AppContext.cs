@@ -8,7 +8,7 @@ namespace FrameworkSDK
     /// <summary>
     /// Use only in static context.
     /// </summary>
-	internal static class AppSingletone
+	internal static class AppContext
 	{
 		public static IFrameworkLogger Logger { get; private set; }
 		public static IServiceLocator ServiceLocator { get; private set; }

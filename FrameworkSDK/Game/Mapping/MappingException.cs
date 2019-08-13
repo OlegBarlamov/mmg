@@ -4,16 +4,12 @@ namespace FrameworkSDK.Game.Mapping
 {
     public class MappingException : FrameworkException
     {
-        public MappingException()
-        {
-        }
-
-        public MappingException(string message)
+	    internal MappingException(string message)
             : base(message)
         {
         }
 
-        public MappingException(string message, Exception inner)
+	    internal MappingException(string message, Exception inner)
             : base(message, inner)
         {
         }
