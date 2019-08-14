@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace FrameworkSDK.Common.Services.Graphics
+namespace FrameworkSDK.Services.Graphics
 {
     public interface ISpriteBatchProvider
     {

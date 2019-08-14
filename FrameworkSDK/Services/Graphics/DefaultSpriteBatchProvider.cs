@@ -1,10 +1,11 @@
 ﻿using System;
-using FrameworkSDK.Common.Services.Graphics;
+using FrameworkSDK.Game;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.Services.Graphics
 {
+    [UsedImplicitly]
     internal class DefaultSpriteBatchProvider : ISpriteBatchProvider
     {
         public SpriteBatch SpriteBatch => GameShell.SpriteBatch;

@@ -30,40 +30,13 @@ namespace FrameworkSDK.Constructing
 
         public void Run()
         {
-            TGameHost host;
-            IGame game;
+            AppConfigurator.Run();
 
-            try
-            {
-                AppConfigurator.Run();
+            var locator = AppContext.ServiceLocator;
+            var host = locator.Resolve<TGameHost>();
+            var game = locator.Resolve<IGame>();
 
-                var locator = AppContext.ServiceLocator;
-                host = locator.Resolve<TGameHost>();
-                game = locator.Resolve<IGame>();
-            }
-            catch (Exception e)
-            {
-                //TODO
-                throw;
-            }
-
-            try
-            {
-                host.Run(game);
-            }
-            catch (Exception e)
-            {
-                throw new FrameworkException(Strings.Exceptions.FatalException, e);
-            }
-            finally
-            {
-                Stop();
-            }
-        }
-
-        private void Stop()
-        {
-            throw new NotImplementedException();
+            host.Run(game);
         }
     }
 }

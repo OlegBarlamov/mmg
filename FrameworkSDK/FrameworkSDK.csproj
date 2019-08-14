@@ -64,7 +64,7 @@
     <Compile Include="Constructing\IAppConfigureHandler.cs" />
     <Compile Include="Constructing\IGameConfigurator.cs" />
     <Compile Include="Constructing\SimpleConfigurationAction.cs" />
-    <Compile Include="Game\IGame.cs" />
+    <Compile Include="IGame.cs" />
     <Compile Include="Game\Mapping\Default\DefaultControllerResolver.cs" />
     <Compile Include="Game\Mapping\Default\DefaultViewResolver.cs" />
     <Compile Include="IGameHost.cs" />

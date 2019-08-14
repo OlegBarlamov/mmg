@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using FrameworkSDK;
-using FrameworkSDK.Common.Services.Graphics;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.Game;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.Game.Views;
+using FrameworkSDK.Services.Graphics;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

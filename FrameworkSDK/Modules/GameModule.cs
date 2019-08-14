@@ -1,5 +1,4 @@
-﻿using FrameworkSDK.Common.Services.Graphics;
-using FrameworkSDK.Game;
+﻿using FrameworkSDK.Game;
 using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.Game.Mapping.Default;
 using FrameworkSDK.Game.Scenes;

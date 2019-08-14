@@ -1,12 +1,14 @@
-﻿using FrameworkSDK.Game;
+﻿using System;
+using FrameworkSDK.Game;
 using FrameworkSDK.Game.Scenes;
+using JetBrains.Annotations;
 
 namespace FrameworkSDK
 {
-    public interface IGameHost
+    public interface IGameHost : IUpdatable, IDisposable
     {
-        Scene CurrentScene { get; }
+        [CanBeNull] Scene CurrentScene { get; }
 
-        void Run(IGame game);
+        void Run([NotNull] IGame game);
     }
 }

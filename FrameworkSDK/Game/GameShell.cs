@@ -1,42 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using FrameworkSDK.Common;
-using FrameworkSDK.Common.Services.Graphics;
-using FrameworkSDK.Constructing;
-using FrameworkSDK.Game;
-using FrameworkSDK.Game.Mapping;
-using FrameworkSDK.IoC;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace FrameworkSDK
+namespace FrameworkSDK.Game
 {
-	internal sealed class GameShell : Microsoft.Xna.Framework.Game
+    [UsedImplicitly]
+	internal sealed class GameShell : Microsoft.Xna.Framework.Game, IGame
 	{
-		[NotNull]
-		public List<ISubsystem> Subsystems { get; } = new List<ISubsystem>();
-		[NotNull]
-		private IApplication Application { get; }
+	    public SpriteBatch SpriteBatch { get; set; }
+
+        [NotNull]
+		private IGameHost Host { get; }
 		[NotNull]
 		private GraphicsDeviceManager GraphicsDeviceManager { get; }
 		[NotNull]
 		private ModuleLogger Logger { get; }
 
 		[NotNull]
-		private IScenesController ScenesController { get; set; }
-		[NotNull]
-		internal SpriteBatch SpriteBatch { get; set; }
+		private IScenesController ScenesController { get; }
 
-		public GameShell([NotNull] IApplication application, [NotNull] IFrameworkLogger logger)
+		public GameShell([NotNull] IGameHost host, [NotNull] IFrameworkLogger logger, [NotNull] IScenesController scenesController)
 		{
 		    if (logger == null) throw new ArgumentNullException(nameof(logger));
-			Application = application ?? throw new ArgumentNullException(nameof(application));
+		    Host = host ?? throw new ArgumentNullException(nameof(host));
 
-			GraphicsDeviceManager = new GraphicsDeviceManager(this);
+		    ScenesController = scenesController ?? throw new ArgumentNullException(nameof(scenesController));
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
-		    Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
+            Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
         }
 
 		public void SetupParameters([NotNull] StartParameters startParameters)
@@ -52,41 +45,9 @@ namespace FrameworkSDK
 		    GraphicsDeviceManager.IsFullScreen = startParameters.IsFullScreenMode;
 		}
 
-	    public void Stop()
-	    {
-	        foreach (var subsystem in Subsystems)
-	        {
-	            subsystem.Stop();
-	        }
-
-	        GraphicsDeviceManager.Dispose();
-
-			Logger.Dispose();
-        }
-
-		public void RegisterServices(IServiceRegistrator serviceRegistrator)
-		{
-			
-		}
-
-		public void ResolveDependencies(IServiceLocator serviceLocator)
-		{
-		    serviceLocator.Resolve<IControllerResolver>().Initialize();
-            serviceLocator.Resolve<IViewResolver>().Initialize();
-
-			ScenesController = serviceLocator.Resolve<IScenesController>();
-
-			RandomShell.Setup(serviceLocator.Resolve<IRandomService>());
-		}
-
 		protected override void Initialize()
 		{
 		    Logger.Info("Initialize...");
-
-		    foreach (var subsystem in Subsystems)
-		    {
-		        subsystem.Start();
-		    }
 
             base.Initialize();
 		}
@@ -95,9 +56,9 @@ namespace FrameworkSDK
 		{
 		    Logger.Info("Loading content...");
 
-            base.LoadContent();
+		    SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-			SpriteBatch = new SpriteBatch(GraphicsDevice);
+            base.LoadContent();
 		}
 
 		protected override void UnloadContent()
@@ -111,10 +72,10 @@ namespace FrameworkSDK
 
 		protected override void Update(GameTime gameTime)
 	    {
-			Application.Update(gameTime);
+			Host.Update(gameTime);
 
 		    if (ScenesController.CanSceneChange)
-			    ScenesController.CurrentScene = Application.CurrentScene;
+			    ScenesController.CurrentScene = Host.CurrentScene;
 
 		    ScenesController.Update(gameTime);
 
@@ -126,6 +87,20 @@ namespace FrameworkSDK
 		    ScenesController.Draw(gameTime);
 
 	        base.Draw(gameTime);
-	    }	    
+	    }
+
+	    void IDisposable.Dispose()
+	    {
+            Dispose(true);
+
+	        GraphicsDeviceManager.Dispose();
+
+	        Logger.Dispose();
+        }
+
+	    public void Stop()
+	    {
+	        
+	    }
 	}
 }
