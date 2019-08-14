@@ -6,6 +6,7 @@ using FrameworkSDK.Game.Views;
 using FrameworkSDK.IoC;
 using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
+using FrameworkSDK.Services;
 using JetBrains.Annotations;
 using NetExtensions;
 
@@ -30,14 +31,15 @@ namespace FrameworkSDK.Game.Mapping.Default
         private ConstructorFinder _constructorFinder;
         private bool _disposed;
 
-
-        public MappingHost([NotNull] IFrameworkServiceContainer serviceContainer,
-            [NotNull] IEnumerable<Type> domainTypes)
+        public MappingHost([NotNull] IServiceContainerFactory serviceContainerFactory,
+            [NotNull] IAppDomainService appDomainService)
         {
-            if (domainTypes == null) throw new ArgumentNullException(nameof(domainTypes));
-            ServiceContainer = serviceContainer ?? throw new ArgumentNullException(nameof(serviceContainer));
+            if (serviceContainerFactory == null) throw new ArgumentNullException(nameof(serviceContainerFactory));
+            if (appDomainService == null) throw new ArgumentNullException(nameof(appDomainService));
 
-            _registeredTypes = new List<Type>(ExtractAvailableViewAndControllerTypes(domainTypes));
+            ServiceContainer = serviceContainerFactory.CreateContainer();
+
+            _registeredTypes = new List<Type>(ExtractAvailableViewAndControllerTypes(appDomainService.GetAllTypes()));
         }
 
         public void Dispose()

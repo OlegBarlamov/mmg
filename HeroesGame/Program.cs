@@ -17,8 +17,7 @@ namespace HeroesGame
         static void Main()
         {
             using (var app = App.Construct()
-				.UseGameFramework()
-				.UseApplication<TestApplication>())
+                .UseGameFramework<TestApplication>())
             {
                 app.Run();
             }

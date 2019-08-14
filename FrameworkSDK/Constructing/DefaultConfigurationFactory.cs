@@ -18,15 +18,15 @@ namespace FrameworkSDK.Constructing
 	        var initializePhase = CreateInitializePhase();
 	        var baseSetup = CreateBaseSetupPhase();
 	        var registration = CreateRegistrationPhase();
-	        var constructing = CreateConstructingPhase();
-	        var run = CreateRunPhase();
+            var externalRegistration = CreateExternalRegistrationPhase();
+            var constructing = CreateConstructingPhase();
 
 			configuration.Phases.AddRange(
 				initializePhase,
 				baseSetup,
 				registration,
-				constructing,
-				run);
+                externalRegistration,
+				constructing);
 
 			return configuration;
         }
@@ -53,8 +53,8 @@ namespace FrameworkSDK.Constructing
 				    DefaultConfigurationSteps.InitializationActions.Ioc, true,
 				    context =>
 				    {
-					    var serviceContainer = new DefaultServiceContainer();
-					    context.SetObject(DefaultConfigurationSteps.ContextKeys.ServiceContainer, serviceContainer);
+					    var serviceContainerFactory = new DefaultServiceContainerFactory();
+					    context.SetObject(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				    })
 		    );
 		    return initializePhase;
@@ -71,12 +71,14 @@ namespace FrameworkSDK.Constructing
 					    Strings.Localization = GetObjectFromContext<ILocalization>(context, DefaultConfigurationSteps.ContextKeys.Localization);
 
 					    var logger = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.Logger);
-						var serviceContainer = GetObjectFromContext<IFrameworkServiceContainer>(context, DefaultConfigurationSteps.ContextKeys.ServiceContainer);
+						var serviceContainerFactory = GetObjectFromContext<IServiceContainerFactory>(context, DefaultConfigurationSteps.ContextKeys.Ioc);
 						var moduleLogger = new ModuleLogger(logger, FrameworkLogModule.Application);
+				        var mainServiceContainer = serviceContainerFactory.CreateContainer();
 
 					    context.SetObject(DefaultConfigurationSteps.ContextKeys.Logger, moduleLogger);
-						context.SetObject(DefaultConfigurationSteps.ContextKeys.ServiceContainer, serviceContainer);
-						context.SetObject(DefaultConfigurationSteps.ContextKeys.BaseLogger, logger);
+						context.SetObject(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
+				        context.SetObject(DefaultConfigurationSteps.ContextKeys.Container, mainServiceContainer);
+                        context.SetObject(DefaultConfigurationSteps.ContextKeys.BaseLogger, logger);
 
 						moduleLogger.Info();
 					})
@@ -97,7 +99,7 @@ namespace FrameworkSDK.Constructing
 
 					    var localization = GetObjectFromContext<ILocalization>(context, DefaultConfigurationSteps.ContextKeys.Localization);
 					    var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
-					    var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.ServiceContainer);
+					    var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.Container);
 
 						var coreModule = new CoreModule(localization, loggerService);
 						serviceRegistrator.RegisterModule(coreModule);
@@ -106,7 +108,13 @@ namespace FrameworkSDK.Constructing
 		    return registrationPhase;
 	    }
 
-	    private ConfigurationPhase CreateConstructingPhase()
+        private ConfigurationPhase CreateExternalRegistrationPhase()
+        {
+            return new ConfigurationPhase(DefaultConfigurationSteps.ExternalRegistration);
+        }
+
+
+        private ConfigurationPhase CreateConstructingPhase()
 	    {
 			var registrationPhase = new ConfigurationPhase(DefaultConfigurationSteps.Constructing);
 		    registrationPhase.AddActions(
@@ -117,7 +125,7 @@ namespace FrameworkSDK.Constructing
 					    var logger = context.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
 					    logger?.Info(Strings.Info.ConstructingStart);
 
-					    var serviceContainer = GetObjectFromContext<IFrameworkServiceContainer>(context, DefaultConfigurationSteps.ContextKeys.ServiceContainer);
+					    var serviceContainer = GetObjectFromContext<IFrameworkServiceContainer>(context, DefaultConfigurationSteps.ContextKeys.Container);
 						var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
 
 					    var serviceLocator = serviceContainer.BuildContainer();
@@ -130,11 +138,6 @@ namespace FrameworkSDK.Constructing
 		    );
 		    return registrationPhase;
 		}
-
-	    private ConfigurationPhase CreateRunPhase()
-	    {
-			return new ConfigurationPhase(DefaultConfigurationSteps.Run);
-	    }
 
 		[NotNull]
 	    private static T GetObjectFromContext<T>(NamedObjectsHeap context, string key)

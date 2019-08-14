@@ -1,18 +1,19 @@
 ﻿using System;
+using FrameworkSDK.Common.Services.Graphics;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace FrameworkSDK.Common.Services.Graphics
+namespace FrameworkSDK.Services.Graphics
 {
     internal class DefaultSpriteBatchProvider : ISpriteBatchProvider
     {
-        public SpriteBatch SpriteBatch => SpriteBatchFunc();
+        public SpriteBatch SpriteBatch => GameShell.SpriteBatch;
 
-        [NotNull] private Func<SpriteBatch> SpriteBatchFunc { get; }
+        [NotNull] private GameShell GameShell { get; }
 
-        public DefaultSpriteBatchProvider([NotNull] Func<SpriteBatch> spriteBatchFunc)
+        public DefaultSpriteBatchProvider([NotNull] GameShell gameShell)
         {
-            SpriteBatchFunc = spriteBatchFunc ?? throw new ArgumentNullException(nameof(spriteBatchFunc));
+            GameShell = gameShell ?? throw new ArgumentNullException(nameof(gameShell));
         }
     }
 }

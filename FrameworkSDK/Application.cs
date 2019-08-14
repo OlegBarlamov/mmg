@@ -10,13 +10,14 @@ using FrameworkSDK.IoC;
 using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
+using FrameworkSDK.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions;
 
 namespace FrameworkSDK
 {
-	public abstract class Application : IApplication, IDisposable
+	public abstract class Application : IGameHost, IDisposable
 	{
 		[NotNull] protected StartParameters StartParameters { get; } = new StartParameters();
 

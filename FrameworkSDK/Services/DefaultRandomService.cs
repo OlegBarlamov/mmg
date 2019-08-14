@@ -1,7 +1,8 @@
 ﻿using System;
+using FrameworkSDK.Common;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Common
+namespace FrameworkSDK.Services
 {
 	public class DefaultRandomService : IRandomService
 	{

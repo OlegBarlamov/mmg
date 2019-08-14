@@ -57,20 +57,29 @@
     <Compile Include="Constructing\AppConstructingException.cs" />
     <Compile Include="Constructing\DefaultConfigurationFactory.cs" />
     <Compile Include="Constructing\DefaultConfigurationSteps.cs" />
+    <Compile Include="Constructing\GameConfigurator.cs" />
     <Compile Include="Constructing\IAppConfigurator.cs" />
     <Compile Include="Constructing\IAppConfigurator.Extensions.cs" />
-    <Compile Include="Constructing\IAppConfigurator.Application.cs" />
     <Compile Include="Constructing\IAppConfigurator.Game.cs" />
     <Compile Include="Constructing\IAppConfigureHandler.cs" />
+    <Compile Include="Constructing\IGameConfigurator.cs" />
     <Compile Include="Constructing\SimpleConfigurationAction.cs" />
+    <Compile Include="Game\IGame.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultControllerResolver.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultViewResolver.cs" />
+    <Compile Include="IGameHost.cs" />
+    <Compile Include="IoC\Default\DefaultServiceContainerFactory.cs" />
+    <Compile Include="IoC\IServiceContainerFactory.cs" />
     <Compile Include="Modules\CoreModule.cs" />
     <Compile Include="IoC\IServicesModule.cs" />
     <Compile Include="Modules\GameModule.cs" />
+    <Compile Include="Services\AppDomainService.cs" />
     <Compile Include="Services\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />
     <Compile Include="Services\Graphics\DefaultSpriteBatchProvider.cs" />
     <Compile Include="Services\Graphics\ISpriteBatchProvider.cs" />
+    <Compile Include="Services\IAppDomainService.cs" />
     <Compile Include="Services\IRandomService.cs" />
     <Compile Include="Common\NamesGenerator.cs" />
     <Compile Include="Configuration\ConfigurationException.cs" />
@@ -97,7 +106,6 @@
     <Compile Include="IoC\ServiceLocatorExtension.cs" />
     <Compile Include="IoC\ServiceRegistratorExtension.cs" />
     <Compile Include="Configuration\PhaseConfiguration.cs" />
-    <Compile Include="StartParameters.cs" />
     <Compile Include="Game\GameShell.cs" />
     <Compile Include="Common\INamed.cs" />
     <Compile Include="Game\Controllers\Controller.cs" />
@@ -121,14 +129,10 @@
     <Compile Include="IoC\IServiceLocator.cs" />
     <Compile Include="IoC\IServiceRegistrator.cs" />
     <Compile Include="IoC\ResolveType.cs" />
-    <Compile Include="IoC\ServiceContainerShell.cs" />
     <Compile Include="Localization\DefaultLocalization.cs" />
     <Compile Include="Localization\ILocalization.cs" />
-    <Compile Include="ISubsystem.cs" />
     <Compile Include="Localization\LocalizationExtension.cs" />
-    <Compile Include="Localization\LocalizationShell.cs" />
     <Compile Include="Localization\Strings.cs" />
-    <Compile Include="Logging\LoggerShell.cs" />
     <Compile Include="Logging\FrameworkLogLayer.cs" />
     <Compile Include="Logging\FrameworkLogLevel.cs" />
     <Compile Include="Logging\IFrameworkLogger.cs" />
@@ -140,7 +144,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Game\RandomShell.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

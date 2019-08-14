@@ -45,10 +45,10 @@ namespace FrameworkSDK.Constructing
 			return configurator;
 		}
 
-		public static IAppConfigurator SetupCustomServiceContainer([NotNull] this IAppConfigurator configurator, [NotNull] Func<IFrameworkServiceContainer> serviceContainerFactory)
+		public static IAppConfigurator SetupCustomIoc([NotNull] this IAppConfigurator configurator, [NotNull] Func<IServiceContainerFactory> serviceContainerFactoryCreator)
 		{
 			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
-			if (serviceContainerFactory == null) throw new ArgumentNullException(nameof(serviceContainerFactory));
+			if (serviceContainerFactoryCreator == null) throw new ArgumentNullException(nameof(serviceContainerFactoryCreator));
 
 			var initializationPhase = configurator.GetPhase(DefaultConfigurationSteps.Initialization);
 			initializationPhase.AddOrReplace(new SimpleConfigurationAction(
@@ -56,8 +56,8 @@ namespace FrameworkSDK.Constructing
 				true,
 				context =>
 				{
-					var serviceContainer = GetFromFactory(serviceContainerFactory);
-					context.SetObject(DefaultConfigurationSteps.ContextKeys.ServiceContainer, serviceContainer);
+					var serviceContainerFactory = GetFromFactory(serviceContainerFactoryCreator);
+					context.SetObject(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				}));
 
 			return configurator;
@@ -68,13 +68,13 @@ namespace FrameworkSDK.Constructing
 			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
 			if (registerAction == null) throw new ArgumentNullException(nameof(registerAction));
 
-			var initializationPhase = configurator.GetPhase(DefaultConfigurationSteps.Registration);
+			var initializationPhase = configurator.GetPhase(DefaultConfigurationSteps.ExternalRegistration);
 			initializationPhase.AddAction(new SimpleConfigurationAction(
-				"external_register",
+				DefaultConfigurationSteps.ExternalRegistrationActions.Registration,
 				true,
 				context =>
 				{
-					var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.ServiceContainer);
+					var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.Container);
 					registerAction.Invoke(serviceRegistrator);
 				}));
 
@@ -102,6 +102,11 @@ namespace FrameworkSDK.Constructing
 
 			return phase;
 		}
+
+	    private static void InsertAfter([NotNull] this IAppConfigurator configurator, ConfigurationPhase phase, ConfigurationPhase insertingPhase)
+	    {
+            throw new NotImplementedException();
+	    }
 
 		[CanBeNull]
 		private static ConfigurationPhase FindPhase([NotNull] this IAppConfigurator configurator, string phaseName)

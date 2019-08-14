@@ -8,8 +8,8 @@ namespace FrameworkSDK.Constructing
         PhaseConfiguration Configuration { get; }
 
         /// <summary>
-        /// Осуществляет построение приложения и запуск.
+        /// Осуществляет построение приложения.
         /// </summary>
-        void Run();
+        void Configure();
     }
 }

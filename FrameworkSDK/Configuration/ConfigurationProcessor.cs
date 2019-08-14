@@ -29,6 +29,7 @@ namespace FrameworkSDK.Configuration
         /// Контекст конфигурирования. В нем можно передавать зависимости между фазами.
         /// Следует чистить на последнем шаге!
         /// </summary>
+        //TODO назвать класс PipelineContext
         [NotNull] public NamedObjectsHeap Context { get; } = new NamedObjectsHeap();
 
         public void Process([NotNull] PhaseConfiguration phaseConfiguration)

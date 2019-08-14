@@ -1,44 +1,26 @@
-﻿using System;
-using FrameworkSDK.Common.Services.Graphics;
+﻿using FrameworkSDK.Common.Services.Graphics;
 using FrameworkSDK.Game;
 using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.Game.Mapping.Default;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.IoC;
-using FrameworkSDK.Logging;
-using JetBrains.Annotations;
-using NetExtensions;
+using FrameworkSDK.Services.Graphics;
 
 namespace FrameworkSDK.Modules
 {
-	internal class GameModule : IServicesModule
+	internal class GameModule<TGameHost> : IServicesModule where TGameHost : IGameHost
 	{
-		private GameShell GameShell { get; }
-		private IFrameworkLogger Logger { get; }
-		private IFrameworkServiceContainer MappingContainer { get; }
-
-		public GameModule([NotNull] IFrameworkServiceContainer mappingContainer, [NotNull] IFrameworkLogger logger,
-			[NotNull] GameShell gameShell)
-		{
-			GameShell = gameShell ?? throw new ArgumentNullException(nameof(gameShell));
-			Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-			MappingContainer = mappingContainer ?? throw new ArgumentNullException(nameof(mappingContainer));
-		}
-
 		public void Register(IServiceRegistrator serviceRegistrator)
 		{
-			serviceRegistrator.RegisterInstance<IScenesController>(new ScenesController(Logger));
-			var mappingHost = CreateMappingHost();
-			serviceRegistrator.RegisterInstance<IViewResolver>(mappingHost);
-			serviceRegistrator.RegisterInstance<IControllerResolver>(mappingHost);
+			serviceRegistrator.RegisterType<IScenesController, ScenesController>();
+			serviceRegistrator.RegisterType<MappingHost, MappingHost>();
+		    serviceRegistrator.RegisterType<IViewResolver, DefaultViewResolver>();
+		    serviceRegistrator.RegisterType<IControllerResolver, DefaultControllerResolver>();
 
+			serviceRegistrator.RegisterType<ISpriteBatchProvider, DefaultSpriteBatchProvider>();
 
-			serviceRegistrator.RegisterInstance<ISpriteBatchProvider>(new DefaultSpriteBatchProvider(() => GameShell.SpriteBatch));
-		}
-
-		private MappingHost CreateMappingHost()
-		{
-			return new MappingHost(MappingContainer, AppDomain.CurrentDomain.GetAllTypes());
+            serviceRegistrator.RegisterType<IGameHost, TGameHost>();
+            serviceRegistrator.RegisterType<GameShell, GameShell>();
 		}
 	}
 }

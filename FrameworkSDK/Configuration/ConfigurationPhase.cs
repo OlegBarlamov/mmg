@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Configuration
 {
+    //TODO rename to pipeline
     public class ConfigurationPhase : INamed
     {
         public string Name { get; }
