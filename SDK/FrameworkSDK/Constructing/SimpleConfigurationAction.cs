@@ -28,5 +28,10 @@ namespace FrameworkSDK.Constructing
         {
             ProcessAction.Invoke(context);
         }
+
+	    public override string ToString()
+	    {
+		    return Name;
+	    }
     }
 }

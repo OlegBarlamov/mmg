@@ -27,7 +27,7 @@ namespace FrameworkSDK.IoC.Default
 
 	        var correctConstructor = FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
             if (correctConstructor == null)
-	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException);
+	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsException, type));
 
 	        return correctConstructor;
         }
@@ -47,11 +47,11 @@ namespace FrameworkSDK.IoC.Default
 
 			var constructors = GetConstructors(type);
             if (constructors.Length < 1)
-				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
+				throw new FrameworkIocException(String.Format(Strings.Exceptions.Ioc.NoPublicConstructorsException, type));
 
 			var correctConstructor = FilterConstructors(constructors).FirstOrDefault();
 			if (correctConstructor == null)
-				throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException);
+				throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsException, type));
 
 			return correctConstructor;
 		}

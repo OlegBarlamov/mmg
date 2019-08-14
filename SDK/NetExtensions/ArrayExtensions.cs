@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace NetExtensions
@@ -44,6 +46,24 @@ namespace NetExtensions
 			}
 
 			return result;
+		}
+
+		public static string ArrayToString<T>([NotNull] this IReadOnlyCollection<T> collection)
+		{
+			if (collection == null) throw new ArgumentNullException(nameof(collection));
+			return collection.ArrayToString(", ", "{0}");
+		}
+
+		public static string ArrayToString<T>([NotNull] this IReadOnlyCollection<T> collection, string separator)
+		{
+			if (collection == null) throw new ArgumentNullException(nameof(collection));
+			return collection.ArrayToString(separator, "{0}");
+		}
+
+		public static string ArrayToString<T>([NotNull] this IReadOnlyCollection<T> collection, string separator, string format)
+		{
+			if (collection == null) throw new ArgumentNullException(nameof(collection));
+			return string.Join(separator, collection.Select(item => string.Format(format, item)));
 		}
 	}
 }

@@ -35,7 +35,12 @@ namespace FrameworkSDK.Game.Views
             throw new NotImplementedException();
         }
 
-        public virtual void Draw(GameTime gameTime)
+	    public override string ToString()
+	    {
+		    return Name;
+	    }
+
+	    public virtual void Draw(GameTime gameTime)
         {
 
         }

@@ -11,6 +11,7 @@ using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions;
+using NetExtensions;
 
 namespace FrameworkSDK.Game.Scenes
 {
@@ -46,7 +47,12 @@ namespace FrameworkSDK.Game.Scenes
 
 	    }
 
-        public void AddController([NotNull] IController controller)
+		public override string ToString()
+		{
+			return Name;
+		}
+
+		public void AddController([NotNull] IController controller)
 		{
 			if (controller == null) throw new ArgumentNullException(nameof(controller));
 
@@ -105,7 +111,7 @@ namespace FrameworkSDK.Game.Scenes
 			}
 			Controllers.Clear();
 
-			Logger.Info(Strings.Info.RemovedMultipleControllersFromScene, count, names.ToArray());
+			Logger.Info(Strings.Info.RemovedMultipleControllersFromScene, names.ToArray().ArrayToString(), count, Name);
 		}
 
 		void IUpdatable.Update(GameTime gameTime)
@@ -216,7 +222,7 @@ namespace FrameworkSDK.Game.Scenes
 
 			view.Destroy();
 
-			Logger.Info(Strings.Info.DestroyViewFromScene, controller?.Name, view.Name, Name);
+			Logger.Info(Strings.Info.DestroyViewFromScene, view.Name, controller?.Name, Name);
 		}
 
 		private void AddView([NotNull] IView view, [CanBeNull] IController controller)
@@ -225,7 +231,7 @@ namespace FrameworkSDK.Game.Scenes
 			var mapping = new ViewMapping(view, controller);
 			Views.Add(mapping);
 
-			Logger.Info(Strings.Info.AddViewToScene, controller?.Name, view.Name, Name);
+			Logger.Info(Strings.Info.AddViewToScene, view.Name, controller?.Name, Name);
 		}
 	}
 }

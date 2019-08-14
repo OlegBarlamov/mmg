@@ -95,11 +95,11 @@ namespace FrameworkSDK.Constructing
 		}
 
 		[NotNull]
-		private static PipelineStep GetStep([NotNull] this IAppConfigurator configurator, string phaseName)
+		private static PipelineStep GetStep([NotNull] this IAppConfigurator configurator, string stepName)
 		{
-			var step = configurator.FindStep(phaseName);
+			var step = configurator.FindStep(stepName);
 			if (step == null)
-				throw new AppConstructingException(Strings.Exceptions.Constructing.StepNotFound);
+				throw new AppConstructingException(string.Format(Strings.Exceptions.Constructing.StepNotFound, stepName));
 
 			return step;
 		}
@@ -132,7 +132,7 @@ namespace FrameworkSDK.Constructing
 		private static T GetObjectFromContext<T>(IPipelineContext context, string key) where T : class
 		{
 			return context.Heap.GetObject<T>(key) ?? throw new AppConstructingException(
-			           string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T)));
+			           string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T).Name));
 		}
 	}
 }

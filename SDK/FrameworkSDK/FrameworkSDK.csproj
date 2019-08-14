@@ -96,7 +96,6 @@
     <Compile Include="Game\Mapping\IncompatibleModelTypeException.cs" />
     <Compile Include="Game\Mapping\IncompatibleViewTypeException.cs" />
     <Compile Include="Game\Mapping\MappingException.cs" />
-    <Compile Include="Game\Mapping\Default\MappingHost.cs" />
     <Compile Include="Game\Mapping\IControllerResolver.cs" />
     <Compile Include="Game\Mapping\IViewResolver.cs" />
     <Compile Include="Game\Scenes\ISceneComponent.cs" />

@@ -12,7 +12,6 @@ namespace FrameworkSDK.Modules
 		public void Register(IServiceRegistrator serviceRegistrator)
 		{
 			serviceRegistrator.RegisterType<IScenesController, ScenesController>();
-			serviceRegistrator.RegisterType<MappingHost, MappingHost>();
 		    serviceRegistrator.RegisterType<IViewResolver, DefaultViewResolver>();
 		    serviceRegistrator.RegisterType<IControllerResolver, DefaultControllerResolver>();
 

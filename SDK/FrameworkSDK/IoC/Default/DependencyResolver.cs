@@ -66,7 +66,7 @@ namespace FrameworkSDK.IoC.Default
 	            }
 
 	            if (!ServiceLocator.IsServiceRegistered(type))
-	                throw new FrameworkIocException(Strings.Exceptions.Ioc.DependencyNotResolvedException);
+	                throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.DependencyNotResolvedException, type));
 	        }
 	    }
     }

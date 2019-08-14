@@ -128,6 +128,9 @@ namespace FrameworkSDK.Constructing
 						var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
 
 					    var serviceLocator = serviceContainer.BuildContainer();
+					    serviceContainer.RegisterInstance(serviceLocator);
+					    serviceLocator = serviceContainer.BuildContainer();
+
 						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Locator, serviceLocator);
 
 						AppContext.Initialize(loggerService, serviceLocator);

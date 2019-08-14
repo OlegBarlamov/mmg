@@ -34,7 +34,12 @@ namespace FrameworkSDK.Pipelines
             }
         }
 
-        public void AddAction([NotNull] IPipelineAction action)
+	    public override string ToString()
+	    {
+		    return Name;
+	    }
+
+	    public void AddAction([NotNull] IPipelineAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (ContainsWithName(action.Name))

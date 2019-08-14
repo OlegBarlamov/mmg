@@ -37,7 +37,12 @@ namespace FrameworkSDK.Game
         {
         }
 
-        bool IController.IsOwnedModel(object model)
+	    public override string ToString()
+	    {
+		    return Name;
+	    }
+
+	    bool IController.IsOwnedModel(object model)
         {
             return ReferenceEquals(model, _model);
         }

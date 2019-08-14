@@ -128,7 +128,7 @@ namespace FrameworkSDK.IoC.Default
 		{
 			var code = GetCode(type);
 			if (!_mapping.TryGetValue(code, out var regInfos) || regInfos.Count < 1)
-				throw new FrameworkIocException(Strings.Exceptions.Ioc.TypeNotRegisteredException);
+				throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.TypeNotRegisteredException, type));
 
 			return regInfos;
 		}
@@ -143,7 +143,7 @@ namespace FrameworkSDK.IoC.Default
 	        }
 	        catch (Exception e)
 	        {
-	            throw new FrameworkIocException(Strings.Exceptions.Ioc.ResolvingTypeException, e);
+	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.ResolvingTypeException, type), e);
 	        }
 	    }
 
@@ -157,7 +157,7 @@ namespace FrameworkSDK.IoC.Default
 			}
 			catch (Exception e)
 			{
-				throw new FrameworkIocException(Strings.Exceptions.Ioc.ResolvingTypeException, e);
+				throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.ResolvingTypeException, type), e);
 			}
 		}
 
