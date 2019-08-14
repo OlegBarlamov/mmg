@@ -1,9 +1,10 @@
 ﻿using System;
-using FrameworkSDK.Configuration;
+using FrameworkSDK.Pipelines;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
+using NetExtensions;
 
 namespace FrameworkSDK.Constructing
 {
@@ -21,7 +22,7 @@ namespace FrameworkSDK.Constructing
 				context =>
 				{
 					var localization = GetFromFactory(localizationFactory);
-					context.SetObject(DefaultConfigurationSteps.ContextKeys.Localization, localization);
+					context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
 				}));
 
 			return configurator;
@@ -39,7 +40,7 @@ namespace FrameworkSDK.Constructing
 				context =>
 				{
 					var logger = GetFromFactory(loggerFactory);
-					context.SetObject(DefaultConfigurationSteps.ContextKeys.Logger, logger);
+					context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
 				}));
 
 			return configurator;
@@ -57,7 +58,7 @@ namespace FrameworkSDK.Constructing
 				context =>
 				{
 					var serviceContainerFactory = GetFromFactory(serviceContainerFactoryCreator);
-					context.SetObject(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
+					context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				}));
 
 			return configurator;
@@ -94,7 +95,7 @@ namespace FrameworkSDK.Constructing
 		}
 
 		[NotNull]
-		private static ConfigurationPhase GetPhase([NotNull] this IAppConfigurator configurator, string phaseName)
+		private static PipelineStep GetPhase([NotNull] this IAppConfigurator configurator, string phaseName)
 		{
 			var phase = configurator.FindPhase(phaseName);
 			if (phase == null)
@@ -103,21 +104,21 @@ namespace FrameworkSDK.Constructing
 			return phase;
 		}
 
-	    private static void InsertAfter([NotNull] this IAppConfigurator configurator, ConfigurationPhase phase, ConfigurationPhase insertingPhase)
+	    private static void InsertAfter([NotNull] this IAppConfigurator configurator, PipelineStep phase, PipelineStep insertingPhase)
 	    {
             throw new NotImplementedException();
 	    }
 
 		[CanBeNull]
-		private static ConfigurationPhase FindPhase([NotNull] this IAppConfigurator configurator, string phaseName)
+		private static PipelineStep FindPhase([NotNull] this IAppConfigurator configurator, string phaseName)
 		{
-			return configurator.Configuration.Phases.FindByName(phaseName);
+			return configurator.ConfigurationPipeline.Steps.FindByName(phaseName);
 		}
 
 		[NotNull]
-		private static T GetObjectFromContext<T>(NamedObjectsHeap context, string key)
+		private static T GetObjectFromContext<T>(IPipelineContext context, string key)
 		{
-			return context.GetObject<IFrameworkLogger>(key) ?? throw new AppConstructingException();
+			return context.Heap.GetObject<IFrameworkLogger>(key) ?? throw new AppConstructingException();
 		}
 	}
 }

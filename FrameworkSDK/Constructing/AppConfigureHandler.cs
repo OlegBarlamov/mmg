@@ -1,7 +1,7 @@
 ﻿using System;
-using FrameworkSDK.Configuration;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
+using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Constructing
@@ -9,17 +9,17 @@ namespace FrameworkSDK.Constructing
     internal class AppConfigureHandler : IAppConfigurator, IAppConfigureHandler
     {
         [NotNull]
-        public PhaseConfiguration Configuration { get; set; } = new PhaseConfiguration();
+        public Pipeline ConfigurationPipeline { get; set; } = new Pipeline();
 
         private bool _configured;
 
         private ModuleLogger Logger { get; set; }
 
-        [NotNull] private IConfigurationProcessor ConfigurationProcessor { get; }
+        [NotNull] private IPipelineProcessor PipelineProcessor { get; }
 
-        public AppConfigureHandler([NotNull] IConfigurationProcessor configurationProcessor)
+        public AppConfigureHandler([NotNull] IPipelineProcessor pipelineProcessor)
         {
-            ConfigurationProcessor = configurationProcessor ?? throw new ArgumentNullException(nameof(configurationProcessor));
+            PipelineProcessor = pipelineProcessor ?? throw new ArgumentNullException(nameof(pipelineProcessor));
         }
 
         public void Configure()
@@ -44,7 +44,7 @@ namespace FrameworkSDK.Constructing
         {
             if (!_configured)
             {
-                ConfigurationProcessor.Process(Configuration);
+                PipelineProcessor.Process(ConfigurationPipeline);
             }
 
             _configured = true;

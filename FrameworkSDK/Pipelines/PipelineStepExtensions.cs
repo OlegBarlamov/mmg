@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Configuration
+namespace FrameworkSDK.Pipelines
 {
-	public static class ConfigurationPhaseExtensions
+	public static class PipelineStepExtensions
 	{
-		public static void AddActions([NotNull] this ConfigurationPhase phase, [NotNull] IEnumerable<IConfigurationPhaseAction> actions)
+		public static void AddActions([NotNull] this PipelineStep phase, [NotNull] IEnumerable<IPipelineAction> actions)
 		{
 			if (phase == null) throw new ArgumentNullException(nameof(phase));
 			if (actions == null) throw new ArgumentNullException(nameof(actions));
@@ -16,12 +15,12 @@ namespace FrameworkSDK.Configuration
 				phase.AddAction(action);
 		}
 
-		public static void AddActions(this ConfigurationPhase phase, params IConfigurationPhaseAction[] actions)
+		public static void AddActions(this PipelineStep phase, params IPipelineAction[] actions)
 		{
-			AddActions(phase, (IEnumerable<IConfigurationPhaseAction>)actions);
+			AddActions(phase, (IEnumerable<IPipelineAction>)actions);
 		}
 
-		public static void AddOrReplace([NotNull] this ConfigurationPhase phase, [NotNull] IConfigurationPhaseAction action)
+		public static void AddOrReplace([NotNull] this PipelineStep phase, [NotNull] IPipelineAction action)
 		{
 			if (phase == null) throw new ArgumentNullException(nameof(phase));
 			if (action == null) throw new ArgumentNullException(nameof(action));
@@ -32,14 +31,14 @@ namespace FrameworkSDK.Configuration
 			phase.AddAction(action);
 		}
 
-		public static bool ContainsName([NotNull] this ConfigurationPhase phase, [NotNull] string actionName)
+		public static bool ContainsName([NotNull] this PipelineStep phase, [NotNull] string actionName)
 		{
 			if (phase == null) throw new ArgumentNullException(nameof(phase));
 			if (actionName == null) throw new ArgumentNullException(nameof(actionName));
 			return phase.Actions.ContainsWithName(actionName);
 		}
 
-		public static void RemoveByName([NotNull] this ConfigurationPhase phase, [NotNull] string actionName)
+		public static void RemoveByName([NotNull] this PipelineStep phase, [NotNull] string actionName)
 		{
 			if (phase == null) throw new ArgumentNullException(nameof(phase));
 			if (actionName == null) throw new ArgumentNullException(nameof(actionName));

@@ -1,7 +1,7 @@
 ﻿using System;
-using FrameworkSDK.Configuration;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.Logging;
+using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK
@@ -16,10 +16,10 @@ namespace FrameworkSDK
             var defaultConfigurationFactory = new DefaultConfigurationFactory();
             var configuration = defaultConfigurationFactory.Create();
 
-            var defaultProcessor = new AppConfigurationProcessor();
+            var defaultProcessor = new AppConstructor();
             var configureHandler = new AppConfigureHandler(defaultProcessor)
             {
-                Configuration = configuration
+                ConfigurationPipeline = configuration
             };
 
             return configureHandler;
@@ -28,14 +28,14 @@ namespace FrameworkSDK
         /// <summary>
         /// Сконструировать приложение на основе существующей конфигурации
         /// </summary>
-        public static IAppConfigureHandler ConstructCustom([NotNull] PhaseConfiguration appConfiguration, IFrameworkLogger logger = null)
+        public static IAppConfigureHandler ConstructCustom([NotNull] Pipelines appConfiguration, IFrameworkLogger logger = null)
         {
             if (appConfiguration == null) throw new ArgumentNullException(nameof(appConfiguration));
 
-            var defaultProcessor = new AppConfigurationProcessor();
+            var defaultProcessor = new AppConstructor();
             var configureHandler = new AppConfigureHandler(defaultProcessor)
             {
-                Configuration = appConfiguration
+                ConfigurationPipeline = appConfiguration
             };
 
             return configureHandler;
@@ -45,15 +45,15 @@ namespace FrameworkSDK
         /// Сконструировать приложение на основе существующей конфигурации, используя свой построитель.
         /// </summary>
         [NotNull]
-        public static IAppConfigureHandler ConstructCustom([NotNull] PhaseConfiguration appConfiguration,
-            [NotNull] IConfigurationProcessor configurationProcessor)
+        public static IAppConfigureHandler ConstructCustom([NotNull] Pipelines appConfiguration,
+            [NotNull] IPipelineProcessor pipelineProcessor)
         {
             if (appConfiguration == null) throw new ArgumentNullException(nameof(appConfiguration));
-            if (configurationProcessor == null) throw new ArgumentNullException(nameof(configurationProcessor));
+            if (pipelineProcessor == null) throw new ArgumentNullException(nameof(pipelineProcessor));
 
-            var configureHandler = new AppConfigureHandler(configurationProcessor)
+            var configureHandler = new AppConfigureHandler(pipelineProcessor)
             {
-                Configuration = appConfiguration
+                ConfigurationPipeline = appConfiguration
             };
 
             return configureHandler;

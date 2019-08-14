@@ -29,8 +29,8 @@ namespace FrameworkSDK.Constructing
                     var locator = GetObjectFromContext<IServiceLocator>(context, DefaultConfigurationSteps.ContextKeys.Locator);
                     var game = locator.Resolve<IGame>();
                     var host = locator.Resolve<IGameHost>();
-                    context.SetObject(DefaultConfigurationSteps.ContextKeys.Game, game);
-                    context.SetObject(DefaultConfigurationSteps.ContextKeys.Host, host);
+                    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Game, game);
+                    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Host, host);
                 }));
 
             return new GameConfigurator<THost>(configurator);

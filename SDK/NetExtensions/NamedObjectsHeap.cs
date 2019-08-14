@@ -2,26 +2,31 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Configuration
+namespace NetExtensions
 {
-    public class NamedObjectsHeap
+    public class NamedObjectsHeap<T> : IKeyValueHeap<string, T>
     {
         [CanBeNull]
-        public object this[[NotNull] string key] => GetObject(key);
+        public T this[[NotNull] string key]
+        {
+            get => GetValue(key);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            set => SetValue(key, value);
+        }
 
         public bool IsEmpty => _heap.Count == 0;
 
-        private readonly Dictionary<string, object> _heap = new Dictionary<string, object>();
+        private readonly Dictionary<string, T> _heap = new Dictionary<string, T>();
 
         [CanBeNull]
-        public object GetObject([NotNull] string key)
+        public T GetValue([NotNull] string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
 
-            return _heap.TryGetValue(key, out var result) ? result : null;
+            return _heap.TryGetValue(key, out var result) ? result : default(T);
         }
 
-        public void SetObject([NotNull] string key, [NotNull] object @object)
+        public void SetValue([NotNull] string key, [NotNull] T @object)
         {
             if (@object == null) throw new ArgumentNullException(nameof(@object));
             if (key == null) throw new ArgumentNullException(nameof(key));

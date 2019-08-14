@@ -1,5 +1,5 @@
 ﻿using System;
-using FrameworkSDK.Configuration;
+using FrameworkSDK.Pipelines;
 using FrameworkSDK.Game;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
@@ -9,7 +9,7 @@ namespace FrameworkSDK.Constructing
 {
     internal class GameConfigurator<TGameHost> : IGameConfigurator<TGameHost> where TGameHost : IGameHost
     {
-        public PhaseConfiguration Configuration => AppConfigurator.Configuration;
+        public Pipeline ConfigurationPipeline => AppConfigurator.ConfigurationPipeline;
 
         [NotNull] private IAppConfigurator AppConfigurator { get; }
 

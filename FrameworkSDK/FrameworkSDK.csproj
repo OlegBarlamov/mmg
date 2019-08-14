@@ -47,11 +47,11 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AppContext.cs" />
-    <Compile Include="Configuration\ConfigurationProcessor.cs" />
-    <Compile Include="Configuration\ConfigurationPhaseExtensions.cs" />
-    <Compile Include="Configuration\EmptyConfigurationPhaseAction.cs" />
-    <Compile Include="Configuration\NamedObjectsHeap.cs" />
-    <Compile Include="Configuration\NamesObjectsHeapExtensions.cs" />
+    <Compile Include="Pipelines\IPipelineProcessor.cs" />
+    <Compile Include="Pipelines\PipelineContext.cs" />
+    <Compile Include="Pipelines\PipelineProcessor.cs" />
+    <Compile Include="Pipelines\PipelineStepExtensions.cs" />
+    <Compile Include="Pipelines\EmptyPipelineAction.cs" />
     <Compile Include="Constructing\AppConfigurationProcessor.cs" />
     <Compile Include="Constructing\AppConfigureHandler.cs" />
     <Compile Include="Constructing\AppConstructingException.cs" />
@@ -73,6 +73,7 @@
     <Compile Include="Modules\CoreModule.cs" />
     <Compile Include="IoC\IServicesModule.cs" />
     <Compile Include="Modules\GameModule.cs" />
+    <Compile Include="Pipelines\SimplePipelineProcessor.cs" />
     <Compile Include="Services\AppDomainService.cs" />
     <Compile Include="Services\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
@@ -82,8 +83,8 @@
     <Compile Include="Services\IAppDomainService.cs" />
     <Compile Include="Services\IRandomService.cs" />
     <Compile Include="Common\NamesGenerator.cs" />
-    <Compile Include="Configuration\ConfigurationException.cs" />
-    <Compile Include="Configuration\ConfigurationPhase.cs" />
+    <Compile Include="Pipelines\PipelineException.cs" />
+    <Compile Include="Pipelines\PipelineStep.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="FrameworkException.cs" />
     <Compile Include="Game\Controllers\ControllerGeneric.cs" />
@@ -101,11 +102,11 @@
     <Compile Include="Game\Views\IView.cs" />
     <Compile Include="Game\Views\View.cs" />
     <Compile Include="Game\Views\ViewGeneric.cs" />
-    <Compile Include="Configuration\IConfigurationPhaseAction.cs" />
+    <Compile Include="Pipelines\IPipelineAction.cs" />
     <Compile Include="IoC\Default\ConstructorFinder.cs" />
     <Compile Include="IoC\ServiceLocatorExtension.cs" />
     <Compile Include="IoC\ServiceRegistratorExtension.cs" />
-    <Compile Include="Configuration\PhaseConfiguration.cs" />
+    <Compile Include="Pipelines\Pipeline.cs" />
     <Compile Include="Game\GameShell.cs" />
     <Compile Include="Common\INamed.cs" />
     <Compile Include="Game\Controllers\Controller.cs" />

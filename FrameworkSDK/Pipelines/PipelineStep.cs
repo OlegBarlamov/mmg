@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Configuration
+namespace FrameworkSDK.Pipelines
 {
-    //TODO rename to pipeline
-    public class ConfigurationPhase : INamed
+    public class PipelineStep : INamed
     {
         public string Name { get; }
 
-        public ConfigurationPhase([NotNull] string name)
+        public PipelineStep([NotNull] string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        [NotNull, ItemNotNull] public IReadOnlyList<IConfigurationPhaseAction> Actions => _actions;
+        [NotNull, ItemNotNull] public IReadOnlyList<IPipelineAction> Actions => _actions;
 
-        private readonly List<IConfigurationPhaseAction> _actions = new List<IConfigurationPhaseAction>();
+        private readonly List<IPipelineAction> _actions = new List<IPipelineAction>();
 
         [NotNull]
-        public IConfigurationPhaseAction this[[NotNull] string actionName]
+        public IPipelineAction this[[NotNull] string actionName]
         {
             get
             {
@@ -28,38 +27,38 @@ namespace FrameworkSDK.Configuration
                 if (string.IsNullOrWhiteSpace(actionName)) throw new ArgumentException(nameof(actionName));
 
                 if (!ContainsWithName(actionName))
-                    throw new ConfigurationException();
+                    throw new PipelineException();
 
                 return _actions.First(action => action.Name == actionName);
             }
         }
 
-        public void AddAction([NotNull] IConfigurationPhaseAction action)
+        public void AddAction([NotNull] IPipelineAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (ContainsWithName(action.Name))
-                throw new ConfigurationException();
+                throw new PipelineException();
 
             _actions.Add(action);
         }
 
-        public void RemoveAction([NotNull] IConfigurationPhaseAction action)
+        public void RemoveAction([NotNull] IPipelineAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (!ContainsWithName(action.Name))
-                throw new ConfigurationException();
+                throw new PipelineException();
 
             _actions.Remove(action);
         }
 
-        public bool ContainsAction([NotNull] IConfigurationPhaseAction action)
+        public bool ContainsAction([NotNull] IPipelineAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
             return _actions.Contains(action);
         }
 
-        public virtual IReadOnlyList<IConfigurationPhaseAction> GetActionsForProcess()
+        public virtual IReadOnlyList<IPipelineAction> GetActionsForProcess()
         {
             return Actions.ToArray();
         }

@@ -1,11 +1,11 @@
 ﻿using System;
-using FrameworkSDK.Configuration;
+using FrameworkSDK.Pipelines;
 
 namespace FrameworkSDK.Constructing
 {
     public interface IAppConfigureHandler : IDisposable
     {
-        PhaseConfiguration Configuration { get; }
+        Pipeline ConfigurationPipeline { get; }
 
         /// <summary>
         /// Осуществляет построение приложения.

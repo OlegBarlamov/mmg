@@ -1,4 +1,4 @@
-﻿using FrameworkSDK.Configuration;
+﻿using FrameworkSDK.Pipelines;
 using FrameworkSDK.IoC;
 using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
@@ -11,9 +11,9 @@ namespace FrameworkSDK.Constructing
 {
     internal class DefaultConfigurationFactory
     {
-        public PhaseConfiguration Create()
+        public Pipeline Create()
         {
-            var configuration = new PhaseConfiguration();
+            var configuration = new Pipeline();
 
 	        var initializePhase = CreateInitializePhase();
 	        var baseSetup = CreateBaseSetupPhase();
@@ -21,7 +21,7 @@ namespace FrameworkSDK.Constructing
             var externalRegistration = CreateExternalRegistrationPhase();
             var constructing = CreateConstructingPhase();
 
-			configuration.Phases.AddRange(
+			configuration.Steps.AddRange(
 				initializePhase,
 				baseSetup,
 				registration,
@@ -31,38 +31,38 @@ namespace FrameworkSDK.Constructing
 			return configuration;
         }
 
-	    private ConfigurationPhase CreateInitializePhase()
+	    private PipelineStep CreateInitializePhase()
 	    {
-			var initializePhase = new ConfigurationPhase(DefaultConfigurationSteps.Initialization);
+			var initializePhase = new PipelineStep(DefaultConfigurationSteps.Initialization);
 		    initializePhase.AddActions(
 			    new SimpleConfigurationAction(
 				    DefaultConfigurationSteps.InitializationActions.Localization, true,
 				    context =>
 				    {
 					    var localization = new DefaultLocalization();
-					    context.SetObject(DefaultConfigurationSteps.ContextKeys.Localization, localization);
+					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
 				    }),
 			    new SimpleConfigurationAction(
 				    DefaultConfigurationSteps.InitializationActions.Logging, true,
 				    context =>
 				    {
 					    var logger = new NullLogger();
-					    context.SetObject(DefaultConfigurationSteps.ContextKeys.Logger, logger);
+					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
 					}),
 			    new SimpleConfigurationAction(
 				    DefaultConfigurationSteps.InitializationActions.Ioc, true,
 				    context =>
 				    {
 					    var serviceContainerFactory = new DefaultServiceContainerFactory();
-					    context.SetObject(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
+					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				    })
 		    );
 		    return initializePhase;
 	    }
 
-	    private ConfigurationPhase CreateBaseSetupPhase()
+	    private PipelineStep CreateBaseSetupPhase()
 	    {
-			var baseSetupPhase = new ConfigurationPhase(DefaultConfigurationSteps.BaseSetup);
+			var baseSetupPhase = new PipelineStep(DefaultConfigurationSteps.BaseSetup);
 		    baseSetupPhase.AddActions(
 			    new SimpleConfigurationAction(
 				    DefaultConfigurationSteps.BaseSetupActions.Setup, true,
@@ -75,10 +75,10 @@ namespace FrameworkSDK.Constructing
 						var moduleLogger = new ModuleLogger(logger, FrameworkLogModule.Application);
 				        var mainServiceContainer = serviceContainerFactory.CreateContainer();
 
-					    context.SetObject(DefaultConfigurationSteps.ContextKeys.Logger, moduleLogger);
-						context.SetObject(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
-				        context.SetObject(DefaultConfigurationSteps.ContextKeys.Container, mainServiceContainer);
-                        context.SetObject(DefaultConfigurationSteps.ContextKeys.BaseLogger, logger);
+					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, moduleLogger);
+						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
+				        context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Container, mainServiceContainer);
+                        context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.BaseLogger, logger);
 
 						moduleLogger.Info();
 					})
@@ -86,15 +86,15 @@ namespace FrameworkSDK.Constructing
 		    return baseSetupPhase;
 		}
 
-	    private ConfigurationPhase CreateRegistrationPhase()
+	    private PipelineStep CreateRegistrationPhase()
 	    {
-		    var registrationPhase = new ConfigurationPhase(DefaultConfigurationSteps.Registration);
+		    var registrationPhase = new PipelineStep(DefaultConfigurationSteps.Registration);
 		    registrationPhase.AddActions(
 			    new SimpleConfigurationAction(
 				    DefaultConfigurationSteps.RegistrationActions.Core, true,
 				    context =>
 				    {
-					    var logger = context.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
+					    var logger = context.Heap.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
 						logger?.Info(Strings.Info.DefaultServices);
 
 					    var localization = GetObjectFromContext<ILocalization>(context, DefaultConfigurationSteps.ContextKeys.Localization);
@@ -108,28 +108,28 @@ namespace FrameworkSDK.Constructing
 		    return registrationPhase;
 	    }
 
-        private ConfigurationPhase CreateExternalRegistrationPhase()
+        private PipelineStep CreateExternalRegistrationPhase()
         {
-            return new ConfigurationPhase(DefaultConfigurationSteps.ExternalRegistration);
+            return new PipelineStep(DefaultConfigurationSteps.ExternalRegistration);
         }
 
 
-        private ConfigurationPhase CreateConstructingPhase()
+        private PipelineStep CreateConstructingPhase()
 	    {
-			var registrationPhase = new ConfigurationPhase(DefaultConfigurationSteps.Constructing);
+			var registrationPhase = new PipelineStep(DefaultConfigurationSteps.Constructing);
 		    registrationPhase.AddActions(
 			    new SimpleConfigurationAction(
 				    DefaultConfigurationSteps.ConstructingActions.Core, true,
 				    context =>
 				    {
-					    var logger = context.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
+					    var logger = context.Heap.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
 					    logger?.Info(Strings.Info.ConstructingStart);
 
 					    var serviceContainer = GetObjectFromContext<IFrameworkServiceContainer>(context, DefaultConfigurationSteps.ContextKeys.Container);
 						var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
 
 					    var serviceLocator = serviceContainer.BuildContainer();
-						context.SetObject(DefaultConfigurationSteps.ContextKeys.Locator, serviceLocator);
+						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Locator, serviceLocator);
 
 						AppContext.Initialize(loggerService, serviceLocator);
 
@@ -140,9 +140,9 @@ namespace FrameworkSDK.Constructing
 		}
 
 		[NotNull]
-	    private static T GetObjectFromContext<T>(NamedObjectsHeap context, string key)
+	    private static T GetObjectFromContext<T>(IPipelineContext context, string key)
 	    {
-			return context.GetObject<IFrameworkLogger>(key) ?? throw new AppConstructingException();
+			return context.Heap.GetObject<IFrameworkLogger>(key) ?? throw new AppConstructingException();
 		}
 	}
 }
