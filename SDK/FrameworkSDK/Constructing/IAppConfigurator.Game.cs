@@ -1,5 +1,4 @@
-﻿using FrameworkSDK.Game;
-using FrameworkSDK.IoC;
+﻿using FrameworkSDK.IoC;
 using FrameworkSDK.Modules;
 using JetBrains.Annotations;
 
@@ -36,4 +35,13 @@ namespace FrameworkSDK.Constructing
             return new GameConfigurator<THost>(configurator);
 		}
 	}
+
+    public static class GameConfiguratorExtensions
+    {
+        public static IGameConfigurator<THost> SetupGameParameters<THost>([NotNull] this IGameConfigurator<THost> configurator)
+            where THost : IGameHost
+        {
+
+        }
+    }
 }
