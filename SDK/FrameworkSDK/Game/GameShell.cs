@@ -20,30 +20,23 @@ namespace FrameworkSDK.Game
 
 		[NotNull]
 		private IScenesController ScenesController { get; }
+	    [NotNull]
+        private IGameParameters Parameters { get; }
 
-		public GameShell([NotNull] IGameHost host, [NotNull] IFrameworkLogger logger, [NotNull] IScenesController scenesController)
+	    public GameShell([NotNull] IGameHost host, [NotNull] IFrameworkLogger logger, [NotNull] IScenesController scenesController,
+	        [NotNull] IGameParameters parameters)
 		{
 		    if (logger == null) throw new ArgumentNullException(nameof(logger));
 		    Host = host ?? throw new ArgumentNullException(nameof(host));
 
 		    ScenesController = scenesController ?? throw new ArgumentNullException(nameof(scenesController));
-            GraphicsDeviceManager = new GraphicsDeviceManager(this);
+		    Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+		    GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
             Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
+
+            SetupParameters(parameters);
         }
-
-		public void SetupParameters([NotNull] StartParameters startParameters)
-		{
-		    Logger.Info("Setup start parameters...");
-
-            if (startParameters == null) throw new ArgumentNullException(nameof(startParameters));
-
-		    Content.RootDirectory = startParameters.ContentRootDirectory;
-
-		    GraphicsDeviceManager.PreferredBackBufferWidth = startParameters.BackBufferSize.Width;
-		    GraphicsDeviceManager.PreferredBackBufferHeight = startParameters.BackBufferSize.Height;
-		    GraphicsDeviceManager.IsFullScreen = startParameters.IsFullScreenMode;
-		}
 
 		protected override void Initialize()
 		{
@@ -89,7 +82,20 @@ namespace FrameworkSDK.Game
 	        base.Draw(gameTime);
 	    }
 
-	    void IDisposable.Dispose()
+	    private void SetupParameters([NotNull] IGameParameters parameters)
+	    {
+	        Logger.Info("Setup game parameters...");
+
+	        if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+	        Content.RootDirectory = parameters.ContentRootDirectory;
+
+	        GraphicsDeviceManager.PreferredBackBufferWidth = parameters.BackBufferSize.Width;
+	        GraphicsDeviceManager.PreferredBackBufferHeight = parameters.BackBufferSize.Height;
+	        GraphicsDeviceManager.IsFullScreen = parameters.IsFullScreenMode;
+	    }
+
+        void IDisposable.Dispose()
 	    {
             Dispose(true);
 

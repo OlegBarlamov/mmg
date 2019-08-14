@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Pipelines
 {
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class Pipeline
     {
         [NotNull, ItemNotNull]
         public List<PipelineStep> Steps { get; } = new List<PipelineStep>();
 
         [NotNull]
-        public PipelineStep this[string phaseName]
+        public PipelineStep this[string stepName]
         {
             get
             {
-                if (phaseName == null) throw new ArgumentNullException(nameof(phaseName));
-                if (string.IsNullOrWhiteSpace(phaseName)) throw new ArgumentException(nameof(phaseName));
+                if (stepName == null) throw new ArgumentNullException(nameof(stepName));
+                if (string.IsNullOrWhiteSpace(stepName)) throw new ArgumentException(nameof(stepName));
 
-                if (!Steps.ContainsWithName(phaseName))
-                    throw new PipelineException();
+                if (!Steps.ContainsWithName(stepName))
+                    throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.StepNotFound, stepName));
 
-                return Steps.First(phase => phase.Name == phaseName);
+                return Steps.First(phase => phase.Name == stepName);
             }
         }
 

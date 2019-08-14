@@ -1,8 +1,6 @@
 ﻿using System;
 using FrameworkSDK.Pipelines;
-using FrameworkSDK.Game;
 using FrameworkSDK.IoC;
-using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Constructing
@@ -33,7 +31,7 @@ namespace FrameworkSDK.Constructing
             AppConfigurator.Run();
 
             var locator = AppContext.ServiceLocator;
-            var host = locator.Resolve<TGameHost>();
+            var host = locator.Resolve<IGameHost>();
             var game = locator.Resolve<IGame>();
 
             host.Run(game);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using FrameworkSDK.Game;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Common
@@ -8,6 +7,8 @@ namespace FrameworkSDK.Common
 	public class Hash : IEquatable<Hash>
 	{
 		[NotNull] public string Value { get; }
+
+        private static LazyService<IRandomService> RandomService { get; } = new LazyService<IRandomService>();
 
 		private Hash(string value)
 		{
@@ -68,7 +69,7 @@ namespace FrameworkSDK.Common
 			{
 				var minValue = i == 0 ? 1 : 0;
 				var maxValue = 10;
-				result += RandomShell.RandomService.NextInteger(minValue, maxValue);
+				result += RandomService.Service.NextInteger(minValue, maxValue);
 			}
 
 			return result;
@@ -78,7 +79,7 @@ namespace FrameworkSDK.Common
 		{
 			if (partsCount <= 0) throw new ArgumentOutOfRangeException(nameof(partsCount));
 
-			var guid = RandomShell.RandomService.NewGuid();
+			var guid = RandomService.Service.NewGuid();
 			if (partsCount >= 5)
 				return guid.ToString("N");
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using JetBrains.Annotations;
+using NetExtensions;
 
 namespace FrameworkSDK.Pipelines
 {
@@ -13,6 +15,16 @@ namespace FrameworkSDK.Pipelines
         protected override void OnPhaseProcessFailed(PipelineStep phase, Exception error)
         {
             throw error;
+        }
+
+        public SimplePipelineProcessor([NotNull] PipelineContext context)
+            : base(context)
+        {
+        }
+
+        public SimplePipelineProcessor()
+            : base(new PipelineContext(new NamedObjectsHeap<object>()))
+        {
         }
     }
 }

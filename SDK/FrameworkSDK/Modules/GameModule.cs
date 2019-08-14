@@ -17,9 +17,10 @@ namespace FrameworkSDK.Modules
 		    serviceRegistrator.RegisterType<IControllerResolver, DefaultControllerResolver>();
 
 			serviceRegistrator.RegisterType<ISpriteBatchProvider, DefaultSpriteBatchProvider>();
+            serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
 
             serviceRegistrator.RegisterType<IGameHost, TGameHost>();
-            serviceRegistrator.RegisterType<GameShell, GameShell>();
+		    serviceRegistrator.RegisterType<IGame, GameShell>();
 		}
 	}
 }

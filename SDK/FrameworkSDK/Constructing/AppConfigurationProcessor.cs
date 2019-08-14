@@ -67,8 +67,6 @@ namespace FrameworkSDK.Constructing
 
         protected sealed override void OnConfigurationFinished()
         {
-            //Нужно проверить Context на пустоту. Если что кинуть warning!
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
+using FrameworkSDK.Logging;
 
 namespace HeroesGame
 {
@@ -17,11 +18,20 @@ namespace HeroesGame
         static void Main()
         {
             using (var app = App.Construct()
-                .UseGameFramework<TestApplication>())
+                .UseGameFramework<TestApplication>()
+                .SetupCustomLogger(() => new ConsoleLogger()))
             {
                 app.Run();
             }
 		}
+    }
+
+    internal class ConsoleLogger : IFrameworkLogger
+    {
+        public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+        {
+            Console.WriteLine($@"{level}:{module}:{message}");
+        }
     }
 #endif
 }

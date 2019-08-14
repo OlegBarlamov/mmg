@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Pipelines
@@ -27,7 +28,7 @@ namespace FrameworkSDK.Pipelines
                 if (string.IsNullOrWhiteSpace(actionName)) throw new ArgumentException(nameof(actionName));
 
                 if (!ContainsWithName(actionName))
-                    throw new PipelineException();
+                    throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.ActionNotFound, actionName));
 
                 return _actions.First(action => action.Name == actionName);
             }
@@ -37,7 +38,7 @@ namespace FrameworkSDK.Pipelines
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (ContainsWithName(action.Name))
-                throw new PipelineException();
+                throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.ActionAlreadyExists, action.Name));
 
             _actions.Add(action);
         }
@@ -46,7 +47,7 @@ namespace FrameworkSDK.Pipelines
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (!ContainsWithName(action.Name))
-                throw new PipelineException();
+                throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.ActionNotFound, action.Name));
 
             _actions.Remove(action);
         }

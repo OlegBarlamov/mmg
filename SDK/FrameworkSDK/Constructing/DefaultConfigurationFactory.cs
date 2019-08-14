@@ -79,8 +79,6 @@ namespace FrameworkSDK.Constructing
 						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				        context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Container, mainServiceContainer);
                         context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.BaseLogger, logger);
-
-						moduleLogger.Info();
 					})
 		    );
 		    return baseSetupPhase;
@@ -99,10 +97,11 @@ namespace FrameworkSDK.Constructing
 
 					    var localization = GetObjectFromContext<ILocalization>(context, DefaultConfigurationSteps.ContextKeys.Localization);
 					    var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
-					    var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.Container);
+					    var serviceContainer = GetObjectFromContext<IFrameworkServiceContainer>(context, DefaultConfigurationSteps.ContextKeys.Container);
+				        var serviceContainerFactory = GetObjectFromContext<IServiceContainerFactory>(context, DefaultConfigurationSteps.ContextKeys.Ioc);
 
-						var coreModule = new CoreModule(localization, loggerService);
-						serviceRegistrator.RegisterModule(coreModule);
+                        var coreModule = new CoreModule(localization, loggerService, serviceContainer, serviceContainerFactory);
+				        serviceContainer.RegisterModule(coreModule);
 					})
 			);
 		    return registrationPhase;
@@ -140,9 +139,10 @@ namespace FrameworkSDK.Constructing
 		}
 
 		[NotNull]
-	    private static T GetObjectFromContext<T>(IPipelineContext context, string key)
+	    private static T GetObjectFromContext<T>(IPipelineContext context, string key) where T : class
 	    {
-			return context.Heap.GetObject<IFrameworkLogger>(key) ?? throw new AppConstructingException();
+			return context.Heap.GetObject<T>(key) ?? throw new AppConstructingException(
+			           string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T).Name));
 		}
 	}
 }

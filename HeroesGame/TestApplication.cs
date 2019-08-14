@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using FrameworkSDK;
-using FrameworkSDK.Constructing;
-using FrameworkSDK.Game;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.Game.Views;
 using FrameworkSDK.Services.Graphics;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace HeroesGame
 {
@@ -17,14 +14,11 @@ namespace HeroesGame
     {
         private TestScene _scene;
 
-        protected override Scene GetCurrentScene()
+        public override Scene CurrentScene => GetCurrentScene();
+
+        private Scene GetCurrentScene()
         {
             return _scene ?? (_scene = new TestScene());
-        }
-
-        protected override void Construct(IAppConstructor constructor)
-        {
-            
         }
     }
 

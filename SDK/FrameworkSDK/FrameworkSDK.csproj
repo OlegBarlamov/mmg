@@ -47,6 +47,9 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AppContext.cs" />
+    <Compile Include="Common\LazyService.cs" />
+    <Compile Include="Game\DefaultGameParameters.cs" />
+    <Compile Include="Game\IGameParameters.cs" />
     <Compile Include="Pipelines\IPipelineProcessor.cs" />
     <Compile Include="Pipelines\PipelineContext.cs" />
     <Compile Include="Pipelines\PipelineProcessor.cs" />

@@ -1,4 +1,6 @@
-﻿using FrameworkSDK.IoC;
+﻿using System;
+using FrameworkSDK.Game;
+using FrameworkSDK.IoC;
 using FrameworkSDK.Modules;
 using JetBrains.Annotations;
 
@@ -8,7 +10,7 @@ namespace FrameworkSDK.Constructing
 	{
 		public static IGameConfigurator<THost> UseGameFramework<THost>([NotNull] this IAppConfigurator configurator) where THost : IGameHost
 		{
-		    var registerPhase = configurator.GetPhase(DefaultConfigurationSteps.Registration);
+		    var registerPhase = configurator.GetStep(DefaultConfigurationSteps.Registration);
 		    registerPhase.AddAction(new SimpleConfigurationAction(
                 DefaultConfigurationSteps.RegistrationActions.Game,
                 true,
@@ -19,7 +21,7 @@ namespace FrameworkSDK.Constructing
                     registrator.RegisterModule(module);
                 }));
 
-		    var constructPhase = configurator.GetPhase(DefaultConfigurationSteps.Constructing);
+		    var constructPhase = configurator.GetStep(DefaultConfigurationSteps.Constructing);
             constructPhase.AddAction(new SimpleConfigurationAction(
                 DefaultConfigurationSteps.ConstructingActions.Game,
                 true,
@@ -34,14 +36,25 @@ namespace FrameworkSDK.Constructing
 
             return new GameConfigurator<THost>(configurator);
 		}
-	}
 
-    public static class GameConfiguratorExtensions
-    {
-        public static IGameConfigurator<THost> SetupGameParameters<THost>([NotNull] this IGameConfigurator<THost> configurator)
-            where THost : IGameHost
-        {
+	    public static IGameConfigurator<THost> SetupGameParameters<THost>([NotNull] this IGameConfigurator<THost> configurator,
+	        [NotNull] Func<IGameParameters> parametersFactory)
+	        where THost : IGameHost
+	    {
+	        if (parametersFactory == null) throw new ArgumentNullException(nameof(parametersFactory));
 
-        }
+	        var registerPhase = configurator.GetStep(DefaultConfigurationSteps.Registration);
+	        registerPhase.AddAction(new SimpleConfigurationAction(
+	            DefaultConfigurationSteps.RegistrationActions.GameParameters,
+	            true,
+	            context =>
+	            {
+	                var registrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.Container);
+	                var gameParameters = GetFromFactory(parametersFactory);
+	                registrator.RegisterInstance(gameParameters);
+	            }));
+
+	        return configurator;
+	    }
     }
 }

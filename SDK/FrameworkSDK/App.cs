@@ -28,7 +28,7 @@ namespace FrameworkSDK
         /// <summary>
         /// Сконструировать приложение на основе существующей конфигурации
         /// </summary>
-        public static IAppConfigureHandler ConstructCustom([NotNull] Pipelines appConfiguration, IFrameworkLogger logger = null)
+        public static IAppConfigureHandler ConstructCustom([NotNull] Pipeline appConfiguration, IFrameworkLogger logger = null)
         {
             if (appConfiguration == null) throw new ArgumentNullException(nameof(appConfiguration));
 
@@ -45,7 +45,7 @@ namespace FrameworkSDK
         /// Сконструировать приложение на основе существующей конфигурации, используя свой построитель.
         /// </summary>
         [NotNull]
-        public static IAppConfigureHandler ConstructCustom([NotNull] Pipelines appConfiguration,
+        public static IAppConfigureHandler ConstructCustom([NotNull] Pipeline appConfiguration,
             [NotNull] IPipelineProcessor pipelineProcessor)
         {
             if (appConfiguration == null) throw new ArgumentNullException(nameof(appConfiguration));

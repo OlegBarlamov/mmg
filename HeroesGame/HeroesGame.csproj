@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FD976E26-AAD3-4407-8B76-4B02B38B4563}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HeroesGame</RootNamespace>
     <AssemblyName>HeroesGame</AssemblyName>
@@ -43,6 +43,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="GameRoot.cs" />
     <Compile Include="Program.cs" />
@@ -70,6 +73,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SDK\FrameworkSDK\FrameworkSDK.csproj">
+      <Project>{1c9a9c3f-5163-4f5a-b1cb-c43876980910}</Project>
+      <Name>FrameworkSDK</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
       <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
       <Name>MonoGameExtensions</Name>

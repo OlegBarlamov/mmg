@@ -21,6 +21,7 @@
 		{
             public const string Core = "core";
 		    public const string Game = "game";
+		    public const string GameParameters = "game_parameters";
         }
 
         public const string ExternalRegistration = "registration_external";
