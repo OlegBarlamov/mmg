@@ -18,16 +18,13 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		private readonly Dictionary<int, Type> _controllersDictionary = new Dictionary<int, Type>();
 
-		private ConstructorFinder ConstructorFinder =>
-		    //Резолвим зависимости используя общий serviceLocator
-		    _constructorFinder ?? (_constructorFinder = new ConstructorFinder(DefaultServiceLocator));
 	    private IServiceLocator ControllersLocator =>
 		    _controllersLocator ?? (_controllersLocator = _controllersContainer.BuildContainer());
 
 	    private readonly IFrameworkServiceContainer _controllersContainer;
+        private readonly ConstructorFinder _constructorFinder;
 
 	    private IServiceLocator _controllersLocator;
-	    private ConstructorFinder _constructorFinder;
 	    private bool _disposed;
 
 		public DefaultControllerResolver([NotNull] IServiceContainerFactory serviceContainerFactory,
@@ -37,7 +34,8 @@ namespace FrameworkSDK.Game.Mapping.Default
 		    if (appDomainService == null) throw new ArgumentNullException(nameof(appDomainService));
 		    DefaultServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
 
-		    _controllersContainer = serviceContainerFactory.CreateContainer();
+	        _constructorFinder = new ConstructorFinder(DefaultServiceLocator);
+            _controllersContainer = serviceContainerFactory.CreateContainer();
 
 		    var registeredTypes = new List<Type>(ExtractAvailableControllerTypes(appDomainService.GetAllTypes()));
 		    RegisterControllers(registeredTypes);
@@ -113,9 +111,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 	    {
 		    if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-		    var constructor = ConstructorFinder.FindConstructorWithParameter(type, parameter.GetType());
-		    if (constructor != null)
-			    return ControllersLocator.ResolveWithParameter(type, parameter);
+		    var constructor = _constructorFinder.GetConstructorWithParameters(type, parameter.GetType());
 
 		    return ControllersLocator.Resolve(type);
 	    }

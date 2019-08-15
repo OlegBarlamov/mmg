@@ -50,6 +50,8 @@
     <Compile Include="Common\LazyService.cs" />
     <Compile Include="Game\DefaultGameParameters.cs" />
     <Compile Include="Game\IGameParameters.cs" />
+    <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
+    <Compile Include="IoC\Default\IConstructorFinder.cs" />
     <Compile Include="Pipelines\IPipelineProcessor.cs" />
     <Compile Include="Pipelines\PipelineContext.cs" />
     <Compile Include="Pipelines\PipelineProcessor.cs" />

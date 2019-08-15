@@ -26,5 +26,13 @@ namespace FrameworkSDK.IoC
             if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
             return serviceLocator.IsServiceRegistered(typeof(T));
         }
+
+        [NotNull]
+        public static T ResolveWithParamter<T>([NotNull] this IServiceLocator serviceLocator, params object[] paramters)
+        {
+            if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
+
+            return (T)serviceLocator.ResolveWithParameters(typeof(T), paramters);
+        }
     }
 }

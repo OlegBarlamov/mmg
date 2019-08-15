@@ -33,6 +33,11 @@ namespace FrameworkSDK.IoC.Default
 			};
 		}
 
+	    public override string ToString()
+	    {
+	        return $"{Type.Name}->{ImplType.Name}:{ResolveType}";
+	    }
+
 		[NotNull]
 		public static RegistrationInfo FromType([NotNull] Type serviceType, [NotNull] Type implType, ResolveType resolveType)
 		{
