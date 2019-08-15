@@ -1,5 +1,4 @@
 ﻿using System;
-using FrameworkSDK.Game;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,13 +7,13 @@ namespace FrameworkSDK.Services.Graphics
     [UsedImplicitly]
     internal class DefaultSpriteBatchProvider : ISpriteBatchProvider
     {
-        public SpriteBatch SpriteBatch => GameShell.SpriteBatch;
+        public SpriteBatch SpriteBatch => Game.SpriteBatch;
 
-        [NotNull] private GameShell GameShell { get; }
+        [NotNull] private IGame Game { get; }
 
-        public DefaultSpriteBatchProvider([NotNull] GameShell gameShell)
+        public DefaultSpriteBatchProvider([NotNull] IGame game)
         {
-            GameShell = gameShell ?? throw new ArgumentNullException(nameof(gameShell));
+	        Game = game ?? throw new ArgumentNullException(nameof(game));
         }
     }
 }

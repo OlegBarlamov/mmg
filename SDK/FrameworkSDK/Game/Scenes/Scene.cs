@@ -20,8 +20,8 @@ namespace FrameworkSDK.Game.Scenes
 		public string Name { get; }
 		
 		[NotNull] private ModuleLogger Logger { get; }
-		[NotNull] private IViewResolver ViewResolver { get; }
-		[NotNull] private IControllerResolver ControllerResolver { get; }
+		[NotNull] private IViewsResolver ViewsResolver { get; }
+		[NotNull] private IControllersResolver ControllersResolver { get; }
 		private UpdatableCollection<IController> Controllers { get; }
 		private UpdatableCollection<ViewMapping> Views { get; }
 
@@ -29,8 +29,8 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			Name = name ?? throw new ArgumentNullException(nameof(name));
 
-			ViewResolver = AppContext.ServiceLocator.Resolve<IViewResolver>();
-			ControllerResolver = AppContext.ServiceLocator.Resolve<IControllerResolver>();
+			ViewsResolver = AppContext.ServiceLocator.Resolve<IViewsResolver>();
+			ControllersResolver = AppContext.ServiceLocator.Resolve<IControllersResolver>();
 
 			Logger = new ModuleLogger(FrameworkLogModule.Scenes);
 			Controllers = new UpdatableCollection<IController>();
@@ -81,7 +81,7 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
-			var controller = ControllerResolver.ResolveByModel(model);
+			var controller = ControllersResolver.ResolveByModel(model);
 		    controller.SetModel(model);
 
 			AddController(controller);
@@ -195,9 +195,9 @@ namespace FrameworkSDK.Game.Scenes
 
 		private void OnControllerAttachedInternal(IController controller)
 		{
-			if (controller.Model != null && ViewResolver.IsModelHasView(controller.Model))
+			if (controller.Model != null && ViewsResolver.IsModelHasView(controller.Model))
 			{
-				var view = ViewResolver.ResolveByModel(controller.Model);
+				var view = ViewsResolver.ResolveByModel(controller.Model);
 			    view.SetController(controller);
 			    view.SetDataModel(controller.Model);
 			    controller.SetView(view);

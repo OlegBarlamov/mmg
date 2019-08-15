@@ -19,7 +19,7 @@
 	        public static string RemovingAllControllersFromScene => Localization.GetString() ?? "removing all controllers from scene {0}";
 	        public static string RemovedMultipleControllersFromScene => Localization.GetString() ?? "controllers:\"{0}\"(total:{1}) have removed from scene {2}";
 
-			public static string AddViewToScene => Localization.GetString() ?? "view {0} for controller {1} has added to scene {3}";
+			public static string AddViewToScene => Localization.GetString() ?? "view {0} for controller {1} has added to scene {2}";
 	        public static string DestroyViewFromScene => Localization.GetString() ?? "view {0} for controller {1} has destroyed from scene {3}";
 		}
 
@@ -41,6 +41,7 @@
 				public static string ResolvingTypeException => Localization.GetString() ?? "Can not resolve type {0}";
 				public static string DisposeServicesException => Localization.GetString() ?? "Error while dispose services in locator";
 				public static string NoSuitablecConstructorsException => Localization.GetString() ?? "Have not founded suitable constructor for type {0}";
+		        public static string NoSuitablecConstructorsExceptionWithParameters => Localization.GetString() ?? "Have not founded suitable constructor for type {0}";
 				public static string BadResolveStrategy => Localization.GetString() ?? "Resolving with parameter can not have Singleton registering type";
 			}
 

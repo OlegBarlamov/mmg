@@ -6,7 +6,17 @@ namespace FrameworkSDK.IoC.Default
 	internal class DefaultServiceContainer : IFrameworkServiceContainer
 	{
 		private bool _isDisposed;
-		private readonly List<RegistrationInfo> _registrations = new List<RegistrationInfo>();
+		private readonly List<RegistrationInfo> _registrations;
+
+		public DefaultServiceContainer()
+			:this(new RegistrationInfo[0])
+		{
+		}
+
+		private DefaultServiceContainer(IEnumerable<RegistrationInfo> registrations)
+		{
+			_registrations = new List<RegistrationInfo>(registrations);
+		}
 
 	    public void RegisterInstance(Type serviceType, object instance)
 	    {
@@ -33,11 +43,17 @@ namespace FrameworkSDK.IoC.Default
 			return new DefaultServiceLocator(_registrations);
 		}
 
+		public IFrameworkServiceContainer Clone()
+		{
+			return new DefaultServiceContainer(_registrations);
+		}
+
 		public void Dispose()
 		{
 			_isDisposed = true;
 
 			_registrations.Clear();
+			//TODO чистить registrations. Там забуферизированные элементы
 		}
 
 		private void CheckDisposed()

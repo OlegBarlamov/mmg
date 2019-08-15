@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
+using NetExtensions;
 
 namespace FrameworkSDK.IoC.Default
 {
@@ -30,42 +31,46 @@ namespace FrameworkSDK.IoC.Default
             if (constructors.Length < 1)
 	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
 
-	        var correctConstructor = FilterConstructorsWithParameters(constructors, parameterType).FirstOrDefault();
-            if (correctConstructor == null)
-	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsException, type));
-
+	        var correctConstructor = FilterConstructorsWithParameters(constructors, parametersTypes).FirstOrDefault();
+		    if (correctConstructor == null)
+		    {
+				if (parametersTypes.Any())
+					throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsExceptionWithParameters, type, parametersTypes.ArrayToString()));
+				else
+					throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsException, type));
+			}
+	            
 	        return correctConstructor;
         }
 
-        private IEnumerable<ConstructorInfo> FilterConstructors(IEnumerable<ConstructorInfo> constructors)
+	    private IEnumerable<ConstructorInfo> FilterConstructorsWithParameters(IEnumerable<ConstructorInfo> constructors, IReadOnlyCollection<Type> parameterTypes)
 	    {
 	        return constructors.OrderBy(info => info.GetParameters().Length)
-	            .Where(IsCorrectConstructor);
+	            .Where(info => IsCorrectConstructorWithParameters(info, parameterTypes));
 	    }
 
-	    private IEnumerable<ConstructorInfo> FilterConstructorsWithParameters(IEnumerable<ConstructorInfo> constructors, Type parameterType)
-	    {
-	        return constructors.OrderBy(info => info.GetParameters().Length)
-	            .Where(info => IsCorrectConstructorWithParameter(info, parameterType));
-	    }
-
-        private bool IsCorrectConstructor([NotNull] ConstructorInfo constructorInfo)
-		{
-			if (constructorInfo == null) throw new ArgumentNullException(nameof(constructorInfo));
-
-			var parameters = constructorInfo.GetParameters().Select(info => info.ParameterType);
-			return parameters.All(type => ServiceLocator.IsServiceRegistered(type));
-		}
-
-	    private bool IsCorrectConstructorWithParameter([NotNull] ConstructorInfo constructorInfo, [NotNull] IReadOnlyCollection<Type> parametersTypes)
+	    private bool IsCorrectConstructorWithParameters([NotNull] ConstructorInfo constructorInfo, [NotNull] IReadOnlyCollection<Type> parametersTypes)
 	    {
 	        if (constructorInfo == null) throw new ArgumentNullException(nameof(constructorInfo));
 	        if (parametersTypes == null) throw new ArgumentNullException(nameof(parametersTypes));
 
 	        var availableParameters = new List<Type>(parametersTypes);
-
 	        var parameters = constructorInfo.GetParameters().Select(info => info.ParameterType);
-	        return parameters.All(type => type.IsAssignableFrom(parameterType) || ServiceLocator.IsServiceRegistered(type));
+
+		    foreach (var parameter in parameters)
+		    {
+			    var correctParameter = availableParameters.FirstOrDefault(type => parameter.IsAssignableFrom(type));
+			    if (correctParameter != null)
+			    {
+				    availableParameters.Remove(correctParameter);
+					continue;
+			    }
+
+			    if (!ServiceLocator.IsServiceRegistered(parameter))
+				    return false;
+		    }
+
+		    return true;
 	    }
 
 	    private static ConstructorInfo[] GetConstructors(Type targetType)

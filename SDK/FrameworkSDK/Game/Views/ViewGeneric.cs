@@ -36,7 +36,7 @@ namespace FrameworkSDK.Game.Views
             if (!(controller is TController))
                 throw new FrameworkException(string.Format(Strings.Exceptions.Mapping.IncompatibleControllerType, controller.GetType(), typeof(TController)));
 
-            base.SetDataModel(controller);
+            base.SetController(controller);
         }
     }
 

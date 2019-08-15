@@ -21,7 +21,7 @@ namespace FrameworkSDK.Game.Views
         private IController _controller;
         private Scene _ownedScene;
 
-        protected View() : this(NamesGenerator.Hash(HashType.SmallGuid, nameof(Controller)))
+        protected View() : this(NamesGenerator.Hash(HashType.SmallGuid, nameof(View)))
         {
         }
 

@@ -1,7 +1,9 @@
-﻿namespace FrameworkSDK.IoC
+﻿using JetBrains.Annotations;
+
+namespace FrameworkSDK.IoC
 {
     public interface IServiceContainerFactory
     {
-        IFrameworkServiceContainer CreateContainer();
+        [NotNull] IFrameworkServiceContainer CreateContainer();
     }
 }

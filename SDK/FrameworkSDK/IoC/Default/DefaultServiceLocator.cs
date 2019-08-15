@@ -15,7 +15,7 @@ namespace FrameworkSDK.IoC.Default
 
 		private bool _isDisposed;
 
-		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyList<RegistrationInfo> registrations)
+		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyCollection<RegistrationInfo> registrations)
 		{
 			if (registrations == null) throw new ArgumentNullException(nameof(registrations));
 
@@ -66,22 +66,21 @@ namespace FrameworkSDK.IoC.Default
 			return ResolveRegInfo(lastReg);
 		}
 
-	    public object ResolveWithParameter(Type type, [NotNull] object parameter)
+	    public object ResolveWithParameters(Type type, [NotNull] object[] parameters)
 	    {
 	        if (type == null) throw new ArgumentNullException(nameof(type));
-	        if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+	        if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 	        CheckDisposed();
 
 	        var regInfos = GetRegInfos(type);
 	        var lastReg = regInfos.Last();
-	        if (lastReg.ResolveType == ResolveType.Singletone)
-	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name,
-	                parameter));
+		    if (lastReg.ResolveType == ResolveType.Singletone)
+			    throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name));
 
-	        return CreateInstanceWithParameter(lastReg.ImplType, parameter);
+			return CreateInstanceWithParameters(lastReg.ImplType, parameters);
 	    }
 
-		public IReadOnlyList<object> ResolveMultiple([NotNull] Type type)
+		public IReadOnlyList<object> ResolveMultiple(Type type)
 		{
 			if (type == null) throw new ArgumentNullException(nameof(type));
 			CheckDisposed();
@@ -133,12 +132,13 @@ namespace FrameworkSDK.IoC.Default
 			return regInfos;
 		}
 
-	    private object CreateInstanceWithParameter(Type type, object parameter)
+	    private object CreateInstanceWithParameters(Type type, object[] parameters)
 	    {
 	        try
 	        {
-	            var constructor = ConstructorFinder.GetConstructorWithParameter(type, parameter.GetType());
-	            var dependencies = DependencyResolver.ResolveDependenciesWithParameter(constructor, parameter);
+		        var parametersTypes = parameters.Select(o => o.GetType()).ToArray();
+	            var constructor = ConstructorFinder.GetConstructorWithParameters(type, parametersTypes);
+	            var dependencies = DependencyResolver.ResolveDependenciesWithParameters(constructor, parameters);
 	            return constructor.Invoke(dependencies);
 	        }
 	        catch (Exception e)

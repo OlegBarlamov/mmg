@@ -8,7 +8,7 @@ namespace FrameworkSDK.IoC
     {
 	    [NotNull] object Resolve([NotNull] Type type);
 
-        object ResolveWithParameters([NotNull] Type type, object[] parameters);
+        [NotNull] object ResolveWithParameters([NotNull] Type type, [NotNull, ItemNotNull] object[] parameters);
 
 	    [NotNull, ItemNotNull] IReadOnlyList<object> ResolveMultiple([NotNull] Type type);
 

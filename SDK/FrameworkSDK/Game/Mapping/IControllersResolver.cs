@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Game.Mapping
 {
-	public interface IControllerResolver
+	public interface IControllersResolver
 	{
 		[NotNull] IController ResolveByModel([NotNull] object model);
 

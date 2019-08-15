@@ -50,8 +50,12 @@
     <Compile Include="Common\LazyService.cs" />
     <Compile Include="Game\DefaultGameParameters.cs" />
     <Compile Include="Game\IGameParameters.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultControllersProvider.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultViewsProvider.cs" />
+    <Compile Include="Game\Mapping\Default\MappingResolver.cs" />
+    <Compile Include="Game\Mapping\IControllersProvider.cs" />
+    <Compile Include="Game\Mapping\IViewsProvider.cs" />
     <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
-    <Compile Include="IoC\Default\IConstructorFinder.cs" />
     <Compile Include="Pipelines\IPipelineProcessor.cs" />
     <Compile Include="Pipelines\PipelineContext.cs" />
     <Compile Include="Pipelines\PipelineProcessor.cs" />
@@ -70,8 +74,8 @@
     <Compile Include="Constructing\IGameConfigurator.cs" />
     <Compile Include="Constructing\SimpleConfigurationAction.cs" />
     <Compile Include="IGame.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultControllerResolver.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultViewResolver.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultControllersResolver.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultViewsResolver.cs" />
     <Compile Include="IGameHost.cs" />
     <Compile Include="IoC\Default\DefaultServiceContainerFactory.cs" />
     <Compile Include="IoC\IServiceContainerFactory.cs" />
@@ -98,8 +102,8 @@
     <Compile Include="Game\Mapping\IncompatibleModelTypeException.cs" />
     <Compile Include="Game\Mapping\IncompatibleViewTypeException.cs" />
     <Compile Include="Game\Mapping\MappingException.cs" />
-    <Compile Include="Game\Mapping\IControllerResolver.cs" />
-    <Compile Include="Game\Mapping\IViewResolver.cs" />
+    <Compile Include="Game\Mapping\IControllersResolver.cs" />
+    <Compile Include="Game\Mapping\IViewsResolver.cs" />
     <Compile Include="Game\Scenes\ISceneComponent.cs" />
     <Compile Include="Game\Scenes\ScenesException.cs" />
     <Compile Include="Game\Scenes\ViewMapping.cs" />
@@ -169,6 +173,8 @@
       <Name>NetExtensions</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TODO.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
