@@ -27,7 +27,6 @@ namespace NetExtensions
                 }
                 catch (Exception)
                 {
-                    //TODO log
                     // ignored
                 }
 

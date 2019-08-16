@@ -5,8 +5,8 @@ namespace FrameworkSDK.Pipelines
 {
 	public class EmptyPipelineAction : IPipelineAction
 	{
-		public string Name { get; set; }
-		public bool IsCritical { get; set; }
+		public string Name { get; }
+	    public bool IsCritical { get; } = false;
 
 		public EmptyPipelineAction([NotNull] string name)
 		{

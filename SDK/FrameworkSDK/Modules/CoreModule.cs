@@ -4,6 +4,7 @@ using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using FrameworkSDK.Services;
+using FrameworkSDK.Services.Randoms;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Modules
@@ -31,7 +32,8 @@ namespace FrameworkSDK.Modules
 		    serviceRegistrator.RegisterInstance<IFrameworkServiceContainer>(MainContainer);
 		    serviceRegistrator.RegisterInstance<IServiceContainerFactory>(ServiceContainerFactory);
 
-            serviceRegistrator.RegisterInstance<IRandomService>(new DefaultRandomService(new Random(Guid.NewGuid().GetHashCode())));
+            serviceRegistrator.RegisterType<IRandomSeedProvider, GuidBasedSeedProvider>();
+            serviceRegistrator.RegisterType<IRandomService, DefaultRandomService>();
             serviceRegistrator.RegisterType<IAppDomainService, AppDomainService>();
 		}
 	}

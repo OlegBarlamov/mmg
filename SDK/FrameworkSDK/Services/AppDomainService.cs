@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using NetExtensions;
 
 namespace FrameworkSDK.Services
 {
+    [UsedImplicitly]
     internal class AppDomainService : IAppDomainService
     {
-        public IEnumerable<Type> GetAllTypes()
+        [NotNull] public IEnumerable<Type> GetAllTypes()
         {
             return AppDomain.CurrentDomain.GetAllTypes();
         }

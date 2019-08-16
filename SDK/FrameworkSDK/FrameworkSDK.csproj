@@ -87,13 +87,15 @@
     <Compile Include="Modules\GameModule.cs" />
     <Compile Include="Pipelines\SimplePipelineProcessor.cs" />
     <Compile Include="Services\AppDomainService.cs" />
-    <Compile Include="Services\DefaultRandomService.cs" />
+    <Compile Include="Services\Randoms\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />
     <Compile Include="Services\Graphics\DefaultSpriteBatchProvider.cs" />
     <Compile Include="Services\Graphics\ISpriteBatchProvider.cs" />
     <Compile Include="Services\IAppDomainService.cs" />
-    <Compile Include="Services\IRandomService.cs" />
+    <Compile Include="Services\Randoms\SeedProviders.cs" />
+    <Compile Include="Services\Randoms\IRandomSeedProvider.cs" />
+    <Compile Include="Services\Randoms\IRandomService.cs" />
     <Compile Include="Common\NamesGenerator.cs" />
     <Compile Include="Pipelines\PipelineException.cs" />
     <Compile Include="Pipelines\PipelineStep.cs" />

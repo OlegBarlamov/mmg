@@ -52,8 +52,10 @@ namespace FrameworkSDK.IoC.Default
 		{
 			_isDisposed = true;
 
+		    foreach (var registrationInfo in _registrations)
+		        registrationInfo.Dispose();
+
 			_registrations.Clear();
-			//TODO чистить registrations. Там забуферизированные элементы
 		}
 
 		private void CheckDisposed()
