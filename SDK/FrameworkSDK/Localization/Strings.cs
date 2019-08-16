@@ -6,10 +6,16 @@
 
         public static class Info
         {
-	        public static string DefaultServices => Localization.GetString() ?? "default services registered.";
-			public static string ConstructingStart => Localization.GetString() ?? "constructing start...";
-	        public static string ConstructingEnd => Localization.GetString() ?? "constructing end.";
-	        public static string AppRunning => Localization.GetString() ?? "app running...";
+            public static class AppConstructing
+            {
+                public static string DefaultServices => Localization.GetString() ?? "default services registered.";
+                public static string AppRunning => Localization.GetString() ?? "app running...";
+
+                public static string ConstructingStart => Localization.GetString() ?? "app constructing start.";
+                public static string ConstructingStep => Localization.GetString() ?? "constructing step {0}";
+                public static string ConstructingAction => Localization.GetString() ?? "constructing action {0}";
+                public static string ConstructingEnd => Localization.GetString() ?? "app constructing end.";
+            }
 
 	        public static string SceneSwitchingState => Localization.GetString() ?? "scenes switching from {0} to {1}";
 	        public static string SceneSwitched => Localization.GetString() ?? "scenes switched from {0} to {1}";
@@ -51,7 +57,9 @@
                 public static string ObjectInContextNotFound => Localization.GetString() ?? $"object {0} not found in pipeline context";
 				public static string FactoryObjectNull => Localization.GetString() ?? "factory gotted in configuration step = null";
 				public static string StepNotFound => Localization.GetString() ?? "Pipeline step {0} not founded";
-			}
+                public static string ActionFailed => Localization.GetString() ?? "action {0} failed";
+                public static string StepFailed => Localization.GetString() ?? "step {0} failed";
+            }
 
             public static class Pipeline
             {

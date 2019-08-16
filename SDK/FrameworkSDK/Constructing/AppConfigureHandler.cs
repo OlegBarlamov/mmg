@@ -35,7 +35,7 @@ namespace FrameworkSDK.Constructing
             ConfigureInternal();
 
             Logger = new ModuleLogger(FrameworkLogModule.Application);
-            Logger.Info(Strings.Info.AppRunning);
+            Logger.Info(Strings.Info.AppConstructing.AppRunning);
         }
 
         public void Dispose()

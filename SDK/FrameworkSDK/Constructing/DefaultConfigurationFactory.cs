@@ -93,7 +93,7 @@ namespace FrameworkSDK.Constructing
 				    context =>
 				    {
 					    var logger = context.Heap.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
-						logger?.Info(Strings.Info.DefaultServices);
+						logger?.Info(Strings.Info.AppConstructing.DefaultServices);
 
 					    var localization = GetObjectFromContext<ILocalization>(context, DefaultConfigurationSteps.ContextKeys.Localization);
 					    var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
@@ -121,9 +121,6 @@ namespace FrameworkSDK.Constructing
 				    DefaultConfigurationSteps.ConstructingActions.Core, true,
 				    context =>
 				    {
-					    var logger = context.Heap.GetObject<ModuleLogger>(DefaultConfigurationSteps.ContextKeys.Logger);
-					    logger?.Info(Strings.Info.ConstructingStart);
-
 					    var serviceContainer = GetObjectFromContext<IFrameworkServiceContainer>(context, DefaultConfigurationSteps.ContextKeys.Container);
 						var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
 
@@ -134,8 +131,6 @@ namespace FrameworkSDK.Constructing
 						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Locator, serviceLocator);
 
 						AppContext.Initialize(loggerService, serviceLocator);
-
-					    logger?.Info(Strings.Info.ConstructingEnd);
 					})
 		    );
 		    return registrationPhase;

@@ -28,11 +28,11 @@ namespace FrameworkSDK
         /// <summary>
         /// Сконструировать приложение на основе существующей конфигурации
         /// </summary>
-        public static IAppConfigureHandler ConstructCustom([NotNull] Pipeline appConfiguration, IFrameworkLogger logger = null)
+        public static IAppConfigureHandler ConstructCustom([NotNull] Pipeline appConfiguration, IFrameworkLogger constructlogger = null)
         {
             if (appConfiguration == null) throw new ArgumentNullException(nameof(appConfiguration));
 
-            var defaultProcessor = new AppConstructor();
+            var defaultProcessor = new AppConstructor(constructlogger);
             var configureHandler = new AppConfigureHandler(defaultProcessor)
             {
                 ConfigurationPipeline = appConfiguration

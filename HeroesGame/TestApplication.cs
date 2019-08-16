@@ -45,7 +45,7 @@ namespace HeroesGame
         public override void Draw(GameTime gameTime)
         {
             var counter = DataModel.Count;
-            Console.WriteLine(counter);
+            //Console.WriteLine(counter);
         }
     }
 

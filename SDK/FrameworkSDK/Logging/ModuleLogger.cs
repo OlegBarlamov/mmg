@@ -136,7 +136,8 @@ namespace FrameworkSDK.Logging
 
 	    public void Dispose()
 	    {
-		    _lastMessageInfo?.Output(FrameworkLogger);
-	    }
+	        if (_lastMessageInfo?.Count > 1)
+	            _lastMessageInfo.Output(FrameworkLogger);
+        }
     }
 }

@@ -57,6 +57,7 @@
     <Compile Include="Game\Mapping\IControllersProvider.cs" />
     <Compile Include="Game\Mapping\IViewsProvider.cs" />
     <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
+    <Compile Include="Logging\DeferredLogger.cs" />
     <Compile Include="Pipelines\IPipelineContext.cs" />
     <Compile Include="Pipelines\IPipelineProcessor.cs" />
     <Compile Include="Pipelines\PipelineContext.cs" />

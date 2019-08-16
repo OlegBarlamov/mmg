@@ -18,27 +18,27 @@ namespace FrameworkSDK.Pipelines
             if (pipeline == null) throw new ArgumentNullException(nameof(pipeline));
             var steps = pipeline.GetStepsForProcess();
 
-            OnPhasesReadyForProcess(steps);
+            OnStepsReadyForProcess(steps);
 
             foreach (var step in steps)
             {
                 try
                 {
                     Context.CurrentStep = step;
-                    OnPhaseProcessStarted(step);
+                    OnStepProcessStarted(step);
 
                     var actions = step.GetActionsForProcess();
 
-                    OnPhaseActionsReadyForProcess(actions, step);
+                    OnStepActionsReadyForProcess(actions, step);
 
                     foreach (var action in actions)
                         ProcessPhaseAction(action, Context, step);
 
-                    OnPhaseProcessCompleted(step);
+                    OnStepProcessCompleted(step);
                 }
                 catch (Exception e)
                 {
-                    OnPhaseProcessFailed(step, e);
+                    OnStepProcessFailed(step, e);
                 }
             }
 
@@ -48,42 +48,42 @@ namespace FrameworkSDK.Pipelines
             Context.Dispose();
         }
 
-        protected virtual void OnPhasesReadyForProcess(IReadOnlyList<PipelineStep> phases)
+        protected virtual void OnStepsReadyForProcess(IReadOnlyList<PipelineStep> steps)
         {
 
         }
 
-        protected virtual void OnPhaseActionsReadyForProcess(IReadOnlyList<IPipelineAction> actions, PipelineStep phase)
+        protected virtual void OnStepActionsReadyForProcess(IReadOnlyList<IPipelineAction> actions, PipelineStep step)
         {
 
         }
 
-        protected virtual void OnPhaseProcessStarted(PipelineStep phase)
+        protected virtual void OnStepProcessStarted(PipelineStep step)
         {
 
         }
 
-        protected virtual void OnPhaseProcessCompleted(PipelineStep phase)
+        protected virtual void OnStepProcessCompleted(PipelineStep step)
         {
 
         }
 
-        protected virtual void OnPhaseProcessFailed(PipelineStep phase, Exception error)
+        protected virtual void OnStepProcessFailed(PipelineStep step, Exception error)
         {
 
         }
 
-        protected virtual void OnPhaseActionProcessStarted(IPipelineAction action, PipelineStep phase)
+        protected virtual void OnStepActionProcessStarted(IPipelineAction action, PipelineStep step)
         {
 
         }
 
-        protected virtual void OnPhaseActionProcessFailed(IPipelineAction action, PipelineStep phase, Exception error)
+        protected virtual void OnStepActionProcessFailed(IPipelineAction action, PipelineStep step, Exception error)
         {
 
         }
 
-        protected virtual void OnPhaseActionProcessCompleted(IPipelineAction action, PipelineStep phase)
+        protected virtual void OnStepActionProcessCompleted(IPipelineAction action, PipelineStep step)
         {
 
         }
@@ -97,13 +97,13 @@ namespace FrameworkSDK.Pipelines
         {
             try
             {
-                OnPhaseActionProcessStarted(pipelineAction, phase);
+                OnStepActionProcessStarted(pipelineAction, phase);
                 pipelineAction.Process(context);
-                OnPhaseActionProcessCompleted(pipelineAction, phase);
+                OnStepActionProcessCompleted(pipelineAction, phase);
             }
             catch (Exception e)
             {
-                OnPhaseActionProcessFailed(pipelineAction, phase, e);
+                OnStepActionProcessFailed(pipelineAction, phase, e);
             }
         }
     }
