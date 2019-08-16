@@ -11,7 +11,7 @@ namespace FrameworkSDK.Constructing
 		public static IGameConfigurator<THost> UseGameFramework<THost>([NotNull] this IAppConfigurator configurator) where THost : IGameHost
 		{
 		    var registerPhase = configurator.GetStep(DefaultConfigurationSteps.Registration);
-		    registerPhase.AddAction(new SimpleConfigurationAction(
+		    registerPhase.AddAction(new PipelineAction(
                 DefaultConfigurationSteps.RegistrationActions.Game,
                 true,
                 context =>
@@ -22,7 +22,7 @@ namespace FrameworkSDK.Constructing
                 }));
 
 		    var constructPhase = configurator.GetStep(DefaultConfigurationSteps.Constructing);
-            constructPhase.AddAction(new SimpleConfigurationAction(
+            constructPhase.AddAction(new PipelineAction(
                 DefaultConfigurationSteps.ConstructingActions.Game,
                 true,
                 context =>
@@ -44,7 +44,7 @@ namespace FrameworkSDK.Constructing
 	        if (parametersFactory == null) throw new ArgumentNullException(nameof(parametersFactory));
 
 	        var registerPhase = configurator.GetStep(DefaultConfigurationSteps.Registration);
-	        registerPhase.AddAction(new SimpleConfigurationAction(
+	        registerPhase.AddAction(new PipelineAction(
 	            DefaultConfigurationSteps.RegistrationActions.GameParameters,
 	            true,
 	            context =>

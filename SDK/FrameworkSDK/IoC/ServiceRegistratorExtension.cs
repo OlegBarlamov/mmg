@@ -22,7 +22,6 @@ namespace FrameworkSDK.IoC
 	    {
 		    if (serviceRegistrator == null) throw new ArgumentNullException(nameof(serviceRegistrator));
 		    if (module == null) throw new ArgumentNullException(nameof(module));
-
 			module.Register(serviceRegistrator);
 	    }
     }

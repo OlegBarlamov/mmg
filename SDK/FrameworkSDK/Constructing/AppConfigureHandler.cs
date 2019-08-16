@@ -12,6 +12,7 @@ namespace FrameworkSDK.Constructing
         public Pipeline ConfigurationPipeline { get; set; } = new Pipeline();
 
         private bool _configured;
+        private bool _isDisposed;
 
         private ModuleLogger Logger { get; set; }
 
@@ -24,11 +25,13 @@ namespace FrameworkSDK.Constructing
 
         public void Configure()
         {
+            if (_isDisposed) throw new ObjectDisposedException(nameof(AppConfigureHandler));
             ConfigureInternal();
         }
 
         public void Run()
         {
+            if (_isDisposed) throw new ObjectDisposedException(nameof(AppConfigureHandler));
             ConfigureInternal();
 
             Logger = new ModuleLogger(FrameworkLogModule.Application);
@@ -37,7 +40,8 @@ namespace FrameworkSDK.Constructing
 
         public void Dispose()
         {
-
+            _isDisposed = true;
+            Logger?.Dispose();
         }
 
         private void ConfigureInternal()

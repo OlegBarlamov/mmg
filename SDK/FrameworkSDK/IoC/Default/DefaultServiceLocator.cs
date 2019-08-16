@@ -75,7 +75,7 @@ namespace FrameworkSDK.IoC.Default
 	        var regInfos = GetRegInfos(type);
 	        var lastReg = regInfos.Last();
 		    if (lastReg.ResolveType == ResolveType.Singletone)
-			    throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name));
+			    throw new FrameworkIocException(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name);
 
 			return CreateInstanceWithParameters(lastReg.ImplType, parameters);
 	    }
@@ -127,7 +127,7 @@ namespace FrameworkSDK.IoC.Default
 		{
 			var code = GetCode(type);
 			if (!_mapping.TryGetValue(code, out var regInfos) || regInfos.Count < 1)
-				throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.TypeNotRegisteredException, type));
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.TypeNotRegisteredException, type);
 
 			return regInfos;
 		}
@@ -143,7 +143,7 @@ namespace FrameworkSDK.IoC.Default
 	        }
 	        catch (Exception e)
 	        {
-	            throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.ResolvingTypeException, type), e);
+	            throw new FrameworkIocException(Strings.Exceptions.Ioc.ResolvingTypeException, e, type);
 	        }
 	    }
 
@@ -157,7 +157,7 @@ namespace FrameworkSDK.IoC.Default
 			}
 			catch (Exception e)
 			{
-				throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.ResolvingTypeException, type), e);
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.ResolvingTypeException, e, type);
 			}
 		}
 

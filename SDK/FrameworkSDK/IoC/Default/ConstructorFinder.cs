@@ -34,11 +34,11 @@ namespace FrameworkSDK.IoC.Default
 	        var correctConstructor = FilterConstructorsWithParameters(constructors, parametersTypes).FirstOrDefault();
 		    if (correctConstructor == null)
 		    {
-				if (parametersTypes.Any())
-					throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsExceptionWithParameters, type, parametersTypes.ArrayToString()));
-				else
-					throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.NoSuitablecConstructorsException, type));
-			}
+		        if (parametersTypes.Any())
+					throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsExceptionWithParameters, type, parametersTypes.ArrayToString());
+
+		        throw new FrameworkIocException(Strings.Exceptions.Ioc.NoSuitablecConstructorsException, type);
+		    }
 	            
 	        return correctConstructor;
         }

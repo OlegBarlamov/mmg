@@ -13,5 +13,15 @@ namespace FrameworkSDK
             : base(message, inner)
         {
         }
+
+        internal FrameworkException(string message,  Exception inner, params object[] args)
+            : this(string.Format(message, args), inner)
+        {
+        }
+
+        internal FrameworkException(string message, params object[] args)
+            : this(string.Format(message, args))
+        {
+        }
     }
 }

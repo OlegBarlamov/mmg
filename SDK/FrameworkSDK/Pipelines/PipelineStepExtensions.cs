@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FrameworkSDK.Common;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Pipelines
@@ -35,7 +36,7 @@ namespace FrameworkSDK.Pipelines
 		{
 			if (phase == null) throw new ArgumentNullException(nameof(phase));
 			if (actionName == null) throw new ArgumentNullException(nameof(actionName));
-			return phase.Actions.ContainsWithName(actionName);
+			return phase.Actions.ContainsByName(actionName);
 		}
 
 		public static void RemoveByName([NotNull] this PipelineStep phase, [NotNull] string actionName)

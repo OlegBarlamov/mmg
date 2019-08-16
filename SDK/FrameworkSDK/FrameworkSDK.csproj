@@ -48,6 +48,7 @@
     <Compile Include="App.cs" />
     <Compile Include="AppContext.cs" />
     <Compile Include="Common\LazyService.cs" />
+    <Compile Include="Common\NamedExtensions.cs" />
     <Compile Include="Game\DefaultGameParameters.cs" />
     <Compile Include="Game\IGameParameters.cs" />
     <Compile Include="Game\Mapping\Default\DefaultControllersProvider.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Game\Mapping\IControllersProvider.cs" />
     <Compile Include="Game\Mapping\IViewsProvider.cs" />
     <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
+    <Compile Include="Pipelines\IPipelineContext.cs" />
     <Compile Include="Pipelines\IPipelineProcessor.cs" />
     <Compile Include="Pipelines\PipelineContext.cs" />
     <Compile Include="Pipelines\PipelineProcessor.cs" />
@@ -72,7 +74,7 @@
     <Compile Include="Constructing\IAppConfigurator.Game.cs" />
     <Compile Include="Constructing\IAppConfigureHandler.cs" />
     <Compile Include="Constructing\IGameConfigurator.cs" />
-    <Compile Include="Constructing\SimpleConfigurationAction.cs" />
+    <Compile Include="Constructing\PipelineAction.cs" />
     <Compile Include="IGame.cs" />
     <Compile Include="Game\Mapping\Default\DefaultControllersResolver.cs" />
     <Compile Include="Game\Mapping\Default\DefaultViewsResolver.cs" />

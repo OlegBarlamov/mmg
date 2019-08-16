@@ -13,5 +13,15 @@ namespace FrameworkSDK.Game.Mapping
             : base(message, inner)
         {
         }
+
+        internal MappingException(string message, Exception inner, params object[] args)
+            : this(string.Format(message, args), inner)
+        {
+        }
+
+        internal MappingException(string message, params object[] args)
+            : this(string.Format(message, args))
+        {
+        }
     }
 }

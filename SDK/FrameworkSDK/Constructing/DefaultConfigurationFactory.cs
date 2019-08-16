@@ -35,21 +35,21 @@ namespace FrameworkSDK.Constructing
 	    {
 			var initializePhase = new PipelineStep(DefaultConfigurationSteps.Initialization);
 		    initializePhase.AddActions(
-			    new SimpleConfigurationAction(
+			    new PipelineAction(
 				    DefaultConfigurationSteps.InitializationActions.Localization, true,
 				    context =>
 				    {
 					    var localization = new DefaultLocalization();
 					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
 				    }),
-			    new SimpleConfigurationAction(
+			    new PipelineAction(
 				    DefaultConfigurationSteps.InitializationActions.Logging, true,
 				    context =>
 				    {
 					    var logger = new NullLogger();
 					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
 					}),
-			    new SimpleConfigurationAction(
+			    new PipelineAction(
 				    DefaultConfigurationSteps.InitializationActions.Ioc, true,
 				    context =>
 				    {
@@ -64,7 +64,7 @@ namespace FrameworkSDK.Constructing
 	    {
 			var baseSetupPhase = new PipelineStep(DefaultConfigurationSteps.BaseSetup);
 		    baseSetupPhase.AddActions(
-			    new SimpleConfigurationAction(
+			    new PipelineAction(
 				    DefaultConfigurationSteps.BaseSetupActions.Setup, true,
 				    context =>
 				    {
@@ -88,7 +88,7 @@ namespace FrameworkSDK.Constructing
 	    {
 		    var registrationPhase = new PipelineStep(DefaultConfigurationSteps.Registration);
 		    registrationPhase.AddActions(
-			    new SimpleConfigurationAction(
+			    new PipelineAction(
 				    DefaultConfigurationSteps.RegistrationActions.Core, true,
 				    context =>
 				    {
@@ -117,7 +117,7 @@ namespace FrameworkSDK.Constructing
 	    {
 			var registrationPhase = new PipelineStep(DefaultConfigurationSteps.Constructing);
 		    registrationPhase.AddActions(
-			    new SimpleConfigurationAction(
+			    new PipelineAction(
 				    DefaultConfigurationSteps.ConstructingActions.Core, true,
 				    context =>
 				    {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrameworkSDK.Common;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 
@@ -20,8 +21,8 @@ namespace FrameworkSDK.Pipelines
                 if (stepName == null) throw new ArgumentNullException(nameof(stepName));
                 if (string.IsNullOrWhiteSpace(stepName)) throw new ArgumentException(nameof(stepName));
 
-                if (!Steps.ContainsWithName(stepName))
-                    throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.StepNotFound, stepName));
+                if (!Steps.ContainsByName(stepName))
+                    throw new PipelineException(Strings.Exceptions.Pipeline.StepNotFound, stepName);
 
                 return Steps.First(phase => phase.Name == stepName);
             }

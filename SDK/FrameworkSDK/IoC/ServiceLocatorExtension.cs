@@ -10,7 +10,6 @@ namespace FrameworkSDK.IoC
         public static T Resolve<T>([NotNull] this IServiceLocator serviceLocator)
         {
             if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
-
             return (T)serviceLocator.Resolve(typeof(T));
         }
 

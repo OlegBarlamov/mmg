@@ -2,6 +2,7 @@
 {
     public interface IAppConfigurator : IAppConfigureHandler
     {
+        //Конфигурирует и запускает приложение.
         void Run();
     }
 }

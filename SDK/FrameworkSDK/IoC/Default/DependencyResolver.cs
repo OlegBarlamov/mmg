@@ -54,7 +54,7 @@ namespace FrameworkSDK.IoC.Default
 	        foreach (var type in types)
 	        {
 	            if (!ServiceLocator.IsServiceRegistered(type))
-	                throw new FrameworkIocException(string.Format(Strings.Exceptions.Ioc.DependencyNotResolvedException, type.Name));
+	                throw new FrameworkIocException(Strings.Exceptions.Ioc.DependencyNotResolvedException, type.Name);
 	        }
 	    }
     }

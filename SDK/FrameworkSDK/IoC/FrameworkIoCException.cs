@@ -14,5 +14,15 @@ namespace FrameworkSDK.IoC
 			: base(message, inner)
 		{
 		}
-	}
+
+	    internal FrameworkIocException(string message, Exception inner, params object[] args)
+	        : this(string.Format(message, args), inner)
+	    {
+	    }
+
+	    internal FrameworkIocException(string message, params object[] args)
+	        : this(string.Format(message, args))
+	    {
+	    }
+    }
 }

@@ -16,7 +16,7 @@ namespace FrameworkSDK.Constructing
 			if (localizationFactory == null) throw new ArgumentNullException(nameof(localizationFactory));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.Initialization);
-			initializationPhase.AddOrReplace(new SimpleConfigurationAction(
+			initializationPhase.AddOrReplace(new PipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Localization,
 				true,
 				context =>
@@ -34,7 +34,7 @@ namespace FrameworkSDK.Constructing
 			if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.Initialization);
-			initializationPhase.AddOrReplace(new SimpleConfigurationAction(
+			initializationPhase.AddOrReplace(new PipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Logging,
 				true,
 				context =>
@@ -52,7 +52,7 @@ namespace FrameworkSDK.Constructing
 			if (serviceContainerFactoryCreator == null) throw new ArgumentNullException(nameof(serviceContainerFactoryCreator));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.Initialization);
-			initializationPhase.AddOrReplace(new SimpleConfigurationAction(
+			initializationPhase.AddOrReplace(new PipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Ioc,
 				true,
 				context =>
@@ -70,7 +70,7 @@ namespace FrameworkSDK.Constructing
 			if (registerAction == null) throw new ArgumentNullException(nameof(registerAction));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.ExternalRegistration);
-			initializationPhase.AddAction(new SimpleConfigurationAction(
+			initializationPhase.AddAction(new PipelineAction(
 				DefaultConfigurationSteps.ExternalRegistrationActions.Registration,
 				true,
 				context =>
@@ -99,7 +99,7 @@ namespace FrameworkSDK.Constructing
 		{
 			var step = configurator.FindStep(stepName);
 			if (step == null)
-				throw new AppConstructingException(string.Format(Strings.Exceptions.Constructing.StepNotFound, stepName));
+				throw new AppConstructingException(Strings.Exceptions.Constructing.StepNotFound, stepName);
 
 			return step;
 		}

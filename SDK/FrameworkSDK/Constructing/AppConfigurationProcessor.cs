@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using FrameworkSDK.Logging;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
-using NetExtensions;
 
 namespace FrameworkSDK.Constructing
 {
     internal class AppConstructor : PipelineProcessor, IPipelineProcessor
     {
-        private IFrameworkLogger Logger => (IFrameworkLogger)(Context.Heap[DefaultConfigurationSteps.ContextKeys.Logger] ?? _defaultLogger);
+        [NotNull] private IFrameworkLogger Logger => CustomLogger ?? _defaultLogger;
+        [CanBeNull] private IFrameworkLogger CustomLogger => (IFrameworkLogger) Context.Heap[DefaultConfigurationSteps.ContextKeys.Logger];
 
         private readonly IFrameworkLogger _defaultLogger;
 
-        public AppConstructor([CanBeNull] IFrameworkLogger logger = null) : this(
-            new PipelineContext(new NamedObjectsHeap<object>()), logger)
+        public AppConstructor([CanBeNull] IFrameworkLogger logger = null)
+            : this(new PipelineContext(), logger)
         {
             _defaultLogger = logger ?? new NullLogger();
         }
 
-        public AppConstructor([NotNull] PipelineContext pipelineContext, [CanBeNull] IFrameworkLogger logger = null) : base(
-            pipelineContext)
+        public AppConstructor([NotNull] PipelineContext pipelineContext, [CanBeNull] IFrameworkLogger logger = null)
+            : base(pipelineContext)
         {
             _defaultLogger = logger ?? new NullLogger();
         }

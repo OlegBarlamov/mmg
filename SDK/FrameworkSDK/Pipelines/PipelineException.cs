@@ -13,5 +13,15 @@ namespace FrameworkSDK.Pipelines
             : base(message, inner)
         {
         }
+
+        internal PipelineException(string message, Exception inner, params object[] args)
+            : this(string.Format(message, args), inner)
+        {
+        }
+
+        internal PipelineException(string message, params object[] args)
+            : this(string.Format(message, args))
+        {
+        }
     }
 }

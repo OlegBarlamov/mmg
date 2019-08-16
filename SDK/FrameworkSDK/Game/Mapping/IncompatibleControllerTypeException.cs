@@ -13,5 +13,15 @@ namespace FrameworkSDK.Game.Mapping
             : base(message, inner)
         {
         }
+
+        internal IncompatibleControllerTypeException(string message, Exception inner, params object[] args)
+            : this(string.Format(message, args), inner)
+        {
+        }
+
+        internal IncompatibleControllerTypeException(string message, params object[] args)
+            : this(string.Format(message, args))
+        {
+        }
     }
 }

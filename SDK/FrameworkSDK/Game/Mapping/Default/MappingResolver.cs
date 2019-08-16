@@ -85,8 +85,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 		private Type ResolveTypeByModelHash(int modelHash, string modelTypeName)
 		{
 			if (!_mappingDictionary.ContainsKey(modelHash))
-				throw new MappingException(string.Format(Strings.Exceptions.Mapping.ControllerForModelNotFound,
-					modelTypeName));
+				throw new MappingException(Strings.Exceptions.Mapping.ControllerForModelNotFound, modelTypeName);
 
 			return _mappingDictionary[modelHash];
 		}

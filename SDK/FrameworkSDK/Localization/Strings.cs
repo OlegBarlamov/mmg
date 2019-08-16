@@ -32,6 +32,7 @@
 		public static class Exceptions
         {
             public static string FatalException => Localization.GetString() ?? "Fatal error! Application will be closed.";
+            public static string AppContextNotInitialized => Localization.GetString() ?? "Application context not initialized.";
 
             public static class Ioc
 	        {

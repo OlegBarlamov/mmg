@@ -11,5 +11,15 @@ namespace FrameworkSDK.Constructing
 		internal AppConstructingException(string message, Exception inner) : base(message, inner)
 		{
 		}
-	}
+
+	    internal AppConstructingException(string message, Exception inner, params object[] args)
+	        : this(string.Format(message, args), inner)
+	    {
+	    }
+
+	    internal AppConstructingException(string message, params object[] args)
+	        : this(string.Format(message, args))
+	    {
+	    }
+    }
 }

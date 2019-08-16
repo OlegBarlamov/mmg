@@ -28,7 +28,7 @@ namespace FrameworkSDK.Pipelines
                 if (string.IsNullOrWhiteSpace(actionName)) throw new ArgumentException(nameof(actionName));
 
                 if (!ContainsWithName(actionName))
-                    throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.ActionNotFound, actionName));
+                    throw new PipelineException(Strings.Exceptions.Pipeline.ActionNotFound, actionName);
 
                 return _actions.First(action => action.Name == actionName);
             }
@@ -43,7 +43,7 @@ namespace FrameworkSDK.Pipelines
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (ContainsWithName(action.Name))
-                throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.ActionAlreadyExists, action.Name));
+                throw new PipelineException(Strings.Exceptions.Pipeline.ActionAlreadyExists, action.Name);
 
             _actions.Add(action);
         }
@@ -52,7 +52,7 @@ namespace FrameworkSDK.Pipelines
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (!ContainsWithName(action.Name))
-                throw new PipelineException(string.Format(Strings.Exceptions.Pipeline.ActionNotFound, action.Name));
+                throw new PipelineException(Strings.Exceptions.Pipeline.ActionNotFound, action.Name);
 
             _actions.Remove(action);
         }
@@ -71,7 +71,7 @@ namespace FrameworkSDK.Pipelines
 
         private bool ContainsWithName(string actionName)
         {
-            return _actions.ContainsWithName(actionName);
+            return _actions.ContainsByName(actionName);
         }
     }
 }
