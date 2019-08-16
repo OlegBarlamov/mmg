@@ -1,13 +1,11 @@
 ﻿using System;
 using FrameworkSDK.Common;
-using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.Game.Views;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
-// ReSharper disable once CheckNamespace
-namespace FrameworkSDK.Game
+namespace FrameworkSDK.Game.Controllers
 {
     public abstract class Controller : IController
     {

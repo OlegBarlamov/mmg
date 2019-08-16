@@ -4,6 +4,7 @@
     {
         Application,
         GameCore,
-		Scenes,
+        Mvc,
+        Scenes,
     }
 }
