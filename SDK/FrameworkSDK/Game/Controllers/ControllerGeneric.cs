@@ -1,4 +1,5 @@
 ﻿using System;
+using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.Game.Views;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
@@ -22,7 +23,7 @@ namespace FrameworkSDK.Game.Controllers
             if (model == null) throw new ArgumentNullException(nameof(model));
 
             if (!(model is TModel))
-                throw new FrameworkException(string.Format(Strings.Exceptions.Mapping.IncompatibleModelType, model.GetType(), typeof(TModel)));
+                throw new IncompatibleModelTypeException(string.Format(Strings.Exceptions.Mapping.IncompatibleModelType, model.GetType(), typeof(TModel)));
 
             base.SetModel(model);
         }
@@ -48,7 +49,7 @@ namespace FrameworkSDK.Game.Controllers
             if (model == null) throw new ArgumentNullException(nameof(model));
 
             if (!(model is TModel))
-                throw new FrameworkException(string.Format(Strings.Exceptions.Mapping.IncompatibleModelType, model.GetType(), typeof(TModel)));
+                throw new IncompatibleModelTypeException(string.Format(Strings.Exceptions.Mapping.IncompatibleModelType, model.GetType(), typeof(TModel)));
 
             base.SetModel(model);
         }
@@ -58,7 +59,7 @@ namespace FrameworkSDK.Game.Controllers
             if (view == null) throw new ArgumentNullException(nameof(view));
 
             if (!(view is TView))
-                throw new FrameworkException(string.Format(Strings.Exceptions.Mapping.IncompatibleViewType, view.GetType(), typeof(TView)));
+                throw new IncompatibleViewTypeException(string.Format(Strings.Exceptions.Mapping.IncompatibleViewType, view.GetType(), typeof(TView)));
 
             base.SetView(view);
         }
