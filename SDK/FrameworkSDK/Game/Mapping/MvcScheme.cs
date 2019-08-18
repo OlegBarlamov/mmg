@@ -16,5 +16,10 @@ namespace FrameworkSDK.Game.Mapping
         [CanBeNull] public object Model { get; set; }
         [CanBeNull] public IController Controller { get; set; }
         [CanBeNull] public IView View { get; set; }
+
+	    public override string ToString()
+	    {
+		    return $"{View}<->{Controller}<->{Model}";
+	    }
     }
 }

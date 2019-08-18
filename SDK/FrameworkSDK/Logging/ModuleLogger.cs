@@ -50,7 +50,13 @@ namespace FrameworkSDK.Logging
             Log(string.Format(message, args), FrameworkLogLevel.Error);
         }
 
-        public void Fatal(string message, params object[] args)
+	    public void Error(string message, Exception exception, params object[] args)
+	    {
+		    message = $"{message}: {exception}";
+		    Log(string.Format(message, args), FrameworkLogLevel.Error);
+	    }
+
+		public void Fatal(string message, params object[] args)
         {
             Log(string.Format(message, args), FrameworkLogLevel.Fatal);
         }

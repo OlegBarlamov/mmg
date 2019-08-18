@@ -20,7 +20,7 @@
 	        public static string SceneSwitchingState => Localization.GetString() ?? "Scenes switching from {0} to {1}.";
 	        public static string SceneSwitched => Localization.GetString() ?? "Scenes switched from {0} to {1}.";
 
-	        public static string AddControllerToScene => Localization.GetString() ?? "Controller {0} added to scene {1}.";
+	        public static string AddControllerToScene => Localization.GetString() ?? "Adding controller {0} to scene {1}.";
 	        public static string RemovedControllerFromScene => Localization.GetString() ?? "Сontroller {0} removed from scene {1}.";
 	        public static string RemovingAllControllersFromScene => Localization.GetString() ?? "Removing all controllers from scene {0}.";
 	        public static string RemovedMultipleControllersFromScene => Localization.GetString() ?? "Controllers:\"{0}\"(total:{1}) removed from scene {2}.";
@@ -32,8 +32,17 @@
 	    public static class Errors
 	    {
 			public static string SceneChangingWhileNotAllowed => Localization.GetString() ?? "Attempt to change scene to {0} while it was forbidden.";
-		}
 
+		    public static class Mapping
+		    {
+			    public static string ResolvingControllerFailed =>
+				    Localization.GetString() ?? "Resolving controllers by {0} failed.";
+			    public static string ResolvingViewFailed =>
+				    Localization.GetString() ?? "Resolving view by {0} failed.";
+			    public static string ResolvingModelFailed =>
+				    Localization.GetString() ?? "Resolving model by {0} failed.";
+			}
+	    }
 
 		public static class Exceptions
         {
@@ -70,10 +79,10 @@
 
             public static class Mapping
             {
-                public static string ControllerForModelNotFound => Localization.GetString() ?? "Controller for model {0} not founded.";
+                public static string MappingForInstanceNotFound => Localization.GetString() ?? "Mapping for instance {0} not founded.";
 				public static string ControllerCreationError => Localization.GetString() ?? "Error while resolving controller.";
-				public static string ViewForModelNotFound => Localization.GetString() ?? "View for model {0} not founded.";
 				public static string ViewCreationError => Localization.GetString() ?? "Error while resolving view.";
+	            public static string ModelCreationError => Localization.GetString() ?? "Error while resolving model.";
 				public static string IncompatibleModelType => Localization.GetString() ?? "Incompatible model type. Expected {0} but was {1}.";
 				public static string IncompatibleControllerType => Localization.GetString() ?? "Incompatible controller type. Expected {0} but was {1}.";
 				public static string IncompatibleViewType => Localization.GetString() ?? "Incompatible view type. Expected {0} but was {1}.";

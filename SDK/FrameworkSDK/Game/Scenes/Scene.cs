@@ -20,17 +20,15 @@ namespace FrameworkSDK.Game.Scenes
 		public string Name { get; }
 		
 		[NotNull] private ModuleLogger Logger { get; }
-		[NotNull] private IViewsResolver ViewsResolver { get; }
-		[NotNull] private IControllersResolver ControllersResolver { get; }
-		private UpdatableCollection<IController> Controllers { get; }
-		private UpdatableCollection<ViewMapping> Views { get; }
+		[NotNull] private IMvcStrategyService MvcStrategy { get; }
+		[NotNull, ItemNotNull] private UpdatableCollection<IController> Controllers { get; }
+		[NotNull, ItemNotNull] private UpdatableCollection<ViewMapping> Views { get; }
 
 		protected Scene([NotNull] string name)
 		{
 			Name = name ?? throw new ArgumentNullException(nameof(name));
 
-			ViewsResolver = AppContext.ServiceLocator.Resolve<IViewsResolver>();
-			ControllersResolver = AppContext.ServiceLocator.Resolve<IControllersResolver>();
+			MvcStrategy = AppContext.ServiceLocator.Resolve<IMvcStrategyService>();
 
 			Logger = new ModuleLogger(FrameworkLogModule.Scenes);
 			Controllers = new UpdatableCollection<IController>();
@@ -58,10 +56,10 @@ namespace FrameworkSDK.Game.Scenes
 
 			Logger.Info(Strings.Info.AddControllerToScene, controller.Name, Name);
 			CheckOwner(controller);
-			Controllers.Add(controller);
 
-			OnControllerAttachedInternal(controller);
-			OnControllerAttached(controller);
+			var scheme = MvcStrategy.ResolveByController(controller);
+			if (scheme.Controller != null)
+				AddControllerInternal(scheme.Controller);
 		}
 
 		public void RemoveController([NotNull] IController controller)
@@ -70,24 +68,54 @@ namespace FrameworkSDK.Game.Scenes
 
 			Logger.Info(Strings.Info.RemovedControllerFromScene, controller.Name, Name);
 			CheckOwner(controller);
-			if (Controllers.Contains(controller))
-				Controllers.Remove(controller);
+			if (!Controllers.Contains(controller))
+			{
+				throw new NotImplementedException();
+			}
 
+			Controllers.Remove(controller);
 			OnControllerDetachedInternal(controller);
 			OnControllerDetached(controller);
 		}
 
-		public void AddControllerByModel([NotNull] object model)
+		public void AddView([NotNull] IView view)
+		{
+			if (view == null) throw new ArgumentNullException(nameof(view));
+
+			var scheme = MvcStrategy.ResolveByView(view);
+			if (scheme.Controller != null)
+				AddControllerInternal(scheme.Controller);
+			else
+			{
+				//separate view
+				AddView(view, null);
+			}
+		}
+
+		public void RemoveSingleView([NotNull] IView view)
+		{
+			if (view == null) throw new ArgumentNullException(nameof(view));
+
+			var targetView = Views.FirstOrDefault(mapping => mapping.View == view);
+			if (targetView == null)
+			{
+				throw new NotImplementedException();
+			}
+
+			//TODO check for correct!
+			Views.Remove(targetView);
+		}
+
+		public void AddController([NotNull] object model)
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
-			var controller = ControllersResolver.ResolveByModel(model);
-		    controller.SetModel(model);
-
-			AddController(controller);
+			var scheme = MvcStrategy.ResolveByModel(model);
+			if (scheme.Controller != null)
+				AddControllerInternal(scheme.Controller);
 		}
 
-		public void RemoveControllerByModel([NotNull] object model)
+		public void RemoveController([NotNull] object model)
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
@@ -185,6 +213,14 @@ namespace FrameworkSDK.Game.Scenes
 			
 		}
 
+		private void AddControllerInternal([NotNull] IController controller)
+		{
+			Controllers.Add(controller);
+
+			OnControllerAttachedInternal(controller);
+			OnControllerAttached(controller);
+		}
+
 		private void CheckOwner([NotNull] ISceneComponent sceneComponent)
 		{
 			if (sceneComponent == null) throw new ArgumentNullException(nameof(sceneComponent));
@@ -195,14 +231,8 @@ namespace FrameworkSDK.Game.Scenes
 
 		private void OnControllerAttachedInternal(IController controller)
 		{
-			if (controller.Model != null && ViewsResolver.IsModelHasView(controller.Model))
-			{
-				var view = ViewsResolver.ResolveByModel(controller.Model);
-			    view.SetController(controller);
-			    view.SetDataModel(controller.Model);
-			    controller.SetView(view);
-				AddView(view, controller);
-			}
+			if (controller.View != null)
+				AddView(controller.View, controller);
 		}
 
 		private void OnControllerDetachedInternal(IController controller)

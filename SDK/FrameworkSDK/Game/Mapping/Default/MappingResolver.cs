@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrameworkSDK.Game.Controllers;
+using FrameworkSDK.Game.Views;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
@@ -10,7 +12,10 @@ namespace FrameworkSDK.Game.Mapping.Default
 {
 	internal class MappingResolver<T> : IDisposable
 	{
-		private string ModelTitle { get; }
+		private static string ModelTitle = "Model";
+		private static string ViewTitle = nameof(View);
+		private static string ControllerTitle = nameof(Controller);
+
 		private string TypeTitle { get; }
 
 		private IServiceLocator MappingLocator => _mappingLocator ?? CreateLocator();
@@ -22,13 +27,10 @@ namespace FrameworkSDK.Game.Mapping.Default
 		private bool _disposed;
 
 		public MappingResolver([NotNull] IFrameworkServiceContainer serviceContainer,
-			[NotNull] string typeTitle, [NotNull] string modelTitle)
+			[NotNull] string typeTitle)
 		{
-			ModelTitle = modelTitle ?? throw new ArgumentNullException(nameof(modelTitle));
 			TypeTitle = typeTitle ?? throw new ArgumentNullException(nameof(typeTitle));
 			if (serviceContainer == null) throw new ArgumentNullException(nameof(serviceContainer));
-			if (string.IsNullOrWhiteSpace(typeTitle)) throw new ArgumentException(nameof(typeTitle));
-			if (string.IsNullOrWhiteSpace(modelTitle)) throw new ArgumentException(nameof(modelTitle));
 
 			_mappingContainer = serviceContainer.Clone();
 		}
@@ -62,17 +64,54 @@ namespace FrameworkSDK.Game.Mapping.Default
 		{
 			if (_disposed) throw new ObjectDisposedException(nameof(MappingResolver<T>));
 			if (model == null) throw new ArgumentNullException(nameof(model));
-
-			var hash = GetModelHash(model, out var modelName);
-			var type = ResolveTypeByModelHash(hash, modelName);
-
-			return (T)ResolveWithParameter(type, model);
+			return Resolve(model, ModelTitle);
 		}
 
 		public bool IsModelHasMapping(object model)
 		{
 			if (_disposed) throw new ObjectDisposedException(nameof(MappingResolver<T>));
-			var hash = GetModelHash(model, out _);
+			return IsHasMapping(model, ModelTitle);
+		}
+
+		public T ResolveByView([NotNull] IView view)
+		{
+			if (view == null) throw new ArgumentNullException(nameof(view));
+			if (_disposed) throw new ObjectDisposedException(nameof(MappingResolver<T>));
+			return Resolve(view, ViewTitle);
+		}
+
+		public bool IsViewHasMapping([NotNull] IView view)
+		{
+			if (view == null) throw new ArgumentNullException(nameof(view));
+			if (_disposed) throw new ObjectDisposedException(nameof(MappingResolver<T>));
+			return IsHasMapping(view, ViewTitle);
+		}
+
+		public T ResolveByController([NotNull] IController controller)
+		{
+			if (controller == null) throw new ArgumentNullException(nameof(controller));
+			if (_disposed) throw new ObjectDisposedException(nameof(MappingResolver<T>));
+			return Resolve(controller, ControllerTitle);
+		}
+
+		public bool IsControllerHasMapping([NotNull] IController controller)
+		{
+			if (controller == null) throw new ArgumentNullException(nameof(controller));
+			if (_disposed) throw new ObjectDisposedException(nameof(MappingResolver<T>));
+			return IsHasMapping(controller, ControllerTitle);
+		}
+
+		private T Resolve(object instance, string instanceTitle)
+		{
+			var hash = GetTypeHash(instance, instanceTitle, out var instanceName);
+			var type = ResolveTypeByHash(hash, instanceName);
+
+			return (T)ResolveWithParameter(type, instance);
+		}
+
+		private bool IsHasMapping(object instance, string instanceTitle)
+		{
+			var hash = GetTypeHash(instance, instanceTitle, out _);
 			return _mappingDictionary.ContainsKey(hash);
 		}
 
@@ -82,12 +121,12 @@ namespace FrameworkSDK.Game.Mapping.Default
 			return _mappingLocator;
 		}
 
-		private Type ResolveTypeByModelHash(int modelHash, string modelTypeName)
+		private Type ResolveTypeByHash(int hash, string typeName)
 		{
-			if (!_mappingDictionary.ContainsKey(modelHash))
-				throw new MappingException(Strings.Exceptions.Mapping.ControllerForModelNotFound, modelTypeName);
+			if (!_mappingDictionary.ContainsKey(hash))
+				throw new MappingException(Strings.Exceptions.Mapping.MappingForInstanceNotFound, typeName);
 
-			return _mappingDictionary[modelHash];
+			return _mappingDictionary[hash];
 		}
 
 		private object ResolveWithParameter([NotNull] Type type, [NotNull] object parameter)
@@ -97,16 +136,16 @@ namespace FrameworkSDK.Game.Mapping.Default
 			return MappingLocator.ResolveWithParameters(type, new[] { parameter });
 		}
 
-		private int GetModelHash([NotNull] object model, out string modelName)
+		private int GetTypeHash([NotNull] object model, string typeNamePattern, out string typeName)
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
 			var type = model.GetType();
-			modelName = type.Name;
-			if (modelName.EndsWith(ModelTitle, StringComparison.InvariantCultureIgnoreCase))
-				modelName = modelName.TrimEnd(ModelTitle);
+			typeName = type.Name;
+			if (typeName.EndsWith(typeNamePattern, StringComparison.InvariantCultureIgnoreCase))
+				typeName = typeName.TrimEnd(typeNamePattern);
 
-			return modelName.GetHashCode();
+			return typeName.GetHashCode();
 		}
 	}
 }

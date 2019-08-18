@@ -1,4 +1,5 @@
 ﻿using System;
+using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Views;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
@@ -20,7 +21,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 		    if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
 		    if (viewsProvider == null) throw new ArgumentNullException(nameof(viewsProvider));
 
-		    _internalResolver = new MappingResolver<IView>(serviceContainer, nameof(View), "Model");
+		    _internalResolver = new MappingResolver<IView>(serviceContainer, nameof(View));
 
 		    var controllersTypes = viewsProvider.GetRegisteredViews();
 		    _internalResolver.RegisterTypes(controllersTypes);
@@ -34,9 +35,32 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		public bool IsModelHasView(object model)
 	    {
+		    if (model == null) throw new ArgumentNullException(nameof(model));
 		    if (_disposed) throw new ObjectDisposedException(nameof(DefaultViewsResolver));
 		    return _internalResolver.IsModelHasMapping(model);
 	    }
+
+	    public IView ResolveByController(IController controller)
+	    {
+			if (_disposed) throw new ObjectDisposedException(nameof(DefaultViewsResolver));
+		    if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+		    try
+		    {
+			    return _internalResolver.ResolveByController(controller);
+		    }
+		    catch (Exception e)
+		    {
+			    throw new MappingException(Strings.Exceptions.Mapping.ViewCreationError, e);
+		    }
+		}
+
+	    public bool IsControllerHasView(IController controller)
+	    {
+			if (controller == null) throw new ArgumentNullException(nameof(controller));
+		    if (_disposed) throw new ObjectDisposedException(nameof(DefaultViewsResolver));
+		    return _internalResolver.IsControllerHasMapping(controller);
+		}
 
 	    public IView ResolveByModel(object model)
 	    {

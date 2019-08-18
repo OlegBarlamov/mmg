@@ -12,7 +12,7 @@ namespace FrameworkSDK.IoC
         }
 
         public static void RegisterType<TService, TImpl>([NotNull] this IServiceRegistrator serviceRegistrator,
-            ResolveType resolveType = ResolveType.Singletone)
+            ResolveType resolveType = ResolveType.Singletone) where TImpl : TService
         {
             if (serviceRegistrator == null) throw new ArgumentNullException(nameof(serviceRegistrator));
             serviceRegistrator.RegisterType(typeof(TService), typeof(TImpl), resolveType);

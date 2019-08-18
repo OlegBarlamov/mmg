@@ -28,7 +28,7 @@ namespace HeroesGame
 
         public TestScene() : base("testScene")
         {
-            AddControllerByModel(_model);
+            AddController(_model);
         }
     }
 
@@ -36,6 +36,8 @@ namespace HeroesGame
     public class TestView : View<TestModel, TestController>
     {
         private ISpriteBatchProvider SpriteBatchProvider { get; }
+
+	    private int _lastCounter;
 
         public TestView(ISpriteBatchProvider spriteBatchProvider)
         {
@@ -45,7 +47,10 @@ namespace HeroesGame
         public override void Draw(GameTime gameTime)
         {
             var counter = DataModel.Count;
-            //Console.WriteLine(counter);
+			if (counter != _lastCounter)
+				Console.WriteLine(counter);
+
+	        _lastCounter = counter;
         }
     }
 

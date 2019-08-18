@@ -14,9 +14,11 @@ namespace FrameworkSDK.Modules
 			serviceRegistrator.RegisterType<IScenesController, ScenesController>();
 			serviceRegistrator.RegisterType<IViewsProvider, DefaultViewsProvider>();
 			serviceRegistrator.RegisterType<IControllersProvider, DefaultControllersProvider>();
+			serviceRegistrator.RegisterType<IModelsProvider, DefaultModelsProvider>();
 			serviceRegistrator.RegisterType<IViewsResolver, DefaultViewsResolver>();
-		    serviceRegistrator.RegisterType<IControllersResolver, DefaultControllersResolver>();
-		    serviceRegistrator.RegisterType<IMvcStrategyService, DefaultMvcStrategy>();
+			serviceRegistrator.RegisterType<IControllersResolver, DefaultControllersResolver>();
+			serviceRegistrator.RegisterType<IModelsResolver, DefaultModelsResolver>();
+			serviceRegistrator.RegisterType<IMvcStrategyService, DefaultMvcStrategy>();
 
             serviceRegistrator.RegisterType<ISpriteBatchProvider, DefaultSpriteBatchProvider>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
