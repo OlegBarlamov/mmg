@@ -6,40 +6,46 @@ namespace HexoGrid
     {
         private static readonly HexPoint ZeroPoint = new HexPoint();
 
-        public readonly int X;
-        public readonly int Y;
+		/// <summary>
+		/// Column number from 0
+		/// </summary>
+        public readonly int Q;
+		/// <summary>
+		/// Row number from 0
+		/// </summary>
+        public readonly int R;
 
         public static HexPoint Zero => HexPoint.ZeroPoint;
 
         public override string ToString()
         {
-            return $"{{X:{X} Y:{Y}}}";
+            return $"{{Q:{Q} R:{R}}}";
         }
 
-        public HexPoint(int x, int y)
+        public HexPoint(int q, int r)
         {
-            X = x;
-            Y = y;
+	        Q = q;
+            R = r;
         }
 
         public static HexPoint operator +(HexPoint value1, HexPoint value2)
         {
-            return new HexPoint(value1.X + value2.X, value1.Y + value2.Y);
+            return new HexPoint(value1.Q + value2.Q, value1.R + value2.R);
         }
 
         public static HexPoint operator -(HexPoint value1, HexPoint value2)
         {
-            return new HexPoint(value1.X - value2.X, value1.Y - value2.Y);
+            return new HexPoint(value1.Q - value2.Q, value1.R - value2.R);
         }
 
         public static HexPoint operator *(HexPoint value1, HexPoint value2)
         {
-            return new HexPoint(value1.X * value2.X, value1.Y * value2.Y);
+            return new HexPoint(value1.Q * value2.Q, value1.R * value2.R);
         }
 
         public static HexPoint operator /(HexPoint value1, HexPoint value2)
         {
-            return new HexPoint(value1.X / value2.X, value1.Y / value2.Y);
+            return new HexPoint(value1.Q / value2.Q, value1.R / value2.R);
         }
 
         public static bool operator ==(HexPoint a, HexPoint b)
@@ -54,7 +60,7 @@ namespace HexoGrid
 
         public bool Equals(HexPoint other)
         {
-            return X == other.X && Y == other.Y;
+            return Q == other.Q && R == other.R;
         }
 
         public override bool Equals(object obj)
@@ -67,8 +73,8 @@ namespace HexoGrid
         {
             unchecked
             {
-                var hashCode = X;
-                hashCode = (hashCode * 397) ^ Y;
+                var hashCode = Q;
+                hashCode = (hashCode * 397) ^ R;
                 return hashCode;
             }
         }

@@ -8,8 +8,14 @@ namespace HexoGrid
 		[NotNull, ItemNotNull]
         public static IEnumerable<HexPoint> GetAroundPoints(this HexPoint point, bool includeSelf = false)
 		{
-			var parity = point.Y;
-			var dir = Directions[parity]
+			var parity = point.Q & 1;
+			var parityDirections = Directions[parity];
+
+			foreach (var parityDirection in parityDirections)
+			{
+				//TOD check it!
+				yield return point + parityDirection;
+			}
 		}
 
 	    private static readonly HexPoint[][] Directions = 
