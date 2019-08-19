@@ -7,24 +7,25 @@ using FrameworkSDK.Services.Graphics;
 
 namespace FrameworkSDK.Modules
 {
-	internal class GameModule<TGameHost> : IServicesModule where TGameHost : IGameHost
-	{
-		public void Register(IServiceRegistrator serviceRegistrator)
-		{
-			serviceRegistrator.RegisterType<IScenesController, ScenesController>();
-			serviceRegistrator.RegisterType<IViewsProvider, DefaultViewsProvider>();
-			serviceRegistrator.RegisterType<IControllersProvider, DefaultControllersProvider>();
-			serviceRegistrator.RegisterType<IModelsProvider, DefaultModelsProvider>();
-			serviceRegistrator.RegisterType<IViewsResolver, DefaultViewsResolver>();
-			serviceRegistrator.RegisterType<IControllersResolver, DefaultControllersResolver>();
-			serviceRegistrator.RegisterType<IModelsResolver, DefaultModelsResolver>();
-			serviceRegistrator.RegisterType<IMvcStrategyService, DefaultMvcStrategy>();
+    internal class GameModule<TGameHost> : IServicesModule where TGameHost : IGameHost
+    {
+        public void Register(IServiceRegistrator serviceRegistrator)
+        {
+            serviceRegistrator.RegisterType<IScenesController, ScenesController>();
+            serviceRegistrator.RegisterType<IViewsProvider, DefaultViewsProvider>();
+            serviceRegistrator.RegisterType<IControllersProvider, DefaultControllersProvider>();
+            serviceRegistrator.RegisterType<IModelsProvider, DefaultModelsProvider>();
+            serviceRegistrator.RegisterType<IViewsResolver, DefaultViewsResolver>();
+            serviceRegistrator.RegisterType<IControllersResolver, DefaultControllersResolver>();
+            serviceRegistrator.RegisterType<IModelsResolver, DefaultModelsResolver>();
+            serviceRegistrator.RegisterType<IMvcStrategyService, DefaultMvcStrategy>();
+            serviceRegistrator.RegisterType<IScenesContainer, DefaultScenesContainer>();
 
             serviceRegistrator.RegisterType<ISpriteBatchProvider, DefaultSpriteBatchProvider>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
 
             serviceRegistrator.RegisterType<IGameHost, TGameHost>();
-		    serviceRegistrator.RegisterType<IGame, GameShell>();
-		}
-	}
+            serviceRegistrator.RegisterType<IGame, GameShell>();
+        }
+    }
 }

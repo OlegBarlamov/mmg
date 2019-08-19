@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using FrameworkSDK.Common;
+using FrameworkSDK.Localization;
 
 namespace FrameworkSDK.IoC.Default
 {
-	internal class DefaultServiceContainer : IFrameworkServiceContainer
+	internal class DefaultServiceContainer : IFrameworkServiceContainer, IDisposableExtended
 	{
-		private bool _isDisposed;
-		private readonly List<RegistrationInfo> _registrations;
+	    public event Action DisposedEvent;
 
-		public DefaultServiceContainer()
+        private bool _isDisposed;
+
+		private readonly List<RegistrationInfo> _parentRegistrations;
+
+        private readonly List<RegistrationInfo> _myRegistrations = new List<RegistrationInfo>();
+
+	    bool IDisposableExtended.IsDisposed => _isDisposed;
+
+        public DefaultServiceContainer()
 			:this(new RegistrationInfo[0])
 		{
 		}
 
 		private DefaultServiceContainer(IEnumerable<RegistrationInfo> registrations)
 		{
-			_registrations = new List<RegistrationInfo>(registrations);
+		    _parentRegistrations = new List<RegistrationInfo>(registrations);
 		}
 
 	    public void RegisterInstance(Type serviceType, object instance)
@@ -25,7 +35,7 @@ namespace FrameworkSDK.IoC.Default
 	        CheckDisposed();
 
 	        var regInfo = RegistrationInfo.FromInstance(serviceType, instance);
-	        _registrations.Add(regInfo);
+	        _myRegistrations.Add(regInfo);
         }
 
 	    public void RegisterType(Type serviceType, Type implType, ResolveType resolveType = ResolveType.Singletone)
@@ -33,35 +43,72 @@ namespace FrameworkSDK.IoC.Default
 	        CheckDisposed();
 
 	        var regInfo = RegistrationInfo.FromType(serviceType, implType, resolveType);
-	        _registrations.Add(regInfo);
+	        _myRegistrations.Add(regInfo);
         }
 
 		public IServiceLocator BuildContainer()
 		{
 			CheckDisposed();
 
-			return new DefaultServiceLocator(_registrations);
+			return new DefaultServiceLocator(this, GetAllRegistrations());
 		}
 
-		public IFrameworkServiceContainer Clone()
+		public IFrameworkServiceContainer CreateScoped()
 		{
-			return new DefaultServiceContainer(_registrations);
+			return new DefaultServiceContainer(GetAllRegistrations());
 		}
 
 		public void Dispose()
 		{
 			_isDisposed = true;
 
-		    foreach (var registrationInfo in _registrations)
+		    var allDisposable = FindAllDisposableSingletones();
+		    var exceptions = new List<Exception>();
+		    foreach (var disposable in allDisposable)
+		    {
+		        try
+		        {
+		            disposable.Dispose();
+		        }
+		        catch (Exception e)
+		        {
+		            exceptions.Add(e);
+		        }
+		    }
+
+            foreach (var registrationInfo in _myRegistrations)
 		        registrationInfo.Dispose();
 
-			_registrations.Clear();
-		}
+		    _myRegistrations.Clear();
+            _parentRegistrations.Clear();
+
+		    DisposedEvent?.Invoke();
+
+            if (exceptions.Count > 0)
+		        throw new AggregateException(Strings.Exceptions.Ioc.DisposeServicesException, exceptions);
+        }
 
 		private void CheckDisposed()
 		{
 			if (_isDisposed)
 				throw new ObjectDisposedException(nameof(DefaultServiceContainer));
 		}
+
+	    private IReadOnlyCollection<RegistrationInfo> GetAllRegistrations()
+	    {
+            return new List<RegistrationInfo>(_parentRegistrations.Concat(_myRegistrations));
+	    }
+
+	    private IEnumerable<IDisposable> FindAllDisposableSingletones()
+	    {
+	        var singletonesRegInfos = _myRegistrations
+	            .Where(info => info.ResolveType == ResolveType.Singletone);
+
+	        var disposableCashedObjects = singletonesRegInfos
+	            .Where(info => info.CashedInstance is IDisposable)
+	            .Cast<IDisposable>();
+
+	        return disposableCashedObjects;
+	    }
 	}
 }

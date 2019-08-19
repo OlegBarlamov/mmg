@@ -14,11 +14,9 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 	    private readonly MappingResolver<IView> _internalResolver;
 
-		public DefaultViewsResolver([NotNull] IViewsProvider viewsProvider, [NotNull] IFrameworkServiceContainer serviceContainer,
-			[NotNull] IServiceLocator serviceLocator)
+		public DefaultViewsResolver([NotNull] IViewsProvider viewsProvider, [NotNull] IFrameworkServiceContainer serviceContainer)
 	    {
 		    if (serviceContainer == null) throw new ArgumentNullException(nameof(serviceContainer));
-		    if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
 		    if (viewsProvider == null) throw new ArgumentNullException(nameof(viewsProvider));
 
 		    _internalResolver = new MappingResolver<IView>(serviceContainer, nameof(View));

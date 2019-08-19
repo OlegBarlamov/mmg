@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using FrameworkSDK;
 using FrameworkSDK.Game.Controllers;
+using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.Game.Views;
 using FrameworkSDK.Services.Graphics;
@@ -12,23 +12,28 @@ namespace HeroesGame
 {
     internal class TestApplication : Application
     {
-        private TestScene _scene;
-
         public override Scene CurrentScene => GetCurrentScene();
+
+        private Scene _scene;
+
+        protected override void RegisterScenes(IScenesRegistrator scenesRegistrator)
+        {
+            base.RegisterScenes(scenesRegistrator);
+
+            scenesRegistrator.RegisterScene<TestModel, TestScene>();
+        }
 
         private Scene GetCurrentScene()
         {
-            return _scene ?? (_scene = new TestScene());
+            return _scene ?? (_scene = ResolveScene(new TestModel()));
         }
     }
 
     internal class TestScene : Scene
     {
-        private readonly TestModel _model = new TestModel();
-
-        public TestScene() : base("testScene")
+        public TestScene(TestModel model) : base("testScene", model)
         {
-            AddController(_model);
+            AddController(Model);
         }
     }
 

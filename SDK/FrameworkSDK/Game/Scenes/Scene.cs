@@ -19,24 +19,39 @@ namespace FrameworkSDK.Game.Scenes
 	{
 		public string Name { get; }
 		
+        protected object Model { get; private set; }
+
 		[NotNull] private ModuleLogger Logger { get; }
 		[NotNull] private IMvcStrategyService MvcStrategy { get; }
 		[NotNull, ItemNotNull] private UpdatableCollection<IController> Controllers { get; }
 		[NotNull, ItemNotNull] private UpdatableCollection<ViewMapping> Views { get; }
 
-		protected Scene([NotNull] string name)
-		{
-			Name = name ?? throw new ArgumentNullException(nameof(name));
+	    object IScene.Model
+	    {
+	        get => Model;
+	        set => Model = value;
+	    }
 
-			MvcStrategy = AppContext.ServiceLocator.Resolve<IMvcStrategyService>();
+	    protected Scene([NotNull] string name, object model = null)
+	    {
+	        Name = name ?? throw new ArgumentNullException(nameof(name));
 
-			Logger = new ModuleLogger(FrameworkLogModule.Scenes);
-			Controllers = new UpdatableCollection<IController>();
-			Views = new UpdatableCollection<ViewMapping>();
-		}
+	        Model = model;
+            MvcStrategy = AppContext.ServiceLocator.Resolve<IMvcStrategyService>();
 
-		protected Scene()
-			:this(NamesGenerator.Hash(HashType.SmallGuid, nameof(Scene).ToLowerInvariant()))
+	        Logger = new ModuleLogger(FrameworkLogModule.Scenes);
+	        Controllers = new UpdatableCollection<IController>();
+	        Views = new UpdatableCollection<ViewMapping>();
+	    }
+
+	    protected Scene(object model)
+	        : this(GenerateScneeName(), model)
+	    {
+
+	    }
+
+        protected Scene()
+			:this(GenerateScneeName(), null)
 		{
 		}
 
@@ -184,7 +199,7 @@ namespace FrameworkSDK.Game.Scenes
 			OnClosed();
 		}
 
-		void IScene.OnOpened()
+	    void IScene.OnOpened()
 		{
 			OnOpened();
 		}
@@ -288,5 +303,10 @@ namespace FrameworkSDK.Game.Scenes
 
 		    mapping.View.OnAddedToScene(this);
         }
+
+	    private static string GenerateScneeName()
+	    {
+	        return NamesGenerator.Hash(HashType.SmallGuid, nameof(Scene).ToLowerInvariant());
+	    }
 	}
 }

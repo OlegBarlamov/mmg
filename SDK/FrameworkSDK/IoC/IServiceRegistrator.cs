@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
 {
-    public interface IServiceRegistrator : IDisposable
+    public interface IServiceRegistrator
     {
         void RegisterInstance([NotNull] Type serviceType, [NotNull] object instance);
 

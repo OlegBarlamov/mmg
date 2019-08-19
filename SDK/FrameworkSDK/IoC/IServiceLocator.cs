@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
 {
-    public interface IServiceLocator : IDisposable
+    public interface IServiceLocator
     {
 	    [NotNull] object Resolve([NotNull] Type type);
 

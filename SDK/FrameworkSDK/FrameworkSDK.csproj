@@ -47,11 +47,17 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="AppContext.cs" />
+    <Compile Include="Common\IDisposableExtended.cs" />
     <Compile Include="Common\LazyService.cs" />
     <Compile Include="Common\NamedExtensions.cs" />
     <Compile Include="Game\DefaultGameParameters.cs" />
     <Compile Include="Game\IGameParameters.cs" />
     <Compile Include="Game\IModelsProvider.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultScenesContainer.cs" />
+    <Compile Include="Game\Mapping\Default\DefaultScenesResolver.cs" />
+    <Compile Include="Game\Mapping\IScenesContainer.cs" />
+    <Compile Include="Game\Mapping\IScenesRegistrator.cs" />
+    <Compile Include="Game\Mapping\IScenesResolver.cs" />
     <Compile Include="Game\IViewsManager.cs" />
     <Compile Include="Game\Mapping\BaseMvcStrategy.cs" />
     <Compile Include="Game\Mapping\Default\DefaultModelsProvider.cs" />
@@ -67,6 +73,7 @@
     <Compile Include="Game\Mapping\MvcScheme.cs" />
     <Compile Include="Game\Mapping\Default\MvcSchemeExtensions.cs" />
     <Compile Include="Game\Mapping\Default\ResolversExtensions.cs" />
+    <Compile Include="Game\Mapping\ScenesRegistratorExtension.cs" />
     <Compile Include="Game\Scenes\SceneCollectionsExtension.cs" />
     <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
     <Compile Include="Logging\DeferredLogger.cs" />

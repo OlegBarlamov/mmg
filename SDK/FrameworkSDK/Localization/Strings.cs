@@ -34,6 +34,8 @@
                 public static string ResolvingViewByController => Localization.GetString() ?? "Resolving view for {0} by controller {1}.";
                 public static string ResolvingModelByView => Localization.GetString() ?? "Resolving model for {0} by view {1}.";
                 public static string ResolvingModelByController => Localization.GetString() ?? "Controller exists. Resolving model for {0} by controller {1}.";
+                public static string SceneRegisteredForModel => Localization.GetString() ?? "Scene {0} registered for model {1}.";
+                public static string SceneResolvedByModel => Localization.GetString() ?? "Scene {0} resolved by model {1}.";
             }
 
             public static string SceneSwitchingState => Localization.GetString() ?? "Scenes switching from {0} to {1}.";
@@ -105,7 +107,8 @@
 				public static string IncompatibleModelType => Localization.GetString() ?? "Incompatible model type. Expected {0} but was {1}.";
 				public static string IncompatibleControllerType => Localization.GetString() ?? "Incompatible controller type. Expected {0} but was {1}.";
 				public static string IncompatibleViewType => Localization.GetString() ?? "Incompatible view type. Expected {0} but was {1}.";
-			}
+                public static string ErrorWhileResolvingScene => Localization.GetString() ?? "Error while resolving scene by model {0}.";
+            }
 
             public static class Scenes
 	        {

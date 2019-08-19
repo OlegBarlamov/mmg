@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrameworkSDK.Common;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 
@@ -8,18 +9,18 @@ namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultServiceLocator : IServiceLocator
 	{
-		private ConstructorFinder ConstructorFinder { get; }
+	    private IDisposableExtended LifeTimeScope { get; }
+	    private ConstructorFinder ConstructorFinder { get; }
 		private DependencyResolver DependencyResolver { get; }
 
 		private readonly Dictionary<int, List<RegistrationInfo>> _mapping = new Dictionary<int, List<RegistrationInfo>>();
 
-		private bool _isDisposed;
-
-		public DefaultServiceLocator([NotNull, ItemNotNull] IReadOnlyCollection<RegistrationInfo> registrations)
+		public DefaultServiceLocator([NotNull] IDisposableExtended lifeTimeScope, [NotNull, ItemNotNull] IReadOnlyCollection<RegistrationInfo> registrations)
 		{
 			if (registrations == null) throw new ArgumentNullException(nameof(registrations));
+		    LifeTimeScope = lifeTimeScope ?? throw new ArgumentNullException(nameof(lifeTimeScope));
 
-			ConstructorFinder = new ConstructorFinder(this);
+		    ConstructorFinder = new ConstructorFinder(this);
 			DependencyResolver = new DependencyResolver(this);
 
 			foreach (var registrationInfo in registrations)
@@ -30,32 +31,12 @@ namespace FrameworkSDK.IoC.Default
 
 				_mapping[code].Add(registrationInfo);
 			}
-		}
 
-		public void Dispose()
-		{
-			_isDisposed = true;
+		    LifeTimeScope.DisposedEvent += LifeTimeScopeOnDisposedEvent;
 
-			var allDisposable = FindAllDisposableSingletones();
+        }
 
-			var exceptions = new List<Exception>();
-			foreach (var disposable in allDisposable)
-			{
-				try
-				{
-					disposable.Dispose();
-				}
-				catch (Exception e)
-				{
-					exceptions.Add(e);
-				}
-			}
-
-			if (exceptions.Count > 0)
-				throw new AggregateException(Strings.Exceptions.Ioc.DisposeServicesException, exceptions);
-		}
-
-		public object Resolve(Type type)
+	    public object Resolve(Type type)
 		{
 			if (type == null) throw new ArgumentNullException(nameof(type));
 			CheckDisposed();
@@ -68,7 +49,7 @@ namespace FrameworkSDK.IoC.Default
 
 	    public object ResolveWithParameters(Type type, [NotNull] object[] parameters)
 	    {
-	        if (type == null) throw new ArgumentNullException(nameof(type));
+            if (type == null) throw new ArgumentNullException(nameof(type));
 	        if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 	        CheckDisposed();
 
@@ -97,18 +78,6 @@ namespace FrameworkSDK.IoC.Default
 
 			var code = GetCode(type);
 			return _mapping.ContainsKey(code);
-		}
-
-		private IEnumerable<IDisposable> FindAllDisposableSingletones()
-		{
-			var singletonesRegInfos = _mapping.Values.SelectMany(list => list)
-				.Where(info => info.ResolveType == ResolveType.Singletone);
-
-			var disposableCashedObjects = singletonesRegInfos
-				.Where(info => info.CashedInstance is IDisposable)
-				.Cast<IDisposable>();
-
-			return disposableCashedObjects;
 		}
 
         private object ResolveRegInfo(RegistrationInfo regIngo)
@@ -178,8 +147,14 @@ namespace FrameworkSDK.IoC.Default
 
 		private void CheckDisposed()
 		{
-			if (_isDisposed)
-				throw new ObjectDisposedException(nameof(DefaultServiceContainer));
+			if (LifeTimeScope.IsDisposed)
+				throw new ObjectDisposedException(LifeTimeScope.ToString());
 		}
-	}
+
+	    private void LifeTimeScopeOnDisposedEvent()
+	    {
+	        LifeTimeScope.DisposedEvent -= LifeTimeScopeOnDisposedEvent;
+            _mapping.Clear();
+	    }
+    }
 }

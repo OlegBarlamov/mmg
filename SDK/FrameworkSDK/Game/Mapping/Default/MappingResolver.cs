@@ -32,7 +32,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 			TypeTitle = typeTitle ?? throw new ArgumentNullException(nameof(typeTitle));
 			if (serviceContainer == null) throw new ArgumentNullException(nameof(serviceContainer));
 
-			_mappingContainer = serviceContainer.Clone();
+			_mappingContainer = serviceContainer.CreateScoped();
 		}
 
 		public void RegisterTypes([NotNull, ItemNotNull] IEnumerable<Type> registeredTypes)
@@ -56,7 +56,6 @@ namespace FrameworkSDK.Game.Mapping.Default
 		{
 			_disposed = true;
 			_mappingDictionary.Clear();
-			_mappingLocator?.Dispose();
 			_mappingContainer.Dispose();
 		}
 
