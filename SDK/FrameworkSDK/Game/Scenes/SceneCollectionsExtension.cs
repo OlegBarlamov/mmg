@@ -8,7 +8,7 @@ using MonoGameExtensions;
 
 namespace FrameworkSDK.Game.Scenes
 {
-    internal static class SceneComponentsCollectionExtension
+    internal static class SceneCollectionsExtension
     {
         public static bool ContainsView([NotNull] this UpdatableCollection<ViewMapping> collection, [NotNull] IView view)
         {
