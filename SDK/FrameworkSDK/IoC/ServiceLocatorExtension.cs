@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
 {
-    internal static class ServiceLocatorExtension
+    public static class ServiceLocatorExtension
     {
         [NotNull]
         public static T Resolve<T>([NotNull] this IServiceLocator serviceLocator)

@@ -16,6 +16,11 @@ namespace HeroesGame
 
         private Scene _scene;
 
+        public TestApplication(ConsoleService consoleService)
+        {
+            
+        }
+
         protected override void RegisterScenes(IScenesRegistrator scenesRegistrator)
         {
             base.RegisterScenes(scenesRegistrator);

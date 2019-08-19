@@ -84,6 +84,10 @@
       <Project>{4f0dfc01-8178-46a2-aafe-dd8ee8afab1c}</Project>
       <Name>NetExtensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Utils\ConsoleWindow\ConsoleWindow.csproj">
+      <Project>{6433e232-4a48-420d-a2c1-0befda8a5ad2}</Project>
+      <Name>ConsoleWindow</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utils\Logging\Logging.csproj">
       <Project>{3fa53468-2750-459f-82f7-a607298376dc}</Project>
       <Name>Logging</Name>

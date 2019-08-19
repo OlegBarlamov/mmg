@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
 {
-    internal static class ServiceRegistratorExtension
+    public static class ServiceRegistratorExtension
     {
         public static void RegisterInstance<T>([NotNull] this IServiceRegistrator serviceRegistrator, [NotNull] T instance)
         {

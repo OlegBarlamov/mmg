@@ -1,6 +1,8 @@
 ﻿using System;
+using ConsoleWindow;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
+using FrameworkSDK.IoC;
 using FrameworkSDK.Logging;
 using Logging;
 using Microsoft.Extensions.Logging;
@@ -13,6 +15,8 @@ namespace HeroesGame
     /// </summary>
     public static class Program
     {
+        private static readonly MyLogger MyLogger = new MyLogger();
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -21,20 +25,49 @@ namespace HeroesGame
         {
             using (var app = App.Construct()
                 .UseGameFramework<TestApplication>()
-                .SetupCustomLogger(() => new MyLogger()))
+                .SetupCustomLogger(() => MyLogger)
+                .RegisterServices(RegisterServices))
             {
                 app.Run();
             }
 		}
+
+        private static void RegisterServices(IServiceRegistrator serviceRegistrator)
+        {
+            var console = new ConsoleService();
+            MyLogger.LogSystem.AddProvider(console);
+            serviceRegistrator.RegisterInstance(console);
+        }
+    }
+
+    internal class ConsoleService : ILoggerProvider
+    {
+        private readonly IConsoleHost _consoleHost;
+
+        public ConsoleService()
+        {
+            _consoleHost = ConsoleFactory.CreateHosted();
+            _consoleHost.Show();
+        }
+
+        public void Dispose()
+        {
+            _consoleHost.Dispose();
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return _consoleHost.CreateLogger(categoryName);
+        }
     }
 
     internal class MyLogger : IFrameworkLogger
     {
-        private readonly LogSystem _logSystem = new LogSystem("Log", true);
+        public LogSystem LogSystem { get; } = new LogSystem("Log", true);
 
         public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
         {
-            var logger = _logSystem.CreateLogger(module.ToString());
+            var logger = LogSystem.CreateLogger(module.ToString());
             logger.Log(message, ToLogLevel(level));
         }
 
