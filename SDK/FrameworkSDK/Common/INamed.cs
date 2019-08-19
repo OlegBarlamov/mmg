@@ -1,8 +1,10 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using JetBrains.Annotations;
+
+// ReSharper disable once CheckNamespace
 namespace FrameworkSDK
 {
     public interface INamed
     {
-        string Name { get; }
+        [NotNull] string Name { get; }
     }
 }

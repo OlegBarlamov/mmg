@@ -52,6 +52,7 @@
     <Compile Include="Game\DefaultGameParameters.cs" />
     <Compile Include="Game\IGameParameters.cs" />
     <Compile Include="Game\IModelsProvider.cs" />
+    <Compile Include="Game\IViewsManager.cs" />
     <Compile Include="Game\Mapping\BaseMvcStrategy.cs" />
     <Compile Include="Game\Mapping\Default\DefaultModelsProvider.cs" />
     <Compile Include="Game\Mapping\Default\DefaultModelsResolver.cs" />

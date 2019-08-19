@@ -116,7 +116,7 @@ namespace FrameworkSDK.Game.Scenes
 			}
 		}
 
-        public void RemoveSingleView([NotNull] IView view)
+        public void RemoveView([NotNull] IView view)
 		{
 			if (view == null) throw new ArgumentNullException(nameof(view));
 
@@ -124,6 +124,9 @@ namespace FrameworkSDK.Game.Scenes
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewNotExists, view, this);
 
 			var targetView = Views.First(mapping => mapping.View == view);
+            if (targetView.Controller != null)
+                throw new ScenesException(Strings.Exceptions.Scenes.ViewHasOwningControllerCanNotBeRemovedSingle, view, targetView.Controller, this);
+
 			RemoveView(targetView);
 		}
 
