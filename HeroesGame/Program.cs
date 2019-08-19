@@ -2,6 +2,8 @@
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.Logging;
+using Logging;
+using Microsoft.Extensions.Logging;
 
 namespace HeroesGame
 {
@@ -19,18 +21,42 @@ namespace HeroesGame
         {
             using (var app = App.Construct()
                 .UseGameFramework<TestApplication>()
-                .SetupCustomLogger(() => new ConsoleLogger()))
+                .SetupCustomLogger(() => new MyLogger()))
             {
                 app.Run();
             }
 		}
     }
 
-    internal class ConsoleLogger : IFrameworkLogger
+    internal class MyLogger : IFrameworkLogger
     {
+        private readonly LogSystem _logSystem = new LogSystem("Log", true);
+
         public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
         {
-            Console.WriteLine($@"{level}:{module}:{message}");
+            var logger = _logSystem.CreateLogger(module.ToString());
+            logger.Log(message, ToLogLevel(level));
+        }
+
+        private static LogLevel ToLogLevel(FrameworkLogLevel frameworkLogLevel)
+        {
+            switch (frameworkLogLevel)
+            {
+                case FrameworkLogLevel.Trace:
+                    return LogLevel.Trace;
+                case FrameworkLogLevel.Debug:
+                    return LogLevel.Debug;
+                case FrameworkLogLevel.Info:
+                    return LogLevel.Information;
+                case FrameworkLogLevel.Warn:
+                    return LogLevel.Warning;
+                case FrameworkLogLevel.Error:
+                    return LogLevel.Error;
+                case FrameworkLogLevel.Fatal:
+                    return LogLevel.Critical;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(frameworkLogLevel), frameworkLogLevel, null);
+            }
         }
     }
 #endif
