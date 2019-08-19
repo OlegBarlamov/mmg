@@ -68,7 +68,18 @@ namespace MonoGameExtensions
 			_clearAll = true;
 		}
 
-		public bool Contains(T item)
+	    public IReadOnlyList<T> GetAllWithToAddItems()
+	    {
+            if (_clearAll)
+                return new T[0];
+
+	        return new List<T>(ActiveControllers
+	            .Concat(_controllersToAdd)
+	            .Except(_controllersToRemove));
+	    }
+
+
+        public bool Contains(T item)
 		{
 			return !_clearAll && ActiveControllers
 				       .Concat(_controllersToAdd)

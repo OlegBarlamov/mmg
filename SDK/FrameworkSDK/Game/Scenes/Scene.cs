@@ -57,6 +57,9 @@ namespace FrameworkSDK.Game.Scenes
 			Logger.Info(Strings.Info.AddControllerToScene, controller.Name, Name);
 			CheckOwner(controller);
 
+            if (Controllers.Contains(controller))
+                throw new ScenesException(Strings.Exceptions.Scenes.ControllerAlreadyExists, controller, this);
+
 			var scheme = MvcStrategy.ResolveByController(controller);
 			if (scheme.Controller != null)
 				AddControllerInternal(scheme.Controller);
@@ -69,20 +72,41 @@ namespace FrameworkSDK.Game.Scenes
 			Logger.Info(Strings.Info.RemovedControllerFromScene, controller.Name, Name);
 			CheckOwner(controller);
 			if (!Controllers.Contains(controller))
-			{
-				throw new NotImplementedException();
-			}
+                throw new ScenesException(Strings.Exceptions.Scenes.ControllerNotExists, controller, this);
 
 			Controllers.Remove(controller);
 			OnControllerDetachedInternal(controller);
 			OnControllerDetached(controller);
 		}
 
-		public void AddView([NotNull] IView view)
+	    public void AddController([NotNull] object model)
+	    {
+	        if (model == null) throw new ArgumentNullException(nameof(model));
+
+	        var scheme = MvcStrategy.ResolveByModel(model);
+	        if (scheme.Controller != null)
+	            AddControllerInternal(scheme.Controller);
+	    }
+
+	    public void RemoveController([NotNull] object model)
+	    {
+	        if (model == null) throw new ArgumentNullException(nameof(model));
+
+	        var targetController = Controllers.FirstOrDefault(controller => controller.IsOwnedModel(model));
+	        if (targetController != null)
+	            RemoveController(targetController);
+            else
+                throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
+	    }
+
+        public void AddView([NotNull] IView view)
 		{
 			if (view == null) throw new ArgumentNullException(nameof(view));
 
-			var scheme = MvcStrategy.ResolveByView(view);
+            if (Views.ContainsView(view))
+                throw new ScenesException(Strings.Exceptions.Scenes.ViewAlreadyExists, view, this);
+
+            var scheme = MvcStrategy.ResolveByView(view);
 			if (scheme.Controller != null)
 				AddControllerInternal(scheme.Controller);
 			else
@@ -92,36 +116,15 @@ namespace FrameworkSDK.Game.Scenes
 			}
 		}
 
-		public void RemoveSingleView([NotNull] IView view)
+        public void RemoveSingleView([NotNull] IView view)
 		{
 			if (view == null) throw new ArgumentNullException(nameof(view));
 
-			var targetView = Views.FirstOrDefault(mapping => mapping.View == view);
-			if (targetView == null)
-			{
-				throw new NotImplementedException();
-			}
+            if (!Views.ContainsView(view))
+                throw new ScenesException(Strings.Exceptions.Scenes.ViewNotExists, view, this);
 
-			//TODO check for correct!
-			Views.Remove(targetView);
-		}
-
-		public void AddController([NotNull] object model)
-		{
-			if (model == null) throw new ArgumentNullException(nameof(model));
-
-			var scheme = MvcStrategy.ResolveByModel(model);
-			if (scheme.Controller != null)
-				AddControllerInternal(scheme.Controller);
-		}
-
-		public void RemoveController([NotNull] object model)
-		{
-			if (model == null) throw new ArgumentNullException(nameof(model));
-
-			var targetController = Controllers.FirstOrDefault(controller => controller.IsOwnedModel(model));
-			if (targetController != null)
-				RemoveController(targetController);
+			var targetView = Views.First(mapping => mapping.View == view);
+			RemoveView(targetView);
 		}
 
 		public void ClearControllers()
@@ -168,8 +171,6 @@ namespace FrameworkSDK.Game.Scenes
 
 		void IClosable.OnClosed()
 		{
-
-
 			OnClosed();
 		}
 
@@ -215,7 +216,10 @@ namespace FrameworkSDK.Game.Scenes
 
 		private void AddControllerInternal([NotNull] IController controller)
 		{
-			Controllers.Add(controller);
+		    if (Controllers.Contains(controller))
+		        throw new ScenesException(Strings.Exceptions.Scenes.ControllerAlreadyExists, controller, this);
+
+            Controllers.Add(controller);
 
 			OnControllerAttachedInternal(controller);
 			OnControllerAttached(controller);
@@ -259,6 +263,9 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			CheckOwner(view);
 			var mapping = new ViewMapping(view, controller);
+            if (Views.ContainsView(view))
+                throw new ScenesException(Strings.Exceptions.Scenes.ViewAlreadyExists, view, this);
+
 			Views.Add(mapping);
 
 			Logger.Info(Strings.Info.AddViewToScene, view.Name, controller?.Name, Name);

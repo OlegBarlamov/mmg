@@ -40,7 +40,7 @@
 	        public static string SceneSwitched => Localization.GetString() ?? "Scenes switched from {0} to {1}.";
 
 	        public static string AddControllerToScene => Localization.GetString() ?? "Adding controller {0} to scene {1}.";
-	        public static string RemovedControllerFromScene => Localization.GetString() ?? "Сontroller {0} removed from scene {1}.";
+	        public static string RemovedControllerFromScene => Localization.GetString() ?? "Removing controller {0} from scene {1}.";
 	        public static string RemovingAllControllersFromScene => Localization.GetString() ?? "Removing all controllers from scene {0}.";
 	        public static string RemovedMultipleControllersFromScene => Localization.GetString() ?? "Controllers:\"{0}\"(total:{1}) removed from scene {2}.";
 
@@ -110,7 +110,12 @@
             public static class Scenes
 	        {
 				public static string SceneComponentWrongOwner => Localization.GetString() ?? "Сompoentnt {0} has already added to another scene and can not be added to {1}.";
-			}
+	            public static string ControllerAlreadyExists => Localization.GetString() ?? "Controller {0} has already exists in scene {1}.";
+	            public static string ViewAlreadyExists => Localization.GetString() ?? "View {0} has already exists in scene {1}.";
+                public static string ControllerNotExists => Localization.GetString() ?? "Controller {0} not exists in scene {1}.";
+	            public static string ControllerForModelNotExists => Localization.GetString() ?? "Controller for model {0} not exists in scene {1}.";
+	            public static string ViewNotExists => Localization.GetString() ?? "View {0} not exists in scene {1}.";
+            }
 		}
     }
 }
