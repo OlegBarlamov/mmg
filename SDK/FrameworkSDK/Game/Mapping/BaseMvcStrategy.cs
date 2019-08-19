@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Views;
+using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 
@@ -30,7 +31,7 @@ namespace FrameworkSDK.Game.Mapping
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-			_moduleLogger.Debug($"Resolving mvc by model '{model}'");
+			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByModel, model);
 	        return ResolveByModelInternal(model);
 		}
 
@@ -38,7 +39,7 @@ namespace FrameworkSDK.Game.Mapping
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            _moduleLogger.Debug($"Resolving mvc by controller '{controller}'");
+            _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByController, controller);
 	        return ResolveByControllerInternal(controller);
         }
 
@@ -46,7 +47,7 @@ namespace FrameworkSDK.Game.Mapping
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
 
-			_moduleLogger.Debug($"Resolving mvc by view '{view}'");
+			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByView, view);
 	        return ResolveByViewInternal(view);
 		}
 

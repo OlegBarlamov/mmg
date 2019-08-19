@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Views;
+using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 
@@ -30,7 +31,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 			ResolveModel(scheme);
 			ResolveView(scheme);
 
-			_moduleLogger.Debug($"Resolving by controller {controller} finished with result: {scheme}.");
+			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByControllerFinished, controller, scheme);
 
 			Setup(scheme);
 			return scheme;
@@ -46,9 +47,9 @@ namespace FrameworkSDK.Game.Mapping.Default
 			ResolveController(scheme);
 			ResolveView(scheme);
 
-			_moduleLogger.Debug($"Resolving by model {model} finished with result: {scheme}.");
+		    _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByModelFinished, model, scheme);
 
-			Setup(scheme);
+            Setup(scheme);
 			return scheme;
 		}
 
@@ -64,9 +65,9 @@ namespace FrameworkSDK.Game.Mapping.Default
 			ResolveModel(scheme);
 			ResolveController(scheme);
 
-			_moduleLogger.Debug($"Resolving by view {view} finished with result: {scheme}.");
+		    _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByViewFinished, view, scheme);
 
-			Setup(scheme);
+            Setup(scheme);
 			return scheme;
 		}
 
@@ -97,7 +98,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 			if (scheme.Controller != null)
 		    {
-			    _moduleLogger.Debug($"Controller already exists in {scheme}.");
+			    _moduleLogger.Debug(Strings.Info.Mapping.ControllerExists, scheme);
 				return;
 		    }
 
@@ -106,14 +107,14 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		    if (model != null && ControllersResolver.IsModelHasController(model))
 		    {
-			    _moduleLogger.Debug($"Model exists. Resolving controller for {scheme} by model {model}.");
+			    _moduleLogger.Debug(Strings.Info.Mapping.ResolvingControllerByModel, scheme, model);
 			    scheme.Controller = ControllersResolver.TryResolveController(model, _moduleLogger);
 			    return;
 		    }
 
 		    if (view != null && ControllersResolver.IsViewHasController(view))
 		    {
-			    _moduleLogger.Debug($"Resolving controller for {scheme} by view.");
+			    _moduleLogger.Debug(Strings.Info.Mapping.ResolvingControllerByView, scheme, view);
 			    scheme.Controller = ControllersResolver.TryResolveController(view, _moduleLogger);
 			}
 	    }
@@ -125,8 +126,8 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		    if (scheme.View != null)
 		    {
-			    _moduleLogger.Debug($"View already exists in {scheme}.");
-			    return;
+		        _moduleLogger.Debug(Strings.Info.Mapping.ViewExists, scheme);
+                return;
 		    }
 
 		    var controller = scheme.Controller;
@@ -134,15 +135,15 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		    if (model != null && ViewsResolver.IsModelHasView(model))
 		    {
-			    _moduleLogger.Debug($"Model exists. Resolving view for {scheme} by model {model}.");
-			    scheme.View = ViewsResolver.TryResolveView(model, _moduleLogger);
+		        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingViewByModel, scheme, model);
+                scheme.View = ViewsResolver.TryResolveView(model, _moduleLogger);
 			    return;
 		    }
 
 		    if (controller != null && ViewsResolver.IsControllerHasView(controller))
 		    {
-			    _moduleLogger.Debug($"Resolving view for {scheme} by controller.");
-			    scheme.View = ViewsResolver.TryResolveView(controller, _moduleLogger);
+		        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingViewByController, scheme, controller);
+                scheme.View = ViewsResolver.TryResolveView(controller, _moduleLogger);
 		    }
 		}
 
@@ -153,8 +154,8 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		    if (scheme.Model != null)
 		    {
-			    _moduleLogger.Debug($"Model already exists in {scheme}.");
-			    return;
+		        _moduleLogger.Debug(Strings.Info.Mapping.ModelExists, scheme);
+                return;
 		    }
 
 		    var controller = scheme.Controller;
@@ -162,14 +163,14 @@ namespace FrameworkSDK.Game.Mapping.Default
 
 		    if (controller != null && ModelsResolver.IsControllerHasModel(controller))
 		    {
-			    _moduleLogger.Debug($"Controller exists. Resolving model for {scheme} by controller {controller}.");
-			    scheme.Model = ModelsResolver.TryResolveModel(controller, _moduleLogger);
+		        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingModelByController, scheme, controller);
+                scheme.Model = ModelsResolver.TryResolveModel(controller, _moduleLogger);
 			    return;
 		    }
 
 		    if (view != null && ModelsResolver.IsViewHasModel(view))
 		    {
-			    _moduleLogger.Debug($"Resolving model for {scheme} by view.");
+			    _moduleLogger.Debug(Strings.Info.Mapping.ResolvingModelByView, scheme, view);
 			    scheme.Model = ModelsResolver.TryResolveModel(view, _moduleLogger);
 		    }
 		}

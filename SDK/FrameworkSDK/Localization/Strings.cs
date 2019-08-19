@@ -17,7 +17,26 @@
                 public static string ConstructingEnd => Localization.GetString() ?? "App constructing finished.";
             }
 
-	        public static string SceneSwitchingState => Localization.GetString() ?? "Scenes switching from {0} to {1}.";
+            public static class Mapping
+            {
+                public static string ResolvingMvcByModel => Localization.GetString() ?? "Resolving mvc by model '{0}'.";
+                public static string ResolvingMvcByController => Localization.GetString() ?? "Resolving mvc by controller '{0}'.";
+                public static string ResolvingMvcByView => Localization.GetString() ?? "Resolving mvc by view '{0}'.";
+                public static string ResolvingMvcByModelFinished => Localization.GetString() ?? "Resolving by model {0} finished with result: {1}.";
+                public static string ResolvingMvcByControllerFinished => Localization.GetString() ?? "Resolving by controller {0} finished with result: {1}.";
+                public static string ResolvingMvcByViewFinished => Localization.GetString() ?? "Resolving by view {0} finished with result: {1}.";
+                public static string ControllerExists => Localization.GetString() ?? "Controller already exists in {0}.";
+                public static string ModelExists => Localization.GetString() ?? "Model already exists in {0}.";
+                public static string ViewExists => Localization.GetString() ?? "View already exists in {0}.";
+                public static string ResolvingControllerByModel => Localization.GetString() ?? "Model exists. Resolving controller for {0} by model {1}.";
+                public static string ResolvingViewByModel => Localization.GetString() ?? "Model exists. Resolving view for {0} by model {1}.";
+                public static string ResolvingControllerByView => Localization.GetString() ?? "Resolving controller for {0} by view {1}.";
+                public static string ResolvingViewByController => Localization.GetString() ?? "Resolving view for {0} by controller {1}.";
+                public static string ResolvingModelByView => Localization.GetString() ?? "Resolving model for {0} by view {1}.";
+                public static string ResolvingModelByController => Localization.GetString() ?? "Controller exists. Resolving model for {0} by controller {1}.";
+            }
+
+            public static string SceneSwitchingState => Localization.GetString() ?? "Scenes switching from {0} to {1}.";
 	        public static string SceneSwitched => Localization.GetString() ?? "Scenes switched from {0} to {1}.";
 
 	        public static string AddControllerToScene => Localization.GetString() ?? "Adding controller {0} to scene {1}.";
