@@ -193,10 +193,6 @@
       <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
       <Name>MonoGameExtensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NetExtensions\NetExtensions.csproj">
-      <Project>{4f0dfc01-8178-46a2-aafe-dd8ee8afab1c}</Project>
-      <Name>NetExtensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="TODO.txt" />

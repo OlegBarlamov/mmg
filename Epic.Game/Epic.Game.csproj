@@ -81,7 +81,7 @@
       <Name>MonoGameExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\SDK\NetExtensions\NetExtensions.csproj">
-      <Project>{4f0dfc01-8178-46a2-aafe-dd8ee8afab1c}</Project>
+      <Project>{ef610c39-8f90-4fcd-a95d-b041bf71251d}</Project>
       <Name>NetExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utils\ConsoleWindow\ConsoleWindow.csproj">
