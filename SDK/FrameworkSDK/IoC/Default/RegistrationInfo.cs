@@ -1,4 +1,5 @@
 ﻿using System;
+using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC.Default
@@ -35,7 +36,7 @@ namespace FrameworkSDK.IoC.Default
 
 	    public override string ToString()
 	    {
-	        return $"{Type.Name}->{ImplType.Name}:{ResolveType}";
+	        return string.Format(NullFormatProvider.Instance, "{0}->{1}:{2}", Type.Name, ImplType.Name, ResolveType);
 	    }
 
 		[NotNull]

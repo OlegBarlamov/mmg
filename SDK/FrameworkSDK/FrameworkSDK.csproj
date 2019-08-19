@@ -68,6 +68,7 @@
     <Compile Include="Game\Mapping\Default\ResolversExtensions.cs" />
     <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
     <Compile Include="Logging\DeferredLogger.cs" />
+    <Compile Include="Logging\NullFormatProvider.cs" />
     <Compile Include="Pipelines\IPipelineContext.cs" />
     <Compile Include="Pipelines\IPipelineProcessor.cs" />
     <Compile Include="Pipelines\PipelineContext.cs" />

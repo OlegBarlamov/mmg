@@ -15,12 +15,12 @@ namespace FrameworkSDK.Game.Scenes
 		}
 
 	    internal ScenesException(string message, Exception inner, params object[] args)
-	        : this(string.Format(message, args), inner)
+	        : this(string.Format(DefaultFormatProvider, message, args), inner)
 	    {
 	    }
 
 	    internal ScenesException(string message, params object[] args)
-	        : this(string.Format(message, args))
+	        : this(string.Format(DefaultFormatProvider, message, args))
 	    {
 	    }
     }

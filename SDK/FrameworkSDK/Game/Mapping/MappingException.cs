@@ -15,12 +15,12 @@ namespace FrameworkSDK.Game.Mapping
         }
 
         internal MappingException(string message, Exception inner, params object[] args)
-            : this(string.Format(message, args), inner)
+            : this(string.Format(DefaultFormatProvider, message, args), inner)
         {
         }
 
         internal MappingException(string message, params object[] args)
-            : this(string.Format(message, args))
+            : this(string.Format(DefaultFormatProvider, message, args))
         {
         }
     }

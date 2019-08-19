@@ -1,9 +1,12 @@
 ﻿using System;
+using FrameworkSDK.Logging;
 
 namespace FrameworkSDK
 {
     public class FrameworkException : Exception
     {
+        protected static IFormatProvider DefaultFormatProvider { get; } = new NullFormatProvider();
+
         internal FrameworkException(string message)
             : base(message)
         {
@@ -15,12 +18,12 @@ namespace FrameworkSDK
         }
 
         internal FrameworkException(string message,  Exception inner, params object[] args)
-            : this(string.Format(message, args), inner)
+            : this(string.Format(DefaultFormatProvider, message, args), inner)
         {
         }
 
         internal FrameworkException(string message, params object[] args)
-            : this(string.Format(message, args))
+            : this(string.Format(DefaultFormatProvider, message, args))
         {
         }
     }

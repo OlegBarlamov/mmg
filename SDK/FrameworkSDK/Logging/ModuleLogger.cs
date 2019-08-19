@@ -11,6 +11,8 @@ namespace FrameworkSDK.Logging
 
 	    [CanBeNull] private MessageInfo _lastMessageInfo;
 
+        private static readonly IFormatProvider DefaultFormatProvider = new NullFormatProvider();
+
 		public ModuleLogger([NotNull] IFrameworkLogger frameworkLogger, FrameworkLogModule logModule)
         {
             FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
@@ -27,38 +29,38 @@ namespace FrameworkSDK.Logging
 
 		public void Info(string message, params object[] args)
         {
-            Log(string.Format(message, args), FrameworkLogLevel.Info);
+            Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Info);
         }
 
         public void Trace(string message, params object[] args)
         {
-            Log(string.Format(message, args), FrameworkLogLevel.Trace);
+            Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Trace);
         }
 
         public void Debug(string message, params object[] args)
         {
-            Log(string.Format(message, args), FrameworkLogLevel.Debug);
+            Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Debug);
         }
 
         public void Warn(string message, params object[] args)
         {
-            Log(string.Format(message, args), FrameworkLogLevel.Warn);
+            Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Warn);
         }
 
         public void Error(string message, params object[] args)
         {
-            Log(string.Format(message, args), FrameworkLogLevel.Error);
+            Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Error);
         }
 
 	    public void Error(string message, Exception exception, params object[] args)
 	    {
 		    message = $"{message}: {exception}";
-		    Log(string.Format(message, args), FrameworkLogLevel.Error);
+		    Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Error);
 	    }
 
 		public void Fatal(string message, params object[] args)
         {
-            Log(string.Format(message, args), FrameworkLogLevel.Fatal);
+            Log(string.Format(DefaultFormatProvider, message, args), FrameworkLogLevel.Fatal);
         }
 
         public void Log(string message, FrameworkLogLevel level = FrameworkLogLevel.Info, params object[] args)

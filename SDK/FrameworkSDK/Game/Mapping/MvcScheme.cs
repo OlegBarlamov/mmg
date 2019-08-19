@@ -1,5 +1,6 @@
 ﻿using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Views;
+using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Game.Mapping
@@ -19,7 +20,7 @@ namespace FrameworkSDK.Game.Mapping
 
 	    public override string ToString()
 	    {
-		    return $"{View}<->{Controller}<->{Model}";
+		    return string.Format(NullFormatProvider.Instance, "{0}<->{1}<->{2}", View, Controller, Model);
 	    }
     }
 }

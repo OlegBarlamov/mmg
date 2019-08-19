@@ -15,12 +15,12 @@ namespace FrameworkSDK.Game.Mapping
         }
 
         internal IncompatibleViewTypeException(string message, Exception inner, params object[] args)
-            : this(string.Format(message, args), inner)
+            : this(string.Format(DefaultFormatProvider, message, args), inner)
         {
         }
 
         internal IncompatibleViewTypeException(string message, params object[] args)
-            : this(string.Format(message, args))
+            : this(string.Format(DefaultFormatProvider, message, args))
         {
         }
     }
