@@ -79,24 +79,38 @@ namespace FrameworkSDK.Game.Scenes
 			OnControllerDetached(controller);
 		}
 
-	    public void AddController([NotNull] object model)
+	    public IController AddController([NotNull] object model)
 	    {
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
 	        var scheme = MvcStrategy.ResolveByModel(model);
 	        if (scheme.Controller != null)
+	        {
 	            AddControllerInternal(scheme.Controller);
-	    }
+	            return scheme.Controller;
+	        }
 
-	    public void RemoveController([NotNull] object model)
+	        throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
+        }
+
+	    public IController RemoveController([NotNull] object model)
 	    {
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
 	        var targetController = Controllers.FirstOrDefault(controller => controller.IsOwnedModel(model));
 	        if (targetController != null)
+	        {
 	            RemoveController(targetController);
-            else
-                throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
+	            return targetController;
+	        }
+
+            throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
+	    }
+
+	    [CanBeNull]
+	    public IController FindControllerByActiveModel(object model)
+	    {
+	        return Controllers.FirstOrDefault(controller => controller.IsOwnedModel(model));
 	    }
 
         public void AddView([NotNull] IView view)
@@ -125,9 +139,9 @@ namespace FrameworkSDK.Game.Scenes
 
 			var targetView = Views.First(mapping => mapping.View == view);
             if (targetView.Controller != null)
-                throw new ScenesException(Strings.Exceptions.Scenes.ViewHasOwningControllerCanNotBeRemovedSingle, view, targetView.Controller, this);
-
-			RemoveView(targetView);
+                RemoveController(targetView.Controller);
+            else
+			    RemoveView(targetView);
 		}
 
 		public void ClearControllers()
@@ -153,23 +167,16 @@ namespace FrameworkSDK.Game.Scenes
 			Controllers.Update();
 			Views.Update();
 
-			foreach (var controller in Controllers)
-			{
-				controller.Update(gameTime);
-			}
+		    Controllers.Update(gameTime);
 
-			Update(gameTime);
+            Update(gameTime);
 		}
 
 		void IDrawable.Draw(GameTime gameTime)
 		{
 			//TODO чистка фоном и т.п
 
-			var views = Views.Select(mapping => mapping.View);
-			foreach (var view in views)
-			{
-				view.Draw(gameTime);
-			}
+			Views.Draw(gameTime);
 		}
 
 		void IClosable.OnClosed()
@@ -240,6 +247,8 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			if (controller.View != null)
 				AddView(controller.View, controller);
+
+            controller.OnAddedToScene(this);
 		}
 
 		private void OnControllerDetachedInternal(IController controller)
@@ -247,6 +256,8 @@ namespace FrameworkSDK.Game.Scenes
 			var targetMapping = Views.FirstOrDefault(mapping => mapping.IsMappedController(controller));
 			if (targetMapping != null)
 				RemoveView(targetMapping);
+
+            controller.OnRemovedFromScene(this);
 		}
 
 		private void RemoveView(ViewMapping viewMapping)
@@ -257,9 +268,11 @@ namespace FrameworkSDK.Game.Scenes
 			CheckOwner(view);
 			Views.Remove(viewMapping);
 
-			view.Destroy();
+		    Logger.Info(Strings.Info.DestroyViewFromScene, view.Name, controller?.Name, Name);
 
-			Logger.Info(Strings.Info.DestroyViewFromScene, view.Name, controller?.Name, Name);
+		    view.OnRemovedFromScene(this);
+
+            view.Destroy();
 		}
 
 		private void AddView([NotNull] IView view, [CanBeNull] IController controller)
@@ -272,6 +285,8 @@ namespace FrameworkSDK.Game.Scenes
 			Views.Add(mapping);
 
 			Logger.Info(Strings.Info.AddViewToScene, view.Name, controller?.Name, Name);
-		}
+
+		    mapping.View.OnAddedToScene(this);
+        }
 	}
 }

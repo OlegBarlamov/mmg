@@ -115,7 +115,8 @@
                 public static string ControllerNotExists => Localization.GetString() ?? "Controller {0} not exists in scene {1}.";
 	            public static string ControllerForModelNotExists => Localization.GetString() ?? "Controller for model {0} not exists in scene {1}.";
 	            public static string ViewNotExists => Localization.GetString() ?? "View {0} not exists in scene {1}.";
-	            public static string ViewHasOwningControllerCanNotBeRemovedSingle => Localization.GetString() ?? "View {0} has controller {1} and can't be removed from scene {2}.";
+	            public static string SceneComponentNotAttached => Localization.GetString() ?? "Scene component {0} not attached to any scene.";
+	            public static string ChildComponentNotExists => Localization.GetString() ?? "Scene component {0} not contains child component {1}.";
             }
 		}
     }

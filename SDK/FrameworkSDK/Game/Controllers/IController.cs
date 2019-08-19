@@ -11,8 +11,6 @@ namespace FrameworkSDK.Game.Controllers
 
 	    bool IsOwnedModel(object model);
 
-	    void SetOwner(Scene ownedScene);
-
 	    void SetModel(object dataModel);
 
 	    void SetView(IView view);

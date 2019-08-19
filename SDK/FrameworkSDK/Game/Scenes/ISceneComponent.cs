@@ -1,7 +1,13 @@
-﻿namespace FrameworkSDK.Game.Scenes
+﻿using JetBrains.Annotations;
+
+namespace FrameworkSDK.Game.Scenes
 {
 	public interface ISceneComponent
 	{
-		Scene OwnedScene { get; }
+		[CanBeNull] Scene OwnedScene { get; }
+
+	    void OnAddedToScene([NotNull] Scene scene);
+
+	    void OnRemovedFromScene([NotNull] Scene scene);
 	}
 }

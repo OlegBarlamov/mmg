@@ -68,7 +68,7 @@ namespace MonoGameExtensions
 			_clearAll = true;
 		}
 
-	    public IReadOnlyList<T> GetAllWithToAddItems()
+	    public IReadOnlyCollection<T> GetAllWithToAddItems()
 	    {
             if (_clearAll)
                 return new T[0];
