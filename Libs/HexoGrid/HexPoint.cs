@@ -4,18 +4,18 @@ namespace HexoGrid
 {
     public struct HexPoint : IEquatable<HexPoint>
     {
-        private static readonly HexPoint ZeroPoint = new HexPoint();
+        public static HexPoint Zero => HexPoint.ZeroPoint;
 
-		/// <summary>
-		/// Column number from 0
-		/// </summary>
+        /// <summary>
+        /// Column number from 0
+        /// </summary>
         public readonly int Q;
 		/// <summary>
 		/// Row number from 0
 		/// </summary>
         public readonly int R;
 
-        public static HexPoint Zero => HexPoint.ZeroPoint;
+        private static readonly HexPoint ZeroPoint = new HexPoint();
 
         public override string ToString()
         {
