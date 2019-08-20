@@ -13,4 +13,8 @@
     <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\HexoGrid\HexoGrid.csproj" />
+  </ItemGroup>
+
 </Project>

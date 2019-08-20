@@ -41,7 +41,8 @@ namespace HexoGrid
             }
         }
 
-        public static IEnumerable<HexPoint> GetPointsInRange(this HexPoint point, HexGridType gridType, int range)
+	    [NotNull]
+		public static IEnumerable<HexPoint> GetPointsInRange(this HexPoint point, HexGridType gridType, int range)
         {
             var cubicCenterPoint = point.ToCubeAxis(gridType);
             for (int dx = -range; dx <= range; dx++)
