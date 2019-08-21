@@ -89,7 +89,9 @@
 				public static string StepNotFound => Localization.GetString() ?? "Pipeline step {0} not founded.";
                 public static string ActionFailed => Localization.GetString() ?? "Action {0} failed.";
                 public static string StepFailed => Localization.GetString() ?? "Step {0} failed.";
-            }
+	            public static string ConstructingFailed => Localization.GetString() ?? "Constructing app {0} failed. See inner exception for more info.";
+	            public static string RunAppFailed => Localization.GetString() ?? "Running app {0} failed. See inner exception for more info.";
+			}
 
             public static class Pipeline
             {

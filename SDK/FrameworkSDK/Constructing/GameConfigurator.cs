@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK.Pipelines;
 using FrameworkSDK.IoC;
+using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Constructing
@@ -23,18 +24,35 @@ namespace FrameworkSDK.Constructing
 
         public void Configure()
         {
-            AppConfigurator.Configure();
+	        try
+	        {
+		        AppConfigurator.Configure();
+			}
+	        catch (Exception e)
+	        {
+		        throw new AppConstructingException(Strings.Exceptions.Constructing.ConstructingFailed, e, nameof(TGameHost));
+	        }
         }
 
         public void Run()
         {
-            AppConfigurator.Run();
+	        IGameHost gameHost;
+	        IGame game;
 
-            var locator = AppContext.ServiceLocator;
-            var host = locator.Resolve<IGameHost>();
-            var game = locator.Resolve<IGame>();
+			try
+	        {
+		        AppConfigurator.Run();
 
-            host.Run(game);
+		        var locator = AppContext.ServiceLocator;
+		        gameHost = locator.Resolve<IGameHost>();
+		        game = locator.Resolve<IGame>();
+	        }
+	        catch (Exception e)
+	        {
+		        throw new AppConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, nameof(TGameHost));
+	        }
+
+	        gameHost.Run(game);
         }
     }
 }

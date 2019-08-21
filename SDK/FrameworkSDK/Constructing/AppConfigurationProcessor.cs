@@ -53,8 +53,7 @@ namespace FrameworkSDK.Constructing
 
         protected sealed override void OnStepProcessFailed(PipelineStep step, Exception error)
         {
-            Log(string.Format(Strings.Exceptions.Constructing.StepFailed, step), FrameworkLogLevel.Error);
-            throw error;
+			throw new AppConstructingException(Strings.Exceptions.Constructing.StepFailed, error, step);
         }
 
         protected sealed override void OnStepActionProcessStarted(IPipelineAction action, PipelineStep step)
