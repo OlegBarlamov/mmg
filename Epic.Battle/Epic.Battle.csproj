@@ -1,16 +1,73 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\bin\Debug\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<OutputPath>..\bin\Release\</OutputPath>
-	</PropertyGroup>
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC326006-A0E3-40A5-8DE3-A4CD9F916856}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Epic.Battle</RootNamespace>
+    <AssemblyName>Epic.Battle</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Epic.Core\Epic.Core.csproj">
+      <Project>{bbd54a85-1e60-4d57-9bef-5d10928d069e}</Project>
+      <Name>Epic.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Epic.Data\Epic.Data.csproj">
+      <Project>{5f10fe28-f623-4e53-9181-5b6eda2432fd}</Project>
+      <Name>Epic.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Epic.Logic\Epic.Logic.csproj">
+      <Project>{384f75ba-cf0f-4256-a6c9-52699562d427}</Project>
+      <Name>Epic.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SDK\FrameworkSDK\FrameworkSDK.csproj">
+      <Project>{1c9a9c3f-5163-4f5a-b1cb-c43876980910}</Project>
+      <Name>FrameworkSDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
+      <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
+      <Name>MonoGameExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SDK\NetExtensions\NetExtensions.csproj">
+      <Project>{ef610c39-8f90-4fcd-a95d-b041bf71251d}</Project>
+      <Name>NetExtensions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

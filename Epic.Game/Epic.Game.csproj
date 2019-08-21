@@ -72,6 +72,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Epic.Battle\Epic.Battle.csproj">
+      <Project>{dc326006-a0e3-40a5-8de3-a4cd9f916856}</Project>
+      <Name>Epic.Battle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Epic.Core\Epic.Core.csproj">
+      <Project>{bbd54a85-1e60-4d57-9bef-5d10928d069e}</Project>
+      <Name>Epic.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDK\FrameworkSDK\FrameworkSDK.csproj">
       <Project>{1c9a9c3f-5163-4f5a-b1cb-c43876980910}</Project>
       <Name>FrameworkSDK</Name>
