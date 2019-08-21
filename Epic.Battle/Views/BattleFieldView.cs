@@ -6,13 +6,13 @@ using Microsoft.Xna.Framework;
 
 namespace Epic.Battle.Views
 {
-    internal class BattleFieldView : View<BattleField, BattleFieldController>
-    {
-        public override void Draw(GameTime gameTime)
-        {
-            base.Draw(gameTime);
+	internal class BattleFieldView : View<BattleField, BattleFieldController>
+	{
+		public override void Draw(GameTime gameTime)
+		{
+			base.Draw(gameTime);
 
-            Console.WriteLine(DataModel.Size);
-        }
-    }
+			Console.WriteLine(DataModel.Size);
+		}
+	}
 }
