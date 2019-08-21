@@ -117,7 +117,10 @@
 	            public static string ViewAlreadyExists => Localization.GetString() ?? "View {0} has already exists in scene {1}.";
                 public static string ControllerNotExists => Localization.GetString() ?? "Controller {0} not exists in scene {1}.";
 	            public static string ControllerForModelNotExists => Localization.GetString() ?? "Controller for model {0} not exists in scene {1}.";
-	            public static string ViewNotExists => Localization.GetString() ?? "View {0} not exists in scene {1}.";
+	            public static string ControllerForModelNotExistsValidateFalse => Localization.GetString() ?? "Controller for model {0} not exists in scene {1}. Validate result was incorrect!";
+	            public static string ViewForModelNotExists => Localization.GetString() ?? "View for model {0} not exists in scene {1}.";
+	            public static string ViewForModelNotExistsValidateFalse => Localization.GetString() ?? "View for model {0} not exists in scene {1}. Validate result was incorrect!";
+                public static string ViewNotExists => Localization.GetString() ?? "View {0} not exists in scene {1}.";
 	            public static string SceneComponentNotAttached => Localization.GetString() ?? "Scene component {0} not attached to any scene.";
 	            public static string ChildComponentNotExists => Localization.GetString() ?? "Scene component {0} not contains child component {1}.";
             }

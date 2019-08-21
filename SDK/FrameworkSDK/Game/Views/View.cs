@@ -82,6 +82,20 @@ namespace FrameworkSDK.Game.Views
             _children.Add(childView);
         }
 
+        [CanBeNull]
+        protected IView AddChild([NotNull] object model)
+        {
+            if (model == null) throw new ArgumentNullException(nameof(model));
+
+            var scene = _ownedScene;
+            if (scene == null)
+                throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
+
+            var view = scene.AddView(model);
+            _children.Add(view);
+            return view;
+        }
+
         protected void RemoveChild([NotNull] IView childView)
         {
             if (childView == null) throw new ArgumentNullException(nameof(childView));

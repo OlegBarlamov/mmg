@@ -27,7 +27,7 @@ namespace FrameworkSDK.Game.Mapping
 			_moduleLogger = new ModuleLogger(logger, FrameworkLogModule.Mvc);
         }
 
-        public MvcScheme ResolveByModel(object model)
+        public IMvcScheme ResolveByModel(object model)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
@@ -35,7 +35,7 @@ namespace FrameworkSDK.Game.Mapping
 	        return ResolveByModelInternal(model);
 		}
 
-	    public MvcScheme ResolveByController(IController controller)
+	    public IMvcScheme ResolveByController(IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
@@ -43,7 +43,7 @@ namespace FrameworkSDK.Game.Mapping
 	        return ResolveByControllerInternal(controller);
         }
 
-        public MvcScheme ResolveByView(IView view)
+        public IMvcScheme ResolveByView(IView view)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
 
@@ -51,7 +51,11 @@ namespace FrameworkSDK.Game.Mapping
 	        return ResolveByViewInternal(view);
 		}
 
-	    public virtual void Dispose()
+        [NotNull] public abstract IMvcSchemeValidateResult ValidateByModel([NotNull] object model);
+        [NotNull] public abstract IMvcSchemeValidateResult ValidateByController([NotNull] IController controller);
+        [NotNull] public abstract IMvcSchemeValidateResult ValidateByView([NotNull] IView view);
+
+        public virtual void Dispose()
         {
             _moduleLogger.Dispose();
         }

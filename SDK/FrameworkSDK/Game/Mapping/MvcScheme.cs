@@ -5,13 +5,6 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Game.Mapping
 {
-    public interface IMvcScheme
-    {
-        [CanBeNull] object Model { get; }
-        [CanBeNull] IController Controller { get; }
-        [CanBeNull] IView View { get; }
-    }
-
     public class MvcScheme : IMvcScheme
     {
         [CanBeNull] public object Model { get; set; }

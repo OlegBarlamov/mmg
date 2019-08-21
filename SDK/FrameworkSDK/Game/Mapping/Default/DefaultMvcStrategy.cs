@@ -19,7 +19,40 @@ namespace FrameworkSDK.Game.Mapping.Default
 			_moduleLogger = new ModuleLogger(Logger, FrameworkLogModule.Mvc);
 		}
 
-		protected override MvcScheme ResolveByControllerInternal(IController controller)
+        public override IMvcSchemeValidateResult ValidateByModel(object model)
+        {
+            if (model == null) throw new ArgumentNullException(nameof(model));
+            return new MvcSchemeValidateResult
+            {
+                IsModelExist = true,
+                IsViewExist = ViewsResolver.IsModelHasView(model),
+                IsControllerExist = ControllersResolver.IsModelHasController(model)
+            };
+        }
+
+        public override IMvcSchemeValidateResult ValidateByController(IController controller)
+        {
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            return new MvcSchemeValidateResult
+            {
+                IsModelExist = ModelsResolver.IsControllerHasModel(controller),
+                IsViewExist = ViewsResolver.IsControllerHasView(controller),
+                IsControllerExist = true
+            };
+        }
+
+        public override IMvcSchemeValidateResult ValidateByView(IView view)
+        {
+            if (view == null) throw new ArgumentNullException(nameof(view));
+            return new MvcSchemeValidateResult
+            {
+                IsModelExist = ModelsResolver.IsViewHasModel(view),
+                IsViewExist = true,
+                IsControllerExist = ControllersResolver.IsViewHasController(view)
+            };
+        }
+
+        protected override MvcScheme ResolveByControllerInternal(IController controller)
 		{
 			var scheme = new MvcScheme
 			{

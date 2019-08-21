@@ -94,21 +94,23 @@ namespace FrameworkSDK.Game.Scenes
 			OnControllerDetached(controller);
 		}
 
-	    public IController AddController([NotNull] object model)
+	    [NotNull] public IController AddController([NotNull] object model)
 	    {
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
-	        var scheme = MvcStrategy.ResolveByModel(model);
-	        if (scheme.Controller != null)
-	        {
-	            AddControllerInternal(scheme.Controller);
-	            return scheme.Controller;
-	        }
+	        var validate = MvcStrategy.ValidateByModel(model);
+            if (!validate.IsControllerExist)
+                throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
 
-	        throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
+            var scheme = MvcStrategy.ResolveByModel(model);
+	        if (scheme.Controller == null)
+	            throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExistsValidateFalse, model, this);
+
+	        AddControllerInternal(scheme.Controller);
+	        return scheme.Controller;
         }
 
-	    public IController RemoveController([NotNull] object model)
+	    [NotNull] public IController RemoveController([NotNull] object model)
 	    {
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
@@ -145,7 +147,27 @@ namespace FrameworkSDK.Game.Scenes
 			}
 		}
 
-        public void RemoveView([NotNull] IView view)
+	    public IView AddView([NotNull] object model)
+	    {
+	        if (model == null) throw new ArgumentNullException(nameof(model));
+
+	        var validate = MvcStrategy.ValidateByModel(model);
+	        if (!validate.IsViewExist)
+	            throw new ScenesException(Strings.Exceptions.Scenes.ViewForModelNotExists, model, this);
+
+	        var scheme = MvcStrategy.ResolveByModel(model);
+	        if (scheme.View == null)
+	            throw new ScenesException(Strings.Exceptions.Scenes.ViewForModelNotExistsValidateFalse, model, this);
+
+	        if (scheme.Controller != null)
+	            AddControllerInternal(scheme.Controller);
+	        else
+	            AddView(scheme.View, null);
+
+	        return scheme.View;
+        }
+
+	    public void RemoveView([NotNull] IView view)
 		{
 			if (view == null) throw new ArgumentNullException(nameof(view));
 

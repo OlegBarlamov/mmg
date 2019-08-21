@@ -55,6 +55,8 @@
     <Compile Include="Game\IModelsProvider.cs" />
     <Compile Include="Game\Mapping\Default\DefaultScenesContainer.cs" />
     <Compile Include="Game\Mapping\Default\DefaultScenesResolver.cs" />
+    <Compile Include="Game\Mapping\IMvcScheme.cs" />
+    <Compile Include="Game\Mapping\IMvcSchemeValidateResult.cs" />
     <Compile Include="Game\Mapping\IScenesContainer.cs" />
     <Compile Include="Game\Mapping\IScenesRegistrator.cs" />
     <Compile Include="Game\Mapping\IScenesResolver.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Game\Mapping\MvcScheme.cs" />
     <Compile Include="Game\Mapping\Default\MvcSchemeExtensions.cs" />
     <Compile Include="Game\Mapping\Default\ResolversExtensions.cs" />
+    <Compile Include="Game\Mapping\MvcSchemeValidateResult.cs" />
     <Compile Include="Game\Mapping\ScenesRegistratorExtension.cs" />
     <Compile Include="Game\Scenes\SceneCollectionsExtension.cs" />
     <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
