@@ -31,6 +31,7 @@ namespace FrameworkSDK.Game.Mapping.Default
 				!type.IsAbstract &&
 				!type.IsInterface &&
 				type.IsPublic &&
+                !type.IsNested &&
 				type.IsSubClassOf(typeof(Controller)));
 		}
 	}

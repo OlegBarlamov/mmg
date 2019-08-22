@@ -7,7 +7,8 @@ namespace Epic.Game
 {
     internal class BattleScene : Scene
     {
-        public BattleScene([NotNull] BattleModel battleModel)
+        public BattleScene([NotNull] BattleModel battleModel) 
+            : base("BattleScene")
         {
             if (battleModel == null) throw new ArgumentNullException(nameof(battleModel));
             AddController(battleModel);

@@ -5,7 +5,7 @@ using FrameworkSDK.Game.Views;
 
 namespace Epic.Battle.Views
 {
-    internal class BattleView : View<BattleModel, BattleController>
+    public class BattleView : View<BattleModel, BattleController>
     {
         protected override void Initialize(Scene scene)
         {

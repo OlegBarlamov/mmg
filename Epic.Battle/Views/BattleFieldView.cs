@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace Epic.Battle.Views
 {
-	internal class BattleFieldView : View<BattleField, BattleFieldController>
+    public class BattleFieldView : View<BattleField, BattleFieldController>
 	{
 		public override void Draw(GameTime gameTime)
 		{

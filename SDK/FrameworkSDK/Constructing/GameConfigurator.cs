@@ -30,7 +30,7 @@ namespace FrameworkSDK.Constructing
 			}
 	        catch (Exception e)
 	        {
-		        throw new AppConstructingException(Strings.Exceptions.Constructing.ConstructingFailed, e, nameof(TGameHost));
+		        throw new AppConstructingException(Strings.Exceptions.Constructing.ConstructingFailed, e, typeof(TGameHost).Name);
 	        }
         }
 
@@ -49,7 +49,7 @@ namespace FrameworkSDK.Constructing
 	        }
 	        catch (Exception e)
 	        {
-		        throw new AppConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, nameof(TGameHost));
+		        throw new AppConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, typeof(TGameHost).Name);
 	        }
 
 	        gameHost.Run(game);

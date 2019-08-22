@@ -80,6 +80,7 @@ namespace ConsoleWindow.Hosted
 			ConsoleHostApp host = null;
 			var thread = new Thread(() =>
 			{
+			    Thread.CurrentThread.Name = "console";
 				host = new ConsoleHostApp();
 				host.Run();
 			});

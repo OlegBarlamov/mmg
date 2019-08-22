@@ -3,7 +3,7 @@ using FrameworkSDK.Game.Controllers;
 
 namespace Epic.Battle.Controllers
 {
-    internal class BattleController : Controller<BattleModel>
+    public class BattleController : Controller<BattleModel>
     {
 
     }
