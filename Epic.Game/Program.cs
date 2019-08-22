@@ -12,7 +12,7 @@ namespace Epic.Game
         static void Main()
         {
             var logFactory = new LogFactory("Logs", true);
-            var module = new CommonModule(logFactory);
+            var module = new CommonModule(logFactory, logFactory);
 
             using (var app = App.Construct()
                 .UseGameFramework<TestApplication>()
