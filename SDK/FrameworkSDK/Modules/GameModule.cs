@@ -23,6 +23,7 @@ namespace FrameworkSDK.Modules
 
             serviceRegistrator.RegisterType<ISpriteBatchProvider, DefaultSpriteBatchProvider>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
+            serviceRegistrator.RegisterType<IGraphicsPipelineFactory, DefaultGraphicsPipelineFactory>();
 
             serviceRegistrator.RegisterType<IGameHost, TGameHost>();
             serviceRegistrator.RegisterType<IGame, GameShell>();

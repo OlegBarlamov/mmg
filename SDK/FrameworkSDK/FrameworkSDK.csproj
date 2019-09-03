@@ -51,8 +51,19 @@
     <Compile Include="Common\LazyService.cs" />
     <Compile Include="Common\NamedExtensions.cs" />
     <Compile Include="Game\DefaultGameParameters.cs" />
+    <Compile Include="Game\Graphics\GraphicPipelineStep.cs" />
+    <Compile Include="Game\Graphics\GraphicsPass.cs" />
+    <Compile Include="Game\Graphics\GraphicsPipeline.cs" />
+    <Compile Include="Game\Graphics\IDrawContext.cs" />
+    <Compile Include="Game\Graphics\IGraphicsPass.cs" />
+    <Compile Include="Game\Graphics\IGraphicsPipeline.cs" />
+    <Compile Include="Game\Graphics\GraphicsPipelineConstructor.cs" />
+    <Compile Include="Game\Graphics\IRenderContext.cs" />
+    <Compile Include="Game\IDrawable.cs" />
     <Compile Include="Game\IGameParameters.cs" />
+    <Compile Include="Game\IGraphicComponent.cs" />
     <Compile Include="Game\IModelsProvider.cs" />
+    <Compile Include="Game\IRenderableComponent.cs" />
     <Compile Include="Game\Mapping\Default\DefaultScenesContainer.cs" />
     <Compile Include="Game\Mapping\Default\DefaultScenesResolver.cs" />
     <Compile Include="Game\Mapping\IMvcScheme.cs" />
@@ -110,6 +121,8 @@
     <Compile Include="Modules\GameModule.cs" />
     <Compile Include="Pipelines\SimplePipelineProcessor.cs" />
     <Compile Include="Services\AppDomainService.cs" />
+    <Compile Include="Services\Graphics\DefaultGraphicsPipelineFactory.cs" />
+    <Compile Include="Services\Graphics\IGraphicsPipelineFactory.cs" />
     <Compile Include="Services\Randoms\DefaultRandomService.cs" />
     <Compile Include="Common\Hash.cs" />
     <Compile Include="Common\HashType.cs" />
@@ -149,7 +162,7 @@
     <Compile Include="Game\IClosable.cs" />
     <Compile Include="Game\Controllers\IController.cs" />
     <Compile Include="Game\IControllersManager.cs" />
-    <Compile Include="Game\IDrawable.cs" />
+    <Compile Include="Game\IDrawableComponent.cs" />
     <Compile Include="Game\IScenesController.cs" />
     <Compile Include="Game\IUpdatable.cs" />
     <Compile Include="Game\Scenes\EmptyScene.cs" />

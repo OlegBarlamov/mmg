@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using FrameworkSDK.Common;
 using FrameworkSDK.Game.Controllers;
+using FrameworkSDK.Game.Graphics;
 using FrameworkSDK.Game.Mapping;
 using FrameworkSDK.Game.Views;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
+using FrameworkSDK.Services.Graphics;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions;
@@ -20,6 +22,8 @@ namespace FrameworkSDK.Game.Scenes
 		public string Name { get; }
 		
         protected object Model { get; private set; }
+
+        [NotNull] protected IGraphicsPipeline GraphicsPipeline { get; set; }
 
 		[NotNull] private ModuleLogger Logger { get; }
 		[NotNull] private IMvcStrategyService MvcStrategy { get; }
@@ -38,8 +42,9 @@ namespace FrameworkSDK.Game.Scenes
 
 	        Model = model;
             MvcStrategy = AppContext.ServiceLocator.Resolve<IMvcStrategyService>();
+	        GraphicsPipeline = AppContext.ServiceLocator.Resolve<IGraphicsPipelineFactory>().CreateDefaultPipeline();
 
-	        Logger = new ModuleLogger(FrameworkLogModule.Scenes);
+            Logger = new ModuleLogger(FrameworkLogModule.Scenes);
 	        Controllers = new UpdatableCollection<IController>();
 	        Views = new UpdatableCollection<ViewMapping>();
 	    }
@@ -213,7 +218,7 @@ namespace FrameworkSDK.Game.Scenes
 		{
 			//TODO чистка фоном и т.п
 
-			Views.Draw(gameTime);
+			GraphicsPipeline.Process(gameTime, Views.Components());
 		}
 
 		void IClosable.OnClosed()

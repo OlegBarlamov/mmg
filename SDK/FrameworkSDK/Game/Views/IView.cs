@@ -3,7 +3,7 @@ using FrameworkSDK.Game.Scenes;
 
 namespace FrameworkSDK.Game.Views
 {
-	public interface IView : IDrawable, INamed, ISceneComponent
+	public interface IView : IGraphicComponent, ISceneComponent, INamed
     {
 	    object DataModel { get; }
 

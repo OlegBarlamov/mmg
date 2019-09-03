@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FrameworkSDK.Common;
 using FrameworkSDK.Game.Controllers;
+using FrameworkSDK.Game.Graphics;
 using FrameworkSDK.Game.Scenes;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
@@ -13,11 +14,15 @@ namespace FrameworkSDK.Game.Views
     {
         public string Name { get; protected set; }
 
+        protected string GraphicsPassName { get; set; }
+
         Scene ISceneComponent.OwnedScene => _ownedScene;
 
         object IView.DataModel => _dataModel;
 
         IController IView.Controller => _controller;
+
+        string IGraphicComponent.GraphicsPassName => GraphicsPassName;
 
         private object _dataModel;
         private IController _controller;
@@ -45,7 +50,12 @@ namespace FrameworkSDK.Game.Views
 		    return Name;
 	    }
 
-	    public virtual void Draw(GameTime gameTime)
+	    public virtual void Draw(GameTime gameTime, IDrawContext context)
+        {
+
+        }
+
+        public virtual void Render(GameTime gameTime, IRenderContext context)
         {
 
         }

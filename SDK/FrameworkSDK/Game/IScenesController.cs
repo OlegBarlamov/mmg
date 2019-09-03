@@ -3,7 +3,7 @@ using FrameworkSDK.Game.Scenes;
 
 namespace FrameworkSDK.Game
 {
-	internal interface IScenesController : IUpdatable, IDrawable, IDisposable
+	internal interface IScenesController : IUpdatable, IDrawableComponent, IDisposable
 	{
 		bool CanSceneChange { get; }
 

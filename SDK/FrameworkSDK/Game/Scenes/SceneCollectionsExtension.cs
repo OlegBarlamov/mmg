@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FrameworkSDK.Game.Controllers;
 using FrameworkSDK.Game.Views;
@@ -19,16 +20,10 @@ namespace FrameworkSDK.Game.Scenes
             return items.Any(mapping => mapping.View == view);
         }
 
-        public static void Draw([NotNull] this UpdatableCollection<ViewMapping> collection, [NotNull] GameTime gameTime)
+        public static IReadOnlyCollection<IGraphicComponent> Components([NotNull] this UpdatableCollection<ViewMapping> collection)
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
-            if (gameTime == null) throw new ArgumentNullException(nameof(gameTime));
-
-            var views = collection.Select(mapping => mapping.View);
-            foreach (var view in views)
-            {
-                view.Draw(gameTime);
-            }
+            return collection.Select(mapping => mapping.View).ToArray();
         }
 
         public static void Update([NotNull] this UpdatableCollection<IController> collection, [NotNull] GameTime gameTime)
