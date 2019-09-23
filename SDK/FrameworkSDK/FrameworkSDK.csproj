@@ -1,221 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1C9A9C3F-5163-4F5A-B1CB-C43876980910}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FrameworkSDK</RootNamespace>
-    <AssemblyName>FrameworkSDK</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <LangVersion>7.2</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\$(Configuration)\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\NetExtensions\NetExtensions.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="App.cs" />
-    <Compile Include="AppContext.cs" />
-    <Compile Include="Common\IDisposableExtended.cs" />
-    <Compile Include="Common\LazyService.cs" />
-    <Compile Include="Common\NamedExtensions.cs" />
-    <Compile Include="Game\DefaultGameParameters.cs" />
-    <Compile Include="Game\Graphics\GraphicPipelineStep.cs" />
-    <Compile Include="Game\Graphics\GraphicsPass.cs" />
-    <Compile Include="Game\Graphics\GraphicsPipeline.cs" />
-    <Compile Include="Game\Graphics\IDrawContext.cs" />
-    <Compile Include="Game\Graphics\IGraphicsPass.cs" />
-    <Compile Include="Game\Graphics\IGraphicsPipeline.cs" />
-    <Compile Include="Game\Graphics\GraphicsPipelineConstructor.cs" />
-    <Compile Include="Game\Graphics\IRenderContext.cs" />
-    <Compile Include="Game\IDrawable.cs" />
-    <Compile Include="Game\IGameParameters.cs" />
-    <Compile Include="Game\IGraphicComponent.cs" />
-    <Compile Include="Game\IModelsProvider.cs" />
-    <Compile Include="Game\IRenderableComponent.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultScenesContainer.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultScenesResolver.cs" />
-    <Compile Include="Game\Mapping\IMvcScheme.cs" />
-    <Compile Include="Game\Mapping\IMvcSchemeValidateResult.cs" />
-    <Compile Include="Game\Mapping\IScenesContainer.cs" />
-    <Compile Include="Game\Mapping\IScenesRegistrator.cs" />
-    <Compile Include="Game\Mapping\IScenesResolver.cs" />
-    <Compile Include="Game\IViewsManager.cs" />
-    <Compile Include="Game\Mapping\BaseMvcStrategy.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultModelsProvider.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultModelsResolver.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultMvcStrategy.cs" />
-    <Compile Include="Game\Mapping\IModelsResolver.cs" />
-    <Compile Include="Game\Mapping\IMvcStrategyService.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultControllersProvider.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultViewsProvider.cs" />
-    <Compile Include="Game\Mapping\Default\MappingResolver.cs" />
-    <Compile Include="Game\Mapping\IControllersProvider.cs" />
-    <Compile Include="Game\Mapping\IViewsProvider.cs" />
-    <Compile Include="Game\Mapping\MvcScheme.cs" />
-    <Compile Include="Game\Mapping\Default\MvcSchemeExtensions.cs" />
-    <Compile Include="Game\Mapping\Default\ResolversExtensions.cs" />
-    <Compile Include="Game\Mapping\MvcSchemeValidateResult.cs" />
-    <Compile Include="Game\Mapping\ScenesRegistratorExtension.cs" />
-    <Compile Include="Game\Scenes\SceneCollectionsExtension.cs" />
-    <Compile Include="IoC\Default\ConstructorFinderExtensions.cs" />
-    <Compile Include="Logging\DeferredLogger.cs" />
-    <Compile Include="Logging\NullFormatProvider.cs" />
-    <Compile Include="Pipelines\IPipelineContext.cs" />
-    <Compile Include="Pipelines\IPipelineProcessor.cs" />
-    <Compile Include="Pipelines\PipelineContext.cs" />
-    <Compile Include="Pipelines\PipelineProcessor.cs" />
-    <Compile Include="Pipelines\PipelineStepExtensions.cs" />
-    <Compile Include="Pipelines\EmptyPipelineAction.cs" />
-    <Compile Include="Constructing\AppConfigurationProcessor.cs" />
-    <Compile Include="Constructing\AppConfigureHandler.cs" />
-    <Compile Include="Constructing\AppConstructingException.cs" />
-    <Compile Include="Constructing\DefaultConfigurationFactory.cs" />
-    <Compile Include="Constructing\DefaultConfigurationSteps.cs" />
-    <Compile Include="Constructing\GameConfigurator.cs" />
-    <Compile Include="Constructing\IAppConfigurator.cs" />
-    <Compile Include="Constructing\IAppConfigurator.Extensions.cs" />
-    <Compile Include="Constructing\IAppConfigurator.Game.cs" />
-    <Compile Include="Constructing\IAppConfigureHandler.cs" />
-    <Compile Include="Constructing\IGameConfigurator.cs" />
-    <Compile Include="Constructing\PipelineAction.cs" />
-    <Compile Include="IGame.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultControllersResolver.cs" />
-    <Compile Include="Game\Mapping\Default\DefaultViewsResolver.cs" />
-    <Compile Include="IGameHost.cs" />
-    <Compile Include="IoC\Default\DefaultServiceContainerFactory.cs" />
-    <Compile Include="IoC\IServiceContainerFactory.cs" />
-    <Compile Include="Modules\CoreModule.cs" />
-    <Compile Include="IoC\IServicesModule.cs" />
-    <Compile Include="Modules\GameModule.cs" />
-    <Compile Include="Pipelines\SimplePipelineProcessor.cs" />
-    <Compile Include="Services\AppDomainService.cs" />
-    <Compile Include="Services\Graphics\DefaultGraphicsPipelineFactory.cs" />
-    <Compile Include="Services\Graphics\IGraphicsPipelineFactory.cs" />
-    <Compile Include="Services\Randoms\DefaultRandomService.cs" />
-    <Compile Include="Common\Hash.cs" />
-    <Compile Include="Common\HashType.cs" />
-    <Compile Include="Services\Graphics\DefaultSpriteBatchProvider.cs" />
-    <Compile Include="Services\Graphics\ISpriteBatchProvider.cs" />
-    <Compile Include="Services\IAppDomainService.cs" />
-    <Compile Include="Services\Randoms\SeedProviders.cs" />
-    <Compile Include="Services\Randoms\IRandomSeedProvider.cs" />
-    <Compile Include="Services\Randoms\IRandomService.cs" />
-    <Compile Include="Common\NamesGenerator.cs" />
-    <Compile Include="Pipelines\PipelineException.cs" />
-    <Compile Include="Pipelines\PipelineStep.cs" />
-    <Compile Include="Application.cs" />
-    <Compile Include="FrameworkException.cs" />
-    <Compile Include="Game\Controllers\ControllerGeneric.cs" />
-    <Compile Include="Game\Controllers\EmptyController.cs" />
-    <Compile Include="Game\Mapping\IncompatibleControllerTypeException.cs" />
-    <Compile Include="Game\Mapping\IncompatibleModelTypeException.cs" />
-    <Compile Include="Game\Mapping\IncompatibleViewTypeException.cs" />
-    <Compile Include="Game\Mapping\MappingException.cs" />
-    <Compile Include="Game\Mapping\IControllersResolver.cs" />
-    <Compile Include="Game\Mapping\IViewsResolver.cs" />
-    <Compile Include="Game\Scenes\ISceneComponent.cs" />
-    <Compile Include="Game\Scenes\ScenesException.cs" />
-    <Compile Include="Game\Scenes\ViewMapping.cs" />
-    <Compile Include="Game\Views\IView.cs" />
-    <Compile Include="Game\Views\View.cs" />
-    <Compile Include="Game\Views\ViewGeneric.cs" />
-    <Compile Include="Pipelines\IPipelineAction.cs" />
-    <Compile Include="IoC\Default\ConstructorFinder.cs" />
-    <Compile Include="IoC\ServiceLocatorExtension.cs" />
-    <Compile Include="IoC\ServiceRegistratorExtension.cs" />
-    <Compile Include="Pipelines\Pipeline.cs" />
-    <Compile Include="Game\GameShell.cs" />
-    <Compile Include="Common\INamed.cs" />
-    <Compile Include="Game\Controllers\Controller.cs" />
-    <Compile Include="Game\IClosable.cs" />
-    <Compile Include="Game\Controllers\IController.cs" />
-    <Compile Include="Game\IControllersManager.cs" />
-    <Compile Include="Game\IDrawableComponent.cs" />
-    <Compile Include="Game\IScenesController.cs" />
-    <Compile Include="Game\IUpdatable.cs" />
-    <Compile Include="Game\Scenes\EmptyScene.cs" />
-    <Compile Include="Game\Scenes\IScene.cs" />
-    <Compile Include="Game\Scenes\Scene.cs" />
-    <Compile Include="Game\ClosingState.cs" />
-    <Compile Include="Game\Scenes\ScenesController.cs" />
-    <Compile Include="IoC\Default\DependencyResolver.cs" />
-    <Compile Include="IoC\Default\DefaultServiceContainer.cs" />
-    <Compile Include="IoC\Default\DefaultServiceLocator.cs" />
-    <Compile Include="IoC\Default\RegistrationInfo.cs" />
-    <Compile Include="IoC\FrameworkIocException.cs" />
-    <Compile Include="IoC\IFrameworkServiceContainer.cs" />
-    <Compile Include="IoC\IServiceLocator.cs" />
-    <Compile Include="IoC\IServiceRegistrator.cs" />
-    <Compile Include="IoC\ResolveType.cs" />
-    <Compile Include="Localization\DefaultLocalization.cs" />
-    <Compile Include="Localization\ILocalization.cs" />
-    <Compile Include="Localization\LocalizationExtension.cs" />
-    <Compile Include="Localization\Strings.cs" />
-    <Compile Include="Logging\FrameworkLogLayer.cs" />
-    <Compile Include="Logging\FrameworkLogLevel.cs" />
-    <Compile Include="Logging\IFrameworkLogger.cs" />
-    <Compile Include="Logging\ModuleLogger.cs" />
-    <Compile Include="Logging\NullLogger.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MonoGameExtensions\MonoGameExtensions.csproj">
-      <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
-      <Name>MonoGameExtensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NetExtensions\NetExtensions.csproj">
-      <Project>{ef610c39-8f90-4fcd-a95d-b041bf71251d}</Project>
-      <Name>NetExtensions</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TODO.txt" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -20,8 +20,8 @@
         public static class RegistrationActions
 		{
             public const string Core = "core";
-		    public const string Game = "game";
-		    public const string GameParameters = "game_parameters";
+		    //public const string Game = "game";
+		    //public const string GameParameters = "game_parameters";
         }
 
         public const string ExternalRegistration = "registration_external";
@@ -34,7 +34,7 @@
         public static class ConstructingActions
         {
             public const string Core = "core";
-            public const string Game = "game";
+            //public const string Game = "game";
         }
 
         public static class ContextKeys
@@ -45,8 +45,8 @@
 	        public static readonly string Container = "container";
             public static readonly string BaseLogger = "base_logger";
 		    public static readonly string Locator = "locator";
-	        public static readonly string Game = "game";
-	        public static readonly string Host = "host";
+	        //public static readonly string Game = "game";
+	        //public static readonly string Host = "host";
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
-using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Constructing
+namespace FrameworkSDK.Pipelines
 {
     internal class PipelineAction : IPipelineAction
     {

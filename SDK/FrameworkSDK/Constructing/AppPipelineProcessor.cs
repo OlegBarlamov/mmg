@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Constructing
 {
-    internal class AppConstructor : PipelineProcessor, IPipelineProcessor
+    public class AppPipelineProcessor : PipelineProcessor, IPipelineProcessor
     {
         [CanBeNull] private IFrameworkLogger ActiveLogger => _externalLogger ?? CustomLogger;
         [CanBeNull] private IFrameworkLogger CustomLogger => (IFrameworkLogger) Context.Heap[DefaultConfigurationSteps.ContextKeys.Logger];
@@ -17,13 +17,13 @@ namespace FrameworkSDK.Constructing
         private readonly DeferredLogger _deferredLogger = new DeferredLogger();
         private readonly IFrameworkLogger _externalLogger;
 
-        public AppConstructor([CanBeNull] IFrameworkLogger logger = null)
+        public AppPipelineProcessor([CanBeNull] IFrameworkLogger logger = null)
             : this(new PipelineContext(), logger)
         {
             _externalLogger = logger;
         }
 
-        public AppConstructor([NotNull] PipelineContext pipelineContext, [CanBeNull] IFrameworkLogger logger = null)
+        public AppPipelineProcessor([NotNull] PipelineContext pipelineContext, [CanBeNull] IFrameworkLogger logger = null)
             : base(pipelineContext)
         {
             _externalLogger = logger;

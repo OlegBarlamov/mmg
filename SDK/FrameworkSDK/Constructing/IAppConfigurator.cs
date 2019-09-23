@@ -1,8 +1,12 @@
-﻿namespace FrameworkSDK.Constructing
+﻿using System;
+using FrameworkSDK.Pipelines;
+
+namespace FrameworkSDK.Constructing
 {
-    public interface IAppConfigurator : IAppConfigureHandler
+    public interface IAppConfigurator : IDisposable
     {
-        //Конфигурирует и запускает приложение.
-        void Run();
+        Pipeline ConfigurationPipeline { get; }
+
+        IAppRunner Configure();
     }
 }

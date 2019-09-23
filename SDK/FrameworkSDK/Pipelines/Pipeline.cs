@@ -10,6 +10,9 @@ namespace FrameworkSDK.Pipelines
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class Pipeline
     {
+		[NotNull]
+	    public static Pipeline Empty => new Pipeline();
+
         [NotNull, ItemNotNull]
         public List<PipelineStep> Steps { get; } = new List<PipelineStep>();
 

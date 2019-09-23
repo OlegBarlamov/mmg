@@ -53,10 +53,6 @@
     <Compile Include="Services\Implementations\ConsoleService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SDK\FrameworkSDK\FrameworkSDK.csproj">
-      <Project>{1c9a9c3f-5163-4f5a-b1cb-c43876980910}</Project>
-      <Name>FrameworkSDK</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
       <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
       <Name>MonoGameExtensions</Name>

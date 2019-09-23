@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Constructing
 {
-    internal class AppConfigureHandler : IAppConfigurator, IAppConfigureHandler
+    public class AppConfigurator : IAppConfigurator, IAppRunner
     {
         [NotNull]
         public Pipeline ConfigurationPipeline { get; set; } = new Pipeline();
@@ -18,20 +18,22 @@ namespace FrameworkSDK.Constructing
 
         [NotNull] private IPipelineProcessor PipelineProcessor { get; }
 
-        public AppConfigureHandler([NotNull] IPipelineProcessor pipelineProcessor)
+        public AppConfigurator([NotNull] IPipelineProcessor pipelineProcessor)
         {
             PipelineProcessor = pipelineProcessor ?? throw new ArgumentNullException(nameof(pipelineProcessor));
         }
 
-        public void Configure()
+        public virtual IAppRunner Configure()
         {
-            if (_isDisposed) throw new ObjectDisposedException(nameof(AppConfigureHandler));
+            if (_isDisposed) throw new ObjectDisposedException(nameof(AppConfigurator));
             ConfigureInternal();
+
+	        return this;
         }
 
-        public void Run()
+        public virtual void Run()
         {
-            if (_isDisposed) throw new ObjectDisposedException(nameof(AppConfigureHandler));
+            if (_isDisposed) throw new ObjectDisposedException(nameof(AppConfigurator));
             ConfigureInternal();
 
             Logger = new ModuleLogger(FrameworkLogModule.Application);

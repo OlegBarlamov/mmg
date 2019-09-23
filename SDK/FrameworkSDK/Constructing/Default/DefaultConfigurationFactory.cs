@@ -3,7 +3,6 @@ using FrameworkSDK.IoC;
 using FrameworkSDK.IoC.Default;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
-using FrameworkSDK.Modules;
 using JetBrains.Annotations;
 using NetExtensions;
 

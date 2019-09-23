@@ -7,7 +7,7 @@ using FrameworkSDK.Services;
 using FrameworkSDK.Services.Randoms;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK.Modules
+namespace FrameworkSDK
 {
 	internal class CoreModule : IServicesModule
 	{
