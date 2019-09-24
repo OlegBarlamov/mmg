@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
+using FrameworkSDK.MonoGame.Graphics;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 

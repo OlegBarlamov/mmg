@@ -14,7 +14,7 @@ namespace FrameworkSDK.MonoGame.GameStructure.Views
     {
         public string Name { get; protected set; }
 
-        protected string GraphicsPassName { get; set; }
+        protected string GraphicsPassName { get; set; } = "default";
 
         Scene ISceneComponent.OwnedScene => _ownedScene;
 

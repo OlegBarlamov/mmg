@@ -3,7 +3,7 @@ using FrameworkSDK.MonoGame.GameStructure;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
-namespace FrameworkSDK.MonoGame.Graphics
+namespace FrameworkSDK.MonoGame.Graphics.Pipeline
 {
     public interface IGraphicsPipeline
     {

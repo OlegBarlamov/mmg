@@ -1,14 +1,14 @@
 ﻿using System;
 using Epic.Battle.Models;
 using Epic.Core.Services;
-using FrameworkSDK.Game.Scenes;
+using FrameworkSDK.MonoGame.GameStructure.Scenes;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions;
 
 namespace Epic.Game
 {
-    internal class TestApplication : FrameworkSDK.Application
+    internal class TestApplication : FrameworkSDK.MonoGame.Application
     {        
         public override Scene CurrentScene { get; }
 

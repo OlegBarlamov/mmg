@@ -1,6 +1,8 @@
-﻿namespace FrameworkSDK.Constructing
+﻿using System;
+
+namespace FrameworkSDK.Constructing
 {
-    public interface IAppRunner
+    public interface IAppRunner : IDisposable
     {
 	    void Run();
     }

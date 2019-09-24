@@ -2,6 +2,7 @@
 using Epic.Core.Logging;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
+using FrameworkSDK.MonoGame.Constructing;
 
 namespace Epic.Game
 {
@@ -14,10 +15,11 @@ namespace Epic.Game
             var logFactory = new LogFactory("Logs", true);
             var module = new CommonModule(logFactory, logFactory);
 
-            using (var app = App.Construct()
-                .UseGameFramework<TestApplication>()
+            var appFactory = new AppFactory();
+            using (var app = appFactory.CreateGame<TestApplication>()
                 .SetupCustomLogger(logFactory.CreateAdapter)
-                .RegisterServices(module.Register))
+                .RegisterServices(module.Register)
+                .Configure())
             {
                 app.Run();
             }

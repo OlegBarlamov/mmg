@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
+// ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics
 {
     public interface IRenderContext
     {
-        GraphicsDevice GraphicsDevice { get; }
+        IRenderer Renderer { get; }
     }
 }

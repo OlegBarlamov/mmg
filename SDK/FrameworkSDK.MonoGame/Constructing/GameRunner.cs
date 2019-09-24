@@ -30,10 +30,16 @@ namespace FrameworkSDK.MonoGame.Constructing
             }
             catch (Exception e)
             {
-                throw new GameConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, typeof(TGame).Name);
+                throw new GameConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e,
+                    typeof(TGame).Name);
             }
 
             gameHost.Run(game);
+        }
+
+        public void Dispose()
+        {
+            AppRunner.Dispose();
         }
     }
 }

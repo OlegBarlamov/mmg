@@ -2,7 +2,7 @@
 
 namespace FrameworkSDK.MonoGame.GameStructure.Mapping
 {
-    public class MappingException : FrameworkException
+    public class MappingException : FrameworkMonoGameException
     {
 	    internal MappingException(string message)
             : base(message)

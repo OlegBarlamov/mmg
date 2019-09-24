@@ -65,6 +65,14 @@
       <Project>{384f75ba-cf0f-4256-a6c9-52699562d427}</Project>
       <Name>Epic.Logic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj">
+      <Project>{1c9a9c3f-5163-4f5a-b1cb-c43876980910}</Project>
+      <Name>FrameworkSDK.MonoGame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SDK\FrameworkSDK\FrameworkSDK.csproj">
+      <Project>{9d88fe04-33a4-40e7-814a-aeccc814e0d8}</Project>
+      <Name>FrameworkSDK</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
       <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
       <Name>MonoGameExtensions</Name>

@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
+﻿// ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics
 {
     public interface IDrawContext
     {
-        SpriteBatch SpriteBatch { get; }
+        ISpriteBatch SpriteBatch { get; }
     }
 }

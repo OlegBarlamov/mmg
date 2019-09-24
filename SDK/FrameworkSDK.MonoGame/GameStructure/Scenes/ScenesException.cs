@@ -2,7 +2,7 @@
 
 namespace FrameworkSDK.MonoGame.GameStructure.Scenes
 {
-	public class ScenesException : FrameworkException
+	public class ScenesException : FrameworkMonoGameException
 	{
 		internal ScenesException(string message)
 			: base(message)

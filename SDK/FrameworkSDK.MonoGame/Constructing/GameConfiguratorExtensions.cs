@@ -3,6 +3,7 @@ using FrameworkSDK.Constructing;
 using FrameworkSDK.MonoGame.GameStructure;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
+using FrameworkSDK.Logging;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 using NetExtensions;
@@ -30,9 +31,13 @@ namespace FrameworkSDK.MonoGame.Constructing
                 true,
                 context =>
                 {
-                    var locator = GetObjectFromContext<IServiceLocator>(context, GameDefaultConfigurationSteps.ContextKeys.Locator);
-                    var game = locator.Resolve<IGame>();
-                    var host = locator.Resolve<IGameHost>();
+                    var loggerService = GetObjectFromContext<IFrameworkLogger>(context, GameDefaultConfigurationSteps.ContextKeys.BaseLogger);
+                    var serviceLocator = GetObjectFromContext<IServiceLocator>(context, GameDefaultConfigurationSteps.ContextKeys.Locator);
+
+                    AppContext.Initialize(loggerService, serviceLocator);
+
+                    var game = serviceLocator.Resolve<IGame>();
+                    var host = serviceLocator.Resolve<IGameHost>();
                     context.Heap.SetValue(GameDefaultConfigurationSteps.ContextKeys.Game, game);
                     context.Heap.SetValue(GameDefaultConfigurationSteps.ContextKeys.Host, host);
                 }));

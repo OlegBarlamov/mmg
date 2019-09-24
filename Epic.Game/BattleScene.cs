@@ -1,6 +1,6 @@
 ﻿using System;
 using Epic.Battle.Models;
-using FrameworkSDK.Game.Scenes;
+using FrameworkSDK.MonoGame.GameStructure.Scenes;
 using JetBrains.Annotations;
 
 namespace Epic.Game

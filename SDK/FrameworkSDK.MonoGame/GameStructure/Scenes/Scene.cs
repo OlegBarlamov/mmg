@@ -10,6 +10,7 @@ using FrameworkSDK.MonoGame.GameStructure.Controllers;
 using FrameworkSDK.MonoGame.GameStructure.Mapping;
 using FrameworkSDK.MonoGame.GameStructure.Views;
 using FrameworkSDK.MonoGame.Graphics;
+using FrameworkSDK.MonoGame.Graphics.Pipeline;
 using FrameworkSDK.MonoGame.Services.Graphics;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;

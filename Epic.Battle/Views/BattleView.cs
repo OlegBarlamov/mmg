@@ -1,7 +1,7 @@
 ﻿using Epic.Battle.Controllers;
 using Epic.Battle.Models;
-using FrameworkSDK.Game.Scenes;
-using FrameworkSDK.Game.Views;
+using FrameworkSDK.MonoGame.GameStructure.Scenes;
+using FrameworkSDK.MonoGame.GameStructure.Views;
 
 namespace Epic.Battle.Views
 {
