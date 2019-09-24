@@ -3,7 +3,7 @@ using FrameworkSDK.MonoGame.GameStructure;
 using FrameworkSDK.MonoGame.GameStructure.Scenes;
 using JetBrains.Annotations;
 
-namespace FrameworkSDK
+namespace FrameworkSDK.MonoGame
 {
     public interface IGameHost : IUpdatable, IDisposable
     {

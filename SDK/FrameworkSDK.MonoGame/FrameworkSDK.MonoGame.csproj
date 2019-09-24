@@ -50,7 +50,7 @@
     <Compile Include="Constructing\GameDefaultConfigurationSteps.cs" />
     <Compile Include="Constructing\GameFactory.cs" />
     <Compile Include="Constructing\GameRunner.cs" />
-    <Compile Include="FrameworkException.cs" />
+    <Compile Include="FrameworkMonoGameException.cs" />
     <Compile Include="Constructing\GameConfigurator.cs" />
     <Compile Include="GameStructure\DefaultGameParameters.cs" />
     <Compile Include="Graphics\GraphicPipelineStep.cs" />

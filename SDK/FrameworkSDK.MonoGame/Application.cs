@@ -1,14 +1,13 @@
 ﻿using System;
+using FrameworkSDK.IoC;
+using FrameworkSDK.Localization;
 using FrameworkSDK.MonoGame.GameStructure;
 using FrameworkSDK.MonoGame.GameStructure.Mapping;
 using FrameworkSDK.MonoGame.GameStructure.Scenes;
-using FrameworkSDK.IoC;
-using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using AppContext = FrameworkSDK.MonoGame.AppContext;
 
-namespace FrameworkSDK
+namespace FrameworkSDK.MonoGame
 {
 	public abstract class Application : IGameHost 
 	{
@@ -60,7 +59,7 @@ namespace FrameworkSDK
 		    }
 		    catch (Exception e)
 		    {
-		        throw new FrameworkException(Strings.Exceptions.FatalException, e);
+		        throw new FrameworkMonoGameException(Strings.Exceptions.FatalException, e);
 		    }
 		    finally
 		    {

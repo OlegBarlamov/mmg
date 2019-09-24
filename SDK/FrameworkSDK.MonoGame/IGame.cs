@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace FrameworkSDK
+namespace FrameworkSDK.MonoGame
 {
     public interface IGame : IDisposable
     {
