@@ -7,7 +7,7 @@ namespace FrameworkSDK
 {
     public sealed class AppFactory
     {
-		public IPipelineProcessor PipelineProcessor { get; set; }
+		[NotNull] public IPipelineProcessor PipelineProcessor { get; set; }
 
 	    public AppFactory([CanBeNull] IFrameworkLogger factoryLogger)
 	    {

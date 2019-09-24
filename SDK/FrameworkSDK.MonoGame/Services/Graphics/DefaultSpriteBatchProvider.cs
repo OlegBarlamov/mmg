@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace FrameworkSDK.Services.Graphics
+namespace FrameworkSDK.MonoGame.Services.Graphics
 {
     [UsedImplicitly]
     internal class DefaultSpriteBatchProvider : ISpriteBatchProvider

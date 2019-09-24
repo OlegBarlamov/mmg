@@ -16,8 +16,11 @@ namespace FrameworkSDK
 	    private IServiceContainerFactory ServiceContainerFactory { get; }
 	    private ILocalization Localization { get; }
 
-		public CoreModule([NotNull] ILocalization localization, [NotNull] IFrameworkLogger logger,
-		    [NotNull] IFrameworkServiceContainer mainContainer, [NotNull] IServiceContainerFactory serviceContainerFactory)
+		public CoreModule(
+		    [NotNull] ILocalization localization,
+		    [NotNull] IFrameworkLogger logger,
+		    [NotNull] IFrameworkServiceContainer mainContainer,
+		    [NotNull] IServiceContainerFactory serviceContainerFactory)
 		{
 			Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		    MainContainer = mainContainer ?? throw new ArgumentNullException(nameof(mainContainer));

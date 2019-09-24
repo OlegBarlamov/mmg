@@ -16,7 +16,7 @@ namespace FrameworkSDK.Constructing
 			if (localizationFactory == null) throw new ArgumentNullException(nameof(localizationFactory));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.Initialization);
-			initializationPhase.AddOrReplace(new PipelineAction(
+			initializationPhase.AddOrReplace(new SimplePipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Localization,
 				true,
 				context =>
@@ -34,7 +34,7 @@ namespace FrameworkSDK.Constructing
 			if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.Initialization);
-			initializationPhase.AddOrReplace(new PipelineAction(
+			initializationPhase.AddOrReplace(new SimplePipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Logging,
 				true,
 				context =>
@@ -52,7 +52,7 @@ namespace FrameworkSDK.Constructing
 			if (serviceContainerFactoryCreator == null) throw new ArgumentNullException(nameof(serviceContainerFactoryCreator));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.Initialization);
-			initializationPhase.AddOrReplace(new PipelineAction(
+			initializationPhase.AddOrReplace(new SimplePipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Ioc,
 				true,
 				context =>
@@ -70,7 +70,7 @@ namespace FrameworkSDK.Constructing
 			if (registerAction == null) throw new ArgumentNullException(nameof(registerAction));
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.ExternalRegistration);
-			initializationPhase.AddAction(new PipelineAction(
+			initializationPhase.AddAction(new SimplePipelineAction(
 				DefaultConfigurationSteps.ExternalRegistrationActions.Registration,
 				true,
 				context =>
@@ -82,7 +82,41 @@ namespace FrameworkSDK.Constructing
 			return configurator;
 		}
 
-		[NotNull]
+	    [NotNull]
+	    public static PipelineStep GetStep([NotNull] this IAppConfigurator configurator, string stepName)
+	    {
+	        var step = configurator.FindStep(stepName);
+	        if (step == null)
+	            throw new AppConstructingException(Strings.Exceptions.Constructing.StepNotFound, stepName);
+
+	        return step;
+	    }
+
+	    public static void InsertBefore([NotNull] this IAppConfigurator configurator, PipelineStep step, PipelineStep insertingStep)
+	    {
+	        var foundStep = configurator.GetStep(step.Name);
+	        var index = configurator.ConfigurationPipeline.Steps.IndexOf(foundStep);
+	        configurator.ConfigurationPipeline.Steps.Insert(index, insertingStep);
+	    }
+
+	    public static void InsertAfter([NotNull] this IAppConfigurator configurator, PipelineStep step, PipelineStep insertingStep)
+	    {
+	        var foundStep = configurator.GetStep(step.Name);
+	        var index = configurator.ConfigurationPipeline.Steps.IndexOf(foundStep);
+	        var insertedIndex = index + 1;
+	        if (insertedIndex >= configurator.ConfigurationPipeline.Steps.Count)
+	            configurator.ConfigurationPipeline.Steps.Add(insertingStep);
+	        else
+	            configurator.ConfigurationPipeline.Steps.Insert(index, insertingStep);
+	    }
+
+	    [CanBeNull]
+	    public static PipelineStep FindStep([NotNull] this IAppConfigurator configurator, string stepName)
+	    {
+	        return configurator.ConfigurationPipeline.Steps.FindByName(stepName);
+	    }
+
+        [NotNull]
 		private static T GetFromFactory<T>([NotNull] Func<T> factory)
 		{
 			if (factory == null) throw new ArgumentNullException(nameof(factory));
@@ -92,40 +126,6 @@ namespace FrameworkSDK.Constructing
 				throw new AppConstructingException(Strings.Exceptions.Constructing.FactoryObjectNull);
 
 			return result;
-		}
-
-		[NotNull]
-		private static PipelineStep GetStep([NotNull] this IAppConfigurator configurator, string stepName)
-		{
-			var step = configurator.FindStep(stepName);
-			if (step == null)
-				throw new AppConstructingException(Strings.Exceptions.Constructing.StepNotFound, stepName);
-
-			return step;
-		}
-
-	    private static void InsertBefore([NotNull] this IAppConfigurator configurator, PipelineStep step, PipelineStep insertingStep)
-	    {
-	        var foundStep = configurator.GetStep(step.Name);
-	        var index = configurator.ConfigurationPipeline.Steps.IndexOf(foundStep);
-	        configurator.ConfigurationPipeline.Steps.Insert(index, insertingStep);
-        }
-
-        private static void InsertAfter([NotNull] this IAppConfigurator configurator, PipelineStep step, PipelineStep insertingStep)
-	    {
-	        var foundStep = configurator.GetStep(step.Name);
-	        var index = configurator.ConfigurationPipeline.Steps.IndexOf(foundStep);
-	        var insertedIndex = index + 1;
-            if (insertedIndex >= configurator.ConfigurationPipeline.Steps.Count)
-                configurator.ConfigurationPipeline.Steps.Add(insertingStep);
-            else 
-                configurator.ConfigurationPipeline.Steps.Insert(index, insertingStep);
-        }
-
-		[CanBeNull]
-		private static PipelineStep FindStep([NotNull] this IAppConfigurator configurator, string stepName)
-		{
-			return configurator.ConfigurationPipeline.Steps.FindByName(stepName);
 		}
 
 		[NotNull]

@@ -1,6 +1,6 @@
-﻿using FrameworkSDK.Game.Graphics;
+﻿using FrameworkSDK.MonoGame.Graphics;
 
-namespace FrameworkSDK.Services.Graphics
+namespace FrameworkSDK.MonoGame.Services.Graphics
 {
     public interface IGraphicsPipelineFactory
     {

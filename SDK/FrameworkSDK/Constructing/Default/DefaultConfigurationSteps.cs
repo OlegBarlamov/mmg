@@ -1,4 +1,5 @@
-﻿namespace FrameworkSDK.Constructing
+﻿// ReSharper disable once CheckNamespace
+namespace FrameworkSDK.Constructing
 {
     internal static class DefaultConfigurationSteps
     {

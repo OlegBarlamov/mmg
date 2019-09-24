@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Logging
 {
-    internal class ModuleLogger : IFrameworkLogger, IDisposable
+    public class ModuleLogger : IFrameworkLogger, IDisposable
     {
         [NotNull] private IFrameworkLogger FrameworkLogger { get; }
 

@@ -6,9 +6,10 @@ using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using NetExtensions;
 
+// ReSharper disable once CheckNamespace
 namespace FrameworkSDK.Constructing
 {
-    internal class DefaultConfigurationFactory
+    public class DefaultConfigurationFactory
     {
         public Pipeline Create()
         {
@@ -34,21 +35,21 @@ namespace FrameworkSDK.Constructing
 	    {
 			var initializePhase = new PipelineStep(DefaultConfigurationSteps.Initialization);
 		    initializePhase.AddActions(
-			    new PipelineAction(
+			    new SimplePipelineAction(
 				    DefaultConfigurationSteps.InitializationActions.Localization, true,
 				    context =>
 				    {
 					    var localization = new DefaultLocalization();
 					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
 				    }),
-			    new PipelineAction(
+			    new SimplePipelineAction(
 				    DefaultConfigurationSteps.InitializationActions.Logging, true,
 				    context =>
 				    {
 					    var logger = new NullLogger();
 					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
 					}),
-			    new PipelineAction(
+			    new SimplePipelineAction(
 				    DefaultConfigurationSteps.InitializationActions.Ioc, true,
 				    context =>
 				    {
@@ -63,7 +64,7 @@ namespace FrameworkSDK.Constructing
 	    {
 			var baseSetupPhase = new PipelineStep(DefaultConfigurationSteps.BaseSetup);
 		    baseSetupPhase.AddActions(
-			    new PipelineAction(
+			    new SimplePipelineAction(
 				    DefaultConfigurationSteps.BaseSetupActions.Setup, true,
 				    context =>
 				    {
@@ -87,7 +88,7 @@ namespace FrameworkSDK.Constructing
 	    {
 		    var registrationPhase = new PipelineStep(DefaultConfigurationSteps.Registration);
 		    registrationPhase.AddActions(
-			    new PipelineAction(
+			    new SimplePipelineAction(
 				    DefaultConfigurationSteps.RegistrationActions.Core, true,
 				    context =>
 				    {
@@ -116,7 +117,7 @@ namespace FrameworkSDK.Constructing
 	    {
 			var registrationPhase = new PipelineStep(DefaultConfigurationSteps.Constructing);
 		    registrationPhase.AddActions(
-			    new PipelineAction(
+			    new SimplePipelineAction(
 				    DefaultConfigurationSteps.ConstructingActions.Core, true,
 				    context =>
 				    {

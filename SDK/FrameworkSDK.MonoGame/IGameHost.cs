@@ -1,6 +1,6 @@
 ﻿using System;
-using FrameworkSDK.Game;
-using FrameworkSDK.Game.Scenes;
+using FrameworkSDK.MonoGame.GameStructure;
+using FrameworkSDK.MonoGame.GameStructure.Scenes;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK

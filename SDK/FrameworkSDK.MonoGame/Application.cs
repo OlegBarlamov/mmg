@@ -1,11 +1,12 @@
 ﻿using System;
-using FrameworkSDK.Game;
-using FrameworkSDK.Game.Mapping;
-using FrameworkSDK.Game.Scenes;
+using FrameworkSDK.MonoGame.GameStructure;
+using FrameworkSDK.MonoGame.GameStructure.Mapping;
+using FrameworkSDK.MonoGame.GameStructure.Scenes;
 using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using AppContext = FrameworkSDK.MonoGame.AppContext;
 
 namespace FrameworkSDK
 {
