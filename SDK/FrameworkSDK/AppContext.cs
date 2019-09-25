@@ -22,5 +22,10 @@ namespace FrameworkSDK
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
         }
+
+        [CanBeNull] public static IFrameworkLogger FindLogger()
+        {
+            return _logger;
+        }
     }
 }

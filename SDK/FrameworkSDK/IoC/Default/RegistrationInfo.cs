@@ -36,7 +36,7 @@ namespace FrameworkSDK.IoC.Default
 
 	    public override string ToString()
 	    {
-	        return string.Format(NullFormatProvider.Instance, "{0}->{1}:{2}", Type.Name, ImplType.Name, ResolveType);
+	        return string.Format(NullFormatProvider.Instance, "{0}->{1}:{2}[{3}]", Type.Name, ImplType.Name, ResolveType, CashedInstance?.GetType().Name);
 	    }
 
 		[NotNull]

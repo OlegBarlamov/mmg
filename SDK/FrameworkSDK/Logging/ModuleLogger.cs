@@ -5,7 +5,7 @@ namespace FrameworkSDK.Logging
 {
     public class ModuleLogger : IFrameworkLogger, IDisposable
     {
-        [NotNull] private IFrameworkLogger FrameworkLogger { get; }
+        [NotNull] private IFrameworkLogger CoreLogger { get; }
 
         private FrameworkLogModule LogModule { get; }
 
@@ -15,7 +15,7 @@ namespace FrameworkSDK.Logging
 
 		public ModuleLogger([NotNull] IFrameworkLogger frameworkLogger, FrameworkLogModule logModule)
         {
-            FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
+            CoreLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
 
             LogModule = logModule;
         }
@@ -83,10 +83,10 @@ namespace FrameworkSDK.Logging
 			}
 
 			if (_lastMessageInfo?.Count > 1)
-				_lastMessageInfo.Output(FrameworkLogger);
+				_lastMessageInfo.Output(CoreLogger);
 
 			_lastMessageInfo = info;
-			FrameworkLogger.Log(message, module, level);
+			CoreLogger.Log(message, module, level);
 		}
 
 	    private class MessageInfo : IEquatable<MessageInfo>
@@ -145,7 +145,7 @@ namespace FrameworkSDK.Logging
 	    public void Dispose()
 	    {
 	        if (_lastMessageInfo?.Count > 1)
-	            _lastMessageInfo.Output(FrameworkLogger);
+	            _lastMessageInfo.Output(CoreLogger);
         }
     }
 }

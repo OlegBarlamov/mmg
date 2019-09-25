@@ -15,6 +15,9 @@
                 public static string ConstructingStep => Localization.GetString() ?? "Step: {0}.";
                 public static string ConstructingAction => Localization.GetString() ?? "Action: {0}.";
                 public static string ConstructingEnd => Localization.GetString() ?? "App constructing finished.";
+
+                public static string ServiceLocatorCreated => Localization.GetString() ?? "Service locator '{0}' has been created. Registrations: {1}";
+                public static string ServiceLocatorInstanceCreated => Localization.GetString() ?? "Service locator '{0}' created the instance by {1}.";
             }
 
             public static class Mapping

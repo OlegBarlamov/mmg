@@ -3,6 +3,5 @@ namespace FrameworkSDK.MonoGame.Graphics
 {
     public interface IDrawContext
     {
-        ISpriteBatch SpriteBatch { get; }
     }
 }

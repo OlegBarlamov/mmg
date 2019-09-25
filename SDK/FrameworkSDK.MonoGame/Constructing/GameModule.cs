@@ -1,9 +1,7 @@
-﻿using FrameworkSDK.MonoGame.GameStructure.Mapping;
-using FrameworkSDK.MonoGame.GameStructure.Mapping.Default;
-using FrameworkSDK.MonoGame.GameStructure.Scenes;
+﻿using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.IoC;
-using FrameworkSDK.MonoGame.GameStructure;
-using FrameworkSDK.MonoGame.Services.Graphics;
+using FrameworkSDK.MonoGame.Config;
+using FrameworkSDK.MonoGame.Graphics.Pipeline;
 
 namespace FrameworkSDK.MonoGame.Constructing
 {
@@ -21,12 +19,13 @@ namespace FrameworkSDK.MonoGame.Constructing
             serviceRegistrator.RegisterType<IMvcStrategyService, DefaultMvcStrategy>();
             serviceRegistrator.RegisterType<IScenesContainer, DefaultScenesContainer>();
 
-            serviceRegistrator.RegisterType<ISpriteBatchProvider, DefaultSpriteBatchProvider>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
-            serviceRegistrator.RegisterType<IGraphicsPipelineFactory, DefaultGraphicsPipelineFactory>();
+            serviceRegistrator.RegisterType<IGraphicsPipeline, GraphicsPipeline>();
+            serviceRegistrator.RegisterType<IComponentsByPassAggregator, ComponentsByPassAggregator>();
+            serviceRegistrator.RegisterType<IGraphicsPipelineContextFactory, GraphicsPipelineContextFactory>();
 
             serviceRegistrator.RegisterType<IGameHost, TGameHost>();
-            serviceRegistrator.RegisterType<IGame, GameShell>();
+            serviceRegistrator.RegisterType<IGameHeart, GameHeart>();
         }
     }
 }

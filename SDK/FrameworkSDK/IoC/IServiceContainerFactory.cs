@@ -4,6 +4,6 @@ namespace FrameworkSDK.IoC
 {
     public interface IServiceContainerFactory
     {
-        [NotNull] IFrameworkServiceContainer CreateContainer();
+        [NotNull] IFrameworkServiceContainer CreateContainer(string name = null);
     }
 }

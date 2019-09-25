@@ -1,14 +1,11 @@
 ﻿using System;
-using FrameworkSDK.MonoGame.GameStructure;
-using FrameworkSDK.MonoGame.GameStructure.Scenes;
+using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame
 {
-    public interface IGameHost : IUpdatable, IDisposable
+    public interface IGameHost : IApplication, IUpdateable, IDrawable, IDisposable
     {
-        [CanBeNull] Scene CurrentScene { get; }
-
-        void Run([NotNull] IGame game);
+        void Initialize([NotNull] IGameHeart gameHeart);
     }
 }

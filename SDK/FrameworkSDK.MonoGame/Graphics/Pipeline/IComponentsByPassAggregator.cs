@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using FrameworkSDK.MonoGame.GameStructure;
+using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Mvc;
 
 namespace FrameworkSDK.MonoGame.Graphics.Pipeline
 {

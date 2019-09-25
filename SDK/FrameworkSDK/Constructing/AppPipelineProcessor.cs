@@ -14,7 +14,7 @@ namespace FrameworkSDK.Constructing
 
         private ModuleLogger _moduleLogger;
 
-        private readonly DeferredLogger _deferredLogger = new DeferredLogger();
+        private readonly ManualDeferredLogger _deferredLogger = new ManualDeferredLogger();
         private readonly IFrameworkLogger _externalLogger;
 
         public AppPipelineProcessor([CanBeNull] IFrameworkLogger logger = null)

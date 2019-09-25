@@ -4,9 +4,8 @@
     {
         public static IGameConfigurator<TGame> CreateGame<TGame>(this AppFactory appFactory) where TGame : IGameHost
         {
-            var pipeline = appFactory.CreateDefaultPipeline();
-            var configurator = appFactory.Create(pipeline);
-            return configurator.UseGameFramework<TGame>();
+            return appFactory.Create<TGame>()
+                .UseGameFramework<TGame>();
         }
     }
 }

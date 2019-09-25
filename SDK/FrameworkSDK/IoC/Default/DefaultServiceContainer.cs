@@ -8,6 +8,8 @@ namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultServiceContainer : IFrameworkServiceContainer, IDisposableExtended
 	{
+        public string Name { get; set; }
+
 	    public event Action DisposedEvent;
 
         private bool _isDisposed;
@@ -50,12 +52,15 @@ namespace FrameworkSDK.IoC.Default
 		{
 			CheckDisposed();
 
-			return new DefaultServiceLocator(this, GetAllRegistrations());
+		    return new DefaultServiceLocator(this, GetAllRegistrations(), Name);
 		}
 
-		public IFrameworkServiceContainer CreateScoped()
+		public IFrameworkServiceContainer CreateScoped(string name = null)
 		{
-			return new DefaultServiceContainer(GetAllRegistrations());
+			return new DefaultServiceContainer(GetAllRegistrations())
+			{
+                Name = name
+            };
 		}
 
 		public void Dispose()

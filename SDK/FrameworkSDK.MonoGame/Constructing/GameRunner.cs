@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Constructing
 {
-    internal class GameRunner<TGame> : IAppRunner
+    internal class GameRunner<TGame> : IAppRunner where TGame : IGameHost
     {
         private IAppRunner AppRunner { get; }
 
@@ -17,16 +17,13 @@ namespace FrameworkSDK.MonoGame.Constructing
 
         public void Run()
         {
-            IGameHost gameHost;
-            IGame game;
-
             try
             {
-                AppRunner.Run();
-
                 var locator = AppContext.ServiceLocator;
-                gameHost = locator.Resolve<IGameHost>();
-                game = locator.Resolve<IGame>();
+                var gameHost = locator.Resolve<TGame>();
+                var gameHeart = locator.Resolve<IGameHeart>();
+
+                gameHost.Initialize(gameHeart);
             }
             catch (Exception e)
             {
@@ -34,7 +31,7 @@ namespace FrameworkSDK.MonoGame.Constructing
                     typeof(TGame).Name);
             }
 
-            gameHost.Run(game);
+            AppRunner.Run();
         }
 
         public void Dispose()

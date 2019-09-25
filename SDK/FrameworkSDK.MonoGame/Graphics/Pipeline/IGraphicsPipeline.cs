@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FrameworkSDK.MonoGame.GameStructure;
+using FrameworkSDK.MonoGame.Graphics.Basic;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 

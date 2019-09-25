@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using FrameworkSDK.Common;
 using FrameworkSDK.Localization;
+using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC.Default
 {
 	internal class DefaultServiceLocator : IServiceLocator
 	{
+        public string Name { get; set; }
+
 	    private IDisposableExtended LifeTimeScope { get; }
 	    private ConstructorFinder ConstructorFinder { get; }
 		private DependencyResolver DependencyResolver { get; }
 
 		private readonly Dictionary<int, List<RegistrationInfo>> _mapping = new Dictionary<int, List<RegistrationInfo>>();
 
-		public DefaultServiceLocator([NotNull] IDisposableExtended lifeTimeScope, [NotNull, ItemNotNull] IReadOnlyCollection<RegistrationInfo> registrations)
+	    private readonly string _id = GetId();
+	    private readonly AutoDefferedLogger _defferedLogger;
+	    private readonly ModuleLogger _logger;
+
+		public DefaultServiceLocator([NotNull] IDisposableExtended lifeTimeScope, [NotNull, ItemNotNull] IReadOnlyCollection<RegistrationInfo> registrations, [CanBeNull] string name = null)
 		{
 			if (registrations == null) throw new ArgumentNullException(nameof(registrations));
 		    LifeTimeScope = lifeTimeScope ?? throw new ArgumentNullException(nameof(lifeTimeScope));
@@ -34,7 +41,21 @@ namespace FrameworkSDK.IoC.Default
 
 		    LifeTimeScope.DisposedEvent += LifeTimeScopeOnDisposedEvent;
 
+		    _defferedLogger = new AutoDefferedLogger(AppContext.FindLogger);
+		    _logger = new ModuleLogger(_defferedLogger, FrameworkLogModule.Application);
+
+		    Name = name;
+            LogCreationInfo(registrations);
         }
+
+	    public override string ToString()
+	    {
+	        var name = string.IsNullOrWhiteSpace(Name)
+	            ? $"{nameof(DefaultServiceLocator)}_{_id}"
+	            : Name;
+
+            return name;
+	    }
 
 	    public object Resolve(Type type)
 		{
@@ -58,7 +79,7 @@ namespace FrameworkSDK.IoC.Default
 		    if (lastReg.ResolveType == ResolveType.Singletone)
 			    throw new FrameworkIocException(Strings.Exceptions.Ioc.BadResolveStrategy, type.Name);
 
-			return CreateInstanceWithParameters(lastReg.ImplType, parameters);
+			return ResolveRegInfo(lastReg, parameters);
 	    }
 
 		public IReadOnlyList<object> ResolveMultiple(Type type)
@@ -80,14 +101,24 @@ namespace FrameworkSDK.IoC.Default
 			return _mapping.ContainsKey(code);
 		}
 
-        private object ResolveRegInfo(RegistrationInfo regIngo)
-		{
-			if (regIngo.CashedInstance != null && regIngo.ResolveType == ResolveType.Singletone)
-				return regIngo.CashedInstance;
+	    private object ResolveRegInfo(RegistrationInfo regInfo)
+	    {
+	        return ResolveRegInfo(regInfo, Array.Empty<object>());
+	    }
 
-			var instance = CreateInstance(regIngo.ImplType);
-			if (regIngo.ResolveType == ResolveType.Singletone)
-				regIngo.CashedInstance = instance;
+        private object ResolveRegInfo(RegistrationInfo regInfo, object[] parameters)
+		{
+			if (regInfo.CashedInstance != null && regInfo.ResolveType == ResolveType.Singletone)
+				return regInfo.CashedInstance;
+
+		    var instance = parameters.Length == 0
+		        ? CreateInstance(regInfo.ImplType)
+		        : CreateInstanceWithParameters(regInfo.ImplType, parameters);
+
+            LogCreatedInstance(regInfo.Type, instance);
+
+			if (regInfo.ResolveType == ResolveType.Singletone)
+				regInfo.CashedInstance = instance;
 
 			return instance;
 		}
@@ -155,6 +186,26 @@ namespace FrameworkSDK.IoC.Default
 	    {
 	        LifeTimeScope.DisposedEvent -= LifeTimeScopeOnDisposedEvent;
             _mapping.Clear();
+
+	        _logger.Dispose();
+            _defferedLogger.Dispose();
+        }
+
+	    private void LogCreationInfo(IReadOnlyCollection<RegistrationInfo> registrations)
+	    {
+	        var registrationsInfo = Environment.NewLine + string.Join(Environment.NewLine, registrations.Select(info => "  " + info));
+            _logger.Debug(Strings.Info.AppConstructing.ServiceLocatorCreated, this, registrationsInfo);
+        }
+
+	    private void LogCreatedInstance(Type sourceType, object instance)
+	    {
+	        _logger.Debug(Strings.Info.AppConstructing.ServiceLocatorInstanceCreated, this, $"{sourceType.Name}->{instance?.GetType().Name}");
+        }
+
+        private static string GetId()
+	    {
+	        var guid = Guid.NewGuid().ToString("D");
+	        return guid.Split('-')[1];
 	    }
     }
 }

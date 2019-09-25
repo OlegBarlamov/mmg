@@ -17,7 +17,7 @@
 		public const string Registration = "registration";
         public static class RegistrationActions
 		{
-            public const string Game = "game";
+            public const string Game = "gameHeart";
 		    public const string GameParameters = "game_parameters";
         }
 
@@ -29,7 +29,7 @@
         public const string Constructing = "constructing";
         public static class ConstructingActions
         {
-            public const string Game = "game";
+            public const string Game = "gameHeart";
         }
 
         public static class ContextKeys
@@ -42,7 +42,7 @@
 	        public static readonly string BaseLogger = "base_logger";
 	        public static readonly string Locator = "locator";
 
-            public static readonly string Game = "game";
+            public static readonly string Game = "gameHeart";
 	        public static readonly string Host = "host";
         }
     }

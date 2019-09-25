@@ -1,5 +1,5 @@
 ﻿using Epic.Battle.Models;
-using FrameworkSDK.MonoGame.GameStructure.Controllers;
+using FrameworkSDK.MonoGame.Mvc;
 
 namespace Epic.Battle.Controllers
 {

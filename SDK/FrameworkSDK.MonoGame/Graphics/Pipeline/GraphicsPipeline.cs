@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using FrameworkSDK.MonoGame.GameStructure;
+using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Graphics.Pipeline
 {
+    [UsedImplicitly]
     internal class GraphicsPipeline : IGraphicsPipeline
     {
         [NotNull, ItemNotNull]
@@ -17,7 +19,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Pipeline
         private IComponentsByPassAggregator Aggregator { get; }
         private IGraphicsPipelineContextFactory ContextFactory { get; }
 
-        internal GraphicsPipeline([NotNull] IComponentsByPassAggregator aggregator,
+        public GraphicsPipeline([NotNull] IComponentsByPassAggregator aggregator,
             [NotNull] IGraphicsPipelineContextFactory contextFactory)
         {
             Aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));

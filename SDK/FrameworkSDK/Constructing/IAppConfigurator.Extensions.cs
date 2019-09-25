@@ -71,7 +71,7 @@ namespace FrameworkSDK.Constructing
 
 			var initializationPhase = configurator.GetStep(DefaultConfigurationSteps.ExternalRegistration);
 			initializationPhase.AddAction(new SimplePipelineAction(
-				DefaultConfigurationSteps.ExternalRegistrationActions.Registration,
+				$"{DefaultConfigurationSteps.ExternalRegistrationActions.Registration}_{initializationPhase.Actions.Count}",
 				true,
 				context =>
 				{

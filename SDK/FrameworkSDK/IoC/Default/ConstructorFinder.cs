@@ -29,7 +29,7 @@ namespace FrameworkSDK.IoC.Default
 
 	        var constructors = GetConstructors(type);
             if (constructors.Length < 1)
-	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException);
+	            throw new FrameworkIocException(Strings.Exceptions.Ioc.NoPublicConstructorsException, type.Name);
 
 	        var correctConstructor = FilterConstructorsWithParameters(constructors, parametersTypes).FirstOrDefault();
 		    if (correctConstructor == null)

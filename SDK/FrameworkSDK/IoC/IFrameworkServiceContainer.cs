@@ -12,6 +12,6 @@ namespace FrameworkSDK.IoC
         /// Однако, при уничтожении дочернего контейнера, не уничтожаются сервисы, зарегстрированные в родительском.
         /// Как и при уничтожении родительского, дочерние регистрации продолжают жить.
         /// </summary>
-	    [NotNull] IFrameworkServiceContainer CreateScoped();
+	    [NotNull] IFrameworkServiceContainer CreateScoped(string name = null);
     }
 }

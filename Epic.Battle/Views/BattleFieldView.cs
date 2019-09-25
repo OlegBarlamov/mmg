@@ -1,7 +1,7 @@
 ﻿using System;
 using Epic.Battle.Controllers;
 using Epic.Data.Battle;
-using FrameworkSDK.MonoGame.GameStructure.Views;
+using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -13,7 +13,7 @@ namespace Epic.Battle.Views
 		{
 			base.Draw(gameTime, drawContext);
 
-			Console.WriteLine(DataModel.Size);
+			//Console.WriteLine(DataModel.Size);
 		}
 	}
 }

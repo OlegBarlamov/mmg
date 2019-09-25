@@ -73,7 +73,7 @@ namespace FrameworkSDK.Constructing
 					    var logger = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.Logger);
 						var serviceContainerFactory = GetObjectFromContext<IServiceContainerFactory>(context, DefaultConfigurationSteps.ContextKeys.Ioc);
 						var moduleLogger = new ModuleLogger(logger, FrameworkLogModule.Application);
-				        var mainServiceContainer = serviceContainerFactory.CreateContainer();
+				        var mainServiceContainer = serviceContainerFactory.CreateContainer("main");
 
 					    context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, moduleLogger);
 						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
@@ -125,9 +125,6 @@ namespace FrameworkSDK.Constructing
 						var loggerService = GetObjectFromContext<IFrameworkLogger>(context, DefaultConfigurationSteps.ContextKeys.BaseLogger);
 
 					    var serviceLocator = serviceContainer.BuildContainer();
-					    serviceContainer.RegisterInstance(serviceLocator);
-					    serviceLocator = serviceContainer.BuildContainer();
-
 						context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Locator, serviceLocator);
 
 						AppContext.Initialize(loggerService, serviceLocator);

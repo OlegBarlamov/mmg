@@ -2,9 +2,12 @@
 {
     internal class DefaultServiceContainerFactory : IServiceContainerFactory
     {
-        public IFrameworkServiceContainer CreateContainer()
+        public IFrameworkServiceContainer CreateContainer(string name = null)
         {
-            return new DefaultServiceContainer();
+            return new DefaultServiceContainer
+            {
+                Name = name
+            };
         }
     }
 }
