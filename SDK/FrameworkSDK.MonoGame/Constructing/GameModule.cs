@@ -24,7 +24,6 @@ namespace FrameworkSDK.MonoGame.Constructing
             serviceRegistrator.RegisterType<IComponentsByPassAggregator, ComponentsByPassAggregator>();
             serviceRegistrator.RegisterType<IGraphicsPipelineContextFactory, GraphicsPipelineContextFactory>();
 
-            serviceRegistrator.RegisterType<IGameHost, TGameHost>();
             serviceRegistrator.RegisterType<IGameHeart, GameHeart>();
         }
     }
