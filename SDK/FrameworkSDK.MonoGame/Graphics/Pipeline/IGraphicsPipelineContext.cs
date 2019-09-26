@@ -18,7 +18,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Pipeline
         public IRenderContext RenderContext =>
             _renderContext ?? (_renderContext = new RenderContext());
         public IDrawContext DrawContext =>
-            _drawContext ?? (_drawContext = new DrawContext());
+            _drawContext ?? (_drawContext = new DrawContext(GameHeart.SpriteBatch));
 
         private IGraphicDevice _graphicDevice;
         private IRenderContext _renderContext;

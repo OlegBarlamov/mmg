@@ -78,6 +78,8 @@ namespace FrameworkSDK.MonoGame
 
 	    protected override void Draw(GameTime gameTime)
 	    {
+			GraphicsDevice.Clear(Color.CornflowerBlue);
+
 	        GameHost.Draw(gameTime);
 
             base.Draw(gameTime);

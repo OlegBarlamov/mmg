@@ -14,7 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libs\HexoGrid\HexoGrid.csproj" />
+    <ProjectReference Include="..\..\Libs\HexoGrid\HexoGrid.csproj" />
+    <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
   </ItemGroup>
 
 </Project>
