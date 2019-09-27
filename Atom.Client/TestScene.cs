@@ -33,7 +33,7 @@ namespace Atom.Client
 
 		private TestCubeModel Generate(Point pos)
 		{
-			var count = _r.Next(3, 90) / 3;
+			var count = _r.Next(1, 9*9*9+1);
 			var atoms = new List<AtomElement>();
 			for (int i = 0; i < count; i++)
 				atoms.Add(GenerateAtom());
@@ -43,12 +43,12 @@ namespace Atom.Client
 
 		private AtomElement GenerateAtom()
 		{
-			return new AtomElement(0, _r.Next(1,10), GenerateVector());
+			return new AtomElement(0, _r.Next(1,8), GenerateVector());
 		}
 
-		private Vector2 GenerateVector()
+		private Vector3 GenerateVector()
 		{
-			return new Vector2(_r.Next(0, 9), _r.Next(0, 9));
+			return new Vector3(_r.Next(0, 9), _r.Next(0, 9), _r.Next(0, 9));
 		}
 	}
 }
