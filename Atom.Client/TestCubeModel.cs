@@ -6,32 +6,104 @@ using Microsoft.Xna.Framework;
 
 namespace Atom.Client
 {
-	public class LightWaveSpectr
+	public class Wave
 	{
-		public float FromLength;
-		public float ToLength;
+		public int From;
+		public int To;
+
+		public Wave(int from, int to)
+		{
+			From = from;
+			To = to;
+		}
 	}
 
-	public class LightWave
+	public class WaveSpectr
 	{
-		public LightWaveSpectr[] Lights { get; }
+		public List<int> _quants = new List<int>();
 
-		public LightWave(IEnumerable<LightWaveSpectr> lights)
+		private List<Wave> _calculatedWaves;
+
+		public void Add(int energy)
 		{
-			Lights = lights.ToArray();
+			_quants.Add(energy);
+		}
+
+		public IEnumerable<Wave> GetWaves()
+		{
+			if (_calculatedWaves != null)
+				return _calculatedWaves;
+
+			_calculatedWaves = new List<Wave>();
+			_quants.Sort();
+
+			var lastQuant = 0;
+			var from = 0;
+			var to = 0;
+			foreach (var q in _quants)
+			{
+				if (from < 1)
+				{
+					from = q;
+					lastQuant = q;
+					continue;
+				}
+
+				if (q == lastQuant)
+				{
+					to = q;
+					continue;
+				}
+
+				if (q - lastQuant == 1)
+				{
+					to = q;
+					lastQuant = q;
+				}
+				else
+				{
+					var wave = new Wave(from, lastQuant);
+					_calculatedWaves.Add(wave);
+					from = q;
+					lastQuant = q;
+					to = q;
+				}
+			}
+
+			if (to > 0)
+			{
+				var wave = new Wave(from, to);
+				_calculatedWaves.Add(wave);
+			}
+
+			return _calculatedWaves;
 		}
 	}
 
 	public class AtomElement
 	{
-		public float Mass;
+		public float MaxEnergy;
 
-		public Vector3 Position;
+		public int Spin;
 
-		public AtomElement(float mass, float size, Vector3 position)
+		public int ElectronsCount;
+
+		public AtomElement(int spin, int electronsCount)
 		{
-			Mass = mass;
-			Position = position;
+			Spin = spin;
+			MaxEnergy = spin * WorldConstants.SpinEnergy;
+			ElectronsCount = electronsCount;
+		}
+
+		public float GetFreeEnergy()
+		{
+			var electronsEnergy = ElectronsCount * WorldConstants.ElectronEnergy;
+			return MaxEnergy - electronsEnergy;
+		}
+
+		public AtomElement Clone()
+		{
+			return new AtomElement(Spin, 0);
 		}
 	}
 
@@ -40,38 +112,76 @@ namespace Atom.Client
 	{
 		public Point Position { get; }
 
+		public Color? BufferColor;
+
 		private AtomElement[] Elements { get; }
 
-	    private float _minDistance;
+		private WaveSpectr _calculatedSpectr;
+
+		private bool _isBlack;
+		private bool _isAplpha;
 
 		public TestCubeModel(Point position, [NotNull] AtomElement[] elements)
 		{
 			Elements = elements ?? throw new ArgumentNullException(nameof(elements));
 			Position = position;
-
-		    _minDistance = elements.Min(e1 =>
-		        elements.Where(e2 => e2 != e1).Min(e => Vector3.Distance(e.Position, e1.Position)));
-
 		}
 
-		public LightWave LightInput(LightWave lightWave)
+		public IEnumerable<Wave> LightInput(Wave inputWave, Wave visibleLight, out bool isBlack, out bool isAlpha)
 		{
-			var light = lightWave.Lights.First();
+			isBlack = _isBlack;
+			isAlpha = _isAplpha;
+			if (_calculatedSpectr != null)
+				return _calculatedSpectr.GetWaves();
 
-			var max = MaxSize * 10 * 1.5;
-			var from = light.FromLength;
-			var to = Math.Min(max, light.ToLength);
+			bool? isBlackNull = null;
+			bool? isAlphaNull = null;
 
-			var result = new List<float>();
+			var freeEnergy = Elements.Sum(element => element.GetFreeEnergy());
 
-			//поглащает
+			float quants = 0;
+			_calculatedSpectr = new WaveSpectr();
 
-
-			return new LightWave(result.Select(f => new LightWaveSpectr
+			for (float w = inputWave.From; w <= inputWave.To; w++)
 			{
-				FromLength = f,
-				ToLength = f
-			}));
+				if (w >= visibleLight.From && w <= visibleLight.To)
+				{
+					if (isBlackNull == null)
+						isBlackNull = true;
+				}
+
+				quants += w;
+				if (quants < freeEnergy)
+					continue;
+
+				//кушает сколько смог накопить
+				var d = quants - freeEnergy;
+				quants = 0;
+
+				//остальное испускает
+				if (d > 0)
+				{
+					if (d >= visibleLight.From && d <= visibleLight.To)
+					{
+						isBlackNull = false;
+						isAlphaNull = false;
+					}
+					_calculatedSpectr.Add((int) d);
+				}
+
+				//пока кушает, не может поглощать.
+				w += freeEnergy / Elements.Length;
+			}
+
+			_calculatedSpectr.Add((int)quants);
+
+			isBlack = isBlackNull == true;
+			isAlpha = isAlphaNull != false && isBlackNull == null;
+
+			_isBlack = isBlack;
+			_isAplpha = isAlpha;
+
+			return _calculatedSpectr.GetWaves();
 		}
 	}
 }

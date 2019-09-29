@@ -35,7 +35,8 @@ namespace FrameworkSDK.MonoGame
             Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
 
             SetupParameters(parameters);
-        }
+			IsMouseVisible = true;
+		}
 
 	    public void Run([NotNull] IGameHost gameHost)
 	    {

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Atom.Client.Services;
+using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Graphics;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
+using Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions;
@@ -13,22 +17,18 @@ namespace Atom.Client
 {
 	public class TestCubeView : View<TestCubeModel>
 	{
-		private static readonly LightWave Sun = new LightWave(new []
-		{
-			new LightWaveSpectr
-			{
-				FromLength = 10,
-				ToLength = 100
-			}
-		});
+		private static readonly Wave Sun = new Wave((int)Constants.MinWaveEnergy, (int)Constants.MaxWaveEnergy);
 
 		private IGameHeart GameHeart { get; }
 
 		private Texture2D _texture;
 
-		public TestCubeView([NotNull] IGameHeart gameHeart)
+		private ILogger Logger;
+
+		public TestCubeView([NotNull] IGameHeart gameHeart, ILoggerFactory loggerFactory)
 		{
 			GameHeart = gameHeart ?? throw new ArgumentNullException(nameof(gameHeart));
+			Logger = loggerFactory.CreateLogger("CUBE");
 		}
 
 		public override void Draw(GameTime gameTime, IDrawContext context)
@@ -37,23 +37,61 @@ namespace Atom.Client
 
 			if (_texture == null)
 				_texture = GameHeart.GraphicsDeviceManager.GraphicsDevice.GetTextureDiffuseColor(Color.White);
+			
+			//if (DataModel.BufferColor == null)
+			//{
+				var newLigthWave = DataModel.LightInput(Sun, new Wave(10000,13000), out var isBlack, out var isAlpha).ToArray();
 
-			var newLigthWave = DataModel.LightInput(Sun);
+			Color color;
+			if (isBlack)
+				color = Color.Black;
+			else if (isAlpha)
+				color = Color.DimGray;
+			else
+				color = GetColorFromLightWave(newLigthWave);
+				
+			if (!isBlack && color == Color.Black)
+			{
+				color = Color.FromNonPremultiplied(0, 0, 0, 0);
+			}
+				//var lightLog = string.Join(Environment.NewLine, newLigthWave.Select(w => $"{w.From}-{w.To}"));
+				//Logger.Warning(lightLog);
+			DataModel.BufferColor = color;
+			//}
 
-			var color = GetColorFromLightWave(newLigthWave);
-			context.Draw(_texture, new Rectangle(DataModel.Position, new Point(30, 30)), color);
+			context.Draw(_texture, new Rectangle(DataModel.Position, new Point(10, 10)), DataModel.BufferColor.Value);
 		}
 
-		private static Color GetColorFromLightWave(LightWave lightWave)
+		private static float _visibleFrom = float.MaxValue;
+		private static float _visibleTo = float.MinValue;
+
+		private Color GetColorFromLightWave(IEnumerable<Wave> waves)
 		{
 			var resultColor = new Vector3();
-			var lights = lightWave.Lights;
 
-			foreach (var lightWaveSpectr in lights)
+			//обрезать до видимого диапазона
+
+			foreach (var wave in waves)
 			{
-				for (var i = lightWaveSpectr.FromLength; i <= lightWaveSpectr.ToLength; i++)
+				for (var e = wave.From; e <= wave.To; e++)
 				{
-					var color = WaveLengthToRGB(i * 10);
+					var waveLength = Constants.EnergyToWaveLength(e);
+					var normalizedWavelength = NormalizeWaveLength(waveLength, Constants.MinWaveLength, Constants.MaxWaveLength, -2400f, 2400);
+
+					//Logger.Error(normalizedWavelength.ToString("F0"));
+
+					if (normalizedWavelength < 380 || normalizedWavelength > 780)
+						continue;
+
+					var color = NormalizedWaveLengthToRGB(normalizedWavelength);
+					if (color != Vector3.Zero)
+					{
+						if (e < _visibleFrom)
+							_visibleFrom = e;
+						if (e > _visibleTo)
+							_visibleTo = e;
+					}
+
 					if (color.X > resultColor.X)
 						resultColor.X = color.X;
 					if (color.Y > resultColor.Y)
@@ -83,7 +121,14 @@ namespace Atom.Client
 			return nonZero.Sum() / nonZero.Length;
 		}
 
-		private static Vector3 WaveLengthToRGB(double wavelength)
+		private static double NormalizeWaveLength(double waveL, double minWaveL, double maxWaveL, double newMinWaveL, double newMaxWaveL)
+		{
+			var relative = waveL - minWaveL;
+			var sourcePercent = relative / (maxWaveL - minWaveL);
+			return newMinWaveL + sourcePercent * (newMaxWaveL - newMinWaveL);
+		}
+
+		private Vector3 NormalizedWaveLengthToRGB(double wavelength)
 		{
 			double Gamma = 1;
 			double IntensityMax = 255;
@@ -115,13 +160,13 @@ namespace Atom.Client
 				Green = 1.0;
 				Blue = 0.0;
 			}
-			else if ((wavelength >= 580) && (wavelength < /*645*/ 650))
+			else if ((wavelength >= 580) && (wavelength < 645))
 			{
 				Red = 1.0;
-				Green = -(wavelength - /*645*/650) / (/*645*/650 - 580);
+				Green = -(wavelength - 645) / (645 - 580);
 				Blue = 0.0;
 			}
-			else if ((wavelength >= /*645*/650) && (wavelength < /*781*/780))
+			else if ((wavelength >= 645) && (wavelength < 781))
 			{
 				Red = 1.0;
 				Green = 0.0;
@@ -140,11 +185,11 @@ namespace Atom.Client
 			{
 				factor = 0.3 + 0.7 * (wavelength - 380) / (420 - 380);
 			}
-			else if ((wavelength >= 420) && (wavelength < /*701*/700))
+			else if ((wavelength >= 420) && (wavelength < 701))
 			{
 				factor = 1.0;
 			}
-			else if ((wavelength >= /*701*/700) && (wavelength < /*781*/780))
+			else if ((wavelength >= 701) && (wavelength < 781))
 			{
 				factor = 0.3 + 0.7 * (780 - wavelength) / (780 - 700);
 			}

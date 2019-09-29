@@ -14,16 +14,21 @@ namespace Atom.Client
 		{
 			var cubes = new List<TestCubeModel>();
 
-			var maxCount = 9999;
+			cubes = GenerateAllFromAtoms(
+				new AtomElement(1, 0),
+				new AtomElement(8, 0)
+			);
+			//var maxCount = 9999;
 
-			for (int x = 0; x < 15 && maxCount > cubes.Count; x++)
-			{
-				for (int y = 0; y < 15 && maxCount > cubes.Count; y++)
-				{
-					var pos = new Point(10 + (10 + 30) * x, 10 + (10 + 30) * y);
-					cubes.Add(Generate(pos));
-				}
-			}
+			//int index = 0;
+			//for (int x = 0; x < 120 && maxCount > cubes.Count; x++)
+			//{
+			//	for (int y = 0; y < 90 && maxCount > cubes.Count; y++)
+			//	{
+			//		var pos = new Point(3 + (3 + 10) * x, 3 + (3 + 10) * y);
+			//		cubes.Add(Generate(pos, x, y));
+			//	}
+			//}
 
 			foreach (var cube in cubes)
 			{
@@ -31,19 +36,55 @@ namespace Atom.Client
 			}
 		}
 
-		private TestCubeModel Generate(Point pos)
+		private List<TestCubeModel> GenerateAllFromAtoms(params AtomElement[] atoms)
 		{
-			var count = _r.Next(1, 9*9*9+1);
+			int size = 30;
+			int width = 100;
+
+			Point GetPosFromIndex(int i)
+			{
+				var x = i % width;
+				var y = i / width;
+				return new Point(x, y);
+			}
+
+			int index = 0;
+			int count = 1;
+			while (true)
+			{
+				for (int i = 1; i <= count; i++)
+				{
+					
+				}
+			}
+		}
+
+		private TestCubeModel GenerateWater(Point pos, int x, int y)
+		{
+			return new TestCubeModel(pos, new []
+			{
+				new AtomElement(WorldConstants.SpinEnergy * 1, 1),
+				new AtomElement(WorldConstants.SpinEnergy * 1, 1),
+				new AtomElement(WorldConstants.SpinEnergy * 8, 2),
+			});
+		}
+
+		private TestCubeModel Generate(Point pos, int x, int y)
+		{
 			var atoms = new List<AtomElement>();
-			for (int i = 0; i < count; i++)
-				atoms.Add(GenerateAtom());
+			var count = (x + 1) / 2 + 1;
+			for (int i = 0; i<count;i++)
+				atoms.Add(GenerateAtom(x,y));
 
 			return new TestCubeModel(pos, atoms.ToArray());
 		}
 
-		private AtomElement GenerateAtom()
+		private AtomElement GenerateAtom(int x, int y)
 		{
-			return new AtomElement(0, _r.Next(1,8), GenerateVector());
+			var spin = y + 1;
+			var energy = spin * WorldConstants.SpinEnergy;
+			var electronsCount = _r.Next(spin + 1);
+			return new AtomElement(energy, electronsCount);
 		}
 
 		private Vector3 GenerateVector()
