@@ -79,10 +79,17 @@ namespace ConsoleWindow.ViewModels
             Content.Blocks.Clear();
         }
 
-        private Brush GetColor(ConsoleMessage message)
-        {
-            var logLevel = message.Level;
-            return ConsolePalette.FindBrush(logLevel) ?? ConsolePalette.DefaultBrush;
-        }
+	    private Brush GetColor(ConsoleMessage message)
+	    {
+		    var color = message.Color;
+		    if (color != null)
+		    {
+			    var brush = ConsolePalette.FindBrush(color.Value);
+			    if (brush != null)
+				    return brush;
+		    }
+		    var logLevel = message.Level;
+		    return ConsolePalette.FindBrush(logLevel) ?? ConsolePalette.DefaultBrush;
+	    }
     }
 }

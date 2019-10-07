@@ -39,14 +39,14 @@ namespace ConsoleWindow.Models
             return newSource;
         }
 
-        public void WriteMessage(string message, LogLevel logLevel = LogLevel.Information, string sourceName = null)
+        public void WriteMessage(string message, LogLevel logLevel = LogLevel.Information, string sourceName = null, ConsoleColor? color = null)
         {
             var targetSourceName = string.IsNullOrWhiteSpace(sourceName) ? AllSourceName : sourceName;
 
             var targetSource = Items.FirstOrDefault(source => source.Name == targetSourceName)
                                ?? CreateSource(targetSourceName);
 
-            targetSource.Write(message, logLevel);
+            targetSource.Write(message, logLevel, color);
         }
 
         public void Dispose()

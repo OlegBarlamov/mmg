@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Windows.Media;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -11,13 +13,16 @@ namespace ConsoleWindow
         [NotNull] Brush DefaultBrush { get; }
 
         [CanBeNull] Brush FindBrush(LogLevel logLevel);
-    }
+
+	    [CanBeNull] Brush FindBrush(ConsoleColor color);
+	}
 
     internal class ConsolePalette : IConsolePalette
     {
         public Brush DefaultBrush { get; }
 
         private readonly Dictionary<LogLevel, SolidColorBrush> _palette = new Dictionary<LogLevel, SolidColorBrush>();
+		private readonly ConcurrentDictionary<ConsoleColor, SolidColorBrush> _consoleColors = new ConcurrentDictionary<ConsoleColor, SolidColorBrush>();
 
         public ConsolePalette()
         {
@@ -43,11 +48,61 @@ namespace ConsoleWindow
             return _palette.TryGetValue(logLevel, out var brush) ? brush : null;
         }
 
-        private static SolidColorBrush CreateBrush(Color color)
+	    public Brush FindBrush(ConsoleColor color)
+	    {
+		    return _consoleColors.GetOrAdd(color, CreateBrush);
+	    }
+
+	    private static SolidColorBrush CreateBrush(Color color)
         {
             var brush = new SolidColorBrush(color);
             brush.Freeze();
             return brush;
         }
-    }
+
+	    private static SolidColorBrush CreateBrush(ConsoleColor color)
+	    {
+		    var clr = ConsoleColorToColor(color);
+		    return CreateBrush(clr);
+	    }
+
+	    private static Color ConsoleColorToColor(ConsoleColor color)
+	    {
+		    switch (color)
+		    {
+			    case ConsoleColor.Black:
+				    return Colors.Black;
+			    case ConsoleColor.Blue:
+				    return Colors.Blue;
+			    case ConsoleColor.Cyan:
+				    return Colors.Cyan;
+			    case ConsoleColor.DarkBlue:
+				    return Colors.DarkBlue;
+			    case ConsoleColor.DarkGray:
+				    return Colors.DarkGray;
+			    case ConsoleColor.DarkGreen:
+				    return Colors.DarkGreen;
+			    case ConsoleColor.DarkMagenta:
+				    return Colors.DarkMagenta;
+			    case ConsoleColor.DarkRed:
+				    return Colors.DarkRed;
+			    case ConsoleColor.DarkYellow:
+				    return Color.FromArgb(255, 128, 128, 0);
+			    case ConsoleColor.Gray:
+				    return Colors.Gray;
+			    case ConsoleColor.Green:
+				    return Colors.Green;
+			    case ConsoleColor.Magenta:
+				    return Colors.Magenta;
+			    case ConsoleColor.Red:
+				    return Colors.Red;
+			    case ConsoleColor.White:
+				    return Colors.White;
+				case ConsoleColor.Yellow:
+					return Colors.Yellow;
+				default:
+					return Colors.White;
+			}
+	    }
+	}
 }

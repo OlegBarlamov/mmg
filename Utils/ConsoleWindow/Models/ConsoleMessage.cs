@@ -8,14 +8,17 @@ namespace ConsoleWindow.Models
     {
         [NotNull] public string Message { get; }
 
-        public LogLevel Level { get; }
+	    [CanBeNull] public ConsoleColor? Color { get; }
 
-        public ConsoleMessage([NotNull] string message, LogLevel level)
+		public LogLevel Level { get; }
+
+        public ConsoleMessage([NotNull] string message, LogLevel level, ConsoleColor? color = null)
         {
             if (string.IsNullOrEmpty(message)) throw new ArgumentException(nameof(message));
 
             Message = message;
             Level = level;
+	        Color = color;
         }
     }
 }

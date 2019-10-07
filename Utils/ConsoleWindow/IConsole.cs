@@ -20,6 +20,8 @@ namespace ConsoleWindow
 
         void Write(string message, LogLevel logLevel = LogLevel.Information, string sourceName = null);
 
+	    void Write(string message, ConsoleColor color, string sourceName = null);
+
         event EventHandler<string> UserCommand;
 
         Collection<CommandDescription> KnownCommands { get; }

@@ -12,7 +12,7 @@ namespace ConsoleWindow
 {
     internal class ConsoleController : IConsole
     {
-        public event EventHandler<string> UserCommand;
+	    public event EventHandler<string> UserCommand;
 
         Collection<CommandDescription> IConsole.KnownCommands => _commandDescriptions;
         public string ShowedSource => _viewModel.SelectedConsoleContent.Name;
@@ -109,7 +109,12 @@ namespace ConsoleWindow
             _sourceCollection.WriteMessage(message, logLevel, sourceName);
         }
 
-        private void ConsoleViewModelOnUserCommand(object sender, string commandText)
+	    public void Write(string message, ConsoleColor color, string sourceName = null)
+	    {
+		    _sourceCollection.WriteMessage(message, LogLevel.Information, sourceName, color);
+		}
+
+		private void ConsoleViewModelOnUserCommand(object sender, string commandText)
         {
             UserCommand?.Invoke(this, commandText);
         }

@@ -22,18 +22,7 @@ namespace Atom.Client
         [STAThread]
         static void Main()
         {
-			var logFactory = new LogFactory("Logs", true);
-
-	        var appFactory = new AppFactory();
-	        using (var app = appFactory.CreateGame<AtomApp>()
-		        .SetupCustomLogger(logFactory.CreateAdapter)
-		        .RegisterServices(registrator =>
-		        {
-			        registrator.RegisterInstance<ILogFactory>(logFactory);
-			        registrator.RegisterInstance<ILoggerFactory>(logFactory);
-			        registrator.RegisterType<IConsoleService, ConsoleService>();
-				})
-		        .Configure())
+			using (var app = ConsoleApp.Create<TestConsoleApp>())
 	        {
 		        app.Run();
 	        }

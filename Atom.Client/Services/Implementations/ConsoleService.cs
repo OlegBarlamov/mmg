@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using ConsoleWindow;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -17,11 +18,15 @@ namespace Atom.Client.Services.Implementations
         private readonly TextWriter _defaultConsoleOut;
         private readonly TextWriter _defaultConsoleError;
 
-        public ConsoleService([NotNull] ILoggerFactory loggerFactory)
+	    private readonly AutoResetEvent _messageReceived = new AutoResetEvent(false);
+	    private string _lastMessage;
+
+		public ConsoleService([NotNull] ILoggerFactory loggerFactory)
         {
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _consoleHost = ConsoleFactory.CreateHosted();
             _consoleHost.TopMost = false;
+			_consoleHost.UserCommand += ConsoleHostOnUserCommand;
 
             LoggerFactory.AddProvider(_consoleHost);
 
@@ -33,7 +38,7 @@ namespace Atom.Client.Services.Implementations
             Console.SetError(_consoleStandartErrorWriter);
         }
 
-        public void Show()
+	    public void Show()
         {
             _consoleHost.Show();
         }
@@ -43,16 +48,35 @@ namespace Atom.Client.Services.Implementations
             _consoleHost.Hide();
         }
 
-        public void Dispose()
+	    public void WriteLine(string text, ConsoleColor color = ConsoleColor.White)
+	    {
+		    _consoleHost.Write(text, color);
+	    }
+
+	    public string ReadLine()
+	    {
+		    _messageReceived.WaitOne();
+		    _messageReceived.Reset();
+		    return _lastMessage;
+	    }
+
+	    public void Dispose()
         {
-            Console.SetOut(_defaultConsoleOut);
+	        _consoleHost.UserCommand -= ConsoleHostOnUserCommand;
+			Console.SetOut(_defaultConsoleOut);
             Console.SetError(_defaultConsoleError);
             _consoleStandartOutWriter.Dispose();
             _consoleStandartErrorWriter.Dispose();
             _consoleHost.Dispose();
-        }
+		}
 
-        private class ToConsoleWriter : TextWriter
+	    private void ConsoleHostOnUserCommand(object sender, string s)
+	    {
+		    _lastMessage = s;
+		    _messageReceived.Set();
+	    }
+
+		private class ToConsoleWriter : TextWriter
         {
             public override Encoding Encoding { get; } = Encoding.Default;
 

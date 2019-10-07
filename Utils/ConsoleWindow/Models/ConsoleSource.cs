@@ -28,9 +28,9 @@ namespace ConsoleWindow.Models
             _subLoggers = subLoggers;
         }
 
-        public void Write(string message, LogLevel logLevel)
+        public void Write(string message, LogLevel logLevel, ConsoleColor? color = null)
         {
-            Log<object>(logLevel, _emptyEventId, null, null, (o, exception) => message);
+            Log<object>(logLevel, _emptyEventId, null, null, (o, exception) => message, color);
         }
 
         protected virtual bool Filter<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -43,39 +43,39 @@ namespace ConsoleWindow.Models
             NewMessage?.Invoke(this, message);
         }
 
-        private void RaiseNewMessage(string message, LogLevel logLevel)
+        private void RaiseNewMessage(string message, LogLevel logLevel, ConsoleColor? color = null)
         {
             if (string.IsNullOrEmpty(message))
                 return;
 
-            var consoleMessage = new ConsoleMessage(message, logLevel);
+            var consoleMessage = new ConsoleMessage(message, logLevel, color);
             RaiseNewMessage(consoleMessage);
         }
 
         void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            Log(logLevel, eventId, state, exception, formatter);
+            Log(logLevel, eventId, state, exception, formatter, null);
         }
 
-        private void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        private void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, ConsoleColor? color)
         {
             lock (_loggingLocker)
             {
                 if (!Filter(logLevel, eventId, state, exception, formatter))
                     return;
 
-                LogSelf(logLevel, eventId, state, exception, formatter);
+                LogSelf(logLevel, eventId, state, exception, formatter, color);
                 LogToSubLoggers(logLevel, eventId, state, exception, formatter);
             }
         }
 
-        private void LogSelf<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        private void LogSelf<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, ConsoleColor? color = null)
         {
             if (formatter == null)
                 return;
 
             var message = formatter(state, exception);
-            RaiseNewMessage(message, logLevel);
+            RaiseNewMessage(message, logLevel, color);
         }
 
         private void LogToSubLoggers<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)

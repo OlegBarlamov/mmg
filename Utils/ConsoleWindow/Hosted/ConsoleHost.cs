@@ -147,6 +147,11 @@ namespace ConsoleWindow.Hosted
 			_console.Write(message, logLevel, sourceName);
 		}
 
+		public void Write(string message, ConsoleColor color, string sourceName = null)
+		{
+			_console.Write(message, color, sourceName);
+		}
+
 		event EventHandler<string> IConsole.UserCommand
 		{
 			add => _console.UserCommand += value;
