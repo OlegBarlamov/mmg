@@ -43,14 +43,14 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Particles\Atom.cs" />
     <Compile Include="Particles\Molecule.cs" />
     <Compile Include="SunGeneration\AstronomicalBlock.cs" />
-    <Compile Include="SunGeneration\AstronomicalBlockFactory.cs" />
-    <Compile Include="SunGeneration\AstronomicalStar.cs" />
     <Compile Include="SunGeneration\AtomConsistency.cs" />
-    <Compile Include="SunGeneration\Consistency.cs" />
     <Compile Include="SunGeneration\MoleculeConsistency.cs" />
+    <Compile Include="SunGeneration\MoleculeFactory.cs" />
     <Compile Include="TestConsoleApp.cs" />
     <Compile Include="_old\AtomApp.cs" />
     <Compile Include="ConsoleApp.cs" />

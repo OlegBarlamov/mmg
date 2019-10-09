@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Atom.Client.SunGeneration
+﻿namespace Atom.Client.SunGeneration
 {
 	public class AtomConsistency
 	{
-		public AtomConsistency Particle { get; }
+		public Particles.Atom Particle { get; }
 
-		public float Density { get; }
+		public float AmountPercent { get; }
+
+	    public AtomConsistency(Particles.Atom atomType, float amount)
+	    {
+	        Particle = atomType;
+	        AmountPercent = amount;
+	    }
 	}
 }
