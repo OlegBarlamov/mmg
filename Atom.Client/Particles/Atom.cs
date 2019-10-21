@@ -9,12 +9,16 @@ namespace Atom.Client.Particles
 
 	    public float Volume {get;}
 
+        public float Mass { get; }
+
 	    public Atom(int protons, int neytrons)
 	    {
 	        Protons = protons;
 	        Neytrons = neytrons;
             Volume = Helpers.Volume(Constants.ProtonQuantsRadius) * Protons +
                      Helpers.Volume(Constants.NeytronQuantsRadius) * Neytrons;
-        }
+
+	        Mass = (Protons + Neytrons) * 1;
+	    }
 	}
 }

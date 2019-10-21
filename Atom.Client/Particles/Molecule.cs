@@ -11,6 +11,8 @@ namespace Atom.Client.Particles
 
         public float CineticEnergy { get; }
 
+        public float Mass { get; }
+
 	    public Molecule(IEnumerable<Atom> atoms, int electronsCount)
 	    {
 	        Atoms = atoms.ToArray();
@@ -18,6 +20,8 @@ namespace Atom.Client.Particles
 	        Volume = Atoms.Sum(atom => atom.Volume);
 
 	        CineticEnergy = Atoms.Length;
+
+	        Mass = Atoms.Sum(atom => atom.Mass);
 	    }
 	}
 }
