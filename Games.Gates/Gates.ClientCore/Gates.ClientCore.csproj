@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj" />
+    <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+    <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
+    <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+    <ProjectReference Include="..\..\Utils\Logging\Logging.csproj" />
+    <ProjectReference Include="..\Gates.Core\Gates.Core.csproj" />
+    <ProjectReference Include="..\Gates.GameLogic\Gates.GameLogic.csproj" />
+  </ItemGroup>
+
+</Project>

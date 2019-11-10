@@ -38,6 +38,8 @@ namespace Gates.GameLogic
             machine.Position = new Point(position, 0);
         }
 
+
+
         bool IPlayerHandler.ProduceMachineFromSlot(int playerID, int slotID)
         {
             var playerData = _gameData.PlayersGameData[playerID];
