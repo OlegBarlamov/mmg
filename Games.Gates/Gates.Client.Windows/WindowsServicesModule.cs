@@ -1,4 +1,5 @@
 ﻿using FrameworkSDK.IoC;
+using Gates.ClientCore;
 
 namespace Gates.Client.Windows
 {
@@ -6,7 +7,7 @@ namespace Gates.Client.Windows
     {
         public void Register(IServiceRegistrator serviceRegistrator)
         {
-            
+            serviceRegistrator.RegisterType<IExternalCommandsProvider, ConsoleService>();
         }
     }
 }

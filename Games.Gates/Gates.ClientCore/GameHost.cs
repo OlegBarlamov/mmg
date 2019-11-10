@@ -1,34 +1,53 @@
-﻿using FrameworkSDK;
+﻿using System;
 using FrameworkSDK.MonoGame;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace Gates.ClientCore
 {
+	[UsedImplicitly]
     public sealed class GameHost : IGameHost
     {
-        public void Run()
+	    private IExternalCommandsProvider ExternalCommandsProvider { get; }
+
+	    private IGameHeart _gameHeart;
+
+	    public GameHost([NotNull] IExternalCommandsProvider externalCommandsProvider)
+	    {
+		    ExternalCommandsProvider = externalCommandsProvider ?? throw new ArgumentNullException(nameof(externalCommandsProvider));
+			ExternalCommandsProvider.NewCommand += OnNewExternalCommand;
+	    }
+
+	    public void Run()
+        {
+			_gameHeart.Run(this);
+		}
+
+        public void Update(GameTime gameTime)
         {
             
         }
 
-        public void Update(GameTime gameTime)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void Draw(GameTime gameTime)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public void Dispose()
         {
-            throw new System.NotImplementedException();
-        }
+	        ExternalCommandsProvider.NewCommand -= OnNewExternalCommand;
+			ExternalCommandsProvider.Dispose();
+		}
 
         public void Initialize(IGameHeart gameHeart)
         {
-            throw new System.NotImplementedException();
-        }
-    }
+	        _gameHeart = gameHeart;
+
+	        ExternalCommandsProvider.Open();
+		}
+
+	    private void OnNewExternalCommand(string commandLine)
+	    {
+	    }
+	}
 }
