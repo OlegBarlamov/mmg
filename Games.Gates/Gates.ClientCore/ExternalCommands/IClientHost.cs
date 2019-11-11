@@ -1,6 +1,8 @@
-﻿namespace Gates.ClientCore
+﻿using System;
+
+namespace Gates.ClientCore.ExternalCommands
 {
-    public interface IClientHost
+    public interface IClientHost : IDisposable
     {
         void ConnectToServer(string serverUrl);
 

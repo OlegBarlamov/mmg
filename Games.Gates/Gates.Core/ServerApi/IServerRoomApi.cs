@@ -6,6 +6,8 @@
 
         RoomState GetState();
 
-        IServerGatesApi RunGatesGame();
+        void RunGatesGame();
+
+        IServerGatesApi ConnectToRunnedGame();
     }
 }

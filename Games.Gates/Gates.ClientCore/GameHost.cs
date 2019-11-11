@@ -1,21 +1,26 @@
 ﻿using System;
 using FrameworkSDK.MonoGame;
+using Gates.ClientCore.ExternalCommands;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace Gates.ClientCore
 {
 	[UsedImplicitly]
-    public sealed class GameHost : IGameHost
+    internal sealed class GameHost : IGameHost
     {
 	    private IExternalCommandsProvider ExternalCommandsProvider { get; }
+        private IExternalCommandsProcessor ExternalCommandsProcessor { get; }
 
-	    private IGameHeart _gameHeart;
+        private IGameHeart _gameHeart;
 
-	    public GameHost([NotNull] IExternalCommandsProvider externalCommandsProvider)
+	    public GameHost(
+	        [NotNull] IExternalCommandsProvider externalCommandsProvider,
+	        [NotNull] IExternalCommandsProcessor externalCommandsProcessor)
 	    {
 		    ExternalCommandsProvider = externalCommandsProvider ?? throw new ArgumentNullException(nameof(externalCommandsProvider));
-			ExternalCommandsProvider.NewCommand += OnNewExternalCommand;
+	        ExternalCommandsProcessor = externalCommandsProcessor ?? throw new ArgumentNullException(nameof(externalCommandsProcessor));
+	        ExternalCommandsProvider.NewCommand += OnNewExternalCommand;
 	    }
 
 	    public void Run()
@@ -48,6 +53,7 @@ namespace Gates.ClientCore
 
 	    private void OnNewExternalCommand(string commandLine)
 	    {
-	    }
-	}
+	        ExternalCommandsProcessor.ProcessCommand(commandLine);
+        }
+    }
 }
