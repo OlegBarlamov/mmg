@@ -6,15 +6,25 @@ using JetBrains.Annotations;
 
 namespace Gates.ClientCore.Rooms
 {
+    [UsedImplicitly]
     internal class RoomController : IRoomController
     {
+        public bool IsGameConnected { get; private set; }
+        
         private const int ListenRequestPeriodMs = 250;
-        private const int ListenRequestPeriodMsWhileRunnedGame = 1500;
+        private const int ListenRequestPeriodMsWhileRunnedGame = 2500;
 
+        private IServerGatesApi _gameApi;
         private IServerRoomApi _roomApi;
         private bool _gameRunning;
 
+        private Task _listenTask;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
+        public IServerGatesApi GetActiveGameApi()
+        {
+            return _gameApi;
+        }
 
         public void StartListenRoom([NotNull] IServerRoomApi roomApi)
         {
@@ -27,7 +37,7 @@ namespace Gates.ClientCore.Rooms
 
                 _roomApi = roomApi;
 
-                StartListenTask();
+                _listenTask = StartListenTask();
             }
         }
 
@@ -38,7 +48,9 @@ namespace Gates.ClientCore.Rooms
                 _cts.Cancel();
             }
 
-            //TODO
+            IsGameConnected = false;
+            _gameApi = null;
+            _listenTask.Dispose();
         }
 
         private Task StartListenTask()
@@ -66,7 +78,6 @@ namespace Gates.ClientCore.Rooms
                         if (roomState != null)
                         {
                             _gameRunning = ProcessRoomState(roomState);
-                            
                         }
 
                         _cts.Token.ThrowIfCancellationRequested();
@@ -85,10 +96,15 @@ namespace Gates.ClientCore.Rooms
         private bool ProcessRoomState(RoomState roomState)
         {
             if (!roomState.GameStarted)
+            {
+                IsGameConnected = false;
                 return false;
+            }
 
             var connectedRunnedGame = _roomApi.ConnectToRunnedGame();
-
+            _gameApi = connectedRunnedGame;
+            IsGameConnected = true;
+            return true;
         }
     }
 }

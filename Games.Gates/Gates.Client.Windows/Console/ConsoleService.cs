@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using ConsoleWindow;
 using Gates.ClientCore;
@@ -10,8 +11,10 @@ namespace Gates.Client.Windows.Console
 {
     [UsedImplicitly]
 	internal class ConsoleService : IExternalCommandsProvider
-	{
-		public event Action<string> NewCommand;
+    {
+        public bool IsOpened => _console.IsShowed;
+
+	    public event Action<string> NewCommand;
 
 		private ILoggerFactory LoggerFactory { get; }
 
@@ -37,7 +40,9 @@ namespace Gates.Client.Windows.Console
 		    _consoleStandartErrorWriter = new ToConsoleWriter(_console, LogLevel.Error, "z_!stderror");
 		    System.Console.SetOut(_consoleStandartOutWriter);
 		    System.Console.SetError(_consoleStandartErrorWriter);
-        }
+
+		    AddKnownCommands(ConsoleCommandsList.Commands);
+		}
 
 	    public void Dispose()
 		{
@@ -64,5 +69,14 @@ namespace Gates.Client.Windows.Console
 	    {
 	        NewCommand?.Invoke(command);
         }
+
+        private void AddKnownCommands(IEnumerable<CommandDescription> commands)
+        {
+            foreach (var command in commands)
+            {
+                _console.KnownCommands.Add(command);
+            }
+        }
+
     }
 }

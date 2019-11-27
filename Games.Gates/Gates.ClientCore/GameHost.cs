@@ -1,57 +1,70 @@
 ﻿using System;
 using FrameworkSDK.MonoGame;
+using FrameworkSDK.MonoGame.Mvc;
 using Gates.ClientCore.ExternalCommands;
+using Gates.ClientCore.Rooms;
+using Gates.ClientCore.Scenes;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace Gates.ClientCore
 {
 	[UsedImplicitly]
-    internal sealed class GameHost : IGameHost
-    {
-	    private IExternalCommandsProvider ExternalCommandsProvider { get; }
-        private IExternalCommandsProcessor ExternalCommandsProcessor { get; }
+    internal sealed class GameHost : GameApplication
+	{
+	    public override Scene CurrentScene => _activeScene;
 
-        private IGameHeart _gameHeart;
+        [NotNull] private IExternalCommandsProvider ExternalCommandsProvider { get; }
+        [NotNull] private IExternalCommandsProcessor ExternalCommandsProcessor { get; }
+        [NotNull] private IRoomController RoomController { get; }
 
-	    public GameHost(
+	    private Scene _activeScene;
+	    private Scene _mainMenuScene;
+	    private Scene _gameScene;
+
+        public GameHost(
 	        [NotNull] IExternalCommandsProvider externalCommandsProvider,
-	        [NotNull] IExternalCommandsProcessor externalCommandsProcessor)
+	        [NotNull] IExternalCommandsProcessor externalCommandsProcessor,
+	        [NotNull] IRoomController roomController)
 	    {
 		    ExternalCommandsProvider = externalCommandsProvider ?? throw new ArgumentNullException(nameof(externalCommandsProvider));
 	        ExternalCommandsProcessor = externalCommandsProcessor ?? throw new ArgumentNullException(nameof(externalCommandsProcessor));
+	        RoomController = roomController ?? throw new ArgumentNullException(nameof(roomController));
 	        ExternalCommandsProvider.NewCommand += OnNewExternalCommand;
 	    }
 
-	    public void Run()
-        {
-			_gameHeart.Run(this);
-		}
-
-        public void Update(GameTime gameTime)
-        {
-            
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            
-        }
-
-        public void Dispose()
+        protected override void Dispose()
         {
 	        ExternalCommandsProvider.NewCommand -= OnNewExternalCommand;
 			ExternalCommandsProvider.Dispose();
 		}
 
-        public void Initialize(IGameHeart gameHeart)
+        protected override void Initialize()
         {
-	        _gameHeart = gameHeart;
+            base.Initialize();
 
-	        ExternalCommandsProvider.Open();
-		}
+            _mainMenuScene = new MainMenuScene();
+            _gameScene = new GameScene();
 
-	    private void OnNewExternalCommand(string commandLine)
+            ExternalCommandsProvider.Open();
+            _activeScene = _mainMenuScene;
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (RoomController.IsGameConnected)
+            {
+                _activeScene = _gameScene;
+            }
+            else
+            {
+                _activeScene = _mainMenuScene;
+            }
+        }
+
+        private void OnNewExternalCommand(string commandLine)
 	    {
 	        ExternalCommandsProcessor.ProcessCommand(commandLine);
         }

@@ -21,6 +21,11 @@ namespace FrameworkSDK.MonoGame
 	        ScenesController = AppContext.ServiceLocator.Resolve<IScenesController>();
 	    }
 
+	    protected virtual void Dispose()
+	    {
+
+	    }
+
 	    protected virtual void Update(GameTime gameTime)
 	    {
 
@@ -79,6 +84,8 @@ namespace FrameworkSDK.MonoGame
         void IDisposable.Dispose()
 		{
 		    GameHeart.Dispose();
+
+		    Dispose();
 		}
 	}
 }

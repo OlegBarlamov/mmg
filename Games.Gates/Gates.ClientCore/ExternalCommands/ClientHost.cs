@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 
 namespace Gates.ClientCore.ExternalCommands
 {
+    [UsedImplicitly]
     internal class ClientHost : IClientHost
     {
         private  IServerConnector ServerConnector { get; }
