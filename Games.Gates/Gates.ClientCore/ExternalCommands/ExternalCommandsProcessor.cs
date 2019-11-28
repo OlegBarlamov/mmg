@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Gates.ClientCore.ExternalCommands
 {
+    [UsedImplicitly]
     internal class ExternalCommandsProcessor : IExternalCommandsProcessor
     {
         private IClientHost ClientHost { get; }
@@ -29,38 +30,40 @@ namespace Gates.ClientCore.ExternalCommands
             if (command.IsEmpty)
                 return;
 
+            Logger.Info($"User command: {commandLine}");
+
             try
             {
                 //TODO сделать нормально
                 if (command.Name == "srv_connect")
                 {
                     var url = command.Parameters[0];
-                    ClientHost.ConnectToServer(url);
+                    ClientHost.ConnectToServerAsync(url);
                     return;
                 }
                 if (command.Name == "srv_auth")
                 {
                     var name = command.Parameters[0];
-                    ClientHost.Authorize(name);
+                    ClientHost.AuthorizeAsync(name);
                     return;
                 }
                 if (command.Name == "rm_create")
                 {
                     var name = command.Parameters[0];
                     var pass = command.Parameters[1];
-                    ClientHost.CreateRoom(name, pass);
+                    ClientHost.CreateRoomAsync(name, pass);
                     return;
                 }
                 if (command.Name == "rm_enter")
                 {
                     var name = command.Parameters[0];
                     var pass = command.Parameters[1];
-                    ClientHost.EnterRoom(name, pass);
+                    ClientHost.EnterRoomAsync(name, pass);
                     return;
                 }
                 if (command.Name == "start")
                 {
-                    ClientHost.RunGame();
+                    ClientHost.RunGameAsync();
                     return;
                 }
 
@@ -69,8 +72,8 @@ namespace Gates.ClientCore.ExternalCommands
             {
                 var message = e.Message;
                 Logger.Error($"Error: {message}");
+                return;
             }
-            
 
             Logger.Info($"Unknown command: '{command.Name}'");
         }

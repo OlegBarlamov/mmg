@@ -1,13 +1,15 @@
-﻿using Gates.Core.Models;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Gates.Core.Models;
 
 namespace Gates.Core.ServerApi
 {
     public interface IServerGatesApi
     {
-        void UserReady();
+        Task PostUserReadyAsync(CancellationToken cancellationToken);
 
-        GameStartInfo StartInfo();
+        Task<GameStartInfo> GetStartInfoAsync(CancellationToken cancellationToken);
 
-        GameDataIteration GemeState();
+        Task<GameDataIteration> GemeStateAsync(CancellationToken cancellationToken);
     }
 }

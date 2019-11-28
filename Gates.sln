@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameExtensions", "SDK\M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{CB521EAB-3E3B-4F22-9CF8-EAB75D989C3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Utils\Logging\Logging.csproj", "{3FA53468-2750-459F-82F7-A607298376DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging", "Utils\Logging\Logging.csproj", "{3FA53468-2750-459F-82F7-A607298376DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleWindow", "Utils\ConsoleWindow\ConsoleWindow.csproj", "{6433E232-4A48-420D-A2C1-0BEFDA8A5AD2}"
 EndProject
@@ -29,7 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gates.Clients", "Gates.Clie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gates.GameLogic", "Games.Gates\Gates.GameLogic\Gates.GameLogic.csproj", "{AC6E0E84-8CB5-45C0-8EDF-DF0EA688709B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gates.ClientCore", "Games.Gates\Gates.ClientCore\Gates.ClientCore.csproj", "{F9F427BB-F2F0-469E-BCCE-E35036D49418}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gates.ClientCore", "Games.Gates\Gates.ClientCore\Gates.ClientCore.csproj", "{F9F427BB-F2F0-469E-BCCE-E35036D49418}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gates.HttpClientSide", "Games.Gates\Gates.HttpClientSide\Gates.HttpClientSide.csproj", "{7FCD3A60-D07B-4A85-BD21-8D8642495538}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gates.ClientSides", "Gates.ClientSides", "{68B256D0-C42B-45FD-9738-4F89CF90509B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +129,14 @@ Global
 		{F9F427BB-F2F0-469E-BCCE-E35036D49418}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9F427BB-F2F0-469E-BCCE-E35036D49418}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9F427BB-F2F0-469E-BCCE-E35036D49418}.Release|x86.Build.0 = Release|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Debug|x86.Build.0 = Debug|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Release|x86.ActiveCfg = Release|Any CPU
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +149,7 @@ Global
 		{3FA53468-2750-459F-82F7-A607298376DC} = {CB521EAB-3E3B-4F22-9CF8-EAB75D989C3A}
 		{6433E232-4A48-420D-A2C1-0BEFDA8A5AD2} = {CB521EAB-3E3B-4F22-9CF8-EAB75D989C3A}
 		{2A2D63F5-36A5-4164-AFFA-BC3F1C4B874C} = {23820BA7-5D15-43C0-9203-E6B512451E3A}
+		{7FCD3A60-D07B-4A85-BD21-8D8642495538} = {68B256D0-C42B-45FD-9738-4F89CF90509B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B3C8C6E-576B-4BB3-A5D5-048EDC377578}

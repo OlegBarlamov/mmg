@@ -4,14 +4,14 @@ namespace Gates.ClientCore.ExternalCommands
 {
     public interface IClientHost : IDisposable
     {
-        void ConnectToServer(string serverUrl);
+        void ConnectToServerAsync(string serverUrl);
 
-        void Authorize(string name);
+        void AuthorizeAsync(string name);
 
-        void CreateRoom(string name, string password);
+        void CreateRoomAsync(string name, string password);
 
-        void EnterRoom(string name, string password);
+        void EnterRoomAsync(string name, string password);
 
-        void RunGame();
+        void RunGameAsync();
     }
 }

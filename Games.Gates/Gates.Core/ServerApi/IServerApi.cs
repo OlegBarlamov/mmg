@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Gates.Core.ServerApi
 {
     public interface IServerApi
     {
-        IServerRoomApi CreateRoom(string name, string password);
+        Task<IServerRoomApi> CreateRoomAsync(string name, string password, CancellationToken cancellationToken);
 
-        IServerRoomApi EnterRoom(string name, string password);
+        Task<IServerRoomApi> EnterRoomAsync(string name, string password, CancellationToken cancellationToken);
 
-        IReadOnlyCollection<RoomDescription> Rooms();
+        Task<IReadOnlyCollection<RoomDescription>> GetRoomsAsync(CancellationToken cancellationToken);
     }
 }

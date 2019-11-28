@@ -1,7 +1,10 @@
-﻿namespace Gates.Core.ServerApi
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Gates.Core.ServerApi
 {
     public interface IServer
     {
-        IServerApi Authorize(string name, string password);
+        Task<IServerApi> AuthorizeAsync(string name, string password, CancellationToken cancellationToken);
     }
 }

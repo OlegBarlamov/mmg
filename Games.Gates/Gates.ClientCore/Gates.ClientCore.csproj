@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\Utils\Logging\Logging.csproj" />
     <ProjectReference Include="..\Gates.Core\Gates.Core.csproj" />
     <ProjectReference Include="..\Gates.GameLogic\Gates.GameLogic.csproj" />
+    <ProjectReference Include="..\Gates.HttpClientSide\Gates.HttpClientSide.csproj" />
   </ItemGroup>
 
   <ItemGroup>

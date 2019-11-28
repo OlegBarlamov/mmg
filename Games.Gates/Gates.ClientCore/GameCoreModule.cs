@@ -1,7 +1,8 @@
 ﻿using FrameworkSDK.IoC;
 using Gates.ClientCore.ExternalCommands;
 using Gates.ClientCore.Rooms;
-using Gates.ClientCore.ServerConnection;
+using Gates.Core.ServerApi;
+using Gates.HttpClientSide;
 
 namespace Gates.ClientCore
 {
@@ -13,7 +14,7 @@ namespace Gates.ClientCore
             serviceRegistrator.RegisterType<IExternalCommandsProcessor, ExternalCommandsProcessor>();
             serviceRegistrator.RegisterType<IRoomController, RoomController>();
             serviceRegistrator.RegisterType<IClientHost, ClientHost>();
-            serviceRegistrator.RegisterType<IServerConnector, FakeServerConnector>();
+            serviceRegistrator.RegisterType<IServerConnector, HttpServerConnector>();
         }
     }
 }

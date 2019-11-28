@@ -1,13 +1,16 @@
-﻿namespace Gates.Core.ServerApi
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Gates.Core.ServerApi
 {
     public interface IServerRoomApi
     {
-        void LeaveRoom();
+        Task LeaveRoomAsync(CancellationToken cancellationToken);
 
-        RoomState GetState();
+        Task<RoomState> GetStateAsync(CancellationToken cancellationToken);
 
-        void RunGatesGame();
+        Task RunGatesGameAsync(CancellationToken cancellationToken);
 
-        IServerGatesApi ConnectToRunnedGame();
+        Task<IServerGatesApi> ConnectToRunnedGameAsync(CancellationToken cancellationToken);
     }
 }

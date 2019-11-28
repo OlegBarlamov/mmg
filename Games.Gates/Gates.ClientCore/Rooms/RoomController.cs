@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Gates.ClientCore.Logging;
 using Gates.Core.ServerApi;
 using JetBrains.Annotations;
+using Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Gates.ClientCore.Rooms
 {
@@ -11,6 +14,8 @@ namespace Gates.ClientCore.Rooms
     {
         public bool IsGameConnected { get; private set; }
         
+        private ILogger Logger { get; }
+
         private const int ListenRequestPeriodMs = 250;
         private const int ListenRequestPeriodMsWhileRunnedGame = 2500;
 
@@ -20,6 +25,11 @@ namespace Gates.ClientCore.Rooms
 
         private Task _listenTask;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
+        public RoomController(ILoggerFactory loggerFactory)
+        {
+            Logger = loggerFactory.CreateLogger(LogCategories.Room);
+        }
 
         public IServerGatesApi GetActiveGameApi()
         {
@@ -66,18 +76,18 @@ namespace Gates.ClientCore.Rooms
                         RoomState roomState = null;
                         try
                         {
-                            roomState = _roomApi.GetState();
+                            roomState = await _roomApi.GetStateAsync(_cts.Token).ConfigureAwait(true);
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
-                            //TODO
+                            Logger.Error(e, "Error while get room state");
                         }
 
                         _cts.Token.ThrowIfCancellationRequested();
 
                         if (roomState != null)
                         {
-                            _gameRunning = ProcessRoomState(roomState);
+                            _gameRunning = await ProcessRoomStateAsync(roomState, _cts.Token).ConfigureAwait(true);
                         }
 
                         _cts.Token.ThrowIfCancellationRequested();
@@ -88,12 +98,16 @@ namespace Gates.ClientCore.Rooms
                 }
                 catch (OperationCanceledException)
                 {
-                    //ignored
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e, "Unknown error while listem the room");
                 }
             }, _cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
         }
 
-        private bool ProcessRoomState(RoomState roomState)
+        private async Task<bool> ProcessRoomStateAsync(RoomState roomState, CancellationToken cancellationToken)
         {
             if (!roomState.GameStarted)
             {
@@ -101,7 +115,9 @@ namespace Gates.ClientCore.Rooms
                 return false;
             }
 
-            var connectedRunnedGame = _roomApi.ConnectToRunnedGame();
+            var connectedRunnedGame = await _roomApi.ConnectToRunnedGameAsync(cancellationToken)
+                .ConfigureAwait(true);
+
             _gameApi = connectedRunnedGame;
             IsGameConnected = true;
             return true;
