@@ -30,16 +30,24 @@ namespace NetExtensions
 		/// </summary>
 		/// <typeparam name="T">The data type</typeparam>
 		/// <param name="massive">The massive.</param>
+		/// <param name="byWidth"></param>
 		/// <returns></returns>
-		public static T[] ConvertMassive2To1<T>(T[,] massive)
+		public static T[] ConvertMassive2To1<T>(T[,] massive, bool byWidth)
 		{
-			int n = massive.GetLength(0);
-			int m = massive.GetLength(1);
-			var data = new T[n*m];
+			int width = massive.GetLength(0);
+			int height = massive.GetLength(1);
+			var data = new T[width * height];
 
-			for (int i = 0; i < n; i++)
-				for (int j = 0; j < m; j++)
-					data[i*m + j] = massive[i, j];
+			for (int x = 0; x < width; x++)
+			{
+				for (int y = 0; y < height; y++)
+				{
+					if (byWidth)
+						data[y * width + x] = massive[x, y];
+					else
+						data[x * height + y] = massive[x, y];
+				}
+			}
 
 			return data;
 		}

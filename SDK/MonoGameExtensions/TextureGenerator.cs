@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions.Geometry;
 using NetExtensions;
 
 namespace MonoGameExtensions
@@ -18,6 +19,7 @@ namespace MonoGameExtensions
 		/// <summary>
 		/// Gets the texture with the gradient color.
 		/// </summary>
+		/// <param name="graphicsDevice">GraphicDevice</param>
 		/// <param name="color1">The color1.</param>
 		/// <param name="color2">The color2.</param>
 		/// <param name="width">The width.</param>
@@ -25,67 +27,66 @@ namespace MonoGameExtensions
 		/// <param name="angle">The angle between the gradient and Y in degree.</param>
 		/// <param name="offset">The offset.</param>
 		/// <returns></returns>
-		//public static Texture2D GetTextureGradientColor(Color color1, Color color2, int width, int height, float angle, float offset = 0)
-		//{
-		//	var texture = GetEmptyTexture(height, width);
+		public static Texture2D GetTextureGradientColor(this GraphicsDevice graphicsDevice, Color color1, Color color2, int width, int height, float angle, float offset = 0)
+		{
+			var texture = GetEmptyTexture(graphicsDevice, width, height);
 
-		//	angle = angle % 360;
-		//	if (angle >= 180)
-		//	{
-		//		Code.Swap(ref color1, ref color2);
-		//		angle = angle - 180;
-		//	}
+			angle = angle % 360;
+			if (angle >= 180)
+			{
+				Code.Swap(ref color1, ref color2);
+				angle = angle - 180;
+			}
 
-		//	var line1 = Line2D.FromPointAngle(new PointF((float)width / 2, (float)height / 2), MathHelper.ToRadians(angle));
+			var line1 = Line2D.FromPointAngle(new Vector2((float)width / 2, (float)height / 2), MathHelper.ToRadians(angle));
 
-		//	var top = new PointF(0, 0);
-		//	var bot = new PointF(width - 1, height - 1);
-		//	if (angle > 90)
-		//	{
-		//		top = new PointF(width - 1, 0);
-		//		bot = new PointF(0, height - 1);
-		//	}
+			var top = new Vector2(0, 0);
+			var bot = new Vector2(width - 1, height - 1);
+			if (angle > 90)
+			{
+				top = new Vector2(width - 1, 0);
+				bot = new Vector2(0, height - 1);
+			}
 
-		//	var beginPerpLine = Line2D.FromNormalAndPoint(line1, top);
-		//	var endPerpLine = Line2D.FromNormalAndPoint(line1, bot);
+			var beginPerpLine = Line2D.FromNormalAndPoint(line1, top);
+			var endPerpLine = Line2D.FromNormalAndPoint(line1, bot);
 
-		//	var begin = line1.GetIntersection(beginPerpLine);
-		//	var end = line1.GetIntersection(endPerpLine);
+			var begin = line1.GetIntersection(beginPerpLine);
+			var end = line1.GetIntersection(endPerpLine);
 
-		//	var distance = new Vector2(begin.X, begin.Y) - new Vector2(end.X, end.Y);
-		//	var distance1 = distance.Length() * (1 - offset) / 2;
-		//	var distance2 = distance.Length() - distance1;
+			var distance = new Vector2(begin.X, begin.Y) - new Vector2(end.X, end.Y);
+			var distance1 = distance.Length() * (1 - offset) / 2;
+			var distance2 = distance.Length() - distance1;
 
-		//	var diffrenceColor = (color2.ToVector4() - color1.ToVector4()) / 2;
-		//	var dColor1 = diffrenceColor / distance1;
-		//	var dColor2 = diffrenceColor / distance2;
+			var differenceColor = (color2.ToVector4() - color1.ToVector4()) / 2;
+			var dColor1 = differenceColor / distance1;
+			var dColor2 = differenceColor / distance2;
 
-		//	//НЕ ТРОГАТЬ!!!
-		//	var arrayColor = new Color[width, height];
-		//	for (int i = 0; i < width; i++)
-		//		for (int j = 0; j < height; j++)
-		//		{
-		//			var currentPerpLine = Line2D.FromNormalAndPoint(line1, new PointF(i, j));
-		//			var current = line1.GetIntersection(currentPerpLine);
+			var arrayColor = new Color[width, height];
+			for (int x = 0; x < width; x++)
+				for (int y = 0; y < height; y++)
+				{
+					var currentPerpLine = Line2D.FromNormalAndPoint(line1, new Vector2(x, y));
+					var current = line1.GetIntersection(currentPerpLine);
+					
+					Vector2 d = begin - current;
+					if (d.Length() < distance1)
+					{
+						arrayColor[x, y] = Color.FromNonPremultiplied(color1.ToVector4() + dColor1 * d.Length());
+						continue;
+					}
+					if (Math.Abs(d.Length() - distance1) > float.Epsilon)
+					{
+						arrayColor[x, y] = Color.FromNonPremultiplied(color2.ToVector4() - dColor2 * (distance.Length() - d.Length()));
+						continue;
+					}
+					arrayColor[x, y] = (Math.Abs(distance2) < float.Epsilon) ? color2 : color1;
+				}
 
-		//			Vector2 d = begin.ToVector2() - current.ToVector2();
-		//			if (d.Length() < distance1)
-		//			{
-		//				arrayColor[i, j] = Color.FromNonPremultiplied(color1.ToVector4() + dColor1 * d.Length());
-		//				continue;
-		//			}
-		//			if (Math.Abs(d.Length() - distance1) > float.Epsilon)
-		//			{
-		//				arrayColor[i, j] = Color.FromNonPremultiplied(color2.ToVector4() - dColor2 * (distance.Length() - d.Length()));
-		//				continue;
-		//			}
-		//			arrayColor[i, j] = (Math.Abs(distance2) < float.Epsilon) ? color2 : color1;
-		//		}
+			SetDataToTexture(texture, arrayColor);
 
-		//	SetDataToTexture(texture, arrayColor);
-
-		//	return texture;
-		//}
+			return texture;
+		}
 
 		private static Texture2D GetEmptyTexture(GraphicsDevice graphicsDevice, int width, int height)
 		{
@@ -110,7 +111,7 @@ namespace MonoGameExtensions
 						dataWidth + 'x' + dataHeight, targetTexture.Width + 'x' + targetTexture.Height));
 			}
 
-			var data1D = Code.ConvertMassive2To1(data);
+			var data1D = Code.ConvertMassive2To1(data, true);
 			targetTexture.SetData(data1D);
 		}
 
