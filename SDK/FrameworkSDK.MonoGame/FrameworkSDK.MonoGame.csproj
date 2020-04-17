@@ -1,170 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1C9A9C3F-5163-4F5A-B1CB-C43876980910}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FrameworkSDK.MonoGame</RootNamespace>
-    <AssemblyName>FrameworkSDK.MonoGame</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <LangVersion>7.2</LangVersion>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\MonoGame.Framework.Portable.3.7.1.189\lib\portable-net45+win8+wpa81\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+    <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
+    <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AppContext.cs" />
-    <Compile Include="Constructing\GameConstructingException.cs" />
-    <Compile Include="Constructing\GameDefaultConfigurationSteps.cs" />
-    <Compile Include="Constructing\GameFactory.cs" />
-    <Compile Include="Constructing\GameRunner.cs" />
-    <Compile Include="FrameworkMonoGameException.cs" />
-    <Compile Include="Constructing\GameConfigurator.cs" />
-    <Compile Include="Graphics\RenderingTools\DrawContext.cs" />
-    <Compile Include="Graphics\RenderingTools\PipelineGraphicDevice.cs" />
-    <Compile Include="Graphics\RenderingTools\RenderContext.cs" />
-    <Compile Include="Config\DefaultGameParameters.cs" />
-    <Compile Include="Graphics\Pipeline\ComponentsByPassAggregator.cs" />
-    <Compile Include="Graphics\Pipeline\DefaultPipelinePass.cs" />
-    <Compile Include="Graphics\Pipeline\GraphicsPipelineContextFactory.cs" />
-    <Compile Include="Graphics\Pipeline\IComponentsByPassAggregator.cs" />
-    <Compile Include="Graphics\Pipeline\IGraphicsPipelineContext.cs" />
-    <Compile Include="Graphics\RenderingTools\IGraphicDevice.cs" />
-    <Compile Include="Graphics\Pipeline\IGraphicsPipelineContextFactory.cs" />
-    <Compile Include="Graphics\Pipeline\GraphicsPipeline.cs" />
-    <Compile Include="Graphics\RenderingTools\IDrawContext.cs" />
-    <Compile Include="Graphics\Pipeline\IGraphicsPass.cs" />
-    <Compile Include="Graphics\Pipeline\IGraphicsPipeline.cs" />
-    <Compile Include="Graphics\RenderingTools\IRenderContext.cs" />
-    <Compile Include="Basic\IDrawable.cs" />
-    <Compile Include="Config\IGameParameters.cs" />
-    <Compile Include="Graphics\Basic\IGraphicComponent.cs" />
-    <Compile Include="Mvc\IModelsProvider.cs" />
-    <Compile Include="Graphics\Basic\IRenderableComponent.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultScenesContainer.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultScenesResolver.cs" />
-    <Compile Include="Mvc\Mapping\IMvcScheme.cs" />
-    <Compile Include="Mvc\Mapping\IMvcSchemeValidateResult.cs" />
-    <Compile Include="Mvc\Mapping\IScenesContainer.cs" />
-    <Compile Include="Mvc\Mapping\IScenesRegistrator.cs" />
-    <Compile Include="Mvc\Mapping\IScenesResolver.cs" />
-    <Compile Include="Mvc\IViewsManager.cs" />
-    <Compile Include="Mvc\Mapping\BaseMvcStrategy.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultModelsProvider.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultModelsResolver.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultMvcStrategy.cs" />
-    <Compile Include="Mvc\Mapping\IModelsResolver.cs" />
-    <Compile Include="Mvc\Mapping\IMvcStrategyService.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultControllersProvider.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultViewsProvider.cs" />
-    <Compile Include="Mvc\Mapping\Default\MappingResolver.cs" />
-    <Compile Include="Mvc\Mapping\IControllersProvider.cs" />
-    <Compile Include="Mvc\Mapping\IViewsProvider.cs" />
-    <Compile Include="Mvc\Mapping\MvcScheme.cs" />
-    <Compile Include="Mvc\Mapping\Default\MvcSchemeExtensions.cs" />
-    <Compile Include="Mvc\Mapping\Default\ResolversExtensions.cs" />
-    <Compile Include="Mvc\Mapping\MvcSchemeValidateResult.cs" />
-    <Compile Include="Mvc\Mapping\ScenesRegistratorExtension.cs" />
-    <Compile Include="Mvc\Scenes\SceneCollectionsExtension.cs" />
-    <Compile Include="Constructing\GameConfiguratorExtensions.cs" />
-    <Compile Include="IGameHeart.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultControllersResolver.cs" />
-    <Compile Include="Mvc\Mapping\Default\DefaultViewsResolver.cs" />
-    <Compile Include="IGameHost.cs" />
-    <Compile Include="Constructing\GameModule.cs" />
-    <Compile Include="GameApplication.cs" />
-    <Compile Include="Mvc\Controllers\ControllerGeneric.cs" />
-    <Compile Include="Mvc\Controllers\EmptyController.cs" />
-    <Compile Include="Mvc\Mapping\IncompatibleControllerTypeException.cs" />
-    <Compile Include="Mvc\Mapping\IncompatibleModelTypeException.cs" />
-    <Compile Include="Mvc\Mapping\IncompatibleViewTypeException.cs" />
-    <Compile Include="Mvc\Mapping\MappingException.cs" />
-    <Compile Include="Mvc\Mapping\IControllersResolver.cs" />
-    <Compile Include="Mvc\Mapping\IViewsResolver.cs" />
-    <Compile Include="Mvc\Scenes\ISceneComponent.cs" />
-    <Compile Include="Mvc\Scenes\ScenesException.cs" />
-    <Compile Include="Mvc\Scenes\ViewMapping.cs" />
-    <Compile Include="Mvc\Views\IView.cs" />
-    <Compile Include="Mvc\Views\View.cs" />
-    <Compile Include="Mvc\Views\ViewGeneric.cs" />
-    <Compile Include="GameHeart.cs" />
-    <Compile Include="Mvc\Controllers\Controller.cs" />
-    <Compile Include="Mvc\IClosable.cs" />
-    <Compile Include="Mvc\Controllers\IController.cs" />
-    <Compile Include="Mvc\IControllersManager.cs" />
-    <Compile Include="Graphics\Basic\IDrawableComponent.cs" />
-    <Compile Include="Mvc\IScenesController.cs" />
-    <Compile Include="Basic\IUpdateable.cs" />
-    <Compile Include="Mvc\Scenes\EmptyScene.cs" />
-    <Compile Include="Mvc\Scenes\IScene.cs" />
-    <Compile Include="Mvc\Scenes\Scene.cs" />
-    <Compile Include="Mvc\ClosingState.cs" />
-    <Compile Include="Mvc\Scenes\ScenesController.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+    <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FrameworkSDK\FrameworkSDK.csproj">
-      <Project>{9d88fe04-33a4-40e7-814a-aeccc814e0d8}</Project>
-      <Name>FrameworkSDK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoGameExtensions\MonoGameExtensions.csproj">
-      <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
-      <Name>MonoGameExtensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NetExtensions\NetExtensions.csproj">
-      <Project>{ef610c39-8f90-4fcd-a95d-b041bf71251d}</Project>
-      <Name>NetExtensions</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TODO.txt" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

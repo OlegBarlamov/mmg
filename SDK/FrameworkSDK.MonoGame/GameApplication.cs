@@ -3,6 +3,7 @@ using FrameworkSDK.Localization;
 using FrameworkSDK.MonoGame.Mvc;
 using Microsoft.Xna.Framework;
 using FrameworkSDK.IoC;
+using Microsoft.Xna.Framework.Content;
 using IUpdateable = FrameworkSDK.MonoGame.Mvc.IUpdateable;
 using IDrawable = FrameworkSDK.MonoGame.Mvc.IDrawable;
 
@@ -35,6 +36,15 @@ namespace FrameworkSDK.MonoGame
 	    {
 
 	    }
+
+	    protected virtual void Draw(GameTime gameTime)
+	    {
+		    
+	    }
+
+	    protected IGameHeart Game => GameHeart;
+	    
+	    protected ContentManager Content => ((Game) GameHeart).Content;
 
 	    void IGameHost.Initialize(IGameHeart gameHeart)
 	    {
@@ -79,6 +89,8 @@ namespace FrameworkSDK.MonoGame
 	    void IDrawable.Draw(GameTime gameTime)
 	    {
             ScenesController.Draw(gameTime);
+            
+            Draw(gameTime);
 	    }
 
         void IDisposable.Dispose()

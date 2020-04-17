@@ -24,7 +24,8 @@ namespace Console.InGame
         private readonly ConsoleView _view;
         private readonly RenderersProvider _renderersProvider = new RenderersProvider();
 
-        public InGameConsoleController([NotNull] IConsoleMessagesProvider consoleMessagesProvider,
+        public InGameConsoleController(
+            [NotNull] IConsoleMessagesProvider consoleMessagesProvider,
             [NotNull] IConsoleCommandExecutor consoleCommandExecutor,
             [NotNull] InGameConsoleConfig config,
             [NotNull] GraphicsDevice graphicsDevice)

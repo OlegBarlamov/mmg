@@ -12,6 +12,11 @@ namespace FrameworkSDK.Constructing
 	{
 		public static IAppConfigurator SetupCustomLocalization([NotNull] this IAppConfigurator configurator, [NotNull] Func<ILocalization> localizationFactory)
 		{
+			return configurator.SetupCustomLocalization<object>(null, context => localizationFactory());
+		}
+		
+		public static IAppConfigurator SetupCustomLocalization<T>([NotNull] this IAppConfigurator configurator, T context, [NotNull] Func<T, ILocalization> localizationFactory)
+		{
 			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
 			if (localizationFactory == null) throw new ArgumentNullException(nameof(localizationFactory));
 
@@ -19,16 +24,21 @@ namespace FrameworkSDK.Constructing
 			initializationPhase.AddOrReplace(new SimplePipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Localization,
 				true,
-				context =>
+				ctx =>
 				{
-					var localization = GetFromFactory(localizationFactory);
-					context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
+					var localization = GetFromFactory(localizationFactory, context);
+					ctx.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
 				}));
 
 			return configurator;
 		}
 
 		public static IAppConfigurator SetupCustomLogger([NotNull] this IAppConfigurator configurator, [NotNull] Func<IFrameworkLogger> loggerFactory)
+		{
+			return configurator.SetupCustomLogger<object>(null, context => loggerFactory());
+		}
+		
+		public static IAppConfigurator SetupCustomLogger<T>([NotNull] this IAppConfigurator configurator, T context, [NotNull] Func<T, IFrameworkLogger> loggerFactory)
 		{
 			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
 			if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
@@ -37,16 +47,21 @@ namespace FrameworkSDK.Constructing
 			initializationPhase.AddOrReplace(new SimplePipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Logging,
 				true,
-				context =>
+				ctx =>
 				{
-					var logger = GetFromFactory(loggerFactory);
-					context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
+					var logger = GetFromFactory(loggerFactory, context);
+					ctx.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
 				}));
 
 			return configurator;
 		}
 
 		public static IAppConfigurator SetupCustomIoc([NotNull] this IAppConfigurator configurator, [NotNull] Func<IServiceContainerFactory> serviceContainerFactoryCreator)
+		{
+			return configurator.SetupCustomIoc<object>(null, context => serviceContainerFactoryCreator());
+		}
+		
+		public static IAppConfigurator SetupCustomIoc<T>([NotNull] this IAppConfigurator configurator, T context, [NotNull] Func<T, IServiceContainerFactory> serviceContainerFactoryCreator)
 		{
 			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
 			if (serviceContainerFactoryCreator == null) throw new ArgumentNullException(nameof(serviceContainerFactoryCreator));
@@ -55,16 +70,21 @@ namespace FrameworkSDK.Constructing
 			initializationPhase.AddOrReplace(new SimplePipelineAction(
 				DefaultConfigurationSteps.InitializationActions.Ioc,
 				true,
-				context =>
+				ctx =>
 				{
-					var serviceContainerFactory = GetFromFactory(serviceContainerFactoryCreator);
-					context.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
+					var serviceContainerFactory = GetFromFactory(serviceContainerFactoryCreator, context);
+					ctx.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				}));
 
 			return configurator;
 		}
 
 		public static IAppConfigurator RegisterServices([NotNull] this IAppConfigurator configurator, [NotNull] Action<IServiceRegistrator> registerAction)
+		{
+			return configurator.RegisterServices<object>(null, (context, registrator) => registerAction(registrator));
+		}
+		
+		public static IAppConfigurator RegisterServices<T>([NotNull] this IAppConfigurator configurator, T context, [NotNull] Action<T, IServiceRegistrator> registerAction)
 		{
 			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
 			if (registerAction == null) throw new ArgumentNullException(nameof(registerAction));
@@ -73,10 +93,10 @@ namespace FrameworkSDK.Constructing
 			initializationPhase.AddAction(new SimplePipelineAction(
 				$"{DefaultConfigurationSteps.ExternalRegistrationActions.Registration}_{initializationPhase.Actions.Count}",
 				true,
-				context =>
+				ctx =>
 				{
-					var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(context, DefaultConfigurationSteps.ContextKeys.Container);
-					registerAction.Invoke(serviceRegistrator);
+					var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(ctx, DefaultConfigurationSteps.ContextKeys.Container);
+					registerAction.Invoke(context, serviceRegistrator);
 				}));
 
 			return configurator;
@@ -122,6 +142,18 @@ namespace FrameworkSDK.Constructing
 			if (factory == null) throw new ArgumentNullException(nameof(factory));
 
 			var result = factory.Invoke();
+			if (result == null)
+				throw new AppConstructingException(Strings.Exceptions.Constructing.FactoryObjectNull);
+
+			return result;
+		}
+		
+		[NotNull]
+		private static T GetFromFactory<C,T>([NotNull] Func<C,T> factory, C context)
+		{
+			if (factory == null) throw new ArgumentNullException(nameof(factory));
+
+			var result = factory.Invoke(context);
 			if (result == null)
 				throw new AppConstructingException(Strings.Exceptions.Constructing.FactoryObjectNull);
 

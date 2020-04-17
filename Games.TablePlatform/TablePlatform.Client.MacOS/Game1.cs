@@ -1,7 +1,8 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Atom.Client.MacOS
+namespace TablePlatform.Client.MacOS
 {
   public class Game1 : Game
   {

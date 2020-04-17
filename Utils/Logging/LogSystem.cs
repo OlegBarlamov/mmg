@@ -10,15 +10,17 @@ namespace Logging
     {
         private string LogDirectoryFullPath { get; }
         private bool IsDebug { get; }
+        private bool FakeLog { get; }
 
         private readonly ILoggerFactory _internalLoggerFactory = new LoggerFactory();
 
-        public LogSystem(string logDirectoryFullPath, bool isDebug)
+        public LogSystem(string logDirectoryFullPath, bool isDebug, bool fakeLog = false)
         {
             LogDirectoryFullPath = logDirectoryFullPath ?? throw new ArgumentNullException(nameof(logDirectoryFullPath));
             IsDebug = isDebug;
+            FakeLog = fakeLog;
 
-            var internalProvider = new LoggersProvider(logDirectoryFullPath, isDebug);
+            var internalProvider = new LoggersProvider(logDirectoryFullPath, isDebug, fakeLog);
 
             _internalLoggerFactory.AddProvider(internalProvider);
         }
@@ -35,7 +37,7 @@ namespace Logging
 
         public void OpenErrorsLogIfNeed()
         {
-            if (!IsDebug)
+            if (!IsDebug || FakeLog)
                 return;
 
             if (GetLoggerOutputFilePath(LoggersProvider.ErrorLoggerName, out var errorLogOutputFilePath))

@@ -1,16 +1,23 @@
 ﻿using System;
+using FrameworkSDK.IoC;
 
-namespace Atom.Client.MacOS
+namespace TablePlatform.Client.MacOS
 {
-    internal class Program
+    internal class Program : IAppRunProgram
     {
         [STAThread]
         public static void Main()
         {
-            using (var game = new Game1())
+            var program = new Program();
+            using (var game = TablePlatformFactory.Create(program))
             {
                 game.Run();
             }
+        }
+
+        public void RegisterCustomServices(IServiceRegistrator serviceRegistrator)
+        {
+            
         }
     }
 }

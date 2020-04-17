@@ -19,15 +19,17 @@ namespace Logging
 
         private string LogsDirectoryFullPath { get; }
         private bool IsDebug { get; }
+        private bool FakeLog { get; }
 
         private readonly ConcurrentQueue<Serilog.ILogger> _createdDisposableLoggers = new ConcurrentQueue<Serilog.ILogger>();
 
         private Logger[] SystemLoggers { get; }
 
-        public LoggersProvider(string logsDirectoryFullPath, bool isDebug)
+        public LoggersProvider(string logsDirectoryFullPath, bool isDebug, bool fakeLog)
         {
             LogsDirectoryFullPath = logsDirectoryFullPath ?? throw new ArgumentNullException(nameof(logsDirectoryFullPath));
             IsDebug = isDebug;
+            FakeLog = fakeLog;
 
             SystemLoggers = new[]
             {
@@ -88,9 +90,16 @@ namespace Logging
 
         private LoggerConfiguration AddWriteToFileOption(LoggerConfiguration loggerConfiguration, string categoryName)
         {
-            var outputFileName = CategoryNameToLogFileName(categoryName);
-            var outputFilePath = Path.Combine(LogsDirectoryFullPath, outputFileName);
-            return loggerConfiguration.WriteToFile(outputFilePath);
+            if (!FakeLog)
+            {
+                var outputFileName = CategoryNameToLogFileName(categoryName);
+                var outputFilePath = Path.Combine(LogsDirectoryFullPath, outputFileName);
+                return loggerConfiguration.WriteToFile(outputFilePath);
+            }
+            else
+            {
+                return loggerConfiguration;
+            }
         }
 
         private ILogger Convert(Serilog.ILogger serilogLogger, string categoryName)

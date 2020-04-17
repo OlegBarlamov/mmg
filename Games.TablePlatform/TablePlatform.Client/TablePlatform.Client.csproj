@@ -12,8 +12,19 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj" />
       <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+      <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
       <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+      <ProjectReference Include="..\..\Utils\Console\Console.InGame\Console.InGame.csproj" />
+      <ProjectReference Include="..\..\Utils\Console\Console.LoggingAdapter\Console.LoggingAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Logging\Logging.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac" Version="5.1.2" />
+      <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+      <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
     </ItemGroup>
 
 </Project>
