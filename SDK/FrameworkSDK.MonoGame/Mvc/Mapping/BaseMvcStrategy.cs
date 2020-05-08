@@ -1,7 +1,6 @@
 ﻿using System;
-using FrameworkSDK.Localization;
+using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Logging;
-using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace

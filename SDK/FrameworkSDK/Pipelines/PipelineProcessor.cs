@@ -6,7 +6,7 @@ namespace FrameworkSDK.Pipelines
 {
     public abstract class PipelineProcessor : IPipelineProcessor
     {
-        protected PipelineContext Context { get; }
+        public PipelineContext Context { get; }
 
         protected PipelineProcessor([NotNull] PipelineContext context)
         {
@@ -93,12 +93,17 @@ namespace FrameworkSDK.Pipelines
 
         }
 
+        protected virtual void ProcessPipeLineAction(IPipelineContext context, IPipelineAction action)
+        {
+            action.Process(context);
+        }
+
         private void ProcessPhaseAction(IPipelineAction pipelineAction, IPipelineContext context, PipelineStep phase)
         {
             try
             {
                 OnStepActionProcessStarted(pipelineAction, phase);
-                pipelineAction.Process(context);
+                ProcessPipeLineAction(context, pipelineAction);
                 OnStepActionProcessCompleted(pipelineAction, phase);
             }
             catch (Exception e)

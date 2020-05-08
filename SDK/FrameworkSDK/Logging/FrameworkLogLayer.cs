@@ -6,5 +6,6 @@
         GameCore,
         Mvc,
         Scenes,
+        Resources,
     }
 }

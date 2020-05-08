@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.IoC;
+using FrameworkSDK.Localization;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 
@@ -16,11 +17,26 @@ namespace FrameworkSDK
 
         public override void Run()
         {
-            var app = CreateApp();
+            TApp app;
+            
+            try
+            {
+                app = CreateApp();
+                base.Run();
+            }
+            catch (Exception e)
+            {
+                throw new AppConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, typeof(TApp).Name);
+            }
 
-            base.Run();
-
-            app.Run();
+            try
+            {
+                app.Run();
+            }
+            catch (Exception e)
+            {
+                throw new FrameworkException(Strings.Exceptions.FatalException, e);
+            }
         }
 
         private static TApp CreateApp()

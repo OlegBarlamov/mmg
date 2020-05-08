@@ -1,11 +1,14 @@
-﻿using System;
+using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Mvc;
-using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame
 {
-    public interface IGameHost : IApplication, IUpdateable, IDrawable, IDisposable
+    internal interface IGameHost : IApplication, IUpdateable, IDrawable, IDisposableExtended
     {
-        void Initialize([NotNull] IGameHeart gameHeart);
+        void OnInitialize();
+
+        void OnLoadContent();
+
+        void OnUnloadContent();
     }
 }

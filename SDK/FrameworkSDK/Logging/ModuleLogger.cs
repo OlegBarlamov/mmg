@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.Logging
@@ -66,6 +67,24 @@ namespace FrameworkSDK.Logging
         public void Log(string message, FrameworkLogLevel level = FrameworkLogLevel.Info, params object[] args)
         {
 	        LogInternal(message, LogModule, level);
+        }
+
+        public void LogCollection<T>([NotNull, ItemNotNull] IEnumerable<T> collection, FrameworkLogLevel level = FrameworkLogLevel.Info)
+        {
+	        if (collection == null) throw new ArgumentNullException(nameof(collection));
+	        LogCollection(collection, x => x.ToString(), level);
+        }
+        
+        public void LogCollection<T>([NotNull, ItemNotNull] IEnumerable<T> collection, [NotNull] Func<T, string> formatter,
+	        FrameworkLogLevel level = FrameworkLogLevel.Info)
+        {
+	        if (collection == null) throw new ArgumentNullException(nameof(collection));
+	        if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+	        foreach (var item in collection)
+	        {
+		        var msg = formatter.Invoke(item);
+		        Log(msg, level);
+	        }
         }
 
 		void IFrameworkLogger.Log(string message, FrameworkLogModule module, FrameworkLogLevel level)

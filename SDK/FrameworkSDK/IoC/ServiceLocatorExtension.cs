@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.IoC
@@ -17,7 +18,7 @@ namespace FrameworkSDK.IoC
         public static IReadOnlyList<T> ResolveMultiple<T>([NotNull] this IServiceLocator serviceLocator)
         {
             if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
-            return (IReadOnlyList<T>)serviceLocator.ResolveMultiple(typeof(T));
+            return serviceLocator.ResolveMultiple(typeof(T)).Cast<T>().ToArray();
         }
 
         public static bool IsServiceRegistered<T>([NotNull] this IServiceLocator serviceLocator)

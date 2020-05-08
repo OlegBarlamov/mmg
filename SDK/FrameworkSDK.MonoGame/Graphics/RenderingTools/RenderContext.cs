@@ -2,6 +2,8 @@
 {
     public class RenderContext : IRenderContext
     {
-
+        public void Dispose()
+        {
+        }
     }
 }

@@ -14,8 +14,8 @@ namespace Console.InGame.Implementation
         public event Action HideAnimationFinished;
 
         private ConsoleModel Model { get; }
-        private InGameConsoleConfig Config { get; }
-        private GraphicsDevice GraphicsDevice { get; }
+        private InGameConsoleConfig Config { get; set; }
+        private GraphicsDevice GraphicsDevice { get; set; }
         private RenderersProvider RenderersProvider { get; }
 
         private string _lastEnteringText;
@@ -41,13 +41,24 @@ namespace Console.InGame.Implementation
         private RenderTarget2D _renderTargetForConsoleMessages;
         private RenderTarget2D _renderTargetForCommandHelp;
 
-        public ConsoleView([NotNull] ConsoleModel model, [NotNull] InGameConsoleConfig config, [NotNull] GraphicsDevice graphicsDevice,
-            [NotNull] RenderersProvider renderersProvider)
+        private bool _initialized;
+        
+        public ConsoleView([NotNull] ConsoleModel model, [NotNull] RenderersProvider renderersProvider)
         {
             Model = model ?? throw new ArgumentNullException(nameof(model));
-            Config = config ?? throw new ArgumentNullException(nameof(config));
-            GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
             RenderersProvider = renderersProvider ?? throw new ArgumentNullException(nameof(renderersProvider));
+        }
+
+        public void Initialize([NotNull] InGameConsoleConfig config,[NotNull] GraphicsDevice graphicsDevice)
+        {
+            if (_initialized) throw new InGameConsoleException("Console initialized already");
+            _initialized = true;
+            
+            GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+            
+            _renderTargetForConsoleMessages = CreateRenderTarget();
+            _renderTargetForCommandHelp = CreateRenderTarget();
         }
 
         public void Dispose()
@@ -57,14 +68,9 @@ namespace Console.InGame.Implementation
             _renderTargetForCommandHelp.Dispose();
         }
 
-        public void LoadContent()
-        {
-            _renderTargetForConsoleMessages = CreateRenderTarget();
-            _renderTargetForCommandHelp = CreateRenderTarget();
-        }
-
         public void Show()
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
             _actualWidth = Model.Width;
             _isHideAnimationActive = false;
             _isShowAnimationActive = true;
@@ -72,12 +78,14 @@ namespace Console.InGame.Implementation
 
         public void Hide()
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
             _isShowAnimationActive = false;
             _isHideAnimationActive = true;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
             LazyDraw(gameTime, spriteBatch);
             
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -95,6 +103,7 @@ namespace Console.InGame.Implementation
 
         public void Update(GameTime gameTime)
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
             ProcessAnimation(gameTime);
 
             _caretVisibleTimeSpan += gameTime.ElapsedGameTime;

@@ -9,5 +9,6 @@ namespace FrameworkSDK.MonoGame.Config
         Int32Size BackBufferSize { get; }
         bool IsFullScreenMode { get; }
         GameRunBehavior GameRunBehavior { get; }
+        bool IsMouseVisible { get; }
     }
 }

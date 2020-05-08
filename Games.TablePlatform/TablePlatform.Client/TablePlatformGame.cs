@@ -1,74 +1,82 @@
 using System;
 using Console.Core;
-using Console.InGame;
+using Console.FrameworkAdapter;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGameExtensions;
 
 namespace TablePlatform.Client
 {
-    internal class TablePlatformGame : GameApplication
+    [UsedImplicitly]
+    internal class TablePlatformGame : GameApp
     {
-        public override Scene CurrentScene { get; } = new EmptyScene();
+        protected override Scene CurrentScene => _currentScene;
         
-        public IConsoleMessagesProvider ConsoleMessagesProvider { get; }
-        public IConsoleCommandExecutor ConsoleCommandExecutor { get; }
+        private IConsoleController ConsoleController { get; }
+        private IResourcesService ResourcesService { get; }
+        private DefaultConsoleManipulator ConsoleManipulator { get; }
 
-        private InGameConsoleController _inGameConsoleController;
+        private Scene _currentScene;
+        
+        private readonly GamePackage _package = new GamePackage();
 
-        private bool _initialized;
-
-        public TablePlatformGame(IConsoleMessagesProvider consoleMessagesProvider, IConsoleCommandExecutor consoleCommandExecutor)
+        public TablePlatformGame(
+            [NotNull] IConsoleController consoleController,
+            [NotNull] IResourcesService resourcesService,
+            [NotNull] DefaultConsoleManipulator consoleManipulator)
         {
-            ConsoleMessagesProvider = consoleMessagesProvider;
-            ConsoleCommandExecutor = consoleCommandExecutor;
+            ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
+            ResourcesService = resourcesService ?? throw new ArgumentNullException(nameof(resourcesService));
+            ConsoleManipulator = consoleManipulator ?? throw new ArgumentNullException(nameof(consoleManipulator));
+
+            _package.Loaded += PackageOnLoaded;
+            ResourcesService.LoadPackage(_package);
         }
 
-        protected override void Initialize()
+        private void PackageOnLoaded()
         {
-            base.Initialize();
+            _currentScene = new GameScene(_package);
+        }
+
+        protected override void Dispose()
+        {
+            base.Dispose();
             
-            Content.RootDirectory = "Resources";
+            _package.Dispose();
         }
 
-        private SpriteBatch _spriteBatch;
-        
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+
+            ConsoleController.Show();
+        }
+
+        protected override void OnContentLoaded()
+        {
+            base.OnContentLoaded();
+        }
+
+        protected override void OnContentUnloading()
+        {
+            base.OnContentUnloading();
+            
+            ResourcesService.UnloadPackage(_package);
+        }
+
         protected override void Update(GameTime gameTime)
         {
-            if (!_initialized)
-            {
-                _initialized = true;
-                var background = new Color(31,32,36);
-                var headerAmbient = new Color(26, 54, 84);
-                _inGameConsoleController = new InGameConsoleController(ConsoleMessagesProvider, ConsoleCommandExecutor, new InGameConsoleConfig
-                {
-                    DefaultWidth = 800,
-                    HeaderBackground = Game.GraphicsDeviceManager.GraphicsDevice.GetTextureGradientColor(headerAmbient, background, 30, 20, 90, 0.8f),
-                    Background = Game.GraphicsDeviceManager.GraphicsDevice.GetTextureDiffuseColor(background),
-                    CommandLineCorner = Game.GraphicsDeviceManager.GraphicsDevice.GetTextureDiffuseColor(Color.White),
-                    SuggestSelection = Game.GraphicsDeviceManager.GraphicsDevice.GetTextureDiffuseColor(Color.Orange),
-                    ConsoleFont = Content.Load<SpriteFont>("TextFont")
-                }, Game.GraphicsDeviceManager.GraphicsDevice);
-                
-                _spriteBatch = new SpriteBatch(Game.GraphicsDeviceManager.GraphicsDevice);
-                
-                _inGameConsoleController.LoadContent();
-                _inGameConsoleController.Show();
-            }
-            
             base.Update(gameTime);
             
-            _inGameConsoleController.Update(gameTime);
+            ConsoleManipulator.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            base.Draw(gameTime);
-            
-            _inGameConsoleController.Draw(gameTime, _spriteBatch);
+            base.Draw(gameTime, spriteBatch);
         }
     }
 }

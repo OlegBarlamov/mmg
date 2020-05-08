@@ -14,9 +14,11 @@ namespace Console.InGame.Implementation
     {
         public event Action<string> UserCommand;
 
-        public float Height { get; }
-        public float Width { get; }
-        public Vector2 Position { get; }
+        public float Height { get; private set; }
+        public float Width { get; private set; }
+        public Vector2 Position { get; private set; }
+
+        public bool Initialized => _initialized;
 
         public string EnteringCommandText { get; private set; } = string.Empty;
 
@@ -38,7 +40,7 @@ namespace Console.InGame.Implementation
 
         public bool IsAllowControl { get; set; }
 
-        [NotNull] private InGameConsoleConfig Config { get; }
+        private InGameConsoleConfig Config { get; set; }
         [NotNull] private RenderersProvider RenderersProvider { get; }
 
         private bool _needUpdateVisibleMessages;
@@ -58,6 +60,8 @@ namespace Console.InGame.Implementation
         private int _enteredCommandSelectedIndex = -1;
 
         private float notUsedOffsetY = 0;
+
+        private bool _initialized;
         
         private readonly List<IRenderingMessage> _allMessages = new List<IRenderingMessage>();
         private readonly object _allMessagesLocker = new object();
@@ -65,18 +69,24 @@ namespace Console.InGame.Implementation
         private readonly CommandSuggestionsProvider _commandSuggestionsProvider;
         private readonly List<string> _enteredCommands = new List<string>();
         
-        public ConsoleModel([NotNull] InGameConsoleConfig config, [NotNull] IConsoleCommandExecutor commandsProvider,
-            [NotNull] RenderersProvider renderersProvider)
+        public ConsoleModel([NotNull] IConsoleCommandExecutor commandsProvider, [NotNull] RenderersProvider renderersProvider)
         {
             if (commandsProvider == null) throw new ArgumentNullException(nameof(commandsProvider));
-            Config = config ?? throw new ArgumentNullException(nameof(config));
             RenderersProvider = renderersProvider ?? throw new ArgumentNullException(nameof(renderersProvider));
 
+            _commandSuggestionsProvider = new CommandSuggestionsProvider(commandsProvider);
+        }
+
+        public void Initialize(InGameConsoleConfig config)
+        {
+            if (_initialized) throw new InGameConsoleException("Console initialized already");
+            _initialized = true;
+            
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+            
             Height = config.DefaultHeight;
             Width = config.DefaultWidth;
             Position = config.Position;
-            
-            _commandSuggestionsProvider = new CommandSuggestionsProvider(commandsProvider);
         }
 
         public void Dispose()
@@ -86,12 +96,16 @@ namespace Console.InGame.Implementation
 
         public void OnShow()
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
             _needScrollByEnd = true;
+            
             _needUpdateVisibleMessages = true;
         }
 
         public void AddMessages(IEnumerable<IConsoleMessage> messages)
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
+            
             var newMessages = new List<IRenderingMessage>();
             foreach (var message in messages)
             {
@@ -115,9 +129,22 @@ namespace Console.InGame.Implementation
                 }
             }
         }
+        
+        public void Clear()
+        {
+            lock (_allMessagesLocker)
+            {
+                _allMessages.Clear();
+            }
+
+            _startVisibleIndex = 0;
+            _needUpdateVisibleMessages = true;
+        }
 
         public void Update(GameTime gameTime)
         {
+            if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
+            
             _inputController.Update(gameTime);
 
             ProcessInputCommandLine(gameTime);
@@ -232,18 +259,6 @@ namespace Console.InGame.Implementation
                 _fullPageFilled = totalHeight >= availableHeight;
                 _currentVisibleMessages = newVisibleMessages;
             }
-        }
-
-
-        public void Clear()
-        {
-            lock (_allMessagesLocker)
-            {
-                _allMessages.Clear();
-            }
-
-            _startVisibleIndex = 0;
-            _needUpdateVisibleMessages = true;
         }
 
         private void ProcessScrolling()

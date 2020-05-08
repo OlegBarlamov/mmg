@@ -1,12 +1,12 @@
 ﻿using System;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.IoC;
-using FrameworkSDK.Localization;
+using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Constructing
 {
-    internal class GameRunner<TGame> : IAppRunner where TGame : IGameHost
+    internal class GameRunner<TGame> : IAppRunner where TGame : GameApp
     {
         private IAppRunner AppRunner { get; }
 
@@ -17,21 +17,29 @@ namespace FrameworkSDK.MonoGame.Constructing
 
         public void Run()
         {
+            IGameHeart gameHeart;
+            
             try
             {
                 var locator = AppContext.ServiceLocator;
-                var gameHost = locator.Resolve<TGame>();
-                var gameHeart = locator.Resolve<IGameHeart>();
+                gameHeart = locator.Resolve<IGameHeart>();
 
-                gameHost.Initialize(gameHeart);
+                AppRunner.Run();
             }
             catch (Exception e)
             {
-                throw new GameConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e,
+                throw new GameConstructingException(Strings.Exceptions.Constructing.RunGameFailed, e,
                     typeof(TGame).Name);
             }
 
-            AppRunner.Run();
+            try
+            {
+                gameHeart.Run();
+            }
+            catch (Exception e)
+            {
+                throw new FrameworkMonoGameException(Strings.Exceptions.FatalException, e);
+            }
         }
 
         public void Dispose()

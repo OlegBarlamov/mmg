@@ -26,7 +26,7 @@ namespace FrameworkSDK.Constructing
 				true,
 				ctx =>
 				{
-					var localization = GetFromFactory(localizationFactory, context);
+					var localization = configurator.GetFromFactory(localizationFactory, context);
 					ctx.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Localization, localization);
 				}));
 
@@ -49,7 +49,7 @@ namespace FrameworkSDK.Constructing
 				true,
 				ctx =>
 				{
-					var logger = GetFromFactory(loggerFactory, context);
+					var logger = configurator.GetFromFactory(loggerFactory, context);
 					ctx.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Logger, logger);
 				}));
 
@@ -72,13 +72,22 @@ namespace FrameworkSDK.Constructing
 				true,
 				ctx =>
 				{
-					var serviceContainerFactory = GetFromFactory(serviceContainerFactoryCreator, context);
+					var serviceContainerFactory = configurator.GetFromFactory(serviceContainerFactoryCreator, context);
 					ctx.Heap.SetValue(DefaultConfigurationSteps.ContextKeys.Ioc, serviceContainerFactory);
 				}));
 
 			return configurator;
 		}
 
+		public static IAppConfigurator RegisterServices<TModule>([NotNull] this IAppConfigurator configurator)
+			where TModule : IServicesModule, new()
+		{
+			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
+			
+			var module = new TModule();
+			return configurator.RegisterServices(registrator => registrator.RegisterModule(module));
+		}
+		
 		public static IAppConfigurator RegisterServices([NotNull] this IAppConfigurator configurator, [NotNull] Action<IServiceRegistrator> registerAction)
 		{
 			return configurator.RegisterServices<object>(null, (context, registrator) => registerAction(registrator));
@@ -95,7 +104,7 @@ namespace FrameworkSDK.Constructing
 				true,
 				ctx =>
 				{
-					var serviceRegistrator = GetObjectFromContext<IServiceRegistrator>(ctx, DefaultConfigurationSteps.ContextKeys.Container);
+					var serviceRegistrator = configurator.GetObjectFromContext<IServiceRegistrator>(ctx, DefaultConfigurationSteps.ContextKeys.Container);
 					registerAction.Invoke(context, serviceRegistrator);
 				}));
 
@@ -137,19 +146,16 @@ namespace FrameworkSDK.Constructing
 	    }
 
         [NotNull]
-		private static T GetFromFactory<T>([NotNull] Func<T> factory)
+		public static T GetFromFactory<T>([NotNull] this IAppConfigurator configurator, [NotNull] Func<T> factory)
 		{
+			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
 			if (factory == null) throw new ArgumentNullException(nameof(factory));
 
-			var result = factory.Invoke();
-			if (result == null)
-				throw new AppConstructingException(Strings.Exceptions.Constructing.FactoryObjectNull);
-
-			return result;
+			return configurator.GetFromFactory<object, T>((c) => factory(), null);
 		}
 		
 		[NotNull]
-		private static T GetFromFactory<C,T>([NotNull] Func<C,T> factory, C context)
+		public static T GetFromFactory<C,T>([NotNull] this IAppConfigurator configurator, [NotNull] Func<C,T> factory, C context)
 		{
 			if (factory == null) throw new ArgumentNullException(nameof(factory));
 
@@ -161,10 +167,12 @@ namespace FrameworkSDK.Constructing
 		}
 
 		[NotNull]
-		private static T GetObjectFromContext<T>(IPipelineContext context, string key) where T : class
+		public static T GetObjectFromContext<T>([NotNull] this IAppConfigurator configurator, IPipelineContext context, string key) where T : class
 		{
+			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
+			
 			return context.Heap.GetObject<T>(key) ?? throw new AppConstructingException(
-			           string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T).Name));
+				       string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T).Name));
 		}
 	}
 }

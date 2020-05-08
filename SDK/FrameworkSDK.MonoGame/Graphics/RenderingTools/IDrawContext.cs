@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics
 {
-    public interface IDrawContext
+    public interface IDrawContext : IDisposable
     {
 	    /// <summary>Submit a sprite for drawing in the current batch.</summary>
 	    /// <param name="texture">A texture.</param>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Console.Core;
 using Console.Core.Models;
@@ -26,22 +27,28 @@ namespace Console.InGame
 
         public InGameConsoleController(
             [NotNull] IConsoleMessagesProvider consoleMessagesProvider,
-            [NotNull] IConsoleCommandExecutor consoleCommandExecutor,
-            [NotNull] InGameConsoleConfig config,
-            [NotNull] GraphicsDevice graphicsDevice)
+            [NotNull] IConsoleCommandExecutor consoleCommandExecutor)
         {
-            if (config == null) throw new ArgumentNullException(nameof(config));
             ConsoleMessagesProvider = consoleMessagesProvider ?? throw new ArgumentNullException(nameof(consoleMessagesProvider));
             ConsoleCommandExecutor = consoleCommandExecutor ?? throw new ArgumentNullException(nameof(consoleCommandExecutor));
 
-            CheckConfigValid(config);
-            
-            _model = new ConsoleModel(config, consoleCommandExecutor, _renderersProvider);
-            _view = new ConsoleView(_model, config, graphicsDevice, _renderersProvider);
+            _model = new ConsoleModel(consoleCommandExecutor, _renderersProvider);
+            _view = new ConsoleView(_model, _renderersProvider);
             
             _model.UserCommand += ModelOnUserCommand;
             _view.ShowAnimationFinished += ViewOnShowAnimationFinished;
             _view.HideAnimationFinished += ViewOnHideAnimationFinished;
+        }
+
+        public void Initialize([NotNull] InGameConsoleConfig config, [NotNull] GraphicsDevice graphicsDevice)
+        {
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (graphicsDevice == null) throw new ArgumentNullException(nameof(graphicsDevice));
+            
+            CheckConfigValid(config);
+            
+            _model.Initialize(config);
+            _view.Initialize(config, graphicsDevice);
             
             ConsoleMessagesProvider.NewMessages += ConsoleMessagesProviderOnNewMessages;
         }
@@ -77,12 +84,7 @@ namespace Console.InGame
             
             _renderersProvider.Register(dataType, renderer);
         }
-        
-        public void LoadContent()
-        {
-            _view.LoadContent();
-        }
-        
+
         public void Show()
         {
             if (_isDisposed) throw new ObjectDisposedException(nameof(InGameConsoleController));
@@ -165,10 +167,11 @@ namespace Console.InGame
 
         private void CheckConfigValid(InGameConsoleConfig config)
         {
-            // if (config.Background == null) throw new ArgumentNullException(nameof(config.Background));
-            // if (config.ConsoleFont == null) throw new ArgumentNullException(nameof(config.ConsoleFont));
-            // if (config.HeaderBackground == null) throw new ArgumentNullException(nameof(config.HeaderBackground));
-            // if (config.CommandLineCorner == null) throw new ArgumentNullException(nameof(config.CommandLineCorner));
+            if (config.Background == null) throw new ArgumentNullException(nameof(config.Background));
+            if (config.ConsoleFont == null) throw new ArgumentNullException(nameof(config.ConsoleFont));
+            if (config.HeaderBackground == null) throw new ArgumentNullException(nameof(config.HeaderBackground));
+            if (config.CommandLineCorner == null) throw new ArgumentNullException(nameof(config.CommandLineCorner));
+            if (config.SuggestSelection == null) throw new ArgumentNullException(nameof(config.SuggestSelection));
         }
     }
 }

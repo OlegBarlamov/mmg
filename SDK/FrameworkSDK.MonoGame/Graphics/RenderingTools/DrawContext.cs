@@ -14,6 +14,11 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
 	    {
 		    SpriteBatch = spriteBatch;
 	    }
+	    
+	    public void Dispose()
+	    {
+		    
+	    }
 
 	    public void Draw(Texture2D texture, Vector2? position = null, Rectangle? destinationRectangle = null,
 		    Rectangle? sourceRectangle = null, Vector2? origin = null, float rotation = 0, Vector2? scale = null,

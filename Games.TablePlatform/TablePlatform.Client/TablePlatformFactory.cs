@@ -1,17 +1,18 @@
 using System;
-using Console.Core;
+using Autofac.FrameworkAdapter;
+using Console.FrameworkAdapter;
+using Console.LoggingAdapter;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
-using FrameworkSDK.IoC;
-using FrameworkSDK.Logging;
+using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Constructing;
+using FrameworkSDK.MonoGame.ExternalComponents;
 using JetBrains.Annotations;
 using Logging;
-using TablePlatform.Client.Console;
-using TablePlatform.Client.IoC;
-using TablePlatform.Client.Logging;
+using Logging.FrameworkAdapter;
 using TablePlatform.Client.Modules;
 
+// ReSharper disable HeapView.CanAvoidClosure
 namespace TablePlatform.Client
 {
     public static class TablePlatformFactory
@@ -19,51 +20,30 @@ namespace TablePlatform.Client
         public static IAppRunner Create([NotNull] IAppRunProgram program)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
-            var context = new ConstructionContext(program);
-            return new AppFactory()
+            
+            var logSystem = new LogSystem("Logs", true, true);
+            var frameworkLogger = logSystem.ToFrameworkLogger();
+            var consoleProvider = new LoggerConsoleMessagesProvider();
+            logSystem.AddProvider(consoleProvider);
+            
+            return new AppFactory(frameworkLogger)
                 .CreateGame<TablePlatformGame>()
-                .SetupCustomLogger(context, InitializeLogSystem)
-                .SetupCustomIoc(context, InitializeIocSystem)
-                .RegisterServices(context, RegisterServices)
+                .SetupGameParameters(GetParameters)
+                .UseComponents()
+                    .AddConsole(consoleProvider, new CommandExecutorMediator())
+                .SetupCustomLogger(() => frameworkLogger)
+                .UseAutofac()
+                .RegisterServices<MainModule>()
+                .RegisterServices(program.RegisterCustomServices)
                 .Configure();
         }
-        
-        private static IFrameworkLogger InitializeLogSystem(ConstructionContext context)
+
+        private static IGameParameters GetParameters()
         {
-            var logSystem = new LogSystem("Logs", true, true);
-            var consoleSystem = ConsoleFactory.CreateConsole();
-            context.ConsoleSystem = consoleSystem;
-            logSystem.AddProvider(consoleSystem.ConsoleMessagesProvider);
-            return new FrameworkLoggerWrapper(logSystem);
-        }
-
-        private static void RegisterServices(ConstructionContext context, IServiceRegistrator serviceRegistrator)
-        {
-            serviceRegistrator.RegisterInstance<IConsoleMessagesProvider>(context.ConsoleSystem.ConsoleMessagesProvider);
-            serviceRegistrator.RegisterInstance<IConsoleCommandExecutor>(context.ConsoleSystem.ConsoleCommandExecutor);
-            //serviceRegistrator.RegisterInstance(context.ConsoleSystem.ConsoleController);
-
-            var module = new MainModule();
-            serviceRegistrator.RegisterModule(module);
-            
-            context.Program.RegisterCustomServices(serviceRegistrator);
-        }
-
-        private static IServiceContainerFactory InitializeIocSystem(ConstructionContext context)
-        {
-            return new AutofacServiceContainerFactory();
-        }
-
-        private class ConstructionContext
-        {
-            public IAppRunProgram Program { get; }
-            
-            public ConsoleWrapper ConsoleSystem { get; set; }
-
-            public ConstructionContext([NotNull] IAppRunProgram program)
+            return new DefaultGameParameters
             {
-                Program = program ?? throw new ArgumentNullException(nameof(program));
-            }
+                ContentRootDirectory = "Resources"
+            };
         }
     }
 }

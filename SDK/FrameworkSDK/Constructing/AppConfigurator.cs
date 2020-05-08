@@ -50,7 +50,14 @@ namespace FrameworkSDK.Constructing
         {
             if (!_configured)
             {
-                PipelineProcessor.Process(ConfigurationPipeline);
+                try
+                {
+                    PipelineProcessor.Process(ConfigurationPipeline);
+                }
+                catch (Exception e)
+                {
+                    throw new AppConstructingException(Strings.Exceptions.Constructing.ConstructingFailed, e);
+                }
             }
 
             _configured = true;

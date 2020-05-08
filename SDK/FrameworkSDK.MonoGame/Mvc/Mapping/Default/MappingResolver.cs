@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FrameworkSDK.IoC;
-using FrameworkSDK.Localization;
-using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
 using NetExtensions;
 

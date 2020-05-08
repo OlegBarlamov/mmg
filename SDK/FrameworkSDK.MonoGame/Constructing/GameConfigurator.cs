@@ -1,16 +1,16 @@
 ﻿using System;
 using FrameworkSDK.Constructing;
-using FrameworkSDK.Localization;
+using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Constructing
 {
-    public interface IGameConfigurator<TGame> : IAppConfigurator where TGame : IGameHost
+    public interface IGameConfigurator<TGame> : IAppConfigurator where TGame : GameApp
     {
     }
 
-    internal class GameConfigurator<TGame> : IGameConfigurator<TGame> where TGame : IGameHost
+    internal class GameConfigurator<TGame> : IGameConfigurator<TGame> where TGame : GameApp
     {
         public Pipeline ConfigurationPipeline => AppConfigurator.ConfigurationPipeline;
 

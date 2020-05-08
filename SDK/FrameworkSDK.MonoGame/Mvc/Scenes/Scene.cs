@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using FrameworkSDK.Common;
 using FrameworkSDK.IoC;
-using FrameworkSDK.Localization;
+using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Logging;
-using FrameworkSDK.MonoGame.Graphics.Pipeline;
+using FrameworkSDK.MonoGame.Basic;
+using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions;
 using NetExtensions;
+using IDrawable = FrameworkSDK.MonoGame.Basic.IDrawable;
+using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Mvc
@@ -19,15 +24,20 @@ namespace FrameworkSDK.MonoGame.Mvc
 		public string Name { get; }
 		
         protected object Model { get; private set; }
+        
+        protected virtual IGraphicsPipeline GraphicsPipeline { get; } 
 
-        [NotNull] protected IGraphicsPipeline GraphicsPipeline { get; set; }
-
-		[NotNull] private ModuleLogger Logger { get; }
+        [NotNull] private ModuleLogger Logger { get; }
 		[NotNull] private IMvcStrategyService MvcStrategy { get; }
 		[NotNull, ItemNotNull] private UpdatableCollection<IController> Controllers { get; }
 		[NotNull, ItemNotNull] private UpdatableCollection<ViewMapping> Views { get; }
+		
+		private static IGraphicsPipelineFactoryService GraphicsPipelineFactoryService { get; } =
+			AppContext.ServiceLocator.Resolve<IGraphicsPipelineFactoryService>();
 
-	    object IScene.Model
+		private readonly ObservableList<IGraphicComponent> _graphicComponents = new ObservableList<IGraphicComponent>();
+		
+		object IScene.Model
 	    {
 	        get => Model;
 	        set => Model = value;
@@ -39,27 +49,32 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 	        Model = model;
             MvcStrategy = AppContext.ServiceLocator.Resolve<IMvcStrategyService>();
-	        GraphicsPipeline = AppContext.ServiceLocator.Resolve<IGraphicsPipeline>();
 
             Logger = new ModuleLogger(FrameworkLogModule.Scenes);
 	        Controllers = new UpdatableCollection<IController>();
 	        Views = new UpdatableCollection<ViewMapping>();
+
+	        //TODO Not good. Virtual call + Scenes can not be created in GameApp constructor! 
+	        if (GraphicsPipeline == null)
+		        GraphicsPipeline = GraphicsPipelineFactoryService.Create().Build();
+	        
+	        GraphicsPipeline.SetupComponents(_graphicComponents);
 	    }
 
 	    protected Scene(object model)
-	        : this(GenerateScneeName(), model)
+	        : this(GenerateSceneName(), model)
 	    {
 
 	    }
 
         protected Scene()
-			:this(GenerateScneeName(), null)
+			:this(GenerateSceneName(), null)
 		{
 		}
-
+        
 	    public virtual void Dispose()
 	    {
-
+		    GraphicsPipeline.Dispose();
 	    }
 
 		public override string ToString()
@@ -213,9 +228,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		void IDrawable.Draw(GameTime gameTime)
 		{
-			//TODO чистка фоном и т.п
-
-			GraphicsPipeline.Process(gameTime, Views.Components());
+			GraphicsPipeline.Process(gameTime);
 		}
 
 		void IClosable.OnClosed()
@@ -309,6 +322,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		    Logger.Info(Strings.Info.DestroyViewFromScene, view.Name, controller?.Name, Name);
 
+		    _graphicComponents.Remove(view);
 		    view.OnRemovedFromScene(this);
 
             view.Destroy();
@@ -325,10 +339,11 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 			Logger.Info(Strings.Info.AddViewToScene, view.Name, controller?.Name, Name);
 
+			_graphicComponents.Add(view);
 		    mapping.View.OnAddedToScene(this);
         }
 
-	    private static string GenerateScneeName()
+	    private static string GenerateSceneName()
 	    {
 	        return NamesGenerator.Hash(HashType.SmallGuid, nameof(Scene).ToLowerInvariant());
 	    }

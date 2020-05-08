@@ -199,7 +199,7 @@ namespace FrameworkSDK.IoC.Default
 
 	    private void LogCreatedInstance(Type sourceType, object instance)
 	    {
-	        _logger.Debug(Strings.Info.AppConstructing.ServiceLocatorInstanceCreated, this, $"{sourceType.Name}->{instance?.GetType().Name}");
+	        _logger.Debug(Strings.Info.AppConstructing.ServiceLocatorInstanceCreated, this, $"{sourceType.Name}->{instance?.GetTypeName()}");
         }
 
         private static string GetId()

@@ -1,7 +1,6 @@
 ﻿using System;
 using FrameworkSDK.IoC;
-using FrameworkSDK.Localization;
-using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Mvc

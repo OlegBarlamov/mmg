@@ -4,23 +4,31 @@ using FrameworkSDK.IoC;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Config;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
+using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
-using NetExtensions;
 
 namespace FrameworkSDK.MonoGame.Constructing
 {
 	public static class GameConfiguratorExtensions
 	{
-		internal static IGameConfigurator<THost> UseGameFramework<THost>([NotNull] this IAppConfigurator configurator) where THost : IGameHost
+		internal static IGameConfigurator<THost> UseGameFramework<THost>([NotNull] this IAppConfigurator configurator) where THost : GameApp
 		{
+			var baseSetupsPhase = configurator.GetStep(GameDefaultConfigurationSteps.BaseSetup);
+			baseSetupsPhase.AddAction(new SimplePipelineAction(GameDefaultConfigurationSteps.BaseSetupActions.Setup, true,
+				context =>
+				{
+					Strings.Localization = configurator.GetObjectFromContext<ILocalization>(context, GameDefaultConfigurationSteps.ContextKeys.Localization);
+				}));
+			
 		    var registerPhase = configurator.GetStep(GameDefaultConfigurationSteps.Registration);
 		    registerPhase.AddAction(new SimplePipelineAction(
 		        GameDefaultConfigurationSteps.RegistrationActions.Game,
                 true,
                 context =>
                 {
-                    var registrator = GetObjectFromContext<IServiceRegistrator>(context, GameDefaultConfigurationSteps.ContextKeys.Container);
+                    var registrator = configurator.GetObjectFromContext<IServiceRegistrator>(context, GameDefaultConfigurationSteps.ContextKeys.Container);
                     var module = new GameModule<THost>();
                     registrator.RegisterModule(module);
                 }));
@@ -31,10 +39,13 @@ namespace FrameworkSDK.MonoGame.Constructing
                 true,
                 context =>
                 {
-                    var loggerService = GetObjectFromContext<IFrameworkLogger>(context, GameDefaultConfigurationSteps.ContextKeys.BaseLogger);
-                    var serviceLocator = GetObjectFromContext<IServiceLocator>(context, GameDefaultConfigurationSteps.ContextKeys.Locator);
+                    var loggerService = configurator.GetObjectFromContext<IFrameworkLogger>(context, GameDefaultConfigurationSteps.ContextKeys.BaseLogger);
+                    var serviceLocator = configurator.GetObjectFromContext<IServiceLocator>(context, GameDefaultConfigurationSteps.ContextKeys.Locator);
 
                     AppContext.Initialize(loggerService, serviceLocator);
+
+                    var associateService = serviceLocator.Resolve<IGraphicsPipelinePassAssociateService>();
+                    associateService.Initialize();
                 }));
 
             return new GameConfigurator<THost>(configurator);
@@ -42,7 +53,7 @@ namespace FrameworkSDK.MonoGame.Constructing
 
 	    public static IGameConfigurator<THost> SetupGameParameters<THost>([NotNull] this IGameConfigurator<THost> configurator,
 	        [NotNull] Func<IGameParameters> parametersFactory)
-	        where THost : IGameHost
+	        where THost : GameApp
 	    {
 	        if (parametersFactory == null) throw new ArgumentNullException(nameof(parametersFactory));
 
@@ -52,31 +63,12 @@ namespace FrameworkSDK.MonoGame.Constructing
 	            true,
 	            context =>
 	            {
-	                var registrator = GetObjectFromContext<IServiceRegistrator>(context, GameDefaultConfigurationSteps.ContextKeys.Container);
-	                var gameParameters = GetFromFactory(parametersFactory);
+	                var registrator = configurator.GetObjectFromContext<IServiceRegistrator>(context, GameDefaultConfigurationSteps.ContextKeys.Container);
+	                var gameParameters = configurator.GetFromFactory(parametersFactory);
 	                registrator.RegisterInstance(gameParameters);
 	            }));
 
 	        return configurator;
 	    }
-
-	    [NotNull]
-	    private static T GetFromFactory<T>([NotNull] Func<T> factory)
-	    {
-	        if (factory == null) throw new ArgumentNullException(nameof(factory));
-
-	        var result = factory.Invoke();
-	        if (result == null)
-	            throw new GameConstructingException(Strings.Exceptions.Constructing.FactoryObjectNull);
-
-	        return result;
-	    }
-
-	    [NotNull]
-	    private static T GetObjectFromContext<T>(IPipelineContext context, string key) where T : class
-	    {
-	        return context.Heap.GetObject<T>(key) ?? throw new GameConstructingException(
-	                   string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T).Name));
-	    }
-    }
+	}
 }

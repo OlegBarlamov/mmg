@@ -1,4 +1,5 @@
-﻿using FrameworkSDK.MonoGame.Mvc;
+﻿using FrameworkSDK.MonoGame.Basic;
+using FrameworkSDK.MonoGame.Mvc;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {

@@ -1,1 +1,1 @@
-﻿
+﻿- Module Logger call dispose in all using

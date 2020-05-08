@@ -19,6 +19,8 @@ namespace FrameworkSDK.Pipelines
         {
             Heap = objectsHeap;
         }
+        
+        public static PipelineContext Empty => new PipelineContext(new NamedObjectsHeap<object>());
 
         public void Dispose()
         {

@@ -4,7 +4,7 @@ using NetExtensions;
 
 namespace FrameworkSDK.Pipelines
 {
-    public sealed class SimplePipelineProcessor : PipelineProcessor, IPipelineProcessor
+    public class SimplePipelineProcessor : PipelineProcessor, IPipelineProcessor
     {
         protected override void OnStepActionProcessFailed(IPipelineAction action, PipelineStep step, Exception error)
         {
@@ -23,7 +23,7 @@ namespace FrameworkSDK.Pipelines
         }
 
         public SimplePipelineProcessor()
-            : base(new PipelineContext(new NamedObjectsHeap<object>()))
+            : base(PipelineContext.Empty)
         {
         }
     }

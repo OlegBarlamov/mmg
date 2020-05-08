@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FrameworkSDK.Common;
-using FrameworkSDK.Localization;
-using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.MonoGame.Graphics;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using JetBrains.Annotations;

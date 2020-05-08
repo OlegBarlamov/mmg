@@ -1,5 +1,5 @@
 ﻿using System;
-using FrameworkSDK.Localization;
+using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -82,10 +82,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 			Logger.Info(Strings.Info.SceneSwitched, oldScene, newScene);
 		}
 
-		private void SwitchScene([NotNull] IScene newScene)
+		private void SwitchScene(IScene newScene)
 		{
-			if (newScene == null) throw new ArgumentNullException(nameof(newScene));
-
 			lock (_sceneChangingLocker)
 			{
 				if (newScene == _currentScene)

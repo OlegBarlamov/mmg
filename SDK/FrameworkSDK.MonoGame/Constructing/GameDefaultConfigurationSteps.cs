@@ -5,13 +5,12 @@
         public const string Initialization = "initialization";
         public static class InitializationActions
         {
-            
         }
 
 	    public const string BaseSetup = "base_setup";
 	    public static class BaseSetupActions
 		{
-			
+			public const string Setup = "game_setup";
 		}
 
 		public const string Registration = "registration";
@@ -19,17 +18,21 @@
 		{
             public const string Game = "gameHeart";
 		    public const string GameParameters = "game_parameters";
+		    
+		    public const string GameComponents = "ex_components";
         }
 
         public const string ExternalRegistration = "registration_external";
         public static class ExternalRegistrationActions
         {
-            }
+	    }
 
         public const string Constructing = "constructing";
         public static class ConstructingActions
         {
             public const string Game = "gameHeart";
+
+            public const string GameComponents = "ex_components";
         }
 
         public static class ContextKeys
@@ -44,6 +47,6 @@
 
             public static readonly string Game = "gameHeart";
 	        public static readonly string Host = "host";
-        }
+	    }
     }
 }
