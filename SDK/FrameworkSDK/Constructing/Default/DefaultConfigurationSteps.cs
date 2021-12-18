@@ -1,7 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
 namespace FrameworkSDK.Constructing
 {
-    internal static class DefaultConfigurationSteps
+    public static class DefaultConfigurationSteps
     {
         public const string Initialization = "initialization";
         public static class InitializationActions

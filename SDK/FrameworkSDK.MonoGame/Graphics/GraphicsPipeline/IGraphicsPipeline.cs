@@ -3,6 +3,7 @@ using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Collections;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {

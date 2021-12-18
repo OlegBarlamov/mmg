@@ -13,31 +13,41 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
     internal class GraphicsPipelineFactoryService : IGraphicsPipelineFactoryService
     {
         [NotNull] private IGameHeartServices GameHeartServices { get; }
-        [NotNull] private IGraphicsPipelineProcessor GraphicsPipelineProcessor { get; }
         [NotNull] private IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
         [NotNull] private IDisplayService DisplayService { get; }
+        [NotNull] private IGraphicsPipelineProcessorsFactory GraphicsPipelineProcessorsFactory { get; }
 
         public GraphicsPipelineFactoryService(
             [NotNull] IGameHeartServices gameHeartServices,
-            [NotNull] IGraphicsPipelineProcessor graphicsPipelineProcessor,
             [NotNull] IRenderTargetsFactoryService renderTargetsFactoryService,
-            [NotNull] IDisplayService displayService)
+            [NotNull] IDisplayService displayService,
+            [NotNull] IGraphicsPipelineProcessorsFactory graphicsPipelineProcessorsFactory)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
-            GraphicsPipelineProcessor = graphicsPipelineProcessor ?? throw new ArgumentNullException(nameof(graphicsPipelineProcessor));
             RenderTargetsFactoryService = renderTargetsFactoryService ?? throw new ArgumentNullException(nameof(renderTargetsFactoryService));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
+            GraphicsPipelineProcessorsFactory = graphicsPipelineProcessorsFactory ?? throw new ArgumentNullException(nameof(graphicsPipelineProcessorsFactory));
         }
         
         public IGraphicsPipelineBuilder Create(IGraphicsPipeline graphicsPipeline = null)
         {
             var graphicDeviceContext = CreateGraphicDeviceContext();
-            var targetPipeline = graphicsPipeline ?? new DefaultGraphicsPipeline(GraphicsPipelineProcessor, graphicDeviceContext, RenderTargetsFactoryService, DisplayService);
+            var renderContext = CreateRenderContext();
+            var drawContext = CreateDrawContext();
+
+            var processor = GraphicsPipelineProcessorsFactory.Create();
+            var targetPipeline = graphicsPipeline ?? new DefaultGraphicsPipeline(
+                                     processor,
+                                     graphicDeviceContext,
+                                     RenderTargetsFactoryService,
+                                     DisplayService,
+                                     renderContext);
+            
             return new GraphicsPipelineBuilder(
                 targetPipeline,
                 graphicDeviceContext,
-                CreateDrawContext(),
-                CreateRenderContext());
+                drawContext,
+                renderContext);
         }
         
         public IDrawContext CreateDrawContext()

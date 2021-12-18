@@ -126,12 +126,12 @@ namespace FrameworkSDK.MonoGame
 
         void IDrawable.Draw(GameTime gameTime)
         {
+            ScenesController.Draw(gameTime);
+            
             foreach (var component in _externalGameComponents)
             {
                 component.Draw(gameTime);
             }
-            
-            ScenesController.Draw(gameTime);
             
             Draw(gameTime, GameHeartServices.SpriteBatch);
         }

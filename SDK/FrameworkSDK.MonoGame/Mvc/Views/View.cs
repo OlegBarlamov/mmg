@@ -13,15 +13,11 @@ namespace FrameworkSDK.MonoGame.Mvc
     {
         public string Name { get; protected set; }
 
-        protected string GraphicsPassName { get; set; } = "default";
-
         Scene ISceneComponent.OwnedScene => _ownedScene;
 
         object IView.DataModel => _dataModel;
 
         IController IView.Controller => _controller;
-
-        string IGraphicComponent.GraphicsPassName => GraphicsPassName;
 
         private object _dataModel;
         private IController _controller;

@@ -88,8 +88,6 @@ namespace Console.InGame.Implementation
             if (!_initialized) throw new InGameConsoleException("Console not initialized yet");
             LazyDraw(gameTime, spriteBatch);
             
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
             
             DrawBackground(gameTime, spriteBatch);

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Resources" />
+        <MonoGameContentReference Include="Resources/content.mgcb">
+            <Link>Resources/content.mgcb</Link>
+        </MonoGameContentReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj" />
+      <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+      <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
+      <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Autofac.FrameworkAdapter\Autofac.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Console.GameFrameworkAdapter\Console.GameFrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Console.LoggingAdapter\Console.LoggingAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Logging.FrameworkAdapter\Logging.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Logging\Logging.csproj" />
+      <ProjectReference Include="..\FriendlyRoguelike.Client.Core\FriendlyRoguelike.Client.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Autofac" Version="5.1.4" />
+        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+        <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
+    </ItemGroup>
+
+</Project>

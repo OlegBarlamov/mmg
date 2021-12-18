@@ -41,7 +41,8 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
 
         public void SetRenderTarget(RenderTarget2D renderTarget2D)
         {
-            if (renderTarget2D == null) throw new ArgumentNullException(nameof(renderTarget2D));
+            //TODO use other function for clear renderTarget
+            //if (renderTarget2D == null) throw new ArgumentNullException(nameof(renderTarget2D));
             
             GraphicsDevice.SetRenderTarget(renderTarget2D);
         }

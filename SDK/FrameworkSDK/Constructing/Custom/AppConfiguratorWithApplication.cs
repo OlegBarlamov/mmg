@@ -8,43 +8,73 @@ using JetBrains.Annotations;
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK
 {
-    internal class AppConfiguratorWithApplication<TApp> : AppConfigurator where TApp : IApplication
+    internal class AppConfiguratorWithApplication<TApp>: IAppConfigurator where TApp : IApplication
     {
-        public AppConfiguratorWithApplication([NotNull] IPipelineProcessor pipelineProcessor)
-            : base(pipelineProcessor)
+        private class AppRunnerWithApplication : IAppRunner
         {
-        }
+            private IAppRunner AppRunner { get; }
 
-        public override void Run()
-        {
-            TApp app;
+            public AppRunnerWithApplication([NotNull] IAppRunner appRunner)
+            {
+                AppRunner = appRunner ?? throw new ArgumentNullException(nameof(appRunner));
+            }
+
+
+            public void Dispose()
+            {
+                AppRunner.Dispose();
+            }
+
+            public void Run()
+            {
+                TApp app;
             
-            try
-            {
-                app = CreateApp();
-                base.Run();
-            }
-            catch (Exception e)
-            {
-                throw new AppConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, typeof(TApp).Name);
-            }
+                try
+                {
+                    app = CreateApp();
+                    AppRunner.Run();
+                }
+                catch (Exception e)
+                {
+                    throw new AppConstructingException(Strings.Exceptions.Constructing.RunAppFailed, e, typeof(TApp).Name);
+                }
 
-            try
-            {
-                app.Run();
+                try
+                {
+                    app.Run();
+                }
+                catch (Exception e)
+                {
+                    throw new FrameworkException(Strings.Exceptions.FatalException, e);
+                }
             }
-            catch (Exception e)
+            
+            private static TApp CreateApp()
             {
-                throw new FrameworkException(Strings.Exceptions.FatalException, e);
+                if (AppContext.ServiceLocator != null)
+                    return AppContext.ServiceLocator.Resolve<TApp>();
+
+                return Activator.CreateInstance<TApp>();
             }
         }
+        [NotNull] private IAppConfigurator AppConfigurator { get; }
 
-        private static TApp CreateApp()
+        Pipeline IAppConfigurator.ConfigurationPipeline => AppConfigurator.ConfigurationPipeline;
+
+        public AppConfiguratorWithApplication([NotNull] IAppConfigurator appConfigurator)
         {
-            if (AppContext.ServiceLocator != null)
-                return AppContext.ServiceLocator.Resolve<TApp>();
+            AppConfigurator = appConfigurator ?? throw new ArgumentNullException(nameof(appConfigurator));
+        }
 
-            return Activator.CreateInstance<TApp>();
+        public void Dispose()
+        {
+            AppConfigurator.Dispose();
+        }
+        
+        IAppRunner IAppConfigurator.Configure()
+        {
+            var runner = AppConfigurator.Configure();
+            return new AppRunnerWithApplication(runner);
         }
     }
 }

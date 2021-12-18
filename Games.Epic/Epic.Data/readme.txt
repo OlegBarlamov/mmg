@@ -1,1 +1,1 @@
-﻿DTO игровых объектов. Не имеют поведения. Просто данные.
+﻿Dto of game objects without behaviour

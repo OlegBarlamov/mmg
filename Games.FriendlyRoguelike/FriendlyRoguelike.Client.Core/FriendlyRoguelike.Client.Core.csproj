@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>FriendlyRoguelike.Core</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+      <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Autofac.FrameworkAdapter\Autofac.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Console.LoggingAdapter\Console.LoggingAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Logging.FrameworkAdapter\Logging.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Logging\Logging.csproj" />
+    </ItemGroup>
+
+</Project>

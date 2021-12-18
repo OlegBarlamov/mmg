@@ -1,0 +1,22 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:../bin/$(Configuration)/Resources
+/intermediateDir:../obj/$(Configuration)/$(Platform)
+/platform:Windows
+/config:
+/profile:HiDef
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin Console/File.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Console/File.spritefont
+

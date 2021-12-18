@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions;
 using NetExtensions;
+using NetExtensions.Collections;
 using IDrawable = FrameworkSDK.MonoGame.Basic.IDrawable;
 using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 

@@ -5,12 +5,14 @@ using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Collections;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
 {
     [UsedImplicitly]
     internal class DefaultGraphicsPipelineProcessor : IGraphicsPipelineProcessor
     {
+        private Guid _id = Guid.NewGuid();
         private IGraphicsPipelinePassAssociateService AssociateService { get; }
 
         private IReadOnlyObservableList<IGraphicComponent> _currentComponents;

@@ -5,6 +5,7 @@ using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using NetExtensions;
+using NetExtensions.Collections;
 
 namespace FrameworkSDK.Constructing
 {
@@ -33,6 +34,13 @@ namespace FrameworkSDK.Constructing
 			return configurator;
 		}
 
+		public static IAppConfigurator SetupCustomLogger([NotNull] this IAppConfigurator configurator,
+			[NotNull] IFrameworkLogger logger)
+		{
+			// ReSharper disable once HeapView.CanAvoidClosure
+			return SetupCustomLogger(configurator, () => logger);
+		}
+		
 		public static IAppConfigurator SetupCustomLogger([NotNull] this IAppConfigurator configurator, [NotNull] Func<IFrameworkLogger> loggerFactory)
 		{
 			return configurator.SetupCustomLogger<object>(null, context => loggerFactory());
@@ -173,6 +181,25 @@ namespace FrameworkSDK.Constructing
 			
 			return context.Heap.GetObject<T>(key) ?? throw new AppConstructingException(
 				       string.Format(Strings.Exceptions.Constructing.ObjectInContextNotFound, key, typeof(T).Name));
+		}
+
+		[NotNull]
+		public static IAppConfigurator UseApplication<TApplication>([NotNull] this IAppConfigurator configurator) where TApplication : IApplication
+		{
+			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
+
+			var configuratorWithApp = new AppConfiguratorWithApplication<TApplication>(configurator);
+			return configuratorWithApp
+				.RegisterServices(registrator => registrator.RegisterType<TApplication, TApplication>());
+		}
+
+		[NotNull]
+		public static TConfigurator WrapConfigurator<TConfigurator>([NotNull] this IAppConfigurator configurator,
+			[NotNull] Func<IAppConfigurator, TConfigurator> createWrapperFunc) where TConfigurator : IAppConfigurator
+		{
+			if (configurator == null) throw new ArgumentNullException(nameof(configurator));
+			if (createWrapperFunc == null) throw new ArgumentNullException(nameof(createWrapperFunc));
+			return createWrapperFunc(configurator);
 		}
 	}
 }

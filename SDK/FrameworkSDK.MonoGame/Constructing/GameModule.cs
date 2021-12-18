@@ -1,5 +1,6 @@
 ﻿using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.IoC;
+using FrameworkSDK.MonoGame.Cameras;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.ExternalComponents;
@@ -23,9 +24,9 @@ namespace FrameworkSDK.MonoGame.Constructing
             
             //Graphics
             serviceRegistrator.RegisterType<IGraphicsPipelineFactoryService, GraphicsPipelineFactoryService>();
-            serviceRegistrator.RegisterType<IGraphicsPipelineProcessor, DefaultGraphicsPipelineProcessor>();
             serviceRegistrator.RegisterType<IGraphicsPipelinePassAssociateService, GraphicsPipelinePassAssociateService>();
             serviceRegistrator.RegisterType<IRenderTargetsFactoryService, RenderTargetsFactoryService>();
+            serviceRegistrator.RegisterType<IGraphicsPipelineProcessorsFactory, DefaultGraphicsPipelineProcessorFactory>();
             serviceRegistrator.RegisterType<IDisplayService, DisplayService>();
 
             //Resources
@@ -51,6 +52,9 @@ namespace FrameworkSDK.MonoGame.Constructing
             var inputManager = new InputManager(inputService);
             serviceRegistrator.RegisterInstance<IInputService>(inputService);
             serviceRegistrator.RegisterInstance<IInputManager>(inputManager);
+            
+            //Camera
+            serviceRegistrator.RegisterType<ICameraService, CameraService>();
             
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
             serviceRegistrator.RegisterType<IAppStateService, AppStateService>();

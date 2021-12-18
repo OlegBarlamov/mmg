@@ -59,7 +59,7 @@ namespace FrameworkSDK.MonoGame
 		    Deactivated += OnAppDeactivated;
 		    
 		    AppStateService.IsAppFocused = IsActive;
-            SetupParameters(parameters);
+		    SetupParameters(Parameters);
 		}
 
         protected override void Initialize()

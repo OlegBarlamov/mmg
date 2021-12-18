@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FriendlyRoguelike.Client.Monogame.MacOS</RootNamespace>
+    <AssemblyName>FriendlyRoguelike.Client.MacOS</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=5.1.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da">
+      <HintPath>..\..\packages\Autofac.5.1.4\lib\net461\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=2020.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+      <HintPath>..\..\packages\JetBrains.Annotations.2020.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0-preview.2.20160.3\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\packages\Microsoft.Extensions.Options.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\..\packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\lib\net45\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\..\packages\Serilog.2.7.1\lib\net46\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Extensions.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\..\packages\Serilog.Extensions.Logging.2.0.2\lib\net461\Serilog.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\..\packages\Serilog.Sinks.RollingFile.3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj">
+      <Project>{1c9a9c3f-5163-4f5a-b1cb-c43876980910}</Project>
+      <Name>FrameworkSDK.MonoGame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj">
+      <Project>{f7336191-8b37-4413-ae0e-bfbc108523d2}</Project>
+      <Name>FrameworkSDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj">
+      <Project>{87a799e0-4be1-4241-9d17-192f517bc734}</Project>
+      <Name>MonoGameExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj">
+      <Project>{850fa83c-7e64-4bf4-aa21-5864777183c5}</Project>
+      <Name>NetExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Adapters\Autofac.FrameworkAdapter\Autofac.FrameworkAdapter.csproj">
+      <Project>{2d26e51c-6f6e-469d-8131-9c6b36121af1}</Project>
+      <Name>Autofac.FrameworkAdapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Adapters\Console.GameFrameworkAdapter\Console.GameFrameworkAdapter.csproj">
+      <Project>{261d6fc9-9bb8-46c4-86e4-627a51733d0c}</Project>
+      <Name>Console.GameFrameworkAdapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Adapters\Console.LoggingAdapter\Console.LoggingAdapter.csproj">
+      <Project>{7f1fb06e-5176-4fc9-9c67-0489442e74ef}</Project>
+      <Name>Console.LoggingAdapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Adapters\Logging.FrameworkAdapter\Logging.FrameworkAdapter.csproj">
+      <Project>{d28db4ea-ad4d-4b81-8131-d6809e6e3489}</Project>
+      <Name>Logging.FrameworkAdapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Console\Console.Core\Console.Core.csproj">
+      <Project>{72871131-b0fa-4970-9cc3-2b46f40d61b1}</Project>
+      <Name>Console.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Console\Console.InGame\Console.InGame.csproj">
+      <Project>{f39dbbb9-159e-4697-8158-9679dacec2f3}</Project>
+      <Name>Console.InGame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Logging\Logging.csproj">
+      <Project>{ca88002c-6236-467e-abe2-374f016dbd50}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FriendlyRoguelike.Client.Monogame\FriendlyRoguelike.Client.Monogame.csproj">
+      <Project>{ef0a9c59-0630-4c62-91cf-f588da33f7ea}</Project>
+      <Name>FriendlyRoguelike.Client.Monogame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TablePlatform.Client\TablePlatform.Client.csproj">
+      <Project>{1c20f89e-43cf-4fb6-9043-4d978375febb}</Project>
+      <Name>TablePlatform.Client</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets" Condition="Exists('..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets'))" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" AfterTargets="Build">
+    <ItemGroup>
+      <ResourcesFolder Include="$(ProjectDir)\..\TablePlatform.Client\bin\Resources\**\*.*" />
+    </ItemGroup>
+      <Copy SourceFiles="@(ResourcesFolder)" DestinationFolder="$(OutputPath)\Resources\%(itemname.RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
+  </Target>
+</Project>

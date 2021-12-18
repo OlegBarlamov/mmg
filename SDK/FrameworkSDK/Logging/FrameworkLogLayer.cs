@@ -7,5 +7,7 @@
         Mvc,
         Scenes,
         Resources,
+        Rendering,
+        Cameras,
     }
 }

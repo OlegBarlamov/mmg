@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Libs\HexoGrid\HexoGrid.csproj" />
+      <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+      <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+      <ProjectReference Include="..\..\Utils\Logging\Logging.csproj" />
+      <ProjectReference Include="..\Epic.Core\Epic.Core.csproj" />
+      <ProjectReference Include="..\Epic.Data\Epic.Data.csproj" />
+      <ProjectReference Include="..\Epic.Logic\Epic.Logic.csproj" />
+    </ItemGroup>
+
+
+</Project>

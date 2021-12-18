@@ -5,6 +5,7 @@ using System.Reflection;
 using FrameworkSDK.Localization;
 using JetBrains.Annotations;
 using NetExtensions;
+using NetExtensions.Collections;
 
 namespace FrameworkSDK.IoC.Default
 {

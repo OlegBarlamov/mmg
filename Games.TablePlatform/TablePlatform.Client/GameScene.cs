@@ -36,7 +36,7 @@ namespace TablePlatform.Client
         {
             base.Draw(gameTime, context);
             
-            context.Draw(DataModel.Texture, DataModel.Position,ToRectangle(DataModel));
+            context.Draw(DataModel.Texture, DataModel.Position, Color.White);
         }
 
         private static Rectangle ToRectangle(IRectangle rectangle)

@@ -42,7 +42,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
             var types = DomainService.GetAllTypes();
             foreach (var type in types)
             {
-                if (!typeof(IGraphicComponent).IsAssignableFrom(type))
+                if (!typeof(IGraphicComponent).IsAssignableFrom(type) || !IsTypeAllowed(type))
                     continue;
 
                 var passName = GetPassNameFromComponentType(type);
@@ -77,6 +77,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
         {
             return componentType.GetCustomAttributes<RenderPassAttribute>().FirstOrDefault()?.PassName ??
                    DefaultPassName;
+        }
+
+        private static bool IsTypeAllowed(Type graphicComponentType)
+        {
+            return !graphicComponentType.IsAbstract && !graphicComponentType.IsInterface;
         }
     }
 }

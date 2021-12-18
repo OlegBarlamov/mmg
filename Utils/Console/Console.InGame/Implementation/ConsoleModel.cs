@@ -483,14 +483,15 @@ namespace Console.InGame.Implementation
                     var estimateWidth = estimateTextSize.Value.X;
                     var extraWidth = estimateWidth - availableWidth;
                     var extraPart = extraWidth / estimateWidth;
-                    var extraCharactersLength = (int) (text.Length * extraPart);
-                    var availableCharactersLength = text.Length - extraCharactersLength;
-                    var availableText = text.Substring(0, availableCharactersLength);
+                    var extraCharactersLength = (int) (estimateMessageText.Length * extraPart);
+                    var availableCharactersLength = estimateMessageText.Length - extraCharactersLength;
+                    var availableText = estimateMessageText.Substring(0, availableCharactersLength);
 
-                    yield return new TextMessage(availableText, color, estimateTextSize.Value, Config.ConsoleFont);
-
-                    estimateMessageText = text.Substring(availableCharactersLength);
+                    var resultEstimateTextSize = estimateTextSize.Value;
+                    estimateMessageText = estimateMessageText.Substring(availableCharactersLength);
                     estimateTextSize = null;
+                    
+                    yield return new TextMessage(availableText, color, resultEstimateTextSize, Config.ConsoleFont);
                 }
             }
 

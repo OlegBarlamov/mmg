@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using NetExtensions;
+using NetExtensions.Collections;
 
 namespace FrameworkSDK.Pipelines
 {

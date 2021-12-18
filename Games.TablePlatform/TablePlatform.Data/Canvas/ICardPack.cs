@@ -1,4 +1,5 @@
 using NetExtensions;
+using NetExtensions.Collections;
 
 namespace TablePlatform.Data
 {

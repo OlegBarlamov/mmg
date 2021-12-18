@@ -36,6 +36,11 @@ namespace FrameworkSDK.MonoGame.Localization
 	            public static string StartUnloadingResourcePackage => Localization.GetString() ?? "Unloading resource package {0} started.";
 	            public static string FinishedUnloadingResourcePackage => Localization.GetString() ?? "Resource package {0} unloaded.";
             }
+
+            public static class Cameras
+            {
+	            public static string CameraSwitched => Localization.GetString() ?? "Active camera switched from {0} to {1}.";
+            }
             
             public static string SceneSwitchingState => Localization.GetString() ?? "Scenes switching from {0} to {1}.";
 	        public static string SceneSwitched => Localization.GetString() ?? "Scenes switched from {0} to {1}.";

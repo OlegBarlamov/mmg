@@ -1,10 +1,12 @@
 using System;
+using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.Pipelines;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Collections;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
@@ -22,9 +24,13 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         private readonly InternalPipelineProcessor _internalPipelineProcessor;
 
+        private static IFrameworkLogger Logger { get; } = AppContext.Logger;
+
         protected GraphicsPipelineBase()
         {
-            _internalPipelineProcessor = new InternalPipelineProcessor(ProcessActionFromInternalProcessor);
+            _internalPipelineProcessor = new InternalPipelineProcessor(
+                ProcessActionFromInternalProcessor,
+                new ModuleLogger(Logger, FrameworkLogModule.Rendering));
         }
 
         public virtual void Dispose()
@@ -32,6 +38,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             if (Disposed) throw new ObjectDisposedException(nameof(GraphicsPipelineBase));
             Disposed = true;
 
+            Processor.Dispose();
+            
             var steps = Pipeline.GetStepsForProcess();
             foreach (var step in steps)
             {
@@ -78,17 +86,28 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         private class InternalPipelineProcessor : SimplePipelineProcessor
         {
             private Action<IPipelineContext, IPipelineAction> ProcessAction { get; }
+            private ModuleLogger Logger { get; }
 
-            public InternalPipelineProcessor([NotNull] Action<IPipelineContext,IPipelineAction> processAction)
+            public InternalPipelineProcessor(
+                [NotNull] Action<IPipelineContext,IPipelineAction> processAction,
+                [NotNull] ModuleLogger logger)
             {
                 ProcessAction = processAction ?? throw new ArgumentNullException(nameof(processAction));
+                Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             }
 
             protected override void ProcessPipeLineAction(IPipelineContext context, IPipelineAction action)
             {
-                base.ProcessPipeLineAction(context, action);
-
                 ProcessAction(context, action);
+            }
+            
+            protected override void OnStepActionProcessFailed(IPipelineAction action, PipelineStep step, Exception error)
+            {
+                if (action.IsCritical)
+                    throw error;
+                
+                //TODO !!!
+                Logger.Error("",error);
             }
         }
     }

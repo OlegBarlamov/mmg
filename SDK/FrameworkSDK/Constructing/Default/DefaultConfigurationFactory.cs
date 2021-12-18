@@ -5,6 +5,7 @@ using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using NetExtensions;
+using NetExtensions.Collections;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.Constructing

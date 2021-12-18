@@ -14,17 +14,15 @@ namespace FrameworkSDK
 			if (appFactory == null) throw new ArgumentNullException(nameof(appFactory));
 
 			var defaultConfigPipeline = appFactory.CreateDefaultPipeline();
-			var configurator = new AppConfiguratorWithApplication<TApp>(appFactory.PipelineProcessor)
+			var configurator = new AppConfigurator(appFactory.PipelineProcessor)
 			{
 				ConfigurationPipeline = defaultConfigPipeline
 			};
-
-			return configurator
-				.RegisterServices(registrator => registrator.RegisterType<TApp, TApp>());
+			return configurator.UseApplication<TApp>();
 		}
 
         [NotNull]
-	    public static Pipeline CreateDefaultPipeline(this AppFactory appFactory)
+        public static Pipeline CreateDefaultPipeline(this AppFactory appFactory)
 	    {
             var pipelineFactory = new DefaultConfigurationFactory();
 	        return pipelineFactory.Create();
