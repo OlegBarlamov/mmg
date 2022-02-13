@@ -6,7 +6,6 @@ using FrameworkSDK.DependencyInjection.Default.Models;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
-using NetExtensions;
 using NetExtensions.Collections;
 
 namespace FrameworkSDK.DependencyInjection.Default
@@ -38,7 +37,7 @@ namespace FrameworkSDK.DependencyInjection.Default
 		    LifeTimeScope = lifeTimeScope ?? throw new ArgumentNullException(nameof(lifeTimeScope));
 		    Name = name;
 		    
-		    _logger = new ModuleLogger(frameworkLogger, FrameworkLogModule.Application);
+		    _logger = new ModuleLogger(frameworkLogger, LogCategories.Application);
 		    _mapping = new RegisteredServicesMapping(registrationsDomain.GetAll());
 
 		    LifeTimeScope.DisposedEvent += LifeTimeScopeOnDisposedEvent;
@@ -126,7 +125,6 @@ namespace FrameworkSDK.DependencyInjection.Default
 	        var constructor = ConstructorFinder.GetConstructor(this, type, parametersTypes);
 	        var dependencies = DependencyResolver.ResolveDependencies(this, constructor, parameters);
 	        var instance = constructor.Invoke(dependencies);
-	        LogCreatedInstance(type, instance);
 	        return instance;
         }
 
@@ -147,13 +145,8 @@ namespace FrameworkSDK.DependencyInjection.Default
 	        LifeTimeScope.DisposedEvent -= LifeTimeScopeOnDisposedEvent;
 	        _logger.Dispose();
 	    }
-	    
-	    private void LogCreatedInstance(Type sourceType, object instance)
-	    {
-		    _logger.Debug(Strings.Info.AppConstructing.ServiceLocatorInstanceCreated, this, $"{sourceType.Name}->{instance?.GetTypeName()}");
-        }
 
-        private static string GetId()
+	    private static string GetId()
 	    {
 	        var guid = Guid.NewGuid().ToString("D");
 	        return guid.Split('-')[1];

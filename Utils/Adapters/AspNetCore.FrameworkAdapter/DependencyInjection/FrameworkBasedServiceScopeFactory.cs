@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCore.FrameworkAdapter
 {
+    [UsedImplicitly]
     internal class FrameworkBasedServiceScopeFactory : IServiceScopeFactory
     {
         [NotNull] public FrameworkBasedContainerBuilder FrameworkBasedContainerBuilder { get; }
-
-
+        
         public FrameworkBasedServiceScopeFactory([NotNull] FrameworkBasedContainerBuilder frameworkBasedContainerBuilder)
         {
             FrameworkBasedContainerBuilder = frameworkBasedContainerBuilder ?? throw new ArgumentNullException(nameof(frameworkBasedContainerBuilder));

@@ -9,7 +9,7 @@ namespace FrameworkSDK.Logging
         private readonly ConcurrentQueue<MemoryLogMessage> _memoryMessages = new ConcurrentQueue<MemoryLogMessage>();
         private bool _isDisposed;
         
-        public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+        public void Log(string message, string module, FrameworkLogLevel level)
         {
             if (_isDisposed)
                 return;
@@ -42,7 +42,7 @@ namespace FrameworkSDK.Logging
         private class MemoryLogMessage
         {
             public string Message { get; set; }
-            public FrameworkLogModule Module { get; set; }
+            public string Module { get; set; }
             public FrameworkLogLevel Level { get; set; }
         }
 

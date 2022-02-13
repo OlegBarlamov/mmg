@@ -11,14 +11,14 @@ namespace FrameworkSDK.Logging
         private class LogMessage
         {
             public string Message { get; set; }
-            public FrameworkLogModule Module { get; set; }
+            public string Module { get; set; }
             public FrameworkLogLevel Level { get; set; }
         }
 
         private bool _isDisposed;
         private readonly ConcurrentQueue<LogMessage> _defferedMessages = new ConcurrentQueue<LogMessage>();
 
-        public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+        public void Log(string message, string module, FrameworkLogLevel level)
         {
             if (_isDisposed)
                 return;

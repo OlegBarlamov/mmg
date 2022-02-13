@@ -8,21 +8,21 @@ namespace FrameworkSDK.Logging
     {
         [NotNull] private IFrameworkLogger CoreLogger { get; }
 
-        private FrameworkLogModule LogModule { get; }
+        private string Category { get; }
 
 	    [CanBeNull] private MessageInfo _lastMessageInfo;
 
         private static readonly IFormatProvider DefaultFormatProvider = new NullFormatProvider();
 
-		public ModuleLogger([NotNull] IFrameworkLogger frameworkLogger, FrameworkLogModule logModule)
+		public ModuleLogger([NotNull] IFrameworkLogger frameworkLogger, string category)
         {
             CoreLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
 
-            LogModule = logModule;
+            Category = category;
         }
 
-	    public ModuleLogger(FrameworkLogModule logModule) 
-			: this(AppContext.Logger, logModule)
+	    public ModuleLogger(string category) 
+			: this(AppContext.Logger, category)
 	    {
 		    
 	    }
@@ -66,7 +66,7 @@ namespace FrameworkSDK.Logging
 
         public void Log(string message, FrameworkLogLevel level = FrameworkLogLevel.Info, params object[] args)
         {
-	        LogInternal(message, LogModule, level);
+	        LogInternal(message, Category, level);
         }
 
         public void LogCollection<T>([NotNull, ItemNotNull] IEnumerable<T> collection, FrameworkLogLevel level = FrameworkLogLevel.Info)
@@ -87,12 +87,12 @@ namespace FrameworkSDK.Logging
 	        }
         }
 
-		void IFrameworkLogger.Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+		void IFrameworkLogger.Log(string message, string category, FrameworkLogLevel level)
         {
-			LogInternal(message, LogModule, level);
+			LogInternal(message, category, level);
 		}
 
-	    private void LogInternal(string message, FrameworkLogModule module, FrameworkLogLevel level)
+	    private void LogInternal(string message, string module, FrameworkLogLevel level)
 		{
 			var info = new MessageInfo(message, module, level);
 			if (info.Equals(_lastMessageInfo))
@@ -113,10 +113,10 @@ namespace FrameworkSDK.Logging
 			public int Count { get; private set; }
 
 		    private string Message { get; }
-		    private FrameworkLogModule Module { get; }
+		    private string Module { get; }
 		    private FrameworkLogLevel LogLevel { get; }
 
-		    public MessageInfo([NotNull] string message, FrameworkLogModule module, FrameworkLogLevel logLevel)
+		    public MessageInfo([NotNull] string message, string module, FrameworkLogLevel logLevel)
 		    {
 			    Message = message ?? throw new ArgumentNullException(nameof(message));
 			    Module = module;
@@ -154,7 +154,7 @@ namespace FrameworkSDK.Logging
 			    unchecked
 			    {
 				    var hashCode = (Message != null ? Message.GetHashCode() : 0);
-				    hashCode = (hashCode * 397) ^ (int) Module;
+				    hashCode = (hashCode * 397) ^ Module.GetHashCode();
 				    hashCode = (hashCode * 397) ^ (int) LogLevel;
 				    return hashCode;
 			    }

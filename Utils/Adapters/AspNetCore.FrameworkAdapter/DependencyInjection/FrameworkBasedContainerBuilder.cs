@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCore.FrameworkAdapter
 {
+    [UsedImplicitly]
     internal class FrameworkBasedContainerBuilder
     {
         public IFrameworkServiceContainer ServiceContainer { get; }

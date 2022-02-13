@@ -9,6 +9,8 @@ namespace AspNetCore.FrameworkAdapter
         public IFrameworkServiceContainer ScopedContainer { get; }
         public IServiceLocator ServiceLocator { get; private set; }
 
+        private bool _isDisposed;
+
         public FrameworkBasedServiceProvider([NotNull] IFrameworkServiceContainer scopedContainer)
         {
             ScopedContainer = scopedContainer ?? throw new ArgumentNullException(nameof(scopedContainer));
@@ -30,8 +32,11 @@ namespace AspNetCore.FrameworkAdapter
 
         public void Dispose()
         {
-            //TODO
-            //ScopedContainer.Dispose();
+            if (_isDisposed)
+                return;
+
+            _isDisposed = true;
+            ScopedContainer.Dispose();
         }
     }
 }

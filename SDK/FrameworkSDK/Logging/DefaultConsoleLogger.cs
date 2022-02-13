@@ -4,7 +4,7 @@ namespace FrameworkSDK.Logging
 {
     public class DefaultConsoleLogger : IFrameworkLogger
     {
-        public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+        public void Log(string message, string module, FrameworkLogLevel level)
         {
             if (string.IsNullOrEmpty(message))
                 return;
@@ -14,7 +14,7 @@ namespace FrameworkSDK.Logging
             Console.WriteLine(line);
         }
 
-        private static string GetPrefix(FrameworkLogModule module, FrameworkLogLevel level)
+        private static string GetPrefix(string module, FrameworkLogLevel level)
         {
             var levelPrefix = GetLevelPrefix(level);
             return $"{levelPrefix}{module.ToString()}:";

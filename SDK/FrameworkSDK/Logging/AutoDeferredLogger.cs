@@ -17,7 +17,7 @@ namespace FrameworkSDK.Logging
             _deferredLogger = new ManualDeferredLogger();
         }
 
-        public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+        public void Log(string message, string module, FrameworkLogLevel level)
         {
             if (_isDisposed) throw new ObjectDisposedException(nameof(AutoDeferredLogger));
 

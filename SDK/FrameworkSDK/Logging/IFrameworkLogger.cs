@@ -7,6 +7,6 @@ namespace FrameworkSDK.Logging
     /// </summary>
     public interface IFrameworkLogger
     {
-        void Log([NotNull] string message, FrameworkLogModule module, FrameworkLogLevel level);
+        void Log([NotNull] string message, string logCategory, FrameworkLogLevel level);
     }
 }

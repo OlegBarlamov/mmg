@@ -31,7 +31,7 @@ namespace AspNetCore.FrameworkAdapter
         public IServiceProvider CreateServiceProvider([NotNull] FrameworkBasedContainerBuilder containerBuilder)
         {
             if (containerBuilder == null) throw new ArgumentNullException(nameof(containerBuilder));
-            return FrameworkBasedContainerBuilder.Create();
+            return containerBuilder.Create();
         }
     }
 }

@@ -14,9 +14,9 @@ namespace Logging.FrameworkAdapter
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
         
-        public void Log(string message, FrameworkLogModule module, FrameworkLogLevel level)
+        public void Log(string message, string module, FrameworkLogLevel level)
         {
-            LoggerFactory.CreateLogger(module.ToString()).Log(message, ToLogLevel(level));
+            LoggerFactory.CreateLogger(module).Log(message, ToLogLevel(level));
         }
 
         private static LogLevel ToLogLevel(FrameworkLogLevel logLevel)
