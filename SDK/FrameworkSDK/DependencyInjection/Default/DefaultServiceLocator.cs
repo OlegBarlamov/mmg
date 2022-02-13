@@ -41,7 +41,13 @@ namespace FrameworkSDK.DependencyInjection.Default
 		    _mapping = new RegisteredServicesMapping(registrationsDomain.GetAll());
 
 		    LifeTimeScope.DisposedEvent += LifeTimeScopeOnDisposedEvent;
+		    LogServiceLocatorCreated();
 		}
+
+	    private void LogServiceLocatorCreated()
+	    {
+		    _logger.Log($"{ToString()} created with mapping: " + Environment.NewLine + _mapping, FrameworkLogLevel.Trace);
+	    }
 
 	    public void InitializeInternalServices(
 		    [NotNull] IConstructorFinder constructorFinder,
@@ -74,7 +80,7 @@ namespace FrameworkSDK.DependencyInjection.Default
 			
 			var candidates = ServicesCandidatesFinder.FindCandidates(type, _mapping);
 			if (candidates.Count < 1)
-				throw new FrameworkIocException(Strings.Exceptions.Ioc.TypeNotRegisteredException, type);
+				throw new FrameworkIocException(Strings.Exceptions.Ioc.TypeNotRegisteredException, type, this);
 			
 			var preferableRegistration = ServicesRegistrationsPriority.GetPreferable(type, candidates);
 			return preferableRegistration.GetOrSet(type, this, parameters ?? Array.Empty<object>());

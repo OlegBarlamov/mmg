@@ -61,6 +61,7 @@ namespace FrameworkSDK
             ConfigureAppComponents(serviceLocator);
             var subSystemsInstances = ConfigureSubSystems(serviceLocator);
 
+            Logger.Log("Resolving app runner.", LogCategories.Constructing, FrameworkLogLevel.Info);
             var subSystemsRunner = serviceLocator.Resolve<IAppSubSystemsRunner>();
             return new DefaultAppContainer(subSystemsInstances, subSystemsRunner);
         }
@@ -80,6 +81,7 @@ namespace FrameworkSDK
 
         private void ConfigureAppComponents(IServiceLocator serviceLocator)
         {
+            Logger.Log("Configuring App subsystems.", LogCategories.Constructing, FrameworkLogLevel.Info);
             foreach (var componentsType in _componentsTypes)
             {
                 var component = (IAppComponent) serviceLocator.Resolve(componentsType);
@@ -96,11 +98,13 @@ namespace FrameworkSDK
 
         private void RegisterAppComponents()
         {
+            Logger.Log("Registering App components.", LogCategories.Constructing, FrameworkLogLevel.Info);
             foreach (var componentsType in _componentsTypes)
             {
                 ServiceContainer.RegisterType(componentsType, componentsType);
             }
 
+            Logger.Log("Registering App subsystems.", LogCategories.Constructing, FrameworkLogLevel.Info);
             foreach (var subsystemsType in _subsystemsTypes)
             {
                 ServiceContainer.RegisterType(subsystemsType, subsystemsType);
@@ -109,6 +113,7 @@ namespace FrameworkSDK
 
         private void RegisterServices()
         {
+            Logger.Log("Registering services.", LogCategories.Constructing, FrameworkLogLevel.Info);
             ServiceContainer.RegisterInstance(Logger);
             ServiceContainer.RegisterInstance(Localization);
             ServiceContainer.RegisterInstance(_cmdArgsHolder);
@@ -128,6 +133,8 @@ namespace FrameworkSDK
                 ServiceContainer = new DefaultServiceContainer(Logger, new RegistrationsDomain());
             if (Localization == null)
                 Localization = new DefaultLocalization();
+            
+            Logger.Log("Core services have been initialized.", LogCategories.Constructing, FrameworkLogLevel.Info);
         }
 
         public IAppFactory AddServices([NotNull] IServicesModule module)

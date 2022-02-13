@@ -1,3 +1,4 @@
+using System.IO;
 using FrameworkSDK;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
@@ -6,13 +7,13 @@ namespace Logging.FrameworkAdapter
 {
     public static class AppFactoryExtensions
     {
-        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory, string logDirectoryFullPath, bool isDebug = false, bool isFakeLog = false)
+        public const string DefaultLogDirectoryName = "Logs";
+        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory, bool isDebug = false)
         {
             var config = new LogSystemConfig
             {
-                LogDirectoryFullPath = logDirectoryFullPath,
                 IsDebug = isDebug,
-                IsFakeLog = isFakeLog
+                LogDirectory = new DirectoryInfo(GetRelativeLogPath(DefaultLogDirectoryName)),
             };
 
             var logger = CreateLogger(config);
@@ -21,15 +22,13 @@ namespace Logging.FrameworkAdapter
 
         private static IFrameworkLogger CreateLogger(LogSystemConfig config)
         {
-            var logSystem = new LogSystem(config.LogDirectoryFullPath, config.IsDebug, config.IsFakeLog);
+            var logSystem = new LogSystem(config);
             return logSystem.ToFrameworkLogger();
         }
 
-        private class LogSystemConfig
+        private static string GetRelativeLogPath(string relativeLogPath)
         {
-            public string LogDirectoryFullPath { get; set; }
-            public bool IsDebug { get; set; } = false;
-            public bool IsFakeLog { get; set; } = false;
+            return Path.Combine(Directory.GetCurrentDirectory(), relativeLogPath);
         }
     }
 }

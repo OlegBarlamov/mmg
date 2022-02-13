@@ -2,25 +2,20 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Logging
 {
     public class LogSystem : ILoggerFactory
     {
-        private string LogDirectoryFullPath { get; }
-        private bool IsDebug { get; }
-        private bool FakeLog { get; }
-
+        private LogSystemConfig Config { get; }
         private readonly ILoggerFactory _internalLoggerFactory = new LoggerFactory();
 
-        public LogSystem(string logDirectoryFullPath, bool isDebug, bool fakeLog = false)
+        public LogSystem([NotNull] LogSystemConfig config)
         {
-            LogDirectoryFullPath = logDirectoryFullPath ?? throw new ArgumentNullException(nameof(logDirectoryFullPath));
-            IsDebug = isDebug;
-            FakeLog = fakeLog;
-
-            var internalProvider = new LoggersProvider(logDirectoryFullPath, isDebug, fakeLog);
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+            var internalProvider = new LoggersProvider(config);
 
             _internalLoggerFactory.AddProvider(internalProvider);
         }
@@ -37,7 +32,7 @@ namespace Logging
 
         public void OpenErrorsLogIfNeed()
         {
-            if (!IsDebug || FakeLog)
+            if (!Config.IsDebug)
                 return;
 
             if (GetLoggerOutputFilePath(LoggersProvider.ErrorLoggerName, out var errorLogOutputFilePath))
@@ -53,7 +48,7 @@ namespace Logging
 
         private bool GetLoggerOutputFilePath(string loggerName, out string outputFilePath)
         {
-            var files = Directory.GetFiles(LogDirectoryFullPath, $"{loggerName}*.{LoggersProvider.LogExtension}");
+            var files = Directory.GetFiles(Config.LogDirectory.FullName, $"{loggerName}*.{LoggersProvider.LogExtension}");
             outputFilePath = files.FirstOrDefault();
             return !string.IsNullOrWhiteSpace(outputFilePath);
         }

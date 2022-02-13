@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
@@ -17,27 +18,21 @@ namespace Logging
         public const string WarningLoggerName = "!Warnings";
         public const string DebugLoggerName = "!Debug";
 
-        private string LogsDirectoryFullPath { get; }
-        private bool IsDebug { get; }
-        private bool FakeLog { get; }
+        private LogSystemConfig Config { get; }
 
         private readonly ConcurrentQueue<Serilog.ILogger> _createdDisposableLoggers = new ConcurrentQueue<Serilog.ILogger>();
+        private readonly Logger[] _systemLoggers;
 
-        private Logger[] SystemLoggers { get; }
-
-        public LoggersProvider(string logsDirectoryFullPath, bool isDebug, bool fakeLog)
+        public LoggersProvider([NotNull] LogSystemConfig logSystemConfig)
         {
-            LogsDirectoryFullPath = logsDirectoryFullPath ?? throw new ArgumentNullException(nameof(logsDirectoryFullPath));
-            IsDebug = isDebug;
-            FakeLog = fakeLog;
+            Config = logSystemConfig ?? throw new ArgumentNullException(nameof(logSystemConfig));
 
-            SystemLoggers = new[]
+            _systemLoggers = new[]
             {
                 SetupLevelLogger(ErrorLoggerName, LogEventLevel.Error).CreateLogger(),
                 SetupLevelLogger(WarningLoggerName, LogEventLevel.Warning).CreateLogger(),
                 SetupLevelLogger(DebugLoggerName, LogEventLevel.Debug).CreateLogger()
             };
-
         }
 
         public void Dispose()
@@ -48,7 +43,7 @@ namespace Logging
                     disposableLogger.Dispose();
             }
 
-            foreach (var systemLogger in SystemLoggers)
+            foreach (var systemLogger in _systemLoggers)
                 systemLogger.Dispose();
         }
 
@@ -78,28 +73,21 @@ namespace Logging
         private LoggerConfiguration SetupNewLogger(string categoryName)
         {
             var config = CreateBaseConfig()
-                .WriteToLoggers(SystemLoggers);
+                .WriteToLoggers(_systemLoggers);
 
             return AddWriteToFileOption(config, categoryName);
         }
 
         private LoggerConfiguration CreateBaseConfig()
         {
-            return new LoggerConfiguration().SetupBase(IsDebug);
+            return new LoggerConfiguration().SetupBase(Config.IsDebug);
         }
 
         private LoggerConfiguration AddWriteToFileOption(LoggerConfiguration loggerConfiguration, string categoryName)
         {
-            if (!FakeLog)
-            {
-                var outputFileName = CategoryNameToLogFileName(categoryName);
-                var outputFilePath = Path.Combine(LogsDirectoryFullPath, outputFileName);
-                return loggerConfiguration.WriteToFile(outputFilePath);
-            }
-            else
-            {
-                return loggerConfiguration;
-            }
+            var outputFileName = CategoryNameToLogFileName(categoryName);
+            var outputFilePath = Path.Combine(Config.LogDirectory.FullName, outputFileName);
+            return loggerConfiguration.WriteToFile(outputFilePath);
         }
 
         private ILogger Convert(Serilog.ILogger serilogLogger, string categoryName)

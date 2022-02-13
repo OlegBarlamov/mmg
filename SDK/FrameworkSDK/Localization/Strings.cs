@@ -37,7 +37,7 @@
             {
 	            public static string NoPublicConstructorsException => Localization.GetString() ?? "Public constructors not founded for type {0}.";
 	            public static string DependencyNotResolvedException => Localization.GetString() ?? "Dependency {0} can not be resolved.";
-	            public static string TypeNotRegisteredException => Localization.GetString() ?? "Type {0} not registered.";
+	            public static string TypeNotRegisteredException => Localization.GetString() ?? "Type {0} not registered in {1}.";
 	            public static string ResolvingTypeException => Localization.GetString() ?? "Can not resolve type {0}.";
 	            public static string DisposeServicesException => Localization.GetString() ?? "Error while dispose services in locator.";
 	            public static string NoSuitablecConstructorsException => Localization.GetString() ?? "Suitable constructors for type {0} not founded. Unresolved type: {1}.";
