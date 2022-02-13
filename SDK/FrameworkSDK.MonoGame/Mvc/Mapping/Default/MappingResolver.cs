@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
 using NetExtensions;

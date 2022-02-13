@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Media;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;

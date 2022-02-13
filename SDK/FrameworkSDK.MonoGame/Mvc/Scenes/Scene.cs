@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FrameworkSDK.Common;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Basic;
@@ -15,7 +15,6 @@ using MonoGameExtensions;
 using NetExtensions;
 using NetExtensions.Collections;
 using IDrawable = FrameworkSDK.MonoGame.Basic.IDrawable;
-using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Mvc
@@ -217,7 +216,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			Logger.Info(Strings.Info.RemovedMultipleControllersFromScene, names.ToArray().ArrayToString(), count, Name);
 		}
 
-		void IUpdateable.Update(GameTime gameTime)
+		void IUpdatable.Update(GameTime gameTime)
 		{
 			Controllers.Update();
 			Views.Update();

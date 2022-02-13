@@ -1,5 +1,4 @@
-using System;
-using FrameworkSDK.MonoGame.Basic;
+using FrameworkSDK.Common;
 using Microsoft.Xna.Framework.Graphics;
 
 // ReSharper disable once CheckNamespace

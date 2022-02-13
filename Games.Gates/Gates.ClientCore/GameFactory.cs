@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using FrameworkSDK;
-using FrameworkSDK.IoC;
 using FrameworkSDK.Constructing;
-using FrameworkSDK.Logging;
+using FrameworkSDK.IoC;
 using FrameworkSDK.MonoGame.Constructing;
 using Gates.ClientCore.Logging;
+using JetBrains.Annotations;
 using Logging;
 using Microsoft.Extensions.Logging;
 
@@ -13,35 +13,44 @@ namespace Gates.ClientCore
 {
     public static class GameFactory
     {
-	    private static LogSystem _logSystem;
+	    public static void Create(IServicesModule services)
+		{
+			var logger = CreateLoggerFactory();
+			var logFactory = new FrameworkLoggerIntegration(logger);
+			var module = new Module(logger);
+            var factory = new DefaultAppFactory();
+            factory.UseLogger(logFactory)
+	            .AddServices(module)
+	            .AddServices<GameCoreModule>()
+	            .AddServices(services)
+	            .UseGame<GameHost>()
+	            .Construct()
+	            .Run();
 
-		public static void Create(IServicesModule services)
-        {
-            var factory = new AppFactory();
-            factory.CreateGame<GameHost>()
-				.SetupCustomLogger(CreateLoggerFactory)
-				.RegisterServices(x => RegisterServices(x, services))
-                .Configure()
-                .Run();
-
-	        using (_logSystem)
+	        using (logger)
 	        {
-		        _logSystem.OpenErrorsLogIfNeed();
+		        logger.OpenErrorsLogIfNeed();
 	        }
         }
 
-	    private static IFrameworkLogger CreateLoggerFactory()
+	    private static LogSystem CreateLoggerFactory()
 	    {
 		    var logDirectoryRoot = Path.Combine(Environment.CurrentDirectory, "Logs");
-		    _logSystem = new LogSystem(logDirectoryRoot, true);
-			return new FrameworkLoggerIntegration(_logSystem);
+		    return new LogSystem(logDirectoryRoot, true);
 	    }
+	    
+	    private class Module : IServicesModule
+	    {
+		    public ILoggerFactory LoggerFactory { get; }
 
-	    private static void RegisterServices(IServiceRegistrator registrator, IServicesModule services)
-        {
-			registrator.RegisterInstance<ILoggerFactory>(_logSystem);
-            registrator.RegisterModule(new GameCoreModule());
-            registrator.RegisterModule(services);
-        }
+		    public Module([NotNull] ILoggerFactory loggerFactory)
+		    {
+			    LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+		    }
+		    public void RegisterServices(IServiceRegistrator registrator)
+		    {
+			    registrator.RegisterInstance(LoggerFactory);
+		    }
+	    }
     }
 }

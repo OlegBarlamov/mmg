@@ -1,9 +1,9 @@
+using FrameworkSDK.MonoGame.Basic;
 using Microsoft.Xna.Framework;
-using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 namespace FrameworkSDK.MonoGame.InputManagement.Implementations
 {
-    internal class InputService : IInputService, IUpdateable
+    internal class InputService : IInputService, IUpdatable
     {
         public IKeyboardProvider Keyboard => _keyboardProvider;
         public IMouseProvider Mouse => _mouseProvider;

@@ -10,8 +10,9 @@ namespace FrameworkSDK.MonoGame.Graphics
 {
     internal class FullScreenRenderTargetWrapper : IRenderTargetWrapper
     {
-        public event EventHandler Disposed;
-        
+        public event EventHandler DisposedEvent;
+        public bool IsDisposed { get; private set; }
+
         public RenderTarget2D RenderTarget { get; private set; }
         
         private IRenderTargetsFactory RenderTargetsFactory { get; }
@@ -56,9 +57,10 @@ namespace FrameworkSDK.MonoGame.Graphics
 
         public void Dispose()
         {
+            IsDisposed = true;
             DisplayService.DeviceReset -= DisplayServiceOnDeviceReset;
-            Disposed?.Invoke(this, EventArgs.Empty);
-            Disposed = null;
+            DisposedEvent?.Invoke(this, EventArgs.Empty);
+            DisposedEvent = null;
         }
         
         private void DisplayServiceOnDeviceReset()

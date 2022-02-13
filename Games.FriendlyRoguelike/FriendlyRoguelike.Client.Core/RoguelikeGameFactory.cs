@@ -1,5 +1,6 @@
 using System;
 using Autofac.FrameworkAdapter;
+using Console.Core;
 using Console.LoggingAdapter;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
@@ -9,9 +10,16 @@ using Logging.FrameworkAdapter;
 
 namespace FriendlyRoguelike.Core
 {
-    public static class RoguelikeGameFactory
+    public class RoguelikeGameFactory : AppFactoryWrapper, IAppFactory
     {
-        public static RoguelikeGameConfigurator Create([NotNull] RoguelikeGameFactoryConfig gameFactoryConfig)
+        public IConsoleMessagesProvider ConsoleMessagesProvider { get; }
+
+        private RoguelikeGameFactory([NotNull] IAppFactory appFactory, [NotNull] IConsoleMessagesProvider consoleMessagesProvider) : base(appFactory)
+        {
+            ConsoleMessagesProvider = consoleMessagesProvider ?? throw new ArgumentNullException(nameof(consoleMessagesProvider));
+        }
+        
+        public static RoguelikeGameFactory Create([NotNull] RoguelikeGameFactoryConfig gameFactoryConfig)
         {
             if (gameFactoryConfig == null) throw new ArgumentNullException(nameof(gameFactoryConfig));
 
@@ -21,12 +29,12 @@ namespace FriendlyRoguelike.Core
             var consoleProvider = new LoggerConsoleMessagesProvider();
             logSystem.AddProvider(consoleProvider);
 
-            return new AppFactory(frameworkLogger)
-                .Create()
-                .SetupCustomLogger(frameworkLogger)
+            var factory = new DefaultAppFactory()
+                .UseLogger(frameworkLogger)
                 .UseAutofac()
-                .RegisterServices<RoguelikeGameMainModule>()
-                .WrapConfigurator(config => new RoguelikeGameConfigurator(config, consoleProvider));
-        } 
+                .AddServices<RoguelikeGameMainModule>();
+            
+            return new RoguelikeGameFactory(factory, consoleProvider);
+        }
     }
 }

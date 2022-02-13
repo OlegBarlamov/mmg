@@ -1,15 +1,14 @@
-using System;
-using FrameworkSDK.Constructing;
+using FrameworkSDK;
 using JetBrains.Annotations;
 
 namespace Autofac.FrameworkAdapter
 {
-    public static class AppConfiguratorExtensions
+    public static class AppFactoryExtensions
     {
-        public static IAppConfigurator UseAutofac([NotNull] this IAppConfigurator appConfigurator)
+        public static DefaultAppFactory UseAutofac([NotNull] this DefaultAppFactory appFactory)
         {
-            if (appConfigurator == null) throw new ArgumentNullException(nameof(appConfigurator));
-            return appConfigurator.SetupCustomIoc(() => new AutofacServiceContainerFactory());
+            var serviceContainer = new AutofacServiceContainer(new ContainerBuilder());
+            return appFactory.UseServiceContainer(serviceContainer);
         }
     }
 }

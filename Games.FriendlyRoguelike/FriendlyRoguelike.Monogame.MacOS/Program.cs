@@ -7,7 +7,7 @@ namespace FriendlyRoguelike.Client.Monogame.MacOS
         [STAThread]
         public static void Main()
         {
-            using (var game = RoguelikeGameFactory.Create())
+            using (var game = RoguelikeGameFactory.Create().Construct())
             {
                 game.Run();
             }

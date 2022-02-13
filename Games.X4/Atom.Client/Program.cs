@@ -22,7 +22,7 @@ namespace Atom.Client
         [STAThread]
         static void Main()
         {
-			using (var app = ConsoleApp.Create<TestConsoleApp>())
+			using (var app = ConsoleApp.Create<TestConsoleApp>().Construct())
 	        {
 		        app.Run();
 	        }

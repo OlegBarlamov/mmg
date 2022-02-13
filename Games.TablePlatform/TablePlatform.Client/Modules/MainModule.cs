@@ -4,7 +4,7 @@ namespace TablePlatform.Client.Modules
 {
     public class MainModule : IServicesModule
     {
-        public void Register(IServiceRegistrator serviceRegistrator)
+        public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             
         }

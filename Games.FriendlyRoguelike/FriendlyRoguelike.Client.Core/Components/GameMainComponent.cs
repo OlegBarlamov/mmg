@@ -12,7 +12,7 @@ namespace FriendlyRoguelike.Core.Components
     {
         private IGameStagesService GameStagesService { get; }
         private StartingGameComponent StartingGameComponent { get; }
-        private MainMenuGameComponent MainMenuGameComponent { get; }
+        //private MainMenuGameComponent MainMenuGameComponent { get; }
         private ExitingComponent ExitingComponent { get; }
         private GameInProgressComponent GameInProgressComponent { get; }
 
@@ -22,14 +22,14 @@ namespace FriendlyRoguelike.Core.Components
             [NotNull] IGameStagesService gameStagesService,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] StartingGameComponent startingGameComponent,
-            [NotNull] MainMenuGameComponent mainMenuGameComponent,
+            //[NotNull] MainMenuGameComponent mainMenuGameComponent,
             [NotNull] ExitingComponent exitingComponent,
             [NotNull] GameInProgressComponent gameInProgressComponent)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             GameStagesService = gameStagesService ?? throw new ArgumentNullException(nameof(gameStagesService));
             StartingGameComponent = startingGameComponent ?? throw new ArgumentNullException(nameof(startingGameComponent));
-            MainMenuGameComponent = mainMenuGameComponent ?? throw new ArgumentNullException(nameof(mainMenuGameComponent));
+            //MainMenuGameComponent = mainMenuGameComponent ?? throw new ArgumentNullException(nameof(mainMenuGameComponent));
             ExitingComponent = exitingComponent ?? throw new ArgumentNullException(nameof(exitingComponent));
             GameInProgressComponent = gameInProgressComponent ?? throw new ArgumentNullException(nameof(gameInProgressComponent));
             Logger = loggerFactory.CreateLogger("Game.Main");
@@ -68,11 +68,11 @@ namespace FriendlyRoguelike.Core.Components
 
             if (GameStagesService.ActiveStage == GameStages.MainMenu)
             {
-                MainMenuGameComponent.Update(gameTime);
-                if (MainMenuGameComponent.IsExited && GameStagesService.CanSwitchTheStage())
-                {
-                    GameStagesService.SwitchToStage(GameStages.Exiting);
-                }
+                // MainMenuGameComponent.Update(gameTime);
+                // if (MainMenuGameComponent.IsExited && GameStagesService.CanSwitchTheStage())
+                // {
+                //     GameStagesService.SwitchToStage(GameStages.Exiting);
+                // }
             }
 
             if (GameStagesService.ActiveStage == GameStages.GameLoading)

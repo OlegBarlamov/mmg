@@ -11,6 +11,7 @@
     <AssemblyName>FriendlyRoguelike.Client.MacOS</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -157,10 +158,6 @@
     <ProjectReference Include="..\FriendlyRoguelike.Client.Monogame\FriendlyRoguelike.Client.Monogame.csproj">
       <Project>{ef0a9c59-0630-4c62-91cf-f588da33f7ea}</Project>
       <Name>FriendlyRoguelike.Client.Monogame</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TablePlatform.Client\TablePlatform.Client.csproj">
-      <Project>{1c20f89e-43cf-4fb6-9043-4d978375febb}</Project>
-      <Name>TablePlatform.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,6 +8,7 @@ using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Content;
+using NetExtensions;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Resources

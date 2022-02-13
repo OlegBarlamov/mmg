@@ -1,10 +1,10 @@
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 
 namespace FriendlyRoguelike.Client.Monogame
 {
     public class MonoGameSpecificModule : IServicesModule
     {
-        public void Register(IServiceRegistrator serviceRegistrator)
+        public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             
         }

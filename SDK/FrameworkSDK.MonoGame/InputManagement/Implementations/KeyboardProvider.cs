@@ -1,11 +1,11 @@
 using System.Linq;
+using FrameworkSDK.MonoGame.Basic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 namespace FrameworkSDK.MonoGame.InputManagement.Implementations
 {
-    public class KeyboardProvider : IKeyboardProvider, IUpdateable
+    public class KeyboardProvider : IKeyboardProvider, IUpdatable
     {
         public KeyboardState Current { get; private set; } = Keyboard.GetState();
         public KeyboardState Previous { get; private set; }= Keyboard.GetState();

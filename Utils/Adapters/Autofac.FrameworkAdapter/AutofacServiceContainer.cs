@@ -1,12 +1,12 @@
 using System;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
 
 namespace Autofac.FrameworkAdapter
 {
     public class AutofacServiceContainer : IFrameworkServiceContainer
     {
-        private ContainerBuilder ContainerBuilder { get; }
+        public ContainerBuilder ContainerBuilder { get; }
         private AutofacServiceLocator _serviceLocator;
 
         public AutofacServiceContainer([NotNull] ContainerBuilder containerBuilder, string name = null)
@@ -41,19 +41,28 @@ namespace Autofac.FrameworkAdapter
 
         public IServiceLocator BuildContainer()
         {
-            var container = ContainerBuilder.Build();
-            _serviceLocator = new AutofacServiceLocator(container);
+            _serviceLocator = BuildAutofacServiceLocator();
             return _serviceLocator;
         }
 
         public IFrameworkServiceContainer CreateScoped(string name = null)
         {
+            if (_serviceLocator == null)
+                _serviceLocator = BuildAutofacServiceLocator();
+         
             var childContainerBuilder = new ContainerBuilder();
             foreach (var registration in _serviceLocator.Container.ComponentRegistry.Registrations)
             {
                 childContainerBuilder.ComponentRegistryBuilder.Register(registration);
             }
             return new AutofacServiceContainer(childContainerBuilder);
+        }
+
+        private AutofacServiceLocator BuildAutofacServiceLocator()
+        {
+            var container = ContainerBuilder.Build();
+            var serviceLocator = new AutofacServiceLocator(container);
+            return serviceLocator;
         }
     }
 }

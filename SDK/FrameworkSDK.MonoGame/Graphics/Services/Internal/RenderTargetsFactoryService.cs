@@ -1,5 +1,5 @@
 using System;
-using FrameworkSDK.MonoGame.Basic;
+using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using JetBrains.Annotations;
@@ -109,7 +109,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Services
         private void SaveReference(IDisposableExtended disposableExtended)
         {
             ResourceReferencesService.AddPackageless(disposableExtended);
-            disposableExtended.Disposed += DisposableExtendedOnDisposed;
+            disposableExtended.DisposedEvent += DisposableExtendedOnDisposed;
         }
 
         private void RenderTarget2DOnDisposing(object sender, EventArgs e)
@@ -122,7 +122,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Services
         private void DisposableExtendedOnDisposed(object sender, EventArgs e)
         {
             var disposable = (IDisposableExtended) sender;
-            disposable.Disposed -= DisposableExtendedOnDisposed;
+            disposable.DisposedEvent -= DisposableExtendedOnDisposed;
             ResourceReferencesService.RemovePackageless(disposable);
         }
     }

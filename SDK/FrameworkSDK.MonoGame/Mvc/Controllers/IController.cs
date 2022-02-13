@@ -3,7 +3,7 @@ using FrameworkSDK.MonoGame.Mvc;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-    public interface IController : IUpdateable, INamed, ISceneComponent
+    public interface IController : IUpdatable, INamed, ISceneComponent
 	{
 		IView View { get; }
 

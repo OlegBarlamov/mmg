@@ -2,6 +2,7 @@ using System;
 using FrameworkSDK.Common;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Localization;
+using NetExtensions;
 
 namespace FrameworkSDK.MonoGame.Resources
 {

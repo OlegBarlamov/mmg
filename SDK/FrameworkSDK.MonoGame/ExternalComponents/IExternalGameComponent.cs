@@ -1,12 +1,12 @@
 using System;
+using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using Microsoft.Xna.Framework;
 using IDrawable = FrameworkSDK.MonoGame.Basic.IDrawable;
-using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 namespace FrameworkSDK.MonoGame.ExternalComponents
 {
-    public interface IExternalGameComponent : IUpdateable, IDrawable, IDisposable
+    public interface IExternalGameComponent : IUpdatable, IDrawable, IDisposable
     {
         void LoadContent();
         

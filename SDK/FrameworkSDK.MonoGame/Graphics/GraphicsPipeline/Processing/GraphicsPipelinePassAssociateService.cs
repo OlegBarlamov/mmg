@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.Services;
 using JetBrains.Annotations;
@@ -36,7 +35,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
         public void Initialize()
         {
             if (_disposed) throw new ObjectDisposedException(nameof(GraphicsPipelinePassAssociateService));
-            if (_initialized) throw new ObjectInitializedException(nameof(GraphicsPipelinePassAssociateService));
+            if (_initialized) throw new ObjectAlreadyInitializedException(nameof(GraphicsPipelinePassAssociateService));
             
             var newMap = new Dictionary<Type, string>();
             var types = DomainService.GetAllTypes();

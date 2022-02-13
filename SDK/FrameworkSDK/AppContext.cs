@@ -1,5 +1,5 @@
 ﻿using System;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;

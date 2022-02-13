@@ -10,9 +10,9 @@ using Microsoft.Xna.Framework;
 namespace Gates.ClientCore
 {
 	[UsedImplicitly]
-    internal sealed class GameHost : GameApplication
+    internal sealed class GameHost : GameApp
 	{
-	    public override Scene CurrentScene => _activeScene;
+	    protected override Scene CurrentScene => _activeScene;
 
         [NotNull] private IExternalCommandsProvider ExternalCommandsProvider { get; }
         [NotNull] private IExternalCommandsProcessor ExternalCommandsProcessor { get; }
@@ -39,9 +39,9 @@ namespace Gates.ClientCore
 			ExternalCommandsProvider.Dispose();
 		}
 
-        protected override void Initialize()
+        protected override void OnInitialized()
         {
-            base.Initialize();
+            base.OnInitialized();
 
             _mainMenuScene = new MainMenuScene();
             _gameScene = new GameScene();

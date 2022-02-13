@@ -20,10 +20,12 @@ namespace Console.InGame
         private bool _isShowed;
         private bool _isDrawEnabled;
         private bool _isDisposed;
+        private bool _isInitialized;
 
         private readonly ConsoleModel _model;
         private readonly ConsoleView _view;
         private readonly RenderersProvider _renderersProvider = new RenderersProvider();
+        private readonly ConcurrentQueue<IReadOnlyCollection<IConsoleMessage>> _awaitingInitializingMessages = new ConcurrentQueue<IReadOnlyCollection<IConsoleMessage>>();
 
         public InGameConsoleController(
             [NotNull] IConsoleMessagesProvider consoleMessagesProvider,
@@ -38,19 +40,23 @@ namespace Console.InGame
             _model.UserCommand += ModelOnUserCommand;
             _view.ShowAnimationFinished += ViewOnShowAnimationFinished;
             _view.HideAnimationFinished += ViewOnHideAnimationFinished;
+            
+            ConsoleMessagesProvider.NewMessages += ConsoleMessagesProviderOnNewMessages;
         }
 
         public void Initialize([NotNull] InGameConsoleConfig config, [NotNull] GraphicsDevice graphicsDevice)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (graphicsDevice == null) throw new ArgumentNullException(nameof(graphicsDevice));
-            
+            if (_isInitialized) throw new InGameConsoleException("Console initialized already");
+            _isInitialized = true;
+
             CheckConfigValid(config);
             
             _model.Initialize(config);
             _view.Initialize(config, graphicsDevice);
-            
-            ConsoleMessagesProvider.NewMessages += ConsoleMessagesProviderOnNewMessages;
+
+            WriteAwaitingMessages(_awaitingInitializingMessages);
         }
 
         public void Dispose()
@@ -161,8 +167,21 @@ namespace Console.InGame
                 var message = ConsoleMessagesProvider.Pop();
                 messages.Add(message);
             }
-            
-            _model.AddMessages(messages);
+
+            if (_isInitialized)
+                _model.AddMessages(messages);
+            else
+                _awaitingInitializingMessages.Enqueue(messages);
+        }
+
+        private void WriteAwaitingMessages([NotNull] ConcurrentQueue<IReadOnlyCollection<IConsoleMessage>> awaitingMessages)
+        {
+            if (awaitingMessages == null) throw new ArgumentNullException(nameof(awaitingMessages));
+
+            while (awaitingMessages.TryDequeue(out var messages))
+            {
+                _model.AddMessages(messages);
+            }
         }
 
         private void CheckConfigValid(InGameConsoleConfig config)

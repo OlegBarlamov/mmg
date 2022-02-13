@@ -1,4 +1,5 @@
 using Console.FrameworkAdapter;
+using FrameworkSDK;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Constructing;
@@ -9,16 +10,16 @@ namespace FriendlyRoguelike.Client.Monogame
 {
     public static class RoguelikeGameFactory
     {
-        public static IAppRunner Create()
+        public static IAppFactory Create()
         {
             var coreConfigurator = Core.RoguelikeGameFactory.Create(new RoguelikeGameFactoryConfig());
             return coreConfigurator
+                .AddServices<MonoGameSpecificModule>()
                 .UseGame<RoguelikeMainGameClass>()
-                .SetupGameParameters(GetParameters)
-                .UseComponents()
-                .AddConsole(coreConfigurator.ConsoleMessagesProvider)
-                .RegisterServices<MonoGameSpecificModule>()
-                .Configure();
+                .UseGameParameters(GetParameters())
+                .UseGameComponents()
+                .UseInGameConsole()
+                .UseConsoleMessagesProvider(coreConfigurator.ConsoleMessagesProvider);
         }
 
         private static IGameParameters GetParameters()

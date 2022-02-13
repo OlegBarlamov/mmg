@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Gates.HttpClientSide\Gates.HttpClientSide.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Localization\" />
-  </ItemGroup>
-
 </Project>

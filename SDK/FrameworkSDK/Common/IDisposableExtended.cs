@@ -2,9 +2,9 @@
 
 namespace FrameworkSDK.Common
 {
-    internal interface IDisposableExtended : IDisposable
+    public interface IDisposableExtended : IDisposable
     {
-        event Action DisposedEvent;
+        event EventHandler DisposedEvent;
 
         bool IsDisposed { get; }
     }

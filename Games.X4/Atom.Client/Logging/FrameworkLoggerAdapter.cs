@@ -8,7 +8,7 @@ namespace Atom.Client.Logging
 {
 	internal class FrameworkLoggerAdapter : IFrameworkLogger
 	{
-		private Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory { get; }
+		private ILoggerFactory LoggerFactory { get; }
 
 		public FrameworkLoggerAdapter([NotNull] Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
 		{

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using FrameworkSDK.Common;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
-using FrameworkSDK.MonoGame.Graphics.Services;
 using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using JetBrains.Annotations;
+using NetExtensions;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Resources
@@ -20,7 +19,7 @@ namespace FrameworkSDK.MonoGame.Resources
         [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
         [NotNull] private IRenderTargetsFactory RenderTargetsFactory { get; }
 
-        private static readonly ModuleLogger Logger = new ModuleLogger(AppContext.Logger, FrameworkLogModule.Resources);
+        [NotNull] private ModuleLogger Logger { get; }
 
         private bool _gameHeartResourcesLoaded;
         private bool _gameHeartResourcesUnloaded;
@@ -30,13 +29,18 @@ namespace FrameworkSDK.MonoGame.Resources
         
         private readonly List<LoadResourcePackageTask> _delayedPackagesForLoad = new List<LoadResourcePackageTask>();
 
-        public ResourcesService([NotNull] IGameHeartServices gameHeartServices, [NotNull] IContentContainersFactory contentContainersFactory,
-            [NotNull] ITextureGeneratorService textureGeneratorService, [NotNull] IRenderTargetsFactory renderTargetsFactory)
+        public ResourcesService(
+            [NotNull] IGameHeartServices gameHeartServices,
+            [NotNull] IContentContainersFactory contentContainersFactory,
+            [NotNull] ITextureGeneratorService textureGeneratorService,
+            [NotNull] IRenderTargetsFactory renderTargetsFactory,
+            [NotNull] IFrameworkLogger frameworkLogger)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             ContentContainersFactory = contentContainersFactory ?? throw new ArgumentNullException(nameof(contentContainersFactory));
             TextureGeneratorService = textureGeneratorService ?? throw new ArgumentNullException(nameof(textureGeneratorService));
             RenderTargetsFactory = renderTargetsFactory ?? throw new ArgumentNullException(nameof(renderTargetsFactory));
+            Logger = new ModuleLogger(frameworkLogger, FrameworkLogModule.Resources);
 
             GameHeartServices.ResourceLoading += GameHeartServicesOnResourceLoading;
             GameHeartServices.ResourceUnloading += GameHeartServicesOnResourceUnloading;

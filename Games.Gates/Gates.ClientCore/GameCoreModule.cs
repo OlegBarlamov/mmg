@@ -8,7 +8,7 @@ namespace Gates.ClientCore
 {
     internal class GameCoreModule : IServicesModule
     {
-        public void Register(IServiceRegistrator serviceRegistrator)
+        public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             serviceRegistrator.RegisterType<IExternalCommandParser, ExternalCommandParser>();
             serviceRegistrator.RegisterType<IExternalCommandsProcessor, ExternalCommandsProcessor>();

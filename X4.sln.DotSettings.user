@@ -1,14 +1,7 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	
-	
-	
-	
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
+  &lt;Assembly Path="/Users/oleg/.nuget/packages/netstandard.library/2.0.3/build/netstandard2.0/ref/netstandard.dll" /&gt;
+&lt;/AssemblyExplorer&gt;</s:String>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=6433e232_002D4a48_002D420d_002Da2c1_002D0befda8a5ad2_0023ConsoleWindow/@EntryIndexedValue">True</s:Boolean>
-	
-	
-	
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=aec9f859_002Dff07_002D452d_002D9ff5_002D7444821d9d14_0023Atom_002EClient/@EntryIndexedValue">True</s:Boolean>
-	
-	
-	
 	</wpf:ResourceDictionary>

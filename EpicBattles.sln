@@ -21,11 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epic.Data", "Games.Epic\Epi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epic.Logic", "Games.Epic\Epic.Logic\Epic.Logic.csproj", "{63FE3718-F0C6-4F3F-9A8F-FF9DCC56BC5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epic.Server", "Games.Epic\Epic.Server\Epic.Server.csproj", "{785665EC-83E0-4E57-B5FD-A1B21A147F7B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epic.Core", "Games.Epic\Epic.Core\Epic.Core.csproj", "{D23316A8-D104-4BC4-9FCA-FB0F54EFAFB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.FrameworkAdapter", "Utils\Adapters\AspNetCore.FrameworkAdapter\AspNetCore.FrameworkAdapter.csproj", "{70D9AEC8-07CE-4BD7-B360-9AC247323E8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.FrameworkAdapter", "Utils\Adapters\Logging.FrameworkAdapter\Logging.FrameworkAdapter.csproj", "{07CB8859-40D5-4D5A-8CD2-A684089F4C1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +57,6 @@ Global
 		{63FE3718-F0C6-4F3F-9A8F-FF9DCC56BC5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63FE3718-F0C6-4F3F-9A8F-FF9DCC56BC5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63FE3718-F0C6-4F3F-9A8F-FF9DCC56BC5C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{785665EC-83E0-4E57-B5FD-A1B21A147F7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{785665EC-83E0-4E57-B5FD-A1B21A147F7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{785665EC-83E0-4E57-B5FD-A1B21A147F7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{785665EC-83E0-4E57-B5FD-A1B21A147F7B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D23316A8-D104-4BC4-9FCA-FB0F54EFAFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D23316A8-D104-4BC4-9FCA-FB0F54EFAFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D23316A8-D104-4BC4-9FCA-FB0F54EFAFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,6 +65,10 @@ Global
 		{70D9AEC8-07CE-4BD7-B360-9AC247323E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70D9AEC8-07CE-4BD7-B360-9AC247323E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70D9AEC8-07CE-4BD7-B360-9AC247323E8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07CB8859-40D5-4D5A-8CD2-A684089F4C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07CB8859-40D5-4D5A-8CD2-A684089F4C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07CB8859-40D5-4D5A-8CD2-A684089F4C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07CB8859-40D5-4D5A-8CD2-A684089F4C1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +79,7 @@ Global
 		{EFEE2200-4D3E-4B45-9F88-B01D226F9349} = {A995339B-3E9C-46E0-9AB1-7D14B6D5E7F7}
 		{3FA53468-2750-459F-82F7-A607298376DC} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
 		{70D9AEC8-07CE-4BD7-B360-9AC247323E8B} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
+		{07CB8859-40D5-4D5A-8CD2-A684089F4C1E} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {297416CF-E620-4DD9-B1E3-A59673237A6A}

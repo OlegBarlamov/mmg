@@ -1,10 +1,10 @@
+using FrameworkSDK.MonoGame.Basic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 namespace FrameworkSDK.MonoGame.InputManagement.Implementations
 {
-    internal class MouseProvider : IMouseProvider, IUpdateable
+    internal class MouseProvider : IMouseProvider, IUpdatable
     {
         public MouseState Current { get; private set; } = Mouse.GetState();
         public MouseState Previous { get; private set; } = Mouse.GetState();

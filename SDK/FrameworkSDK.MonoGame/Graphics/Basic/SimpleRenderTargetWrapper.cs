@@ -6,8 +6,9 @@ namespace FrameworkSDK.MonoGame.Graphics.Basic
 {
     public class SimpleRenderTargetWrapper : IRenderTargetWrapper
     {
-        public event EventHandler Disposed;
-        
+        public event EventHandler DisposedEvent;
+        public bool IsDisposed { get; private set; }
+
         public RenderTarget2D RenderTarget { get; }
         
         public SimpleRenderTargetWrapper([NotNull] RenderTarget2D renderTarget)
@@ -17,9 +18,10 @@ namespace FrameworkSDK.MonoGame.Graphics.Basic
         
         public void Dispose()
         {
+            IsDisposed = true;
             RenderTarget.Dispose();
-            Disposed?.Invoke(this, EventArgs.Empty);
-            Disposed = null;
+            DisposedEvent?.Invoke(this, EventArgs.Empty);
+            DisposedEvent = null;
         }
     }
 }

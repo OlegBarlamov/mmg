@@ -1,5 +1,5 @@
 ﻿using System;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
 

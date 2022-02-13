@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atom.Client
 {
-	public abstract class ConsoleApp : IApplication
+	public abstract class ConsoleApp : IAppSubSystem
 	{
 		protected IConsoleService Console { get; }
 
@@ -20,18 +20,17 @@ namespace Atom.Client
 
 		public abstract void Run();
 
-		public static IAppRunner Create<TConsoleApp>() where TConsoleApp : ConsoleApp
+		public static IAppFactory Create<TConsoleApp>() where TConsoleApp : ConsoleApp
 		{
 			var loggerFactory = new NullLogFactory();
-			var appFactory = new AppFactory();
-			return appFactory.Create<TConsoleApp>()
-				.RegisterServices(registrator =>
+			var appFactory = new DefaultAppFactory();
+			return appFactory.AddServices
+				(registrator =>
 				{
 					registrator.RegisterInstance<ILoggerFactory>(loggerFactory);
 					registrator.RegisterType<IConsoleService, ConsoleService>();
 				})
-				.Configure();
-
+				.AddComponent<TConsoleApp>();
 		}
 
 		private class NullLogFactory : ILoggerFactory
@@ -48,6 +47,16 @@ namespace Atom.Client
 			public void AddProvider(ILoggerProvider provider)
 			{
 			}
+		}
+
+		public void Dispose()
+		{
+			
+		}
+
+		public void Configure()
+		{
+			
 		}
 	}
 }

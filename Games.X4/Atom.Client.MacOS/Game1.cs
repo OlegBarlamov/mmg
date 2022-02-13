@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Console.Core;
-using Console.Core.Implementations.Terminal;
 using Console.Core.Models;
 using Console.InGame;
-using Console.InGame.Implementation;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,7 +27,7 @@ namespace Atom.Client.MacOS
         LogLevel = logLevel;
         Content = content;
       }
-
+      
       public string Source { get; } = "Fake";
       public ConsoleLogLevel LogLevel { get; }
       public object Content { get; } = null;
@@ -47,9 +43,7 @@ namespace Atom.Client.MacOS
     
     public FakeMessagesProvider()
     {
-      _timer = new Timer(500);
-      _timer.Elapsed += TimerOnElapsed;
-      _timer.Start();
+      _timer = new Timer(TimerOnElapsed, new object(), 500, 500);
     }
 
     public void SendMessage(ConsoleMessage message)
@@ -59,7 +53,7 @@ namespace Atom.Client.MacOS
 
     private static int _counter;
     
-    private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+    private void TimerOnElapsed(object state)
     {
       try
       {
@@ -244,9 +238,9 @@ namespace Atom.Client.MacOS
 
       var onePixelTexture = GraphicsDevice.GetTextureDiffuseColor(Color.White);
       var messagesProvider = new FakeMessagesProvider();
-      _consoleController = new InGameConsoleController(messagesProvider,  new FakeCommandExecutor(messagesProvider.SendMessage, onePixelTexture), _consoleConfig, GraphicsDevice);
-      _consoleController.LoadContent();
+      _consoleController = new InGameConsoleController(messagesProvider,  new FakeCommandExecutor(messagesProvider.SendMessage, onePixelTexture));
       _consoleController.RegisterDataRenderer(new DataRenderer());
+      _consoleController.Initialize(_consoleConfig, GraphicsDevice);
     }
 
     private bool _isDown;

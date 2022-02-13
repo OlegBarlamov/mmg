@@ -8,7 +8,7 @@ namespace TablePlatform.Client.MacOS
         [STAThread]
         public static void Main()
         {
-            using (var game = TablePlatformFactory.Create(new Program()))
+            using (var game = TablePlatformFactory.Create(new Program()).Construct())
             {
                 game.Run();
             }

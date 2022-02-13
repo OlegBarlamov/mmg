@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Mvc;
 using Microsoft.Xna.Framework;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
+using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.ExternalComponents;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Localization;
 using Microsoft.Xna.Framework.Graphics;
 using IDrawable = FrameworkSDK.MonoGame.Basic.IDrawable;
-using IUpdateable = FrameworkSDK.MonoGame.Basic.IUpdateable;
 
 namespace FrameworkSDK.MonoGame
 {
     public abstract class GameApp : IGameHost
     {
-        public event EventHandler Disposed;
+        public event EventHandler DisposedEvent;
+        public bool IsDisposed { get; private set; }
 
         protected abstract Scene CurrentScene { get; }
 	    
@@ -70,6 +71,8 @@ namespace FrameworkSDK.MonoGame
         
         void IDisposable.Dispose()
         {
+            IsDisposed = true;
+            
             foreach (var component in _externalGameComponents)
             {
                 component.Dispose();
@@ -79,12 +82,8 @@ namespace FrameworkSDK.MonoGame
             
             ScenesController.Dispose();
             
-            Disposed?.Invoke(this, EventArgs.Empty);
-            Disposed = null;
-        }
-        
-        void IApplication.Run()
-        {
+            DisposedEvent?.Invoke(this, EventArgs.Empty);
+            DisposedEvent = null;
         }
 
         void IGameHost.OnInitialize()
@@ -107,7 +106,7 @@ namespace FrameworkSDK.MonoGame
             OnContentLoaded();
         }
 
-        void IUpdateable.Update(GameTime gameTime)
+        void IUpdatable.Update(GameTime gameTime)
         {
             InputManager.Update(gameTime);
             

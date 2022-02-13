@@ -7,7 +7,7 @@ namespace Gates.Client.Windows
 {
     internal class WindowsServicesModule : IServicesModule
     {
-        public void Register(IServiceRegistrator serviceRegistrator)
+        public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             serviceRegistrator.RegisterType<IExternalCommandsProvider, ConsoleService>();
         }

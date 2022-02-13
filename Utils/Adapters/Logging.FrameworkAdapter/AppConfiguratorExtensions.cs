@@ -1,24 +1,22 @@
-using System;
-using FrameworkSDK.Constructing;
+using FrameworkSDK;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 
 namespace Logging.FrameworkAdapter
 {
-    public static class AppConfiguratorExtensions
+    public static class AppFactoryExtensions
     {
-        public static IAppConfigurator SetupLogSystem([NotNull] this IAppConfigurator appConfigurator, string logDirectoryFullPath, bool isDebug = false, bool isFakeLog = false)
+        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory, string logDirectoryFullPath, bool isDebug = false, bool isFakeLog = false)
         {
-            if (appConfigurator == null) throw new ArgumentNullException(nameof(appConfigurator));
-            
             var config = new LogSystemConfig
             {
                 LogDirectoryFullPath = logDirectoryFullPath,
                 IsDebug = isDebug,
                 IsFakeLog = isFakeLog
             };
-            
-            return appConfigurator.SetupCustomLogger(config, CreateLogger);
+
+            var logger = CreateLogger(config);
+            return appFactory.UseLogger(logger);
         }
 
         private static IFrameworkLogger CreateLogger(LogSystemConfig config)

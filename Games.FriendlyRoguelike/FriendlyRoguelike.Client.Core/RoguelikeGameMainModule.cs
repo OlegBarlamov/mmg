@@ -1,4 +1,4 @@
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 using FriendlyRoguelike.Core.Components;
 using FriendlyRoguelike.Core.Models;
 using FriendlyRoguelike.Core.Services;
@@ -8,7 +8,7 @@ namespace FriendlyRoguelike.Core
 {
     public class RoguelikeGameMainModule : IServicesModule
     {
-        public void Register(IServiceRegistrator serviceRegistrator)
+        public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             var gameRootModel = new GameRootModel();
             serviceRegistrator.RegisterInstance(gameRootModel);

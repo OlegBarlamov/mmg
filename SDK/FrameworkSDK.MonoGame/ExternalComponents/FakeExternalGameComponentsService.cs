@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
+using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.ExternalComponents
 {
+    [UsedImplicitly]
     internal class FakeExternalGameComponentsService : IExternalGameComponentsService
     {
         public void Dispose()
@@ -22,7 +24,7 @@ namespace FrameworkSDK.MonoGame.ExternalComponents
         {
         }
 
-        public void ResolveComponents(IServiceLocator serviceLocator)
+        public void LoadComponents(IServiceLocator serviceLocator)
         {
         }
 
