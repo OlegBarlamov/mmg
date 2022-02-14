@@ -10,7 +10,7 @@ namespace FrameworkSDK.MonoGame.Cameras
     {
         public ICamera ActiveCamera { get; private set; }
         
-        private static ModuleLogger Logger { get; } = new ModuleLogger(AppContext.Logger, FrameworkLogModule.Cameras);
+        private static ModuleLogger Logger { get; } = new ModuleLogger(AppContext.Logger, LogCategories.Cameras);
         
         public void ChangeCamera(ICamera camera)
         {

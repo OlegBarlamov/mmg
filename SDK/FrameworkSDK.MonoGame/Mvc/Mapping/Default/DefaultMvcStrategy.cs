@@ -14,7 +14,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			IModelsResolver modelsResolver, [NotNull] IFrameworkLogger logger)
 			: base(controllersResolver, viewsResolver, modelsResolver, logger)
 		{
-			_moduleLogger = new ModuleLogger(Logger, FrameworkLogModule.Mvc);
+			_moduleLogger = new ModuleLogger(Logger, LogCategories.Mvc);
 		}
 
         public override IMvcSchemeValidateResult ValidateByModel(object model)

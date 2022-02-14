@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
@@ -53,7 +52,7 @@ namespace FrameworkSDK.MonoGame
 
 		    GameApp.DisposedEvent += GameHostOnDisposed;
 		    
-		    Logger = new ModuleLogger(logger, FrameworkLogModule.GameCore);
+		    Logger = new ModuleLogger(logger, LogCategories.GameCore);
 
 		    Activated += OnAppActivated;
 		    Deactivated += OnAppDeactivated;

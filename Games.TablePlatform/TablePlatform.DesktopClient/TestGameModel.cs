@@ -5,7 +5,7 @@ using TablePlatform.Data;
 using TablePlatform.Data.Implementations;
 using TablePlatform.Data.Tokens;
 
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     public class TestGameModel : ITableGameDescriptor
     {

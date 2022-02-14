@@ -154,9 +154,9 @@
       <Project>{ca88002c-6236-467e-abe2-374f016dbd50}</Project>
       <Name>Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TablePlatform.Client\TablePlatform.Client.csproj">
+    <ProjectReference Include="..\TablePlatform.DesktopClient\TablePlatform.DesktopClient.csproj">
       <Project>{1c20f89e-43cf-4fb6-9043-4d978375febb}</Project>
-      <Name>TablePlatform.Client</Name>
+      <Name>TablePlatform.DesktopClient</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

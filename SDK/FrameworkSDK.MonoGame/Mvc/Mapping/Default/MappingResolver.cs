@@ -130,7 +130,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		{
 			if (type == null) throw new ArgumentNullException(nameof(type));
 			if (parameter == null) throw new ArgumentNullException(nameof(parameter));
-			return MappingLocator.ResolveWithParameters(type, new[] { parameter });
+			return MappingLocator.Resolve(type, new[] { parameter });
 		}
 
 		private int GetTypeHash([NotNull] object model, string typeNamePattern, out string typeName)

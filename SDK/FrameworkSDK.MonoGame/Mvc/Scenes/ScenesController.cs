@@ -32,7 +32,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		public ScenesController([NotNull] IFrameworkLogger coreLogger)
 		{
 			if (coreLogger == null) throw new ArgumentNullException(nameof(coreLogger));
-			Logger = new ModuleLogger(coreLogger, FrameworkLogModule.Scenes);
+			Logger = new ModuleLogger(coreLogger, LogCategories.Mvc);
 		}
 
 		public void Update(GameTime gameTime)

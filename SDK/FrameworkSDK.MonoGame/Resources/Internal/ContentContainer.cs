@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FrameworkSDK.Common;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
@@ -19,7 +18,7 @@ namespace FrameworkSDK.MonoGame.Resources
         
         private IResourceReferencesService ResourceReferencesService { get; }
 
-        private static ModuleLogger Logger { get; } = new ModuleLogger(AppContext.Logger, FrameworkLogModule.Resources); 
+        private static ModuleLogger Logger { get; } = new ModuleLogger(AppContext.Logger, LogCategories.Resources); 
         
         private bool _isDisposed;
         

@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePlatform.Client.MacOS", "Games.TablePlatform\TablePlatform.Client.MacOS\TablePlatform.Client.MacOS.csproj", "{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePlatform.Client", "Games.TablePlatform\TablePlatform.Client\TablePlatform.Client.csproj", "{1C20F89E-43CF-4FB6-9043-4D978375FEBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePlatform.DesktopClient", "Games.TablePlatform\TablePlatform.DesktopClient\TablePlatform.DesktopClient.csproj", "{1C20F89E-43CF-4FB6-9043-4D978375FEBB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{8A5DF9CB-5077-4574-8D79-5ECE10417B5C}"
 EndProject

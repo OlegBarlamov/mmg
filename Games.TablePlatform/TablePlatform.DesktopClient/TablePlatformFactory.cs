@@ -10,10 +10,10 @@ using FrameworkSDK.MonoGame.ExternalComponents;
 using JetBrains.Annotations;
 using Logging;
 using Logging.FrameworkAdapter;
-using TablePlatform.Client.Modules;
+using TablePlatform.DesktopClient.Modules;
 
 // ReSharper disable HeapView.CanAvoidClosure
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     public static class TablePlatformFactory
     {
@@ -21,7 +21,7 @@ namespace TablePlatform.Client
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             
-            var logSystem = new LogSystem("Logs", true);
+            var logSystem = new LogSystem(new LogSystemConfig());
             var frameworkLogger = logSystem.ToFrameworkLogger();
             var consoleProvider = new LoggerConsoleMessagesProvider();
             logSystem.AddProvider(consoleProvider);

@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     [UsedImplicitly]
     internal class TablePlatformGame : GameApp

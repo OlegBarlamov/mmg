@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TablePlatform.Data;
 
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     public class GameScene : Scene
     {

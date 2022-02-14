@@ -24,7 +24,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             ServiceContainer = serviceContainer ?? throw new ArgumentNullException(nameof(serviceContainer));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            _moduleLogger = new ModuleLogger(Logger, FrameworkLogModule.Mvc);
+            _moduleLogger = new ModuleLogger(Logger, LogCategories.Mvc);
         }
 
         public void RegisterScene(Type modelType, Type sceneType)

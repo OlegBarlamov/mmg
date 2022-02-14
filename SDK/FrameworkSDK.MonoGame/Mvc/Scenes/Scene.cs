@@ -50,7 +50,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 	        Model = model;
             MvcStrategy = AppContext.ServiceLocator.Resolve<IMvcStrategyService>();
 
-            Logger = new ModuleLogger(FrameworkLogModule.Scenes);
+            Logger = new ModuleLogger(LogCategories.Mvc);
 	        Controllers = new UpdatableCollection<IController>();
 	        Views = new UpdatableCollection<ViewMapping>();
 

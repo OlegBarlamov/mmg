@@ -19,7 +19,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
 
-            _logger = new ModuleLogger(logger, FrameworkLogModule.Mvc);
+            _logger = new ModuleLogger(logger, LogCategories.Mvc);
         }
 
         public bool IsModelRegistered(object model)
@@ -37,7 +37,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             try
             {
                 var type = model.GetType();
-                var scene = (IScene) ServiceLocator.ResolveWithParameters(type, new[] {model});
+                var scene = (IScene) ServiceLocator.Resolve(type, new[] {model});
                 if (scene.Model == null)
                     scene.Model = model;
 

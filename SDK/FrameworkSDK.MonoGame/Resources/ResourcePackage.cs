@@ -14,7 +14,7 @@ namespace FrameworkSDK.MonoGame.Resources
         public bool IsLoading { get; private set; }
 
         private static Lazy<ModuleLogger> LazyLoggerFactory { get; } = 
-            new Lazy<ModuleLogger>(() => new ModuleLogger(AppContext.Logger, FrameworkLogModule.Resources));
+            new Lazy<ModuleLogger>(() => new ModuleLogger(AppContext.Logger, LogCategories.Resources));
         private static ModuleLogger Logger => LazyLoggerFactory.Value;
         
         private bool _unloaded;

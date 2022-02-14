@@ -12,7 +12,7 @@ namespace FrameworkSDK.DependencyInjection.Default
 {
 	internal class DefaultServiceLocator : IServiceLocator
 	{
-        public string Name { get; set; }
+        public string Name { get; }
 
 	    private IDisposableExtended LifeTimeScope { get; }
 	    private IConstructorFinder ConstructorFinder { get; set; }
@@ -149,6 +149,7 @@ namespace FrameworkSDK.DependencyInjection.Default
 	    private void LifeTimeScopeOnDisposedEvent(object sender, EventArgs args)
 	    {
 	        LifeTimeScope.DisposedEvent -= LifeTimeScopeOnDisposedEvent;
+	        _logger.Trace($"{ToString()} disposed");
 	        _logger.Dispose();
 	    }
 

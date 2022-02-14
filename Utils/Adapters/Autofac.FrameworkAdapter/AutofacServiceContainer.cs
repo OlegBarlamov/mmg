@@ -1,4 +1,5 @@
 using System;
+using Autofac.Builder;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
 
@@ -32,6 +33,38 @@ namespace Autofac.FrameworkAdapter
                 default:
                     throw new ArgumentOutOfRangeException(nameof(resolveType), resolveType, null);
             }
+        }
+
+        public void RegisterFactory(Type serviceType, ServiceFactoryDelegate factory,
+            ResolveType resolveType = ResolveType.Singletone)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RegisterGeneric(Type genericServiceTypeDefinition, Type genericImplementationTypeDefinition,
+            ResolveType resolveType = ResolveType.Singletone)
+        {
+            switch (resolveType)
+            {
+                case ResolveType.Singletone:
+                    ContainerBuilder.RegisterGeneric(genericImplementationTypeDefinition)
+                        .As(genericServiceTypeDefinition)
+                        .SingleInstance();
+                    break;
+                case ResolveType.InstancePerResolve:
+                    ContainerBuilder.RegisterGeneric(genericImplementationTypeDefinition)
+                        .As(genericServiceTypeDefinition)
+                        .InstancePerDependency();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(resolveType), resolveType, null);
+            }
+        }
+
+        public void RegisterGenericFactory(Type genericServiceTypeDefinition, ServiceFactoryDelegate factory,
+            ResolveType resolveType = ResolveType.Singletone)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()

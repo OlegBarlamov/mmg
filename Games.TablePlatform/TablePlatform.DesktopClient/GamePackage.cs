@@ -1,7 +1,7 @@
 using FrameworkSDK.MonoGame.Resources;
 using Microsoft.Xna.Framework;
 
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     public class GamePackage : ResourcePackage
     {

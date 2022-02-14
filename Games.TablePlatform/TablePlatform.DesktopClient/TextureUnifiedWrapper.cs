@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TablePlatform.Data;
 using TablePlatform.Data.Tokens;
 
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     public class TextureUnifiedWrapper : IUnified
     {

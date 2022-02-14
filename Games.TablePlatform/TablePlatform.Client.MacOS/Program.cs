@@ -1,5 +1,6 @@
 ﻿using System;
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
+using TablePlatform.DesktopClient;
 
 namespace TablePlatform.Client.MacOS
 {

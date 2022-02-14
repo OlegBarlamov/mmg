@@ -30,7 +30,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             _internalPipelineProcessor = new InternalPipelineProcessor(
                 ProcessActionFromInternalProcessor,
-                new ModuleLogger(Logger, FrameworkLogModule.Rendering));
+                new ModuleLogger(Logger, LogCategories.Rendering));
         }
 
         public virtual void Dispose()

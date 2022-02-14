@@ -1,6 +1,6 @@
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 
-namespace TablePlatform.Client.Modules
+namespace TablePlatform.DesktopClient.Modules
 {
     public class MainModule : IServicesModule
     {

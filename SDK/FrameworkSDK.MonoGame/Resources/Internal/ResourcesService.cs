@@ -40,7 +40,7 @@ namespace FrameworkSDK.MonoGame.Resources
             ContentContainersFactory = contentContainersFactory ?? throw new ArgumentNullException(nameof(contentContainersFactory));
             TextureGeneratorService = textureGeneratorService ?? throw new ArgumentNullException(nameof(textureGeneratorService));
             RenderTargetsFactory = renderTargetsFactory ?? throw new ArgumentNullException(nameof(renderTargetsFactory));
-            Logger = new ModuleLogger(frameworkLogger, FrameworkLogModule.Resources);
+            Logger = new ModuleLogger(frameworkLogger, LogCategories.Resources);
 
             GameHeartServices.ResourceLoading += GameHeartServicesOnResourceLoading;
             GameHeartServices.ResourceUnloading += GameHeartServicesOnResourceUnloading;

@@ -23,7 +23,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 	        ModelsResolver = modelsResolver ?? throw new ArgumentNullException(nameof(modelsResolver));
 			Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-			_moduleLogger = new ModuleLogger(logger, FrameworkLogModule.Mvc);
+			_moduleLogger = new ModuleLogger(logger, LogCategories.Mvc);
         }
 
         public IMvcScheme ResolveByModel(object model)

@@ -14,24 +14,23 @@ namespace Autofac.FrameworkAdapter
         {
             Container = container ?? throw new ArgumentNullException(nameof(container));
         }
-
-        public object Resolve(Type type)
+        
+        public object Resolve(Type type, object[] additionalParameters = null)
         {
-            return Container.Resolve(type);
+            return Container.Resolve(type, additionalParameters.Select(TypedParameter.From));
         }
 
-        public object ResolveWithParameters(Type type, object[] parameters)
-        {
-            return Container.Resolve(type, parameters.Select(TypedParameter.From));
-        }
-
-        public IReadOnlyList<object> ResolveMultiple(Type type)
+        Array IServiceLocator.ResolveMultiple(Type type)
         {
             var listOf = typeof(IEnumerable<>);
             var listOfType = listOf.MakeGenericType(type);
             
-            var resultArray = (Array) Container.Resolve(listOfType);
-            return resultArray.Cast<object>().ToArray();
+            return (Array) Container.Resolve(listOfType);
+        }
+        
+        public object CreateInstance(Type type, object[] parameters = null)
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsServiceRegistered(Type type)

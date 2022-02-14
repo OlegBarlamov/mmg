@@ -1,6 +1,6 @@
-using FrameworkSDK.IoC;
+using FrameworkSDK.DependencyInjection;
 
-namespace TablePlatform.Client
+namespace TablePlatform.DesktopClient
 {
     public interface IAppRunProgram
     {
