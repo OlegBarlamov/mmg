@@ -17,6 +17,10 @@ export interface ICanvasService {
     
     projectPointScreenToCanvas(point: Point): Point
     projectPointCanvasToScreen(point: Point): Point
+    projectSizeScreenToCanvas(size: Size): Size
+    projectSizeCanvasToScreen(size: Size): Size
+    projectRectangleScreenToCanvas(rectangle: IRectangle): IRectangle
+    projectRectangleCanvasToScreen(rectangle: IRectangle): IRectangle
 }
 
 export type ViewportChangeEventArgs = {

@@ -30,15 +30,53 @@ export class FakeCanvasService implements ICanvasService{
     
     projectPointCanvasToScreen(point: Point): Point {
         return {
-            x: point.x / this.viewport.width * this.screenSize.width,
-            y: point.y / this.viewport.height * this.screenSize.height,
+            x: (point.x - this.viewport.x) / this.viewport.width * this.screenSize.width,
+            y: (point.y - this.viewport.y) / this.viewport.height * this.screenSize.height,
         }
     }
 
     projectPointScreenToCanvas(point: Point): Point {
         return {
-            x: point.x / this.screenSize.width * this.viewport.width,
-            y: point.y / this.screenSize.height * this.viewport.height,
+            x: point.x / this.screenSize.width * this.viewport.width + this.viewport.x,
+            y: point.y / this.screenSize.height * this.viewport.height + this.viewport.y,
         }
     }
+
+    projectSizeCanvasToScreen(size: Size): Size {
+        return {
+            width: size.width / this.viewport.width * this.screenSize.width,
+            height: size.height / this.viewport.height * this.screenSize.height,
+        }
+    }
+
+    projectSizeScreenToCanvas(size: Size): Size {
+        return {
+            width: size.width / this.screenSize.width * this.viewport.width,
+            height: size.height / this.screenSize.height * this.viewport.height,
+        }
+    }
+
+    projectRectangleCanvasToScreen(rectangle: IRectangle): IRectangle {
+        const left: Point = this.projectPointCanvasToScreen({x: rectangle.x, y: rectangle.y})
+        const size: Size = this.projectSizeCanvasToScreen({width: rectangle.width, height: rectangle.height})
+        return {
+            x: left.x,
+            y: left.y,
+            width: size.width,
+            height: size.height
+        }
+    }
+
+    projectRectangleScreenToCanvas(rectangle: IRectangle): IRectangle {
+        const left: Point = this.projectPointScreenToCanvas({x: rectangle.x, y: rectangle.y})
+        const size: Size = this.projectSizeScreenToCanvas({width: rectangle.width, height: rectangle.height})
+        return {
+            x: left.x,
+            y: left.y,
+            width: size.width,
+            height: size.height
+        }
+    }
+    
+    
 }

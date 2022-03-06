@@ -1,6 +1,6 @@
 import {ICanvasService, IRectangle} from "./ICanvasService";
 import {MouseButtons} from "../common/MouseButtons";
-import {Point} from "../common/Geometry";
+import {Point, Size} from "../common/Geometry";
 
 export class CanvasController {
     private _canvasContainer: HTMLElement | undefined;
@@ -51,7 +51,7 @@ export class CanvasController {
     }
     
     private onMouseWheel(e: WheelEvent): void {
-        const speed = 1
+        const speed = 0.1
         const viewport = this._canvasService.viewport
         const newViewport: IRectangle = {
             x: viewport.x - e.deltaY * speed,
@@ -65,16 +65,16 @@ export class CanvasController {
     }
     
     private moveViewport(xDiff: number, yDiff: number) {
-        const diffPoint : Point = {
-            x: xDiff,
-            y: yDiff,
+        const diffPoint : Size = {
+            width: xDiff,
+            height: yDiff,
         } 
         
-        const projectedToCanvasDiffPoint = this._canvasService.projectPointScreenToCanvas(diffPoint)
+        const projectedToCanvasDiffPoint = this._canvasService.projectSizeScreenToCanvas(diffPoint)
         const viewport = this._canvasService.viewport
         const newViewport: IRectangle = {
-            x: viewport.x - projectedToCanvasDiffPoint.x,
-            y: viewport.y - projectedToCanvasDiffPoint.y,
+            x: viewport.x - projectedToCanvasDiffPoint.width,
+            y: viewport.y - projectedToCanvasDiffPoint.height,
             width: viewport.width,
             height: viewport.height,
         }
