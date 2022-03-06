@@ -6,7 +6,6 @@ using FrameworkSDK;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Constructing;
-using FrameworkSDK.MonoGame.ExternalComponents;
 using JetBrains.Annotations;
 using Logging;
 using Logging.FrameworkAdapter;
