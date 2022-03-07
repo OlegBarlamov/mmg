@@ -10,7 +10,7 @@ export interface ICanvasService {
     readonly viewport: IRectangle
 
     readonly screenSize: Size
-    setScreenSize(newSize: Size): void
+    onScreenSizeChanged(newSize: Size): void
     
     viewportChanged: Signal<(args: ViewportChangeEventArgs) => void>
     setViewport(viewport: IRectangle): void
@@ -21,6 +21,8 @@ export interface ICanvasService {
     projectSizeCanvasToScreen(size: Size): Size
     projectRectangleScreenToCanvas(rectangle: IRectangle): IRectangle
     projectRectangleCanvasToScreen(rectangle: IRectangle): IRectangle
+    
+    findWidgetUnderThePoint(point: Point): IWidget | undefined
 }
 
 export type ViewportChangeEventArgs = {

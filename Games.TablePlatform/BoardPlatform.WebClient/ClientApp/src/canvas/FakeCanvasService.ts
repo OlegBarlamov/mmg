@@ -2,14 +2,15 @@ import {ICanvasService, IRectangle, ViewportChangeEventArgs} from "./ICanvasServ
 import {IWidget} from "../models/IWidget";
 import {Signal} from "typed-signals";
 import {Point, Size} from "../common/Geometry";
+import {WidgetModel} from "./WidgetModel";
 
-export class FakeCanvasService implements ICanvasService{
-    viewport: IRectangle = {height: 1600, width: 1600, x: 0, y: 0}
-    screenSize: Size = {width: 1, height: 1}
+export class FakeCanvasService implements ICanvasService {
+    viewport: IRectangle = {width: 1920, height: 1080, x: 0, y: 0}
+    screenSize: Size = {width: 1920, height: 1080}
     
     widgets: IWidget[] = [
-        {x: 0, y: 0, width: 100, height: 100, id: 0},
-        {x: 30, y: 300, width: 200, height: 400, id: 0},
+        new WidgetModel(0, {x: 0, y: 0, width: 100, height: 100}),
+        new WidgetModel(1,{x: 30, y: 300, width: 200, height: 400}),
     ];
     
     viewportChanged: Signal<(args: ViewportChangeEventArgs) => void> = new Signal<(args: ViewportChangeEventArgs) => void>() 
@@ -21,11 +22,13 @@ export class FakeCanvasService implements ICanvasService{
             previousViewport: previousViewport,
             newViewport: this.viewport
         })
-        console.log(`x: ${this.viewport.x} y:${this.viewport.y} width:${this.viewport.width} height:${this.viewport.height}`)
+        console.log(`Viewport: x: ${this.viewport.x} y:${this.viewport.y} width:${this.viewport.width} height:${this.viewport.height}`)
     }
 
-    setScreenSize(newSize: Size): void {
+    onScreenSizeChanged(newSize: Size): void {
+        const sizeDiff: Size = { width: newSize.width - this.screenSize.width, height: newSize.height - this.screenSize.height }
         this.screenSize = newSize
+        this.setViewport({x: this.viewport.x, y: this.viewport.y, width: this.viewport.width + sizeDiff.width, height: this.viewport.height + sizeDiff.height })
     }
     
     projectPointCanvasToScreen(point: Point): Point {
@@ -77,6 +80,20 @@ export class FakeCanvasService implements ICanvasService{
             height: size.height
         }
     }
+
+    findWidgetUnderThePoint(point: Point): IWidget | undefined {
+        console.log(`click: x: ${point.x} y:${point.y}`)
+        for (const widget of this.widgets) {
+            const widgetRec: IRectangle = widget
+            if (FakeCanvasService.pointInRectangle(point, widgetRec)) {
+                return widget
+            }
+        }
+        return undefined
+    }
     
-    
+    private static pointInRectangle(point: Point, rectangle: IRectangle): boolean {
+        return point.x > rectangle.x && point.x < rectangle.x + rectangle.width
+            && point.y > rectangle.y && point.y < rectangle.y + rectangle.height 
+    }
 }

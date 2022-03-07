@@ -35,8 +35,8 @@ export default class CanvasViewComponent extends PureComponent<CanvasViewCompone
         this.addWidgets(this.props.canvasService.widgets)
         
         this.refreshCanvasSize()
-        this.container.addEventListener('resize', this.onContainerSizeChanged)
-        this.container.addEventListener('contextmenu', e => e.preventDefault())
+        window.addEventListener('resize', this.onWindowSizeChanged)
+        this.container.addEventListener('contextmenu', this.onCanvasContextMenu)
 
         this.pixi.ticker.add(() => {
             this.widgetViews.forEach(x => x.update())
@@ -45,18 +45,20 @@ export default class CanvasViewComponent extends PureComponent<CanvasViewCompone
     
     componentWillUnmount(): void {
         this.canvasController.destroy()
-        
-        this.container.removeEventListener('resize', this.onContainerSizeChanged)
+
+        window.removeEventListener('resize', this.onWindowSizeChanged)
+        this.container.removeEventListener('contextmenu', this.onCanvasContextMenu)
         this.pixi.destroy(true, true)
     }
     
     private refreshCanvasSize() {
-        const screenWidth = this.container.clientWidth / this.props.devicePixelRatio
-        const screenHeight = this.container.clientHeight / this.props.devicePixelRatio
+        const screenWidth = this.container.clientWidth
+        const screenHeight = this.container.clientHeight
+        //this.pixi.renderer.resize(screenWidth / this.props.devicePixelRatio, screenHeight / this.props.devicePixelRatio)
         this.pixi.renderer.resize(screenWidth, screenHeight)
-        this.pixi.stage.scale.x = screenWidth / this.props.canvasService.viewport.width
-        this.pixi.stage.scale.y = screenHeight / this.props.canvasService.viewport.height
-        this.props.canvasService.setScreenSize(
+        // this.pixi.stage.scale.x = screenWidth / this.props.canvasService.viewport.width
+        // this.pixi.stage.scale.y = screenHeight / this.props.canvasService.viewport.height
+        this.props.canvasService.onScreenSizeChanged(
             {
                 width: screenWidth,
                 height: screenHeight,
@@ -87,13 +89,17 @@ export default class CanvasViewComponent extends PureComponent<CanvasViewCompone
                 backgroundAlpha: 1,
                 backgroundColor: 0x1099bb,
                 antialias: true,
-                resolution: resolution,
+                //resolution: resolution,
                 width: 0,
                 height: 0,
             });
     }
 
-    private onContainerSizeChanged = () => {
+    private onWindowSizeChanged = () => {
         this.refreshCanvasSize()
+    }
+    
+    private onCanvasContextMenu = (e: any) => {
+        e.preventDefault()
     }
 }
