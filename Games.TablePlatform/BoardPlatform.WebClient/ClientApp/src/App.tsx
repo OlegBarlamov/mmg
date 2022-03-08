@@ -1,16 +1,22 @@
 import React from 'react';
 import './App.css';
 import CanvasViewComponent from "./canvas/CanvasViewComponent";
-import {FakeCanvasService} from "./canvas/FakeCanvasService";
+import {DefaultCanvasService} from "./canvas/DefaultCanvasService";
+import {WsWidgetsService} from "./models/IWidgetsService";
+import {WebSocketServiceImpl} from "./ws-api/IWebSocketService";
 
 function App() {
     initializeApplication()
     
-    const canvasService = new FakeCanvasService()
+    const wsService = new WebSocketServiceImpl() 
+    const widgetsService = new WsWidgetsService(wsService)
+    const canvasService = new DefaultCanvasService(widgetsService)
+    
+    wsService.connect('ws://localhost:8999')
     
     return (
         <div className="App">
-            <CanvasViewComponent canvasService={canvasService} devicePixelRatio={window.devicePixelRatio} />
+            <CanvasViewComponent canvasService={canvasService} widgetsService={widgetsService} />
         </div>
     );
 }

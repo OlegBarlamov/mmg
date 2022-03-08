@@ -92,7 +92,7 @@ export class CanvasController {
         if (newHeight < 1) {
             newHeight = 1
         }
-        if (newHeight != viewport.height) {
+        if (newHeight !== viewport.height) {
             const newWidth = newHeight * aspectRatio
             const newViewport: IRectangle = {
                 x: viewport.x - (newWidth - viewport.width) / 2,

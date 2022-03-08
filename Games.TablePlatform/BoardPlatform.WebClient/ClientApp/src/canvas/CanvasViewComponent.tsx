@@ -5,10 +5,11 @@ import {WidgetView} from "./WidgetView";
 import {IWidget} from "../models/IWidget";
 import './CanvasViewComponent.css'
 import {CanvasController} from "./CanvasController";
+import {IWidgetsService} from "../models/IWidgetsService";
 
 interface CanvasViewComponentProps {
     canvasService: ICanvasService
-    devicePixelRatio: number
+    widgetsService: IWidgetsService
 }
 
 export default class CanvasViewComponent extends PureComponent<CanvasViewComponentProps> {
@@ -20,7 +21,7 @@ export default class CanvasViewComponent extends PureComponent<CanvasViewCompone
     constructor(props: CanvasViewComponentProps) {
         super(props);
         this.rootCanvasDomElement = React.createRef()
-        this.pixi = CanvasViewComponent.createPixiApp(props.devicePixelRatio)
+        this.pixi = CanvasViewComponent.createPixiApp()
         this.canvasController = new CanvasController(this.props.canvasService)
     }
 
@@ -32,7 +33,7 @@ export default class CanvasViewComponent extends PureComponent<CanvasViewCompone
         this.canvasController.initialize(this.container)
         this.container.append(this.pixi.view)
         
-        this.addWidgets(this.props.canvasService.widgets)
+        this.addWidgets(this.props.widgetsService.widgets)
         
         this.refreshCanvasSize()
         window.addEventListener('resize', this.onWindowSizeChanged)
@@ -83,13 +84,12 @@ export default class CanvasViewComponent extends PureComponent<CanvasViewCompone
         )
     }
 
-    private static createPixiApp(resolution: number): PIXI.Application {
+    private static createPixiApp(): PIXI.Application {
         return new PIXI.Application(
             {
                 backgroundAlpha: 1,
                 backgroundColor: 0x1099bb,
                 antialias: true,
-                //resolution: resolution,
                 width: 0,
                 height: 0,
             });

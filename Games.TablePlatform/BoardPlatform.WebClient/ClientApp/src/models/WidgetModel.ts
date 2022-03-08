@@ -1,5 +1,6 @@
-import {IWidget} from "../models/IWidget";
-import {IRectangle} from "./ICanvasService";
+import {IWidget} from "./IWidget";
+import {IRectangle} from "../canvas/ICanvasService";
+
 
 export class WidgetModel implements IWidget {
     readonly id: number;

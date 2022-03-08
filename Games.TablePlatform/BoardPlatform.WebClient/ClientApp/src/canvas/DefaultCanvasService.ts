@@ -2,19 +2,19 @@ import {ICanvasService, IRectangle, ViewportChangeEventArgs} from "./ICanvasServ
 import {IWidget} from "../models/IWidget";
 import {Signal} from "typed-signals";
 import {Point, Size} from "../common/Geometry";
-import {WidgetModel} from "./WidgetModel";
+import {IWidgetsService} from "../models/IWidgetsService";
 
-export class FakeCanvasService implements ICanvasService {
+export class DefaultCanvasService implements ICanvasService {
     viewport: IRectangle = {width: 1920, height: 1080, x: 0, y: 0}
     screenSize: Size = {width: 1920, height: 1080}
     
-    widgets: IWidget[] = [
-        new WidgetModel(0, {x: 0, y: 0, width: 100, height: 100}),
-        new WidgetModel(1,{x: 30, y: 300, width: 200, height: 400}),
-    ];
-    
-    viewportChanged: Signal<(args: ViewportChangeEventArgs) => void> = new Signal<(args: ViewportChangeEventArgs) => void>() 
+    readonly viewportChanged: Signal<(args: ViewportChangeEventArgs) => void> = new Signal<(args: ViewportChangeEventArgs) => void>()
+    private readonly  _widgetsService: IWidgetsService; 
 
+    constructor(widgetsService: IWidgetsService) {
+        this._widgetsService = widgetsService;
+    }
+    
     setViewport(viewport: IRectangle): void {
         const previousViewport = this.viewport
         this.viewport = viewport
@@ -83,9 +83,9 @@ export class FakeCanvasService implements ICanvasService {
 
     findWidgetUnderThePoint(point: Point): IWidget | undefined {
         console.log(`click: x: ${point.x} y:${point.y}`)
-        for (const widget of this.widgets) {
+        for (const widget of this._widgetsService.widgets) {
             const widgetRec: IRectangle = widget
-            if (FakeCanvasService.pointInRectangle(point, widgetRec)) {
+            if (DefaultCanvasService.pointInRectangle(point, widgetRec)) {
                 return widget
             }
         }

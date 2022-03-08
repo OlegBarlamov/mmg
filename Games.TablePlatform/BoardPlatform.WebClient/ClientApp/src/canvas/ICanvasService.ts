@@ -6,7 +6,6 @@ export interface IRectangle extends IPositioned, ISizable {
 }
 
 export interface ICanvasService {
-    readonly widgets: IWidget[]
     readonly viewport: IRectangle
 
     readonly screenSize: Size
@@ -21,7 +20,7 @@ export interface ICanvasService {
     projectSizeCanvasToScreen(size: Size): Size
     projectRectangleScreenToCanvas(rectangle: IRectangle): IRectangle
     projectRectangleCanvasToScreen(rectangle: IRectangle): IRectangle
-    
+
     findWidgetUnderThePoint(point: Point): IWidget | undefined
 }
 
