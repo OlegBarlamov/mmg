@@ -1,23 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0">
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0">
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0">
     </PackageReference>
     <PackageReference Include="Serilog" Version="2.7.1">
     </PackageReference>
-    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2">
+    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.0">
     </PackageReference>
-    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0">
-    </PackageReference>
-    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0">
-    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.RollingFile" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

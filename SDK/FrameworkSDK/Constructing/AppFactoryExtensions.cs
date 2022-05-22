@@ -18,6 +18,11 @@ namespace FrameworkSDK.Constructing
             var module = new ServicesModuleDelegate(registerServicesDelegate);
             return appFactory.AddServices(module);
         }
+
+        public static IAppFactory AddService<T>(this IAppFactory appFactory, [NotNull] T instance) where T: class
+        {
+            return appFactory.AddServices(registrator => { registrator.RegisterInstance(instance); });
+        }
     }
 
 }

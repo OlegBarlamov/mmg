@@ -2,8 +2,8 @@
 #----------------------------- Global Properties ----------------------------#
 
 /outputDir:../bin/Debug/Content
-/intermediateDir:obj/$(Platform)
-/platform:Windows
+/intermediateDir:../obj/Debug/Content
+/platform:MacOSX
 /config:
 /profile:Reach
 /compress:False
@@ -18,5 +18,5 @@
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:File.spritefont;ConsoleFont.spritefont
+/build:File.spritefont;TextFont.spritefont
 

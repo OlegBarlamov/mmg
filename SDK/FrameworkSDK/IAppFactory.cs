@@ -7,5 +7,6 @@ namespace FrameworkSDK
         IApp Construct();
         IAppFactory AddServices(IServicesModule module);
         IAppFactory AddComponent<TComponent>() where TComponent : class, IAppComponent;
+        IAppFactory AddComponent(IAppComponent appComponent);
     }
 }

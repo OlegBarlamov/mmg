@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 namespace Console.FrameworkAdapter
 {
-    internal class GameWithConsoleFactory : AppFactoryWrapper, IGameWithConsoleFactory
+    internal class GameWithConsoleFactory : GameFactoryWrapper, IGameWithConsoleFactory
     {
         [NotNull] public IGameFactoryWithExternalComponents GameFactoryWithExternalComponents { get; }
 

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Autofac.FrameworkAdapter;
 using Console.Core;
 using Console.LoggingAdapter;
@@ -24,7 +25,12 @@ namespace FriendlyRoguelike.Core
             if (gameFactoryConfig == null) throw new ArgumentNullException(nameof(gameFactoryConfig));
 
             var logConfig = gameFactoryConfig.LogginCoreConfig;
-            var logSystem = new LogSystem(logConfig.LogDirectoryFullPath, logConfig.IsDebug, logConfig.FakeLog);
+            var logSystemConfig = new LogSystemConfig
+            {
+                IsDebug = logConfig.IsDebug,
+                LogDirectory = new DirectoryInfo(logConfig.LogDirectoryFullPath)
+            };
+            var logSystem = new LogSystem(logSystemConfig);
             var frameworkLogger = logSystem.ToFrameworkLogger();
             var consoleProvider = new LoggerConsoleMessagesProvider();
             logSystem.AddProvider(consoleProvider);

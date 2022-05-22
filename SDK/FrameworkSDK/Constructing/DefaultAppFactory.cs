@@ -22,6 +22,8 @@ namespace FrameworkSDK
         private readonly List<IServicesModule> _servicesModules = new List<IServicesModule>();
         private readonly List<Type> _componentsTypes = new List<Type>();
         private readonly List<Type> _subsystemsTypes = new List<Type>();
+        private readonly List<IAppComponent> _componentsToConfigure = new List<IAppComponent>();
+        private readonly List<IAppSubSystem> _subSystemsToConfigure = new List<IAppSubSystem>();
         private readonly ICmdArgsHolder _cmdArgsHolder;
 
         public DefaultAppFactory():this(new string[0]) { }
@@ -58,7 +60,7 @@ namespace FrameworkSDK
             RegisterAppComponents();
 
             var serviceLocator = BuildServiceLocator();
-            ConfigureAppComponents(serviceLocator);
+            var componentsInstances = ConfigureAppComponents(serviceLocator);
             var subSystemsInstances = ConfigureSubSystems(serviceLocator);
 
             Logger.Log("Resolving app runner.", LogCategories.Constructing, FrameworkLogLevel.Info);
@@ -69,6 +71,7 @@ namespace FrameworkSDK
         private IReadOnlyCollection<IAppSubSystem> ConfigureSubSystems(IServiceLocator serviceLocator)
         {
             var subSystemsInstances = new List<IAppSubSystem>();
+            Logger.Log("Configuring App subsystems.", LogCategories.Constructing, FrameworkLogLevel.Info);
             foreach (var subsystemsType in _subsystemsTypes)
             {
                 var component = (IAppSubSystem) serviceLocator.Resolve(subsystemsType);
@@ -76,17 +79,35 @@ namespace FrameworkSDK
                 subSystemsInstances.Add(component);
             }
 
+            foreach (var subSystem in _subSystemsToConfigure)
+            {
+                subSystem.Configure();
+                subSystemsInstances.Add(subSystem);
+            }
+            _subSystemsToConfigure.Clear();
+
             return subSystemsInstances;
         }
 
-        private void ConfigureAppComponents(IServiceLocator serviceLocator)
+        private IReadOnlyCollection<IAppComponent> ConfigureAppComponents(IServiceLocator serviceLocator)
         {
-            Logger.Log("Configuring App subsystems.", LogCategories.Constructing, FrameworkLogLevel.Info);
+            var componentsInstances = new List<IAppComponent>();
+            Logger.Log("Configuring App components.", LogCategories.Constructing, FrameworkLogLevel.Info);
             foreach (var componentsType in _componentsTypes)
             {
                 var component = (IAppComponent) serviceLocator.Resolve(componentsType);
                 component.Configure();
+                componentsInstances.Add(component);
             }
+
+            foreach (var component in _componentsToConfigure)
+            {
+                component.Configure();
+                componentsInstances.Add(component);
+            }
+            _componentsToConfigure.Clear();
+            
+            return componentsInstances;
         }
 
         private IServiceLocator BuildServiceLocator()
@@ -154,6 +175,22 @@ namespace FrameworkSDK
             else
             {
                 _componentsTypes.Add(targetType);
+            }
+
+            return this;
+        }
+
+        public IAppFactory AddComponent([NotNull] IAppComponent appComponent)
+        {
+            if (appComponent == null) throw new ArgumentNullException(nameof(appComponent));
+            var targetType = appComponent.GetType();
+            if (typeof(IAppSubSystem).IsAssignableFrom(targetType))
+            {
+                _subSystemsToConfigure.Add((IAppSubSystem)appComponent);
+            }
+            else
+            {
+                _componentsToConfigure.Add(appComponent);
             }
 
             return this;

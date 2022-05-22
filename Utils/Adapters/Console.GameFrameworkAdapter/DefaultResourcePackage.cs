@@ -14,6 +14,11 @@ namespace Console.FrameworkAdapter
 
         private DefaultParameters Parameters { get; }
         
+        public DefaultResourcePackage()
+            :this(null)
+        {
+        }
+        
         public DefaultResourcePackage(DefaultParameters parameters = null)
         {
             Parameters = parameters ?? new DefaultParameters();

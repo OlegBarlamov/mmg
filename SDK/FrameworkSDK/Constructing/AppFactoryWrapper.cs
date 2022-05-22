@@ -32,5 +32,10 @@ namespace FrameworkSDK.Constructing
         {
             return AppFactory.AddComponent<TComponent>();
         }
+
+        public IAppFactory AddComponent(IAppComponent appComponent)
+        {
+            return AppFactory.AddComponent(appComponent);
+        }
     }
 }

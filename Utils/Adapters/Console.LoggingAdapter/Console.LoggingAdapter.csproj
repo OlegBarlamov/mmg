@@ -10,7 +10,7 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0-preview.2.20160.3" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

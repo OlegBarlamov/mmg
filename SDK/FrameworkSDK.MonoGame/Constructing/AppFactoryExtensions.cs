@@ -1,3 +1,6 @@
+using System;
+using FrameworkSDK.Constructing;
+using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Services;
 
 namespace FrameworkSDK.MonoGame.Constructing
@@ -18,6 +21,12 @@ namespace FrameworkSDK.MonoGame.Constructing
             gameFactoryWithExternalComponents.AddServices<GameComponentsServicesModule>();
             gameFactoryWithExternalComponents.AddComponent<GameComponentsAppComponent>();
             return gameFactoryWithExternalComponents;
+        }
+
+        public static IGameFactory PreloadResourcePackage<TResourcePackage>(this IGameFactory gameFactory) where TResourcePackage : class, IResourcePackage
+        {
+            var resourcePackageInstance = Activator.CreateInstance<TResourcePackage>();
+            return gameFactory.PreloadResourcePackage(resourcePackageInstance);
         }
     }
 }

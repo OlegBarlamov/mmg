@@ -1,14 +1,22 @@
 using System.IO;
 using FrameworkSDK;
-using FrameworkSDK.Logging;
+using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Logging.FrameworkAdapter
 {
     public static class AppFactoryExtensions
     {
         public const string DefaultLogDirectoryName = "Logs";
-        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory, bool isDebug = false)
+
+        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory,
+            bool isDebug = false)
+        {
+            return SetupLogSystem(appFactory, new ILoggerProvider[0], isDebug);
+        }
+
+        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory, ILoggerProvider[] loggerProviders, bool isDebug = false)
         {
             var config = new LogSystemConfig
             {
@@ -16,14 +24,18 @@ namespace Logging.FrameworkAdapter
                 LogDirectory = new DirectoryInfo(GetRelativeLogPath(DefaultLogDirectoryName)),
             };
 
-            var logger = CreateLogger(config);
-            return appFactory.UseLogger(logger);
-        }
-
-        private static IFrameworkLogger CreateLogger(LogSystemConfig config)
-        {
             var logSystem = new LogSystem(config);
-            return logSystem.ToFrameworkLogger();
+            foreach (var loggerProvider in loggerProviders)
+            {
+                logSystem.AddProvider(loggerProvider);
+            }
+            appFactory.AddServices(new ServicesModuleDelegate(registrator =>
+            {
+                registrator.RegisterInstance<ILoggerFactory>(logSystem);
+            }));
+            
+            var logger = logSystem.ToFrameworkLogger();
+            return appFactory.UseLogger(logger);
         }
 
         private static string GetRelativeLogPath(string relativeLogPath)
