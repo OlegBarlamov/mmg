@@ -37,13 +37,28 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		public void Update(GameTime gameTime)
 		{
+			var currentScene = CurrentScene;
 			if (_newScene != null)
 			{
-				ProcessScenesChanging(CurrentScene, _newScene, gameTime);
+				try
+				{
+					ProcessScenesChanging(currentScene, _newScene, gameTime);
+				}
+				catch (Exception e)
+				{
+					Logger.Error("Error during scenes changing: {0}->{1}", e, currentScene, _newScene);
+				}
 				return;
 			}
 
-		    CurrentScene.Update(gameTime);
+			try
+			{
+				currentScene.Update(gameTime);
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Scene {0} Update unhandled exception.", e, currentScene);
+			}
 		}
 
 		public void Draw(GameTime gameTime)

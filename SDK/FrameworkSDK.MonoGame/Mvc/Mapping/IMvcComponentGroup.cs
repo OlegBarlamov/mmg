@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-    public interface IMvcScheme
+    public interface IMvcComponentGroup
     {
         [CanBeNull] object Model { get; }
         [CanBeNull] IController Controller { get; }

@@ -2,9 +2,9 @@
 {
 	internal static class MvcSchemeExtensions
 	{
-		public static bool IsValid(this IMvcScheme scheme)
+		public static bool IsValid(this IMvcComponentGroup componentGroup)
 		{
-			return scheme.View != null || scheme.Model != null || scheme.Controller != null;
+			return componentGroup.View != null || componentGroup.Model != null || componentGroup.Controller != null;
 		}
 	}
 }

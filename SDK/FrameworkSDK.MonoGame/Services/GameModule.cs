@@ -38,15 +38,8 @@ namespace FrameworkSDK.MonoGame.Services
          
             //Mvc
             serviceRegistrator.RegisterType<IScenesController, ScenesController>();
-            serviceRegistrator.RegisterType<IViewsProvider, DefaultViewsProvider>();
-            serviceRegistrator.RegisterType<IControllersProvider, DefaultControllersProvider>();
-            serviceRegistrator.RegisterType<IModelsProvider, DefaultModelsProvider>();
-            serviceRegistrator.RegisterType<IViewsResolver, DefaultViewsResolver>();
-            serviceRegistrator.RegisterType<IControllersResolver, DefaultControllersResolver>();
-            serviceRegistrator.RegisterType<IModelsResolver, DefaultModelsResolver>();
-            serviceRegistrator.RegisterType<IMvcStrategyService, DefaultMvcStrategy>();
-            serviceRegistrator.RegisterType<IScenesContainer, DefaultScenesContainer>();
-            
+            serviceRegistrator.RegisterType<IMvcStrategyService, EmptyMvcStrategyService>();
+
             //Input
             var inputService = new InputService();
             var inputManager = new InputManager(inputService);

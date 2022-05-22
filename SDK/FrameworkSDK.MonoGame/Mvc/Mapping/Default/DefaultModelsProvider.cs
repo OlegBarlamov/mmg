@@ -1,72 +1,102 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using FrameworkSDK.MonoGame.Mvc;
-using FrameworkSDK.Services;
+using FrameworkSDK.Logging;
 using JetBrains.Annotations;
-using NetExtensions;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-	[UsedImplicitly]
-	internal class DefaultModelsProvider : IModelsProvider
-	{
-		[NotNull] private IControllersProvider ControllersProvider { get; }
-		[NotNull] private IViewsProvider ViewsProvider { get; }
-		[NotNull] private IAppDomainService AppDomainService { get; }
+    [UsedImplicitly]
+    public class DefaultMvcMappingProvider : IMvcMappingProvider, IDisposable
+    {
+        private IViewsProvider ViewsProvider { get; }
+        private IControllersProvider ControllersProvider { get; }
+        private ModuleLogger Logger { get; }
+        private readonly List<MvcTypesDeclaration> _mapping = new List<MvcTypesDeclaration>();
 
-		public DefaultModelsProvider(IAppDomainService appDomainService, [NotNull] IViewsProvider viewsProvider,
-			[NotNull] IControllersProvider controllersProvider)
-		{
-			ControllersProvider = controllersProvider ?? throw new ArgumentNullException(nameof(controllersProvider));
-			ViewsProvider = viewsProvider ?? throw new ArgumentNullException(nameof(viewsProvider));
-			AppDomainService = appDomainService ?? throw new ArgumentNullException(nameof(appDomainService));
-		}
+        public DefaultMvcMappingProvider([NotNull] IViewsProvider viewsProvider, [NotNull] IControllersProvider controllersProvider, IFrameworkLogger logger)
+        {
+            ViewsProvider = viewsProvider ?? throw new ArgumentNullException(nameof(viewsProvider));
+            ControllersProvider = controllersProvider ?? throw new ArgumentNullException(nameof(controllersProvider));
+            Logger = new ModuleLogger(logger, LogCategories.Mvc);
+        }
+        
+        public void FetchMapping()
+        {
+            Logger.Debug("Fetching by default MVC provider");
+            
+            var views = ViewsProvider.GetRegisteredViews();
+            var controllers = ControllersProvider.GetRegisteredControllers();
 
-		public IEnumerable<Type> GetRegisteredModels()
-		{
-			var registeredViews = ViewsProvider.GetRegisteredViews();
-			var registeredControllers = ControllersProvider.GetRegisteredControllers();
+            var mappingsFromViews = FindMappingsFromViews(views).ToArray();
+            var notMappedYetControllers = controllers
+                .Where(controller => mappingsFromViews.All(x => x.Controller != controller))
+                .ToArray();
+            var mappingFromControllers = FindMappingsFromControllers(notMappedYetControllers);
 
-			var possibleModelNamesFromViews = ExtractPossibleModelNamesFromTypes(registeredViews);
-			var possibleModelNamesFromControllers = ExtractPossibleModelNamesFromTypes(registeredControllers);
-			var possibleModelNames = possibleModelNamesFromViews.Concat(possibleModelNamesFromControllers).ToArray();
+            _mapping.AddRange(mappingsFromViews);
+            _mapping.AddRange(mappingFromControllers);
+            
+            Logger.Debug("Fetched groups: ");
+            foreach (var group in _mapping)
+            {
+                Logger.Debug(group.ToString());
+            }
+            Logger.Debug($"Total MVC groups: {_mapping.Count}");
+        }
 
-			var allTypes = AppDomainService.GetAllTypes();
-			return FilterTypesByPossibleModelNames(allTypes, possibleModelNames).Distinct();
-		}
+        public IReadOnlyList<MvcTypesDeclaration> GetMapping()
+        {
+            return _mapping;
+        }
 
-		private static IEnumerable<Type> FilterTypesByPossibleModelNames(IEnumerable<Type> allTypes,
-			IReadOnlyList<string> possibleModelNames)
-		{
-			foreach (var type in allTypes)
-			{
-				var typeName = type.Name;
-				if (possibleModelNames.Any(possibleName => IsCorretModelTypeName(typeName, possibleName)))
-					yield return type;
-			}
-		}
+        public void Dispose()
+        {
+            _mapping.Clear();
+        }
 
-		private static bool IsCorretModelTypeName(string candidateModelTypeName, string pattern)
-		{
-			return pattern.Equals(candidateModelTypeName, StringComparison.InvariantCultureIgnoreCase);
-		}
+        private IEnumerable<MvcTypesDeclaration> FindMappingsFromViews(IEnumerable<Type> viewsTypes)
+        {
+            foreach (var viewType in viewsTypes)
+            {
+                // View<TData, TController>
+                var viewTypeArguments = GetBaseTypeGenericTypeArguments(viewType, typeof(View<,>));
+                if (viewTypeArguments.Length > 0)
+                {
+                    var modelType = viewTypeArguments[0];
+                    var controllerType = viewTypeArguments[1];
+                    yield return new MvcTypesDeclaration(modelType, viewType, controllerType);
+                }
+            }
+        }
 
-		private static IEnumerable<string> ExtractPossibleModelNamesFromTypes(IEnumerable<Type> types)
-		{
-			var viewMarker = nameof(View);
-			var controllerMarker = nameof(Controller);
+        private IEnumerable<MvcTypesDeclaration> FindMappingsFromControllers(IEnumerable<Type> controllersTypes)
+        {
+            foreach (var controllerType in controllersTypes)
+            {
+                // Controller<TData>
+                var viewTypeArguments = GetBaseTypeGenericTypeArguments(controllerType, typeof(Controller<>));
+                if (viewTypeArguments.Length > 0)
+                {
+                    var modelType = viewTypeArguments[0];
+                    yield return new MvcTypesDeclaration(modelType, null, controllerType);
+                }
+            }
+        }
+        
+        private Type[] GetBaseTypeGenericTypeArguments(Type targetType, Type searchedGenericTypeDefinition)
+        {
+            if (!searchedGenericTypeDefinition.IsGenericTypeDefinition)
+                throw new ArgumentException($"{nameof(searchedGenericTypeDefinition)} parameter must be genericTypeDefinition");
+            
+            while (targetType.BaseType != null)
+            {
+                targetType = targetType.BaseType;
+                if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == searchedGenericTypeDefinition)
+                    return targetType.GetGenericArguments();
+            }
 
-			foreach (var type in types)
-			{
-				var name = type.Name;
-				if (name.EndsWith(viewMarker, StringComparison.InvariantCultureIgnoreCase))
-					yield return name.TrimEnd(viewMarker, StringComparison.InvariantCultureIgnoreCase);
-
-				if (name.EndsWith(controllerMarker, StringComparison.InvariantCultureIgnoreCase))
-					yield return name.TrimEnd(controllerMarker, StringComparison.InvariantCultureIgnoreCase);
-			}
-		}
-	}
+            return Array.Empty<Type>();
+        }
+    }
 }

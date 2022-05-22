@@ -6,48 +6,56 @@ using JetBrains.Annotations;
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Mvc
 {
-    public abstract class MvcStrategy : IMvcStrategyService, IDisposable
+    public abstract class BaseMvcStrategy : IMvcStrategyService, IDisposable
     {
-        [NotNull] protected IControllersResolver ControllersResolver { get; }
-        [NotNull] protected IViewsResolver ViewsResolver { get; }
-	    [NotNull] protected IModelsResolver ModelsResolver { get; }
-		[NotNull] protected IFrameworkLogger Logger { get; }
+	    [NotNull] protected IMvcMappingResolver Resolver { get; }
+	    [NotNull] protected IFrameworkLogger Logger { get; }
 
         private readonly ModuleLogger _moduleLogger;
 
-        protected MvcStrategy([NotNull] IControllersResolver controllersResolver, [NotNull] IViewsResolver viewsResolver, IModelsResolver modelsResolver,
-            [NotNull] IFrameworkLogger logger)
+        protected BaseMvcStrategy(
+	        [NotNull] IMvcMappingResolver resolver,
+	        [NotNull] IFrameworkLogger logger)
         {
-            ControllersResolver = controllersResolver ?? throw new ArgumentNullException(nameof(controllersResolver));
-            ViewsResolver = viewsResolver ?? throw new ArgumentNullException(nameof(viewsResolver));
-	        ModelsResolver = modelsResolver ?? throw new ArgumentNullException(nameof(modelsResolver));
-			Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-			_moduleLogger = new ModuleLogger(logger, LogCategories.Mvc);
+	        Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+	        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+	        _moduleLogger = new ModuleLogger(logger, LogCategories.Mvc);
         }
 
-        public IMvcScheme ResolveByModel(object model)
+        public IMvcComponentGroup ResolveByModel(object model)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
 			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByModel, model);
-	        return ResolveByModelInternal(model);
-		}
+	        var result = ResolveByModelInternal(model);
+	        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByModelFinished, model, result);
+	        
+	        Setup(result);
+	        return result;
+        }
 
-	    public IMvcScheme ResolveByController(IController controller)
+	    public IMvcComponentGroup ResolveByController(IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
             _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByController, controller);
-	        return ResolveByControllerInternal(controller);
+	        var result = ResolveByControllerInternal(controller);
+	        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByControllerFinished, controller, result);
+
+	        Setup(result);
+	        return result;
         }
 
-        public IMvcScheme ResolveByView(IView view)
+        public IMvcComponentGroup ResolveByView(IView view)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
 
 			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByView, view);
-	        return ResolveByViewInternal(view);
+			var result = ResolveByViewInternal(view);
+			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByViewFinished, view, result);
+			
+			Setup(result);
+			return result;
 		}
 
         [NotNull] public abstract IMvcSchemeValidateResult ValidateByModel([NotNull] object model);
@@ -59,10 +67,30 @@ namespace FrameworkSDK.MonoGame.Mvc
             _moduleLogger.Dispose();
         }
 
-	    [NotNull] protected abstract MvcScheme ResolveByControllerInternal([NotNull] IController controller);
+	    [NotNull] protected abstract IMvcComponentGroup ResolveByControllerInternal([NotNull] IController controller);
 
-	    [NotNull] protected abstract MvcScheme ResolveByModelInternal([NotNull] object model);
+	    [NotNull] protected abstract IMvcComponentGroup ResolveByModelInternal([NotNull] object model);
 
-	    [NotNull] protected abstract MvcScheme ResolveByViewInternal([NotNull] IView view);
+	    [NotNull] protected abstract IMvcComponentGroup ResolveByViewInternal([NotNull] IView view);
+	    
+	    private void Setup(IMvcComponentGroup componentGroup)
+	    {
+		    var controller = componentGroup.Controller;
+		    var model = componentGroup.Model;
+		    var view = componentGroup.View;
+
+		    if (controller != null)
+		    {
+			    if (view != null)
+			    {
+				    controller.SetView(view);
+				    view.SetController(controller);
+			    }
+			    if (model != null)
+				    controller.SetModel(model);
+		    }
+		    if (view != null && model != null)
+			    view.SetDataModel(model);
+	    }
 	}
 }

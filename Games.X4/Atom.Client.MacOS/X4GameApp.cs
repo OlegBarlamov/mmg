@@ -1,9 +1,11 @@
 using System;
+using Atom.Client.MacOS.Components;
 using Console.FrameworkAdapter;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using JetBrains.Annotations;
+using Microsoft.Xna.Framework;
 
 namespace Atom.Client.MacOS
 {
@@ -36,8 +38,8 @@ namespace Atom.Client.MacOS
             _mainScene.AddController(DefaultConsoleManipulator);
             _currentScene = _mainScene;
             
-            // var rectangleData = new RectangleModel {Texture = ColorsTexturesPackage.Get(Color.Red)};
-            // _mainScene.AddView(rectangleData);
+            var rectangleData = new RectangleModel {Texture = ColorsTexturesPackage.Get(Color.Red)};
+            _mainScene.AddView(rectangleData);
         }
 
     }

@@ -1,5 +1,6 @@
 using System;
 using FrameworkSDK.Constructing;
+using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Services;
 
@@ -27,6 +28,13 @@ namespace FrameworkSDK.MonoGame.Constructing
         {
             var resourcePackageInstance = Activator.CreateInstance<TResourcePackage>();
             return gameFactory.PreloadResourcePackage(resourcePackageInstance);
+        }
+
+        public static IGameFactory UseMvc(this IGameFactory gameFactory)
+        {
+            gameFactory.AddServices<MvcServicesModule>();
+            gameFactory.AddComponent<MvcAppComponent>();
+            return gameFactory;
         }
     }
 }

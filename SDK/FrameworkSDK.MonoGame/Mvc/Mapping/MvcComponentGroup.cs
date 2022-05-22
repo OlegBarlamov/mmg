@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-    public class MvcScheme : IMvcScheme
+    public class MvcComponentGroup : IMvcComponentGroup
     {
         [CanBeNull] public object Model { get; set; }
         [CanBeNull] public IController Controller { get; set; }

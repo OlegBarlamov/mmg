@@ -1,6 +1,6 @@
 using FrameworkSDK.Constructing;
-using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Config;
+using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 

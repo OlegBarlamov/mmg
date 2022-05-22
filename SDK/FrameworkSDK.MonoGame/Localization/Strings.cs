@@ -19,12 +19,6 @@ namespace FrameworkSDK.MonoGame.Localization
                 public static string ControllerExists => Localization.GetString() ?? "Controller already exists in {0}.";
                 public static string ModelExists => Localization.GetString() ?? "Model already exists in {0}.";
                 public static string ViewExists => Localization.GetString() ?? "View already exists in {0}.";
-                public static string ResolvingControllerByModel => Localization.GetString() ?? "Model exists. Resolving controller for {0} by model {1}.";
-                public static string ResolvingViewByModel => Localization.GetString() ?? "Model exists. Resolving view for {0} by model {1}.";
-                public static string ResolvingControllerByView => Localization.GetString() ?? "Resolving controller for {0} by view {1}.";
-                public static string ResolvingViewByController => Localization.GetString() ?? "Resolving view for {0} by controller {1}.";
-                public static string ResolvingModelByView => Localization.GetString() ?? "Resolving model for {0} by view {1}.";
-                public static string ResolvingModelByController => Localization.GetString() ?? "Controller exists. Resolving model for {0} by controller {1}.";
                 public static string SceneRegisteredForModel => Localization.GetString() ?? "Scene {0} registered for model {1}.";
                 public static string SceneResolvedByModel => Localization.GetString() ?? "Scene {0} resolved by model {1}.";
             }

@@ -10,9 +10,7 @@ using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions;
-using NetExtensions;
 using NetExtensions.Collections;
 using IDrawable = FrameworkSDK.MonoGame.Basic.IDrawable;
 

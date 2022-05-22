@@ -5,9 +5,9 @@ namespace FrameworkSDK.MonoGame.Mvc
 {
     public interface IMvcStrategyService
     {
-        [NotNull] IMvcScheme ResolveByModel([NotNull] object model);
-        [NotNull] IMvcScheme ResolveByController([NotNull] IController controller);
-        [NotNull] IMvcScheme ResolveByView([NotNull] IView view);
+        [NotNull] IMvcComponentGroup ResolveByModel([NotNull] object model);
+        [NotNull] IMvcComponentGroup ResolveByController([NotNull] IController controller);
+        [NotNull] IMvcComponentGroup ResolveByView([NotNull] IView view);
 
         [NotNull] IMvcSchemeValidateResult ValidateByModel([NotNull] object model);
         [NotNull] IMvcSchemeValidateResult ValidateByController([NotNull] IController controller);
