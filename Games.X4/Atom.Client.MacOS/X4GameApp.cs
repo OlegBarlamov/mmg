@@ -11,13 +11,13 @@ namespace Atom.Client.MacOS
 {
     public class X4GameApp : GameApp
     {
-        protected override Scene CurrentScene => _currentScene;
+        protected override SceneBase CurrentScene => _currentScene;
         
         private DefaultConsoleManipulator DefaultConsoleManipulator { get; }
         private ColorsTexturesPackage ColorsTexturesPackage { get; }
 
-        private Scene _mainScene;
-        private Scene _currentScene;
+        private SceneBase _mainScene;
+        private SceneBase _currentScene;
 
         public X4GameApp([NotNull] DefaultConsoleManipulator defaultConsoleManipulator, [NotNull] ColorsTexturesPackage colorsTexturesPackage)
         {

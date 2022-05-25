@@ -8,6 +8,6 @@ namespace FrameworkSDK.MonoGame.Mvc
     {
         bool IsModelRegistered([NotNull] object model);
 
-        [NotNull] Scene ResolveScene([NotNull] object model);
+        [NotNull] SceneBase ResolveScene([NotNull] object model);
     }
 }

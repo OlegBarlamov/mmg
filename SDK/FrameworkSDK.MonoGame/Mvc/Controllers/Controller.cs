@@ -14,14 +14,14 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         IView IController.View => _view;
 
-        object IController.Model => _model;
+        object IController.DataModel => _model;
         
         private object _model;
         private IView _view;
 
-        Scene ISceneComponent.OwnedScene => _ownedScene;
+        SceneBase ISceneComponent.OwnedScene => _ownedScene;
 
-        private Scene _ownedScene;
+        private SceneBase _ownedScene;
 
         private readonly List<IController> _children = new List<IController>();
 
@@ -43,7 +43,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		    return Name;
 	    }
 
-	    bool IController.IsOwnedModel(object model)
+	    bool IController.IsOwnedDataModel(object model)
         {
             return ReferenceEquals(model, _model);
         }
@@ -58,12 +58,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             _view = view ?? throw new ArgumentNullException(nameof(view));
         }
 
-        protected virtual void Initialize([NotNull] Scene scene)
+        protected virtual void Initialize([NotNull] SceneBase scene)
         {
 
         }
 
-        protected virtual void OnDetached([NotNull] Scene scene)
+        protected virtual void OnDetached([NotNull] SceneBase scene)
         {
 
         }
@@ -126,7 +126,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             _children.Remove(removedController);
         }
 
-        void IController.SetModel(object model)
+        void IController.SetDataModel(object model)
         {
             if (_model == null)
                 SetModel(model);
@@ -138,14 +138,14 @@ namespace FrameworkSDK.MonoGame.Mvc
                 SetView(view);
         }
 
-        void ISceneComponent.OnAddedToScene(Scene scene)
+        void ISceneComponent.OnAddedToScene(SceneBase scene)
         {
             _ownedScene = scene ?? throw new ArgumentNullException(nameof(scene));
 
             Initialize(_ownedScene);
         }
 
-        void ISceneComponent.OnRemovedFromScene(Scene scene)
+        void ISceneComponent.OnRemovedFromScene(SceneBase scene)
         {
             foreach (var child in _children)
                 RemoveChild(child);

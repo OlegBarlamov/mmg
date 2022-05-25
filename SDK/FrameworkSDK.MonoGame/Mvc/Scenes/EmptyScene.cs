@@ -1,12 +1,18 @@
 ﻿
 namespace FrameworkSDK.MonoGame.Mvc
 {
-	public sealed class EmptyScene : Scene
+	public sealed class EmptyScene : SceneBase
 	{
-	    public EmptyScene()
+		public override bool ReadyToBeClosed
+		{
+			get => true;
+			protected set { }
+		}
+
+		public EmptyScene()
 	        :base("empty_scene")
 	    {
-	        
+		    
 	    }
 	}
 }

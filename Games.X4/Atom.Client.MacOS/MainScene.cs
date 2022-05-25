@@ -1,4 +1,3 @@
-using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Mvc;
 
 namespace Atom.Client.MacOS

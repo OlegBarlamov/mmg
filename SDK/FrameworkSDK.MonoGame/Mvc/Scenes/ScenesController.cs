@@ -48,7 +48,6 @@ namespace FrameworkSDK.MonoGame.Mvc
 				{
 					Logger.Error("Error during scenes changing: {0}->{1}", e, currentScene, _newScene);
 				}
-				return;
 			}
 
 			try
@@ -59,11 +58,6 @@ namespace FrameworkSDK.MonoGame.Mvc
 			{
 				Logger.Error("Scene {0} Update unhandled exception.", e, currentScene);
 			}
-		}
-
-		public void Draw(GameTime gameTime)
-		{
-		    CurrentScene.Draw(gameTime);
 		}
 
 		private IScene GetCurrentScene()
@@ -81,9 +75,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 				_previousClosingScene = newScene;
 				Logger.Info(Strings.Info.SceneSwitchingState, oldScene, newScene);
 			}
-
-			var closeState = oldScene.UpdateState(gameTime);
-			if (closeState.CanClose)
+			
+			if (oldScene.ReadyToBeClosed)
 				CloseAndSwitchScenes(oldScene, newScene);
 		}
 
@@ -113,6 +106,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 				CanSceneChange = false;
 			}
 
+			_currentScene?.CloseRequest();
+			newScene.OnOpening();
 			_newScene = newScene;
 		}
 

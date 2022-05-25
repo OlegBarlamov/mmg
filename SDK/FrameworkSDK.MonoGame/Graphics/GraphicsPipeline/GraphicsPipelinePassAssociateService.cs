@@ -12,7 +12,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
     [UsedImplicitly]
     internal class GraphicsPipelinePassAssociateService : IGraphicsPipelinePassAssociateService
     {
-        public const string DefaultPassName = "default";
+        public const string DefaultPassName = "Default";
         private IAppDomainService DomainService { get; }
 
         private bool _initialized;

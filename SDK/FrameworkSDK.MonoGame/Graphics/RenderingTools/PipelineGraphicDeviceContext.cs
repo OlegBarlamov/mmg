@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using FrameworkSDK.MonoGame.Resources;
+using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
 {
     public class PipelineGraphicDeviceContext : IGraphicDeviceContext
     {
+        public IDisplayService DisplayService { get; }
         private SpriteBatch SpriteBatch { get; }
         private GraphicsDevice GraphicsDevice { get; }
 
@@ -19,11 +21,13 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             _internalDrawContext.Dispose();
         }
         
-        public PipelineGraphicDeviceContext([NotNull] SpriteBatch spriteBatch, [NotNull] GraphicsDevice graphicsDevice)
+        public PipelineGraphicDeviceContext([NotNull] SpriteBatch spriteBatch, [NotNull] GraphicsDevice graphicsDevice,
+            [NotNull] IDisplayService displayService)
         {
             SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
             GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
-            
+            DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
+
             _internalDrawContext = new DrawContext(SpriteBatch);
         }
 
@@ -41,10 +45,14 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
 
         public void SetRenderTarget(RenderTarget2D renderTarget2D)
         {
-            //TODO use other function for clear renderTarget
-            //if (renderTarget2D == null) throw new ArgumentNullException(nameof(renderTarget2D));
+            if (renderTarget2D == null) throw new ArgumentNullException(nameof(renderTarget2D));
             
             GraphicsDevice.SetRenderTarget(renderTarget2D);
+        }
+
+        public void SetRenderTargetToDisplay()
+        {
+            GraphicsDevice.SetRenderTarget(null);
         }
 
         public void Clear(Color color)

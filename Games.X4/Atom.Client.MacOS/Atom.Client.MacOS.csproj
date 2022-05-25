@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Components\Grid3DComponentView.cs" />
     <Compile Include="Components\RectangleView.cs" />
     <Compile Include="MainModule.cs" />
     <Compile Include="MainScene.cs" />

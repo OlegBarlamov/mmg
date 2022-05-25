@@ -52,11 +52,11 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         private void FillMapping(MvcTypesDeclaration types)
         {
-            if (types.Controller != null)
+            if (types.Controller != null && !_mappingByController.ContainsKey(types.Controller))
                 _mappingByController.Add(types.Controller, types);
-            if (types.View != null)
+            if (types.View != null && !_mappingByView.ContainsKey(types.View))
                 _mappingByView.Add(types.View, types);
-            if (types.Model != null)
+            if (types.Model != null && !_mappingByModel.ContainsKey(types.Model))
                 _mappingByModel.Add(types.Model, types);
         }
 

@@ -9,4 +9,20 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
         void Initialize();
         [CanBeNull] string GetAssociatedPass([NotNull] IGraphicComponent component);
     }
+
+    public class EmptyGraphicsPipelinePassAssociateService : IGraphicsPipelinePassAssociateService
+    {
+        public void Dispose()
+        {
+        }
+
+        public void Initialize()
+        {
+        }
+
+        public string GetAssociatedPass(IGraphicComponent component)
+        {
+            return null;
+        }
+    }
 }

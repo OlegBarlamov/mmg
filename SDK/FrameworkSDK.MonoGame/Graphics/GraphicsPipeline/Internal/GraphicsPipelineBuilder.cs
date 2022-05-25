@@ -1,45 +1,45 @@
 using System;
-using FrameworkSDK.MonoGame.Graphics.RenderingTools;
+using System.Collections.Generic;
+using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.MonoGame.Localization;
 using JetBrains.Annotations;
+using NetExtensions.Collections;
 
-// ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
     internal class GraphicsPipelineBuilder : IGraphicsPipelineBuilder
     {
-        public IGraphicsPipeline Pipeline { get; }
-        public IDrawContext DrawContext { get; }
-        public IRenderContext RenderContext { get; }
-        public IGraphicDeviceContext GraphicDeviceContext { get; }
-
+        private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
+        private readonly IReadOnlyObservableList<IGraphicComponent> _graphicComponents;
+        private readonly List<IGraphicsPipelineAction> _actions = new List<IGraphicsPipelineAction>();
         private bool _built;
+
+        public GraphicsPipelineBuilder(
+        [NotNull] IReadOnlyObservableList<IGraphicComponent> graphicComponents,
+            [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService)
+        {
+            GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
+            _graphicComponents = graphicComponents ?? throw new ArgumentNullException(nameof(graphicComponents));
+        }
         
         public IGraphicsPipelineBuilder AddAction([NotNull] IGraphicsPipelineAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-            if (_built) throw new FrameworkMonoGameException(Strings.Exceptions.Graphics.PipelineAlreadyBuilt);
-            Pipeline.AddAction(action);
+            
+            _actions.Add(action);
             return this;
         }
 
-        public GraphicsPipelineBuilder(
-            [NotNull] IGraphicsPipeline pipeline,
-            [NotNull] IGraphicDeviceContext graphicDeviceContext,
-            [NotNull] IDrawContext drawContext,
-            [NotNull] IRenderContext renderContext)
-        {
-            Pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
-            GraphicDeviceContext = graphicDeviceContext ?? throw new ArgumentNullException(nameof(graphicDeviceContext));
-            DrawContext = drawContext ?? throw new ArgumentNullException(nameof(drawContext));
-            RenderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
-        }
-        
         public IGraphicsPipeline Build()
         {
             if (_built) throw new FrameworkMonoGameException(Strings.Exceptions.Graphics.PipelineAlreadyBuilt);
             _built = true;
-            return Pipeline;
+            
+            var actions = new List<IGraphicsPipelineAction>(_actions);
+            _actions.Clear();
+            
+            return new GraphicsPipeline(actions, _graphicComponents, GraphicsPipelinePassAssociateService);
         }
     }
 }

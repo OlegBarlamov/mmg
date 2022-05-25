@@ -7,6 +7,8 @@ using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.ExternalComponents;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
+using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Localization;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,7 +21,7 @@ namespace FrameworkSDK.MonoGame
         public event EventHandler DisposedEvent;
         public bool IsDisposed { get; private set; }
 
-        protected abstract Scene CurrentScene { get; }
+        protected abstract SceneBase CurrentScene { get; }
 	    
         private IScenesController ScenesController { get; } 
             = AppContext.ServiceLocator.Resolve<IScenesController>();
@@ -29,9 +31,14 @@ namespace FrameworkSDK.MonoGame
         private IInputManager InputManager { get; } =
             AppContext.ServiceLocator.Resolve<IInputManager>();
 
+        private IGraphicsPipelineFactoryService GraphicsPipelineFactoryService { get; } =
+            AppContext.ServiceLocator.Resolve<IGraphicsPipelineFactoryService>();
+        
         private static bool _oneInstanceCreated;
         private readonly IReadOnlyCollection<IExternalGameComponent> _externalGameComponents;
         private readonly ModuleLogger _logger;
+
+        private IGraphicDeviceContext _graphicDeviceContext;
         
         protected GameApp()
         {
@@ -84,6 +91,7 @@ namespace FrameworkSDK.MonoGame
             Dispose();
             
             ScenesController.Dispose();
+            _graphicDeviceContext?.Dispose();
             
             DisposedEvent?.Invoke(this, EventArgs.Empty);
             DisposedEvent = null;
@@ -105,6 +113,7 @@ namespace FrameworkSDK.MonoGame
 
             try
             {
+                _graphicDeviceContext = GraphicsPipelineFactoryService.CreateGraphicDeviceContext();
                 OnInitialized();
             }
             catch (Exception e)
@@ -165,14 +174,14 @@ namespace FrameworkSDK.MonoGame
 
             if (ScenesController.CanSceneChange)
                 ScenesController.CurrentScene = CurrentScene;
-
+            
             ScenesController.Update(gameTime);
         }
 
         void IDrawable.Draw(GameTime gameTime)
         {
-            ScenesController.Draw(gameTime);
-            
+            ScenesController.CurrentScene.GraphicsPipeline.Process(gameTime, _graphicDeviceContext);
+
             foreach (var component in _externalGameComponents)
             {
                 component.Draw(gameTime);

@@ -87,7 +87,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 				    view.SetController(controller);
 			    }
 			    if (model != null)
-				    controller.SetModel(model);
+				    controller.SetDataModel(model);
 		    }
 		    if (view != null && model != null)
 			    view.SetDataModel(model);

@@ -3,7 +3,7 @@ using FrameworkSDK.MonoGame.Basic;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-	internal interface IScenesController : IUpdatable, IDrawable, IDisposable
+	internal interface IScenesController : IUpdatable, IDisposable
 	{
 		bool CanSceneChange { get; }
 

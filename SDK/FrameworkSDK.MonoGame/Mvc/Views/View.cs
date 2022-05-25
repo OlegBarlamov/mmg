@@ -13,7 +13,7 @@ namespace FrameworkSDK.MonoGame.Mvc
     {
         public string Name { get; protected set; }
 
-        Scene ISceneComponent.OwnedScene => _ownedScene;
+        SceneBase ISceneComponent.OwnedScene => _ownedScene;
 
         object IView.DataModel => _dataModel;
 
@@ -21,7 +21,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         private object _dataModel;
         private IController _controller;
-        private Scene _ownedScene;
+        private SceneBase _ownedScene;
 
         private readonly List<IView> _children = new List<IView>();
 
@@ -65,12 +65,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             _controller = controller ?? throw new ArgumentNullException(nameof(controller));
         }
 
-        protected virtual void Initialize([NotNull] Scene scene)
+        protected virtual void Initialize([NotNull] SceneBase scene)
         {
 
         }
 
-        protected virtual void OnDetached([NotNull] Scene scene)
+        protected virtual void OnDetached([NotNull] SceneBase scene)
         {
 
         }
@@ -116,14 +116,14 @@ namespace FrameworkSDK.MonoGame.Mvc
             _children.Remove(childView);
         }
 
-        void ISceneComponent.OnAddedToScene(Scene scene)
+        void ISceneComponent.OnAddedToScene(SceneBase scene)
         {
             _ownedScene = scene ?? throw new ArgumentNullException(nameof(scene));
 
             Initialize(_ownedScene);
         }
 
-        void ISceneComponent.OnRemovedFromScene(Scene scene)
+        void ISceneComponent.OnRemovedFromScene(SceneBase scene)
         {
             foreach (var child in _children)
                 RemoveChild(child);

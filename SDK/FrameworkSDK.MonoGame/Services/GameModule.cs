@@ -26,7 +26,6 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterType<IGraphicsPipelineFactoryService, GraphicsPipelineFactoryService>();
             serviceRegistrator.RegisterType<IGraphicsPipelinePassAssociateService, GraphicsPipelinePassAssociateService>();
             serviceRegistrator.RegisterType<IRenderTargetsFactoryService, RenderTargetsFactoryService>();
-            serviceRegistrator.RegisterType<IGraphicsPipelineProcessorsFactory, DefaultGraphicsPipelineProcessorFactory>();
             serviceRegistrator.RegisterType<IDisplayService, DisplayService>();
 
             //Resources

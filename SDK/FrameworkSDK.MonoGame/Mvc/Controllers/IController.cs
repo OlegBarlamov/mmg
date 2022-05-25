@@ -7,11 +7,11 @@ namespace FrameworkSDK.MonoGame.Mvc
 	{
 		IView View { get; }
 
-		object Model { get; }
+		object DataModel { get; }
 
-	    bool IsOwnedModel(object model);
+	    bool IsOwnedDataModel(object model);
 
-	    void SetModel(object dataModel);
+	    void SetDataModel(object dataModel);
 
 	    void SetView(IView view);
     }

@@ -1,13 +1,17 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using FrameworkSDK.MonoGame.Basic;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
+using JetBrains.Annotations;
 
-using FrameworkSDK.MonoGame.Basic;
-
+// ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Mvc
 {
-	internal interface IScene : IControllersManager, IViewsManager, IUpdatable, IClosable, IDrawable, INamed
+	internal interface IScene : IControllersManager, IViewsManager, IUpdatable, IClosable, INamed
     {
-        object Model { get; set; }
+        [NotNull] IGraphicsPipeline GraphicsPipeline { get; }
+        
+        object DataModel { get; set; }
 
-		void OnOpened();
-	}
+        void OnOpened();
+        void OnOpening();
+    }
 }

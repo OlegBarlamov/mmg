@@ -6,9 +6,4 @@ namespace FrameworkSDK.MonoGame.Basic
     {
         void Update(GameTime gameTime);
     }
-
-	public interface IUpdatable<out TState>
-	{
-		TState UpdateState(GameTime gameTime);
-	}
 }

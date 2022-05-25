@@ -1,10 +1,12 @@
 ﻿using FrameworkSDK.MonoGame.Basic;
-using FrameworkSDK.MonoGame.Mvc;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-	public interface IClosable : IUpdatable<ClosingState>
+	public interface IClosable : IUpdatable
 	{
+		bool ReadyToBeClosed { get; }
+		void CloseRequest();
+		
 		void OnClosed();
 	}
 }

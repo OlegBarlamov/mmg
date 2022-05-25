@@ -30,7 +30,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             return ServiceLocator.IsServiceRegistered(type);
         }
 
-        public Scene ResolveScene(object model)
+        public SceneBase ResolveScene(object model)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
@@ -38,11 +38,11 @@ namespace FrameworkSDK.MonoGame.Mvc
             {
                 var type = model.GetType();
                 var scene = (IScene) ServiceLocator.Resolve(type, new[] {model});
-                if (scene.Model == null)
-                    scene.Model = model;
+                if (scene.DataModel == null)
+                    scene.DataModel = model;
 
                 _logger.Debug(Strings.Info.Mapping.SceneResolvedByModel, scene, model);
-                return (Scene) scene;
+                return (SceneBase) scene;
             }
             catch (Exception e)
             {
