@@ -12,35 +12,44 @@ namespace Atom.Client.MacOS
     public class X4GameApp : GameApp
     {
         protected override SceneBase CurrentScene => _currentScene;
+
+        private SceneBase _currentScene;
         
         private DefaultConsoleManipulator DefaultConsoleManipulator { get; }
-        private ColorsTexturesPackage ColorsTexturesPackage { get; }
+        public IScenesContainer ScenesContainer { get; }
+        public MainSceneDataModel MainSceneDataModel { get; }
 
-        private SceneBase _mainScene;
-        private SceneBase _currentScene;
+        private readonly IScenesResolver _scenesResolver;
 
-        public X4GameApp([NotNull] DefaultConsoleManipulator defaultConsoleManipulator, [NotNull] ColorsTexturesPackage colorsTexturesPackage)
+        public X4GameApp([NotNull] DefaultConsoleManipulator defaultConsoleManipulator, [NotNull] IScenesContainer scenesContainer,
+            [NotNull] MainSceneDataModel mainSceneDataModel)
         {
             DefaultConsoleManipulator = defaultConsoleManipulator ?? throw new ArgumentNullException(nameof(defaultConsoleManipulator));
-            ColorsTexturesPackage = colorsTexturesPackage ?? throw new ArgumentNullException(nameof(colorsTexturesPackage));
+            ScenesContainer = scenesContainer ?? throw new ArgumentNullException(nameof(scenesContainer));
+            MainSceneDataModel = mainSceneDataModel ?? throw new ArgumentNullException(nameof(mainSceneDataModel));
+
+            ScenesContainer.RegisterScene<MainSceneDataModel, MainScene>();
+
+            _scenesResolver = ScenesContainer.CreateResolver();
         }
 
         protected override void OnContentLoaded()
         {
             base.OnContentLoaded();
+
+            _currentScene = _scenesResolver.ResolveScene(MainSceneDataModel);
         }
 
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            
-            _mainScene = new MainScene();
-            _mainScene.AddController(DefaultConsoleManipulator);
-            _currentScene = _mainScene;
-            
-            var rectangleData = new RectangleModel {Texture = ColorsTexturesPackage.Get(Color.Red)};
-            _mainScene.AddView(rectangleData);
         }
 
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+            
+            DefaultConsoleManipulator.Update(gameTime);
+        }
     }
 }

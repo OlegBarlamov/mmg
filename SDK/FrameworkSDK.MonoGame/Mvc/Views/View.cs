@@ -11,6 +11,10 @@ namespace FrameworkSDK.MonoGame.Mvc
 {
     public abstract class View : IView
     {
+        public const string DefaultViewPassName = "Default";
+
+        private static readonly IReadOnlyList<string> DefaultViewPassNames = new[] {DefaultViewPassName};  
+
         public string Name { get; protected set; }
 
         SceneBase ISceneComponent.OwnedScene => _ownedScene;
@@ -40,17 +44,16 @@ namespace FrameworkSDK.MonoGame.Mvc
             throw new NotImplementedException();
         }
 
-	    public override string ToString()
-	    {
-		    return Name;
-	    }
-
-	    public virtual void Draw(GameTime gameTime, IDrawContext context)
+        public override string ToString()
         {
-
+            return Name;
         }
 
-        public virtual void Render(GameTime gameTime, IRenderContext context)
+        public virtual IReadOnlyList<string> GraphicsPassNames => DefaultViewPassNames;
+        
+        public virtual IReadOnlyDictionary<string, IReadOnlyList<IRenderableMesh>> MeshesByPass { get; } = new Dictionary<string, IReadOnlyList<IRenderableMesh>>();
+
+        public virtual void Draw(GameTime gameTime, IDrawContext context)
         {
 
         }

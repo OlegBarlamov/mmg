@@ -8,22 +8,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
-    public class DrawRenderTargetToDisplay : IGraphicsPipelineAction
+    public class DrawRenderTargetToDisplay : GraphicsPipelineActionBase
     {
-        public string Name { get; }
         public BeginDrawConfig BeginDrawConfig { get; }
         public RenderTarget2D RenderTarget2D { get; }
-        public bool IsDisabled { get; set; }
 
         public DrawRenderTargetToDisplay([NotNull] string name, [NotNull] BeginDrawConfig beginDrawConfig,
-            [NotNull] RenderTarget2D renderTarget2D)
+            [NotNull] RenderTarget2D renderTarget2D) : base(name)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
             BeginDrawConfig = beginDrawConfig ?? throw new ArgumentNullException(nameof(beginDrawConfig));
             RenderTarget2D = renderTarget2D ?? throw new ArgumentNullException(nameof(renderTarget2D));
         }
         
-        public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
+        public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
         {
             graphicDeviceContext.BeginDraw(BeginDrawConfig);
             graphicDeviceContext.SetRenderTargetToDisplay();

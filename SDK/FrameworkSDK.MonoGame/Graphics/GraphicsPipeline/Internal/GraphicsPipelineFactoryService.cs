@@ -1,4 +1,5 @@
 using System;
+using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
@@ -18,22 +19,25 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         [NotNull] private IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
         [NotNull] private IDisplayService DisplayService { get; }
         [NotNull] private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
+        public IFrameworkLogger FrameworkLogger { get; }
 
         public GraphicsPipelineFactoryService(
             [NotNull] IGameHeartServices gameHeartServices,
             [NotNull] IRenderTargetsFactoryService renderTargetsFactoryService,
             [NotNull] IDisplayService displayService,
-            [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService)
+            [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService,
+            [NotNull] IFrameworkLogger frameworkLogger)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             RenderTargetsFactoryService = renderTargetsFactoryService ?? throw new ArgumentNullException(nameof(renderTargetsFactoryService));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
             GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
+            FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
         }
 
         public IGraphicsPipelineBuilder Create(IReadOnlyObservableList<IGraphicComponent> graphicComponents)
         {
-            return new GraphicsPipelineBuilder(graphicComponents, GraphicsPipelinePassAssociateService);
+            return new GraphicsPipelineBuilder(graphicComponents, GraphicsPipelinePassAssociateService, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, FrameworkLogger);
         }
 
         public IDrawContext CreateDrawContext()

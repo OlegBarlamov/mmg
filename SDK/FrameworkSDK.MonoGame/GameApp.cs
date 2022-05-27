@@ -119,6 +119,7 @@ namespace FrameworkSDK.MonoGame
             catch (Exception e)
             {
                 _logger.Error("Game app class initialization error: ", e);
+                throw;
             }
         }
 

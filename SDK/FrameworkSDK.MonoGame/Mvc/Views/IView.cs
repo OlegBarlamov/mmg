@@ -1,5 +1,6 @@
 ﻿using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Mvc;
+using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
@@ -14,5 +15,5 @@ namespace FrameworkSDK.MonoGame.Mvc
 	    void SetDataModel(object dataModel);
 
 	    void SetController(IController controller);
-	}
+    }
 }

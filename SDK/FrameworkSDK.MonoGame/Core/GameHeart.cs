@@ -6,6 +6,7 @@ using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame
 {
@@ -48,6 +49,7 @@ namespace FrameworkSDK.MonoGame
 		    AppStateService = (AppStateService) appStateService;
 		    
 		    GraphicsDeviceManager = new GraphicsDeviceManager(this);
+		    GraphicsDeviceManager.PreparingDeviceSettings += GraphicsDeviceManagerOnPreparingDeviceSettings;
 		    GameApp = gameApp;
 
 		    GameApp.DisposedEvent += GameHostOnDisposed;
@@ -60,6 +62,12 @@ namespace FrameworkSDK.MonoGame
 		    AppStateService.IsAppFocused = IsActive;
 		    SetupParameters(Parameters);
 		}
+
+        private void GraphicsDeviceManagerOnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+        {
+	        //TODO make it configurable
+	        e.GraphicsDeviceInformation.GraphicsProfile = GraphicsProfile.HiDef;
+        }
 
         protected override void Initialize()
 		{

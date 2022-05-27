@@ -6,7 +6,7 @@ namespace Atom.Client.MacOS
     {
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
-            
+            serviceRegistrator.RegisterType<MainSceneDataModel, MainSceneDataModel>();
         }
     }
 }

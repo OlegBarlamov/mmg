@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
@@ -11,27 +12,27 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
     internal class GraphicsPipeline : IGraphicsPipeline
     {
-        public static IGraphicsPipeline Empty { get; } = 
-            new GraphicsPipeline(
-                Array.Empty<IGraphicsPipelineAction>(),
-                new ObservableList<IGraphicComponent>(),
-                new EmptyGraphicsPipelinePassAssociateService());
-        
+        public static IGraphicsPipeline Empty { get; } = new EmptyGraphicsPipeline();
+
         public IReadOnlyList<IGraphicsPipelineAction> Actions { get; }
         private IReadOnlyObservableList<IGraphicComponent> GraphicComponents { get; }
         private IGraphicsPipelinePassAssociateService PipelinePassAssociateService { get; }
-        
+
+        private readonly ModuleLogger _logger;
+
         private readonly Dictionary<string, List<IGraphicComponent>> _componentsByPassesMap = new Dictionary<string, List<IGraphicComponent>>();
         private bool _disposed;
 
         public GraphicsPipeline(
             [NotNull] IReadOnlyList<IGraphicsPipelineAction> actions,
             [NotNull] IReadOnlyObservableList<IGraphicComponent> graphicComponents,
-            [NotNull] IGraphicsPipelinePassAssociateService pipelinePassAssociateService)
+            [NotNull] IGraphicsPipelinePassAssociateService pipelinePassAssociateService,
+            IFrameworkLogger frameworkLogger)
         {
             Actions = actions ?? throw new ArgumentNullException(nameof(actions));
             GraphicComponents = graphicComponents ?? throw new ArgumentNullException(nameof(graphicComponents));
             PipelinePassAssociateService = pipelinePassAssociateService ?? throw new ArgumentNullException(nameof(pipelinePassAssociateService));
+            _logger = new ModuleLogger(frameworkLogger, LogCategories.Rendering);
             
             SubscribeToComponentsChanges(GraphicComponents);
             BuildMap();
@@ -51,22 +52,27 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         
         private void ComponentsOnItemAdded(IGraphicComponent component)
         {
-            var targetPass = PipelinePassAssociateService.GetAssociatedPass(component);
-            AddToMap(component, targetPass);
+            var targetPasses = PipelinePassAssociateService.GetAssociatedPasses(component);
+            foreach (var targetPass in targetPasses)
+            {
+                AddToMap(component, targetPass);
+            }
         }
         
         private void ComponentsOnItemRemoved(IGraphicComponent component)
         {
-            var targetPass = PipelinePassAssociateService.GetAssociatedPass(component);
-            RemoveFromMap(component, targetPass);
+            var targetPasses = PipelinePassAssociateService.GetAssociatedPasses(component);
+            foreach (var targetPass in targetPasses)
+            {
+                RemoveFromMap(component, targetPass);
+            }
         }
         
         private void BuildMap()
         {
             foreach (var component in GraphicComponents)
             {
-                var targetPass = PipelinePassAssociateService.GetAssociatedPass(component);
-                AddToMap(component, targetPass);
+                ComponentsOnItemAdded(component);
             }
         }
         
@@ -108,22 +114,42 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             UnsubscribeToComponentsChanges(GraphicComponents);
 
             _componentsByPassesMap.Clear();
+
+            foreach (var pipelineAction in Actions)
+            {
+                try
+                {
+                    pipelineAction.Dispose();
+                }
+                catch (Exception e)
+                {
+                    _logger.Error($"Graphics pipeline action {pipelineAction.Name} dispose error", e);
+                }
+            }
+            
+            _logger.Dispose();
         }
 
+        private IGraphicsPipelineAction _iterableAction;
+        private int _iterableIndex;
+        private List<IGraphicComponent> _passComponentsArray;
         public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
         {
-            for (int i = 0; i < Actions.Count; i++)
+            for (_iterableIndex = 0; _iterableIndex < Actions.Count; _iterableIndex++)
             {
-                var action = Actions[i];
-                if (!action.IsDisabled)
+                _iterableAction = Actions[_iterableIndex];
+                if (_iterableAction.IsDisabled)
+                    continue;
+
+                if (_componentsByPassesMap.TryGetValue(_iterableAction.Name, out _passComponentsArray))
                 {
-                    var passName = action.Name;
-                    var targetComponents = _componentsByPassesMap.ContainsKey(passName)
-                        ? (IReadOnlyList<IGraphicComponent>)_componentsByPassesMap[passName]
-                        : Array.Empty<IGraphicComponent>(); 
-                    
-                    action.Process(gameTime, graphicDeviceContext, targetComponents);
+                    _iterableAction.Process(gameTime, graphicDeviceContext, _passComponentsArray);
                 }
+                else
+                {
+                    _iterableAction.Process(gameTime, graphicDeviceContext, Array.Empty<IGraphicComponent>());
+                }
+
             }
         }
     }

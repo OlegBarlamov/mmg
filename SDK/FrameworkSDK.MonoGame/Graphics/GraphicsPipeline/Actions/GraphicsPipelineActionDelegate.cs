@@ -24,5 +24,9 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             _processAction.Invoke(gameTime, graphicDeviceContext, associatedComponents);
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

@@ -1,28 +1,12 @@
 using System;
+using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using JetBrains.Annotations;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing
 {
-    public interface IGraphicsPipelinePassAssociateService : IDisposable
+    public interface IGraphicsPipelinePassAssociateService
     {
-        void Initialize();
-        [CanBeNull] string GetAssociatedPass([NotNull] IGraphicComponent component);
-    }
-
-    public class EmptyGraphicsPipelinePassAssociateService : IGraphicsPipelinePassAssociateService
-    {
-        public void Dispose()
-        {
-        }
-
-        public void Initialize()
-        {
-        }
-
-        public string GetAssociatedPass(IGraphicComponent component)
-        {
-            return null;
-        }
+        [NotNull] IReadOnlyList<string> GetAssociatedPasses([NotNull] IGraphicComponent component);
     }
 }

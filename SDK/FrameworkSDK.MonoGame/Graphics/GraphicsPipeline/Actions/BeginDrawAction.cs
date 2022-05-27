@@ -7,20 +7,16 @@ using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
-    public class BeginDrawAction : IGraphicsPipelineAction
+    public class BeginDrawAction : GraphicsPipelineActionBase
     {
-        public string Name { get; }
-        public bool IsDisabled { get; set; }
-        
         private readonly BeginDrawConfig _beginDrawConfig;
 
-        public BeginDrawAction([NotNull] string name, [NotNull] BeginDrawConfig beginDrawConfig)
+        public BeginDrawAction([NotNull] string name, [NotNull] BeginDrawConfig beginDrawConfig) : base(name)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
             _beginDrawConfig = beginDrawConfig ?? throw new ArgumentNullException(nameof(beginDrawConfig));
         }
 
-        public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
+        public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
         {
             graphicDeviceContext.BeginDraw(
                 _beginDrawConfig.SortMode,

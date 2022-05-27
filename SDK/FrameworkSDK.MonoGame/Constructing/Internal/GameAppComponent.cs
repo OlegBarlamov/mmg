@@ -27,7 +27,6 @@ namespace FrameworkSDK.MonoGame.Constructing
         
         public void Configure()
         {
-            GraphicsPipelinePassAssociateService.Initialize();
             GameHeart = ServiceLocator.Resolve<IGameHeart>();
         }
 

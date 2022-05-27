@@ -7,17 +7,13 @@ using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
-    public class SetRenderTargetToDisplayAction : IGraphicsPipelineAction
+    public class SetRenderTargetToDisplayAction : GraphicsPipelineActionBase
     {
-        public string Name { get; }
-        public bool IsDisabled { get; set; }
-
-        public SetRenderTargetToDisplayAction([NotNull] string name)
+        public SetRenderTargetToDisplayAction([NotNull] string name) : base(name)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
         
-        public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
+        public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
         {
             graphicDeviceContext.SetRenderTargetToDisplay();
         }

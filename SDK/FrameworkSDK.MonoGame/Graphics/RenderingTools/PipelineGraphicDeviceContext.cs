@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -12,15 +11,17 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     {
         public IDisplayService DisplayService { get; }
         private SpriteBatch SpriteBatch { get; }
-        private GraphicsDevice GraphicsDevice { get; }
+        public GraphicsDevice GraphicsDevice { get; }
 
         private readonly IDrawContext _internalDrawContext;
+        private readonly IRenderContext _internalRenderContext;
 
         public void Dispose()
         {
             _internalDrawContext.Dispose();
+            _internalRenderContext.Dispose();
         }
-        
+
         public PipelineGraphicDeviceContext([NotNull] SpriteBatch spriteBatch, [NotNull] GraphicsDevice graphicsDevice,
             [NotNull] IDisplayService displayService)
         {
@@ -29,6 +30,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
 
             _internalDrawContext = new DrawContext(SpriteBatch);
+            _internalRenderContext = new RenderContext(GraphicsDevice);
         }
 
         public void BeginDraw(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null,
@@ -137,6 +139,21 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
             _internalDrawContext.DrawString(spriteFont, text, position, color, rotation, origin, scale, effects, layerDepth);
+        }
+        
+        public void DrawIndexedPrimitives(PrimitiveType primitiveType, int baseVertex, int startIndex, int primitiveCount)
+        {
+            _internalRenderContext.DrawIndexedPrimitives(primitiveType, baseVertex, startIndex, primitiveCount);
+        }
+
+        public void SetVertexBuffer(VertexBuffer vertexBuffer)
+        {
+            _internalRenderContext.SetVertexBuffer(vertexBuffer);
+        }
+
+        public void SetIndexBuffer(IndexBuffer indexBuffer)
+        {
+            _internalRenderContext.SetIndexBuffer(indexBuffer);
         }
     }
 }

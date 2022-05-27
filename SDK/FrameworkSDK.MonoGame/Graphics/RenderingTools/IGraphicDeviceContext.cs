@@ -9,7 +9,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     /// <summary>
     /// Graphics pipeline tool
     /// </summary>
-    public interface IGraphicDeviceContext : IDrawContext, IDisposable
+    public interface IGraphicDeviceContext : IDrawContext, IRenderContext, IDisposable
     {
         IDisplayService DisplayService { get; }
         
@@ -23,5 +23,8 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         void SetRenderTargetToDisplay();
 
         void Clear(Color color);
+        
+        // TODO temporary
+        GraphicsDevice GraphicsDevice { get; }
     }
 }

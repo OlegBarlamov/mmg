@@ -1,7 +1,7 @@
 using System;
 using FrameworkSDK.Common;
-using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
+using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,7 +38,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             return builder.Do(context => context.Clear(clearColor), GenerateActionName(nameof(Clear)));
         }
         
-        public static IGraphicsPipelineBuilder DrawComponents([NotNull] this IGraphicsPipelineBuilder builder, [NotNull] string name = GraphicsPipelinePassAssociateService.DefaultPassName)
+        public static IGraphicsPipelineBuilder DrawComponents([NotNull] this IGraphicsPipelineBuilder builder, [NotNull] string name = View.DefaultViewPassName)
         {
             return builder.AddAction(new DrawComponentsAction(name));
         }
@@ -64,6 +64,14 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             return builder.AddAction(new DrawRenderTargetToDisplay(
                 GenerateActionName(nameof(DrawRenderTargetToDisplay)), beginDrawConfig, renderTarget2D));
+        }
+
+        public static IGraphicsPipelineBuilder SimpleRender<TVertexType>([NotNull] this IGraphicsPipelineBuilder builder,
+            [NotNull] Effect effect, [NotNull] VertexBuffer vertexBuffer, [NotNull] IndexBuffer indexBuffer, [NotNull] string name = View.DefaultViewPassName)
+            where TVertexType : struct, IVertexType
+        {
+            return builder.AddAction(
+                new SimpleRenderComponentsMeshes<TVertexType>(name, effect, vertexBuffer, indexBuffer));
         }
 
         private static string GenerateActionName(string prefix = "")

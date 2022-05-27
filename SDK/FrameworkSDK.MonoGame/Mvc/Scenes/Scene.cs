@@ -1,28 +1,39 @@
 using FrameworkSDK.DependencyInjection;
+using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.Services;
 using JetBrains.Annotations;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
     public abstract class Scene : SceneBase
     {
-        [NotNull] private IGraphicsPipelineFactoryService GraphicsPipelineFactoryService { get; }
-        [NotNull] private IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
-
-        private bool _initialized;
+        public static class DefaultPipelineActions
+        {
+            public const string Draw = "Default";
+            public const string RenderVertexPosition = "Render_VP";
+            public const string RenderVertexPositionColor = "Render_VPC";
+            public const string RenderVertexPositionTexture = "Render_VPT";
+        }
         
+        [NotNull] protected IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
+        [NotNull] protected IGameHeartServices GameHeartServices { get; }
+
+        [NotNull] private IGraphicsPipelineFactoryService GraphicsPipelineFactoryService { get; }
+
         [CanBeNull] private IGraphicsPipeline _usedGraphicsPipeline;
         [CanBeNull] private IRenderTargetWrapper _defaultGraphicsPipelineRenderTarget;
+        
+        private bool _initialized;
 
         protected Scene([NotNull] string name, object model = null)
             : base(name, model)
         {
             GraphicsPipelineFactoryService = AppContext.ServiceLocator.Resolve<IGraphicsPipelineFactoryService>();
             RenderTargetsFactoryService = AppContext.ServiceLocator.Resolve<IRenderTargetsFactoryService>();
+            GameHeartServices = AppContext.ServiceLocator.Resolve<IGameHeartServices>();
         }
 
         protected Scene(object model)
@@ -81,7 +92,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             return builder
                 .SetRenderTarget(_defaultGraphicsPipelineRenderTarget.RenderTarget)
                 .BeginDraw(new BeginDrawConfig())
-                .DrawComponents()
+                .DrawComponents(DefaultPipelineActions.Draw)
                 .EndDraw()
                 .DrawRenderTargetToDisplay(_defaultGraphicsPipelineRenderTarget.RenderTarget)
                 .Build();
