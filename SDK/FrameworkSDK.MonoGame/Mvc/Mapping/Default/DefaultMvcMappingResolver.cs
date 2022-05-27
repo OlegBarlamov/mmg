@@ -241,12 +241,12 @@ namespace FrameworkSDK.MonoGame.Mvc
         private static void RegisterTypes(MvcTypesDeclaration types, IFrameworkServiceContainer targetContainer)
         {
             if (types.Controller != null)
-                targetContainer.RegisterType(types.Controller, types.Controller);
+                targetContainer.RegisterType(types.Controller, types.Controller, ResolveType.InstancePerResolve);
             // We don't register model types. Model should be provided manually as a parameter (ResolveByModel)
             // if (types.Model != null)
             //     targetContainer.RegisterType(types.Model, types.Model);
             if (types.View != null)
-                targetContainer.RegisterType(types.View, types.View);
+                targetContainer.RegisterType(types.View, types.View, ResolveType.InstancePerResolve);
         }
     }
 }

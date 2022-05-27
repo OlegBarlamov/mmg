@@ -1,4 +1,5 @@
 ﻿using System;
+using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -11,6 +12,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     /// </summary>
     public interface IGraphicDeviceContext : IDrawContext, IRenderContext, IDisposable
     {
+        ICamera3DProvider Camera3DProvider { get; }
         IDisplayService DisplayService { get; }
         
         void BeginDraw(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null,

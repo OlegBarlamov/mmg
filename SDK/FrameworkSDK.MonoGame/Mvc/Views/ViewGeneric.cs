@@ -10,14 +10,6 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         protected TController Controller => (TController) ((IView) this).Controller;
 
-        protected View()
-        {
-        }
-
-        protected View([NotNull] string name) : base(name)
-        {
-        }
-
         protected sealed override void SetDataModel([NotNull] object dataModel)
         {
             if (dataModel == null) throw new ArgumentNullException(nameof(dataModel));
@@ -41,12 +33,5 @@ namespace FrameworkSDK.MonoGame.Mvc
 
     public abstract class View<TData> : View<TData, EmptyController>
     {
-        protected View()
-        {
-        }
-
-        protected View([NotNull] string name) : base(name)
-        {
-        }
     }
 }

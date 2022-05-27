@@ -30,13 +30,8 @@ namespace FrameworkSDK.MonoGame.Mvc
         private readonly List<IView> _children = new List<IView>();
 
         protected View()
-            : this(NamesGenerator.Hash(HashType.SmallGuid, nameof(View)))
         {
-        }
-
-        protected View([NotNull] string name)
-        {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = NamesGenerator.Hash(HashType.SmallGuid, GetType().Name);
         }
 
         public void Destroy()

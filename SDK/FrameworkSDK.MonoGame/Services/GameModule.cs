@@ -1,8 +1,8 @@
 ﻿using FrameworkSDK.DependencyInjection;
-using FrameworkSDK.MonoGame.Cameras;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.ExternalComponents;
+using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.MonoGame.Graphics.Services;
@@ -46,7 +46,9 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterInstance<IInputManager>(inputManager);
             
             //Camera
-            serviceRegistrator.RegisterType<ICameraService, CameraService>();
+            serviceRegistrator.RegisterType<DefaultCamera3DService, DefaultCamera3DService>();
+            serviceRegistrator.RegisterFactory(typeof(ICamera3DService), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));
+            serviceRegistrator.RegisterFactory(typeof(ICamera3DProvider), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));
             
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
             serviceRegistrator.RegisterType<IAppStateService, AppStateService>();

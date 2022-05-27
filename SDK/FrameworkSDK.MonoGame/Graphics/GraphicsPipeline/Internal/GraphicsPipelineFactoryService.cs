@@ -2,6 +2,7 @@ using System;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.Graphics.Services;
@@ -19,20 +20,23 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         [NotNull] private IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
         [NotNull] private IDisplayService DisplayService { get; }
         [NotNull] private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
-        public IFrameworkLogger FrameworkLogger { get; }
+        [NotNull] private IFrameworkLogger FrameworkLogger { get; }
+        [NotNull] private ICamera3DProvider Camera3DProvider { get; }
 
         public GraphicsPipelineFactoryService(
             [NotNull] IGameHeartServices gameHeartServices,
             [NotNull] IRenderTargetsFactoryService renderTargetsFactoryService,
             [NotNull] IDisplayService displayService,
             [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService,
-            [NotNull] IFrameworkLogger frameworkLogger)
+            [NotNull] IFrameworkLogger frameworkLogger,
+            [NotNull] ICamera3DProvider camera3DProvider)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             RenderTargetsFactoryService = renderTargetsFactoryService ?? throw new ArgumentNullException(nameof(renderTargetsFactoryService));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
             GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
             FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
+            Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
         }
 
         public IGraphicsPipelineBuilder Create(IReadOnlyObservableList<IGraphicComponent> graphicComponents)
@@ -47,7 +51,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         public IGraphicDeviceContext CreateGraphicDeviceContext()
         {
-            return new PipelineGraphicDeviceContext(GameHeartServices.SpriteBatch, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, DisplayService);
+            return new PipelineGraphicDeviceContext(GameHeartServices.SpriteBatch, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, DisplayService, Camera3DProvider);
         }
 
         public IRenderContext CreateRenderContext()

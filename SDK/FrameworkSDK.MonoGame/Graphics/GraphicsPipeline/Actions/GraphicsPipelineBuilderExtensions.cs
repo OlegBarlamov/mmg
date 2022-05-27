@@ -1,5 +1,6 @@
 using System;
 using FrameworkSDK.Common;
+using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
@@ -72,6 +73,12 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             return builder.AddAction(
                 new SimpleRenderComponentsMeshes<TVertexType>(name, effect, vertexBuffer, indexBuffer));
+        }
+
+        public static IGraphicsPipelineBuilder SetActiveCamera([NotNull] this IGraphicsPipelineBuilder builder, IEffectMatrices effect)
+        {
+            return builder.AddAction(
+                new SetActiveCameraAction(GenerateActionName(nameof(SetActiveCameraAction)), effect));
         }
 
         private static string GenerateActionName(string prefix = "")
