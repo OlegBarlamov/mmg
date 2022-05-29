@@ -12,7 +12,24 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public string Name { get; }
         public bool IsDisabled { get; set; }
 
+        protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();
+        
         [NotNull] private readonly GraphicsActionDelegate _processAction;
+        
+        public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
+        {
+            _processAction.Invoke(gameTime, graphicDeviceContext, AttachedComponents);
+        }
+
+        public void OnComponentAttached(IGraphicComponent attachingComponent)
+        {
+            AttachedComponents.Add(attachingComponent);
+        }
+
+        public void OnComponentDetached(IGraphicComponent detachingComponent)
+        {
+            AttachedComponents.Remove(detachingComponent);
+        }
 
         public GraphicsPipelineActionDelegate([NotNull] string name, [NotNull] GraphicsActionDelegate processAction)
         {
@@ -20,13 +37,10 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             Name = name;
             _processAction = processAction ?? throw new ArgumentNullException(nameof(processAction));
         }
-        public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
-        {
-            _processAction.Invoke(gameTime, graphicDeviceContext, associatedComponents);
-        }
 
         public void Dispose()
         {
+            AttachedComponents.Clear();
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Atom.Client.MacOS
             
             var gridData = new Grid3DComponentData
             {
-                GraphicsPassName = "Render"
+                GraphicsPassName = "Render_Identical"
             };
             AddView(gridData);
 
@@ -53,8 +53,8 @@ namespace Atom.Client.MacOS
                 {
                     GraphicsPassName = "Render_Identical",
                     Color = Color.Pink,
-                    Size = new Vector3(2),
-                    Position = new Vector3(-1f + i*3f, -1f + (int)((i / 5f)*2), -1f),
+                    //Scale = new Vector3(2),
+                    Position = new Vector3(i*3f,(int)((i / 5f)*2), 0),
                 };
                 _boxView = AddView(boxData);
             }
@@ -91,7 +91,7 @@ namespace Atom.Client.MacOS
                 .Clear(Color.Black)
                 .SetActiveCamera(_effect)
                 .SimpleRender<VertexPositionColor>(_effect, vertexBuffer, indexBuffer, "Render")
-                .RenderIdentical<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2, _boxView.MeshesByPass["Render_Identical"][0],  "Render_Identical")
+                .RenderIdentical<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2,  "Render_Identical")
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()
                 .EndDraw()

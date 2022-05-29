@@ -1,48 +1,51 @@
+using System;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.Basic
 {
-    public sealed class FixedSimpleMesh<T> : IRenderableMesh where T: struct, IVertexType
+    public sealed class FixedSimpleMesh : IRenderableMesh
     {
         public IRenderableComponent Parent { get; }
-        public PrimitiveType PrimitiveType { get; }
-        public VertexDeclaration VertexDeclaration { get; }
-
-        private readonly T[] _vertices;
-        private readonly int[] _indices;
-        private readonly int _primitivesCount;
-
-        public Matrix World { get; set; } = Matrix.Identity;
         
-        public FixedSimpleMesh(IRenderableComponent parent, PrimitiveType primitiveType, VertexDeclaration vertexDeclaration, T[] vertices, int[] indices, int primitivesCount)
+        public IMeshGeometry Geometry { get; }
+        
+        public Matrix World { get; set; } = Matrix.Identity;
+
+        private Vector3 _position = Vector3.Zero;
+        private Vector3 _scale = Vector3.One;
+
+        public FixedSimpleMesh([NotNull] IRenderableComponent parent, PrimitiveType primitiveType, VertexDeclaration vertexDeclaration,
+            [NotNull] Array vertices, [NotNull] int[] indices, int primitivesCount)
         {
-            _vertices = vertices;
-            _indices = indices;
-            _primitivesCount = primitivesCount;
-            Parent = parent;
-            PrimitiveType = primitiveType;
-            VertexDeclaration = vertexDeclaration;
+            if (vertices == null) throw new ArgumentNullException(nameof(vertices));
+            if (indices == null) throw new ArgumentNullException(nameof(indices));
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            Geometry = new BasicMeshGeometry(primitiveType, vertexDeclaration, vertices, indices, primitivesCount);
+        }
+
+        public FixedSimpleMesh([NotNull] IRenderableComponent parent, [NotNull] IMeshGeometry geometry)
+        {
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            Geometry = geometry ?? throw new ArgumentNullException(nameof(geometry));
         }
 
         public void SetPosition(Vector3 position)
         {
-            World = Matrix.CreateTranslation(position);
+            _position = position;
+            UpdateWordMatrix();
         }
 
-        public object GetVertices()
+        public void SetScale(Vector3 scale)
         {
-            return _vertices;
+            _scale = scale;
+            UpdateWordMatrix();
         }
 
-        public int[] GetIndices()
+        public void UpdateWordMatrix()
         {
-            return _indices;
-        }
-
-        public int GetPrimitivesCount()
-        {
-            return _primitivesCount;
+            World = Matrix.CreateTranslation(_position) * Matrix.CreateScale(_scale);
         }
     }
 }

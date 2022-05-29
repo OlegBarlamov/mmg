@@ -11,6 +11,9 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
     {
         bool IsDisabled { get; set; }
         
-        void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents);
+        void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext);
+
+        void OnComponentAttached(IGraphicComponent attachingComponent);
+        void OnComponentDetached(IGraphicComponent detachingComponent);
     }
 }

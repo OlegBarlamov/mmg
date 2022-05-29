@@ -12,15 +12,33 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public string Name { get; }
 
         public bool IsDisabled { get; set; }
-
+        
+        protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();
+        
         protected GraphicsPipelineActionBase([NotNull] string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
         
+        public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
+        {
+            Process(gameTime, graphicDeviceContext, AttachedComponents);
+        }
+
+        public virtual void OnComponentAttached(IGraphicComponent attachingComponent)
+        {
+            AttachedComponents.Add(attachingComponent);
+        }
+
+        public virtual void OnComponentDetached(IGraphicComponent detachingComponent)
+        {
+            AttachedComponents.Remove(detachingComponent);
+        }
+
         void IDisposable.Dispose()
         {
             Dispose();
+            AttachedComponents.Clear();
         }
 
         public abstract void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext,

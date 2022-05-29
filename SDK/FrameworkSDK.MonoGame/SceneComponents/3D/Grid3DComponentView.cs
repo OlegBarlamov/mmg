@@ -26,7 +26,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         protected override IRenderableMesh Mesh => _mesh;
         protected override string SingleGraphicsPassName { get; }
 
-        private readonly FixedSimpleMesh<VertexPositionColor> _mesh;
+        private readonly FixedSimpleMesh _mesh;
         
         public Grid3DComponentView(Grid3DComponentData model)
         {
@@ -36,7 +36,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             _mesh.SetPosition(model.Position);
         }
 
-        private FixedSimpleMesh<VertexPositionColor> GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)
+        private FixedSimpleMesh GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)
         {
             var vertices = new List<VertexPositionColor>();
             var indices = new List<int>();
@@ -89,7 +89,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
                 indices.Add(++index);
             }
 
-            return new FixedSimpleMesh<VertexPositionColor>(this, PrimitiveType.LineList,
+            return new FixedSimpleMesh(this, PrimitiveType.LineList,
                 VertexPositionColor.VertexDeclaration, vertices.ToArray(), indices.ToArray(), indices.Count / 2);
         }
     }

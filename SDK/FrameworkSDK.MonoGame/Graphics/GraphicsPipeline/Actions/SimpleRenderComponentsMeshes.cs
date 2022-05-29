@@ -47,14 +47,14 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                         ((IEffectMatrices) Effect).World = _mesh.World;
                         pass.Apply();
 
-                        VertexBuffer.SetData((TVertexType[]) _mesh.GetVertices());
-                        IndexBuffer.SetData(_mesh.GetIndices());
+                        VertexBuffer.SetData((TVertexType[]) _mesh.Geometry.GetVertices());
+                        IndexBuffer.SetData(_mesh.Geometry.GetIndices());
 
                         graphicDeviceContext.GraphicsDevice.SetVertexBuffer(VertexBuffer);
                         graphicDeviceContext.GraphicsDevice.Indices = IndexBuffer;
 
-                        graphicDeviceContext.GraphicsDevice.DrawIndexedPrimitives(_mesh.PrimitiveType, 0, 0,
-                            _mesh.GetPrimitivesCount());
+                        graphicDeviceContext.GraphicsDevice.DrawIndexedPrimitives(_mesh.Geometry.PrimitiveType, 0, 0,
+                            _mesh.Geometry.GetPrimitivesCount());
                     }
                 }
             }

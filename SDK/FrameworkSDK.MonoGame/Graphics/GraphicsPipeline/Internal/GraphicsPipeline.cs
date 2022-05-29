@@ -19,8 +19,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         private IGraphicsPipelinePassAssociateService PipelinePassAssociateService { get; }
 
         private readonly ModuleLogger _logger;
-
-        private readonly Dictionary<string, List<IGraphicComponent>> _componentsByPassesMap = new Dictionary<string, List<IGraphicComponent>>();
+        
+        private readonly Dictionary<string, List<IGraphicsPipelineAction>> _actionsByPassesMap = new Dictionary<string, List<IGraphicsPipelineAction>>();
         private bool _disposed;
 
         public GraphicsPipeline(
@@ -34,8 +34,25 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             PipelinePassAssociateService = pipelinePassAssociateService ?? throw new ArgumentNullException(nameof(pipelinePassAssociateService));
             _logger = new ModuleLogger(frameworkLogger, LogCategories.Rendering);
             
+            FillActionsMap();
+            ProcessAlreadyExistedComponents();
+            
             SubscribeToComponentsChanges(GraphicComponents);
-            BuildMap();
+        }
+
+        private void FillActionsMap()
+        {
+            foreach (var graphicsPipelineAction in Actions)
+            {
+                var passName = graphicsPipelineAction.Name;
+                if (string.IsNullOrWhiteSpace(passName)) 
+                    continue;
+                
+                if (!_actionsByPassesMap.ContainsKey(passName)) 
+                    _actionsByPassesMap.Add(passName, new List<IGraphicsPipelineAction>());
+                
+                _actionsByPassesMap[passName].Add(graphicsPipelineAction);
+            }
         }
 
         private void SubscribeToComponentsChanges(IReadOnlyObservableList<IGraphicComponent> components)
@@ -68,7 +85,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             }
         }
         
-        private void BuildMap()
+        private void ProcessAlreadyExistedComponents()
         {
             foreach (var component in GraphicComponents)
             {
@@ -81,17 +98,12 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             if (string.IsNullOrWhiteSpace(targetPass))
                 return;
 
-            if (!_componentsByPassesMap.ContainsKey(targetPass))
+            if (_actionsByPassesMap.TryGetValue(targetPass, out var graphicsPipelineActions))
             {
-                var list = new List<IGraphicComponent>
+                foreach (var graphicsPipelineAction in graphicsPipelineActions)
                 {
-                    component
-                };
-                _componentsByPassesMap.Add(targetPass, list);
-            }
-            else
-            {
-                _componentsByPassesMap[targetPass].Add(component);
+                    graphicsPipelineAction.OnComponentAttached(component);
+                }
             }
         }
 
@@ -100,10 +112,13 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             if (string.IsNullOrWhiteSpace(targetPass))
                 return;
             
-            if (!_componentsByPassesMap.ContainsKey(targetPass))
-                return;
-
-            _componentsByPassesMap[targetPass].Remove(component);
+            if (_actionsByPassesMap.TryGetValue(targetPass, out var graphicsPipelineActions))
+            {
+                foreach (var graphicsPipelineAction in graphicsPipelineActions)
+                {
+                    graphicsPipelineAction.OnComponentDetached(component);
+                }
+            }
         }
         
         public void Dispose()
@@ -113,7 +128,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             
             UnsubscribeToComponentsChanges(GraphicComponents);
 
-            _componentsByPassesMap.Clear();
+            _actionsByPassesMap.Clear();
 
             foreach (var pipelineAction in Actions)
             {
@@ -132,7 +147,6 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         private IGraphicsPipelineAction _iterableAction;
         private int _iterableIndex;
-        private List<IGraphicComponent> _passComponentsArray;
         public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
         {
             for (_iterableIndex = 0; _iterableIndex < Actions.Count; _iterableIndex++)
@@ -141,15 +155,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                 if (_iterableAction.IsDisabled)
                     continue;
 
-                if (_componentsByPassesMap.TryGetValue(_iterableAction.Name, out _passComponentsArray))
-                {
-                    _iterableAction.Process(gameTime, graphicDeviceContext, _passComponentsArray);
-                }
-                else
-                {
-                    _iterableAction.Process(gameTime, graphicDeviceContext, Array.Empty<IGraphicComponent>());
-                }
-
+                _iterableAction.Process(gameTime, graphicDeviceContext);
             }
         }
     }
