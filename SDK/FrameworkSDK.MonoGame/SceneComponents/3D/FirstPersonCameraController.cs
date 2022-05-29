@@ -1,4 +1,3 @@
-
 using System;
 using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;

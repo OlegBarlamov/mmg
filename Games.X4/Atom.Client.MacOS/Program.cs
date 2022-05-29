@@ -16,15 +16,18 @@ namespace Atom.Client.MacOS
         public static void Main()
         {
             var loggerConsoleMessageProvider = new LoggerConsoleMessagesProvider();
+            var commandExecutor = new CommandExecutorMediator();
             using (var game = new DefaultAppFactory()
                 .SetupLogSystem(new ILoggerProvider[]{loggerConsoleMessageProvider})
                 .AddServices<MainModule>()
+                .AddService(commandExecutor)
                 .UseGame<X4GameApp>()
                     .UseMvc()
                     .PreloadResourcePackage<ColorsTexturesPackage>()
                     .UseGameComponents()
                         .UseInGameConsole()
                         .UseConsoleMessagesProvider(loggerConsoleMessageProvider)
+                        .UseConsoleCommandExecutor(commandExecutor)
                 .Construct())
             {
                 game.Run();

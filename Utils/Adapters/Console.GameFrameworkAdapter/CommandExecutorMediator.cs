@@ -9,7 +9,7 @@ namespace Console.FrameworkAdapter
 {
     public class CommandExecutorMediator : IConsoleCommandExecutor, IDisposable
     {
-        public Action<string> Command;
+        public event Action<string> Command;
 
         private bool _disposed;
         

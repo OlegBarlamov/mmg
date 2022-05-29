@@ -8,5 +8,7 @@ namespace FrameworkSDK.MonoGame
         event Action ResourceUnloading;
         
         void Run();
+
+        void Exit();
     }
 }

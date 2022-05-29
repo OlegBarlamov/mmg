@@ -21,6 +21,7 @@ namespace FrameworkSDK.MonoGame.Services
         {
             serviceRegistrator.RegisterType<GameApp, TGame>();
             serviceRegistrator.RegisterType<IExternalGameComponentsService, FakeExternalGameComponentsService>();
+            serviceRegistrator.RegisterType<IAppTerminator, DefaultAppTerminator>();
             
             //Graphics
             serviceRegistrator.RegisterType<IGraphicsPipelineFactoryService, GraphicsPipelineFactoryService>();

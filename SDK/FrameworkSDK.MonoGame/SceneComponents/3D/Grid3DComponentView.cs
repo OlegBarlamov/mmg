@@ -10,6 +10,8 @@ namespace FrameworkSDK.MonoGame.SceneComponents
     {
         public string GraphicsPassName = View.DefaultViewPassName;
 
+        public Vector3 Position = Vector3.Zero; 
+        
         public float AxesLength = 10f;
         public float CellsSize = 1f;
         
@@ -21,17 +23,20 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
     public class Grid3DComponentView : SingleMeshComponent<Grid3DComponentData>
     {
-        protected override IRenderableMesh Mesh { get; } 
+        protected override IRenderableMesh Mesh => _mesh;
         protected override string SingleGraphicsPassName { get; }
 
+        private readonly FixedSimpleMesh<VertexPositionColor> _mesh;
+        
         public Grid3DComponentView(Grid3DComponentData model)
         {
             SingleGraphicsPassName = model.GraphicsPassName;
 
-            Mesh = GenerateMesh(model.AxesLength, model.CellsSize, model.XAxeColor, model.YAxeColor, model.ZAxeColor, model.CellsColor);
+            _mesh = GenerateMesh(model.AxesLength, model.CellsSize, model.XAxeColor, model.YAxeColor, model.ZAxeColor, model.CellsColor);
+            _mesh.SetPosition(model.Position);
         }
 
-        private IRenderableMesh GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)
+        private FixedSimpleMesh<VertexPositionColor> GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)
         {
             var vertices = new List<VertexPositionColor>();
             var indices = new List<int>();

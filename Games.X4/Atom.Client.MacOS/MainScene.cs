@@ -1,5 +1,4 @@
 using System;
-using Atom.Client.MacOS.Components;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -31,6 +30,8 @@ namespace Atom.Client.MacOS
         private BasicEffect _effect;
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), Vector3.Zero);
         private readonly FirstPersonCameraController _cameraController;
+
+        private IView _boxView;
         
         public MainScene(MainSceneDataModel model, [NotNull] ICamera3DService camera3DService, IInputService inputService)
             :base("MainScene")
@@ -44,9 +45,20 @@ namespace Atom.Client.MacOS
             {
                 GraphicsPassName = "Render"
             };
-            AddView(new RectangleModel(DataModel.ColorsTexturesPackage.Get(Color.Blue)));
             AddView(gridData);
-            
+
+            for (int i = 0; i < 50; i++)
+            {
+                var boxData = new BoxComponentDataModel
+                {
+                    GraphicsPassName = "Render_Identical",
+                    Color = Color.Pink,
+                    Size = new Vector3(2),
+                    Position = new Vector3(-1f + i*3f, -1f + (int)((i / 5f)*2), -1f),
+                };
+                _boxView = AddView(boxData);
+            }
+
             _cameraController = new FirstPersonCameraController(inputService, _camera);
         }
 
@@ -71,11 +83,15 @@ namespace Atom.Client.MacOS
 
             var vertexBuffer = new VertexBuffer(graphicsPipelineBuilder.GraphicsDevice, VertexPositionColor.VertexDeclaration, 100, BufferUsage.WriteOnly);
             var indexBuffer = new IndexBuffer(graphicsPipelineBuilder.GraphicsDevice, typeof(int), 200, BufferUsage.WriteOnly);
+            
+            var vertexBuffer2 = new VertexBuffer(graphicsPipelineBuilder.GraphicsDevice, VertexPositionColor.VertexDeclaration, 100, BufferUsage.WriteOnly);
+            var indexBuffer2 = new IndexBuffer(graphicsPipelineBuilder.GraphicsDevice, typeof(int), 200, BufferUsage.WriteOnly);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetActiveCamera(_effect)
                 .SimpleRender<VertexPositionColor>(_effect, vertexBuffer, indexBuffer, "Render")
+                .RenderIdentical<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2, _boxView.MeshesByPass["Render_Identical"][0],  "Render_Identical")
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()
                 .EndDraw()
