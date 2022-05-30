@@ -19,7 +19,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public IDisplayService DisplayService { get; } = AppContext.ServiceLocator.Resolve<IDisplayService>();
         
         public GraphicsDevice GraphicsDevice { get; }
-        public IFrameworkLogger FrameworkLogger { get; }
+        private IFrameworkLogger FrameworkLogger { get; }
+        private IDebugInfoService DebugInfoService { get; }
 
         private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
         private readonly IReadOnlyObservableList<IGraphicComponent> _graphicComponents;
@@ -30,11 +31,13 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         [NotNull] IReadOnlyObservableList<IGraphicComponent> graphicComponents, 
         [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService,
         [NotNull] GraphicsDevice graphicsDevice,
-        [NotNull] IFrameworkLogger frameworkLogger)
+        [NotNull] IFrameworkLogger frameworkLogger,
+        [NotNull] IDebugInfoService debugInfoService)
         {
             GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
             GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
             FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
+            DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             _graphicComponents = graphicComponents ?? throw new ArgumentNullException(nameof(graphicComponents));
         }
 
@@ -54,7 +57,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             var actions = new List<IGraphicsPipelineAction>(_actions);
             _actions.Clear();
             
-            return new GraphicsPipeline(actions, _graphicComponents, GraphicsPipelinePassAssociateService, FrameworkLogger);
+            return new GraphicsPipeline(actions, _graphicComponents, GraphicsPipelinePassAssociateService, FrameworkLogger, DebugInfoService);
         }
     }
 }

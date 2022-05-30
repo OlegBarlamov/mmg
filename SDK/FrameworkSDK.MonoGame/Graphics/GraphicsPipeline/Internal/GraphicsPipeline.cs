@@ -4,6 +4,7 @@ using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
+using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Collections;
@@ -17,27 +18,33 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public IReadOnlyList<IGraphicsPipelineAction> Actions { get; }
         private IReadOnlyObservableList<IGraphicComponent> GraphicComponents { get; }
         private IGraphicsPipelinePassAssociateService PipelinePassAssociateService { get; }
+        private IDebugInfoService DebugInfoService { get; }
 
         private readonly ModuleLogger _logger;
         
         private readonly Dictionary<string, List<IGraphicsPipelineAction>> _actionsByPassesMap = new Dictionary<string, List<IGraphicsPipelineAction>>();
         private bool _disposed;
+        
+        private const string DebugInfoGraphicsComponentsCount = "graph_comp";
 
         public GraphicsPipeline(
             [NotNull] IReadOnlyList<IGraphicsPipelineAction> actions,
             [NotNull] IReadOnlyObservableList<IGraphicComponent> graphicComponents,
             [NotNull] IGraphicsPipelinePassAssociateService pipelinePassAssociateService,
-            IFrameworkLogger frameworkLogger)
+            [NotNull] IFrameworkLogger frameworkLogger,
+            [NotNull] IDebugInfoService debugInfoService)
         {
             Actions = actions ?? throw new ArgumentNullException(nameof(actions));
             GraphicComponents = graphicComponents ?? throw new ArgumentNullException(nameof(graphicComponents));
             PipelinePassAssociateService = pipelinePassAssociateService ?? throw new ArgumentNullException(nameof(pipelinePassAssociateService));
+            DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             _logger = new ModuleLogger(frameworkLogger, LogCategories.Rendering);
             
             FillActionsMap();
             ProcessAlreadyExistedComponents();
             
             SubscribeToComponentsChanges(GraphicComponents);
+            DebugInfoService.SetCounter(DebugInfoGraphicsComponentsCount, GraphicComponents.Count);
         }
 
         private void FillActionsMap()
@@ -74,6 +81,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             {
                 AddToMap(component, targetPass);
             }
+            DebugInfoService.IncrementCounter(DebugInfoGraphicsComponentsCount);
         }
         
         private void ComponentsOnItemRemoved(IGraphicComponent component)
@@ -83,6 +91,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             {
                 RemoveFromMap(component, targetPass);
             }
+            DebugInfoService.DecrementCounter(DebugInfoGraphicsComponentsCount);
         }
         
         private void ProcessAlreadyExistedComponents()
@@ -149,6 +158,9 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         private int _iterableIndex;
         public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
         {
+            graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingMeshes, 0);
+            graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingComponents, 0);
+            
             for (_iterableIndex = 0; _iterableIndex < Actions.Count; _iterableIndex++)
             {
                 _iterableAction = Actions[_iterableIndex];

@@ -27,6 +27,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
         private readonly IReadOnlyDictionary<string, TimeSpan> _measures;
         private readonly IReadOnlyDictionary<string, DateTime> _timers;
+        private readonly IReadOnlyDictionary<string, int> _counters;
         
         public DebugInfoComponent([NotNull] DebugInfoComponentData data, [NotNull] IDebugInfoService debugInfoService)
         {
@@ -35,6 +36,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
             _measures = DebugInfoService.GetAllMeasures();
             _timers = DebugInfoService.GetAllTimers();
+            _counters = DebugInfoService.GetAllCounters();
         }
 
         public override void Draw(GameTime gameTime, IDrawContext context)
@@ -51,6 +53,12 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             foreach (var measure in _measures)
             {
                 context.DrawString(Data.Font, $"{measure.Key}: {TimespanToString(measure.Value)}", position, Data.FontColor);
+                position += new Vector2(0, Data.Tab);
+            }
+
+            foreach (var counter in _counters)
+            {
+                context.DrawString(Data.Font, $"{counter.Key}: {counter.Value.ToString()}", position, Data.FontColor);
                 position += new Vector2(0, Data.Tab);
             }
         }

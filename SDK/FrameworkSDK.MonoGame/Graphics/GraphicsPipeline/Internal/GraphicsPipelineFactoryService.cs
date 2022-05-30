@@ -22,6 +22,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         [NotNull] private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
         [NotNull] private IFrameworkLogger FrameworkLogger { get; }
         [NotNull] private ICamera3DProvider Camera3DProvider { get; }
+        [NotNull] private IDebugInfoService DebugInfoService { get; }
 
         public GraphicsPipelineFactoryService(
             [NotNull] IGameHeartServices gameHeartServices,
@@ -29,7 +30,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             [NotNull] IDisplayService displayService,
             [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService,
             [NotNull] IFrameworkLogger frameworkLogger,
-            [NotNull] ICamera3DProvider camera3DProvider)
+            [NotNull] ICamera3DProvider camera3DProvider,
+            [NotNull] IDebugInfoService debugInfoService)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             RenderTargetsFactoryService = renderTargetsFactoryService ?? throw new ArgumentNullException(nameof(renderTargetsFactoryService));
@@ -37,11 +39,12 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
             FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
             Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
+            DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
         }
 
         public IGraphicsPipelineBuilder Create(IReadOnlyObservableList<IGraphicComponent> graphicComponents)
         {
-            return new GraphicsPipelineBuilder(graphicComponents, GraphicsPipelinePassAssociateService, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, FrameworkLogger);
+            return new GraphicsPipelineBuilder(graphicComponents, GraphicsPipelinePassAssociateService, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, FrameworkLogger, DebugInfoService);
         }
 
         public IDrawContext CreateDrawContext()
@@ -51,7 +54,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         public IGraphicDeviceContext CreateGraphicDeviceContext()
         {
-            return new PipelineGraphicDeviceContext(GameHeartServices.SpriteBatch, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, DisplayService, Camera3DProvider);
+            return new PipelineGraphicDeviceContext(GameHeartServices.SpriteBatch, GameHeartServices.GraphicsDeviceManager.GraphicsDevice, DisplayService, Camera3DProvider, DebugInfoService);
         }
 
         public IRenderContext CreateRenderContext()

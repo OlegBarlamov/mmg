@@ -8,10 +8,10 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
     [UsedImplicitly]
     internal class DefaultDebugInfoService : IDebugInfoService
     {
+        #region Measures
+
         private readonly ConcurrentDictionary<string, DateTime> _startMeasuringTimes = new ConcurrentDictionary<string, DateTime>();
         private readonly ConcurrentDictionary<string, TimeSpan> _resultMeasuringTimes = new ConcurrentDictionary<string, TimeSpan>();
-
-        private readonly ConcurrentDictionary<string, DateTime> _startTimers = new ConcurrentDictionary<string, DateTime>();
         
         public void StartMeasure(string key)
         {
@@ -35,6 +35,12 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
             return _resultMeasuringTimes;
         }
 
+        #endregion
+
+        #region Timers
+
+        private readonly ConcurrentDictionary<string, DateTime> _startTimers = new ConcurrentDictionary<string, DateTime>();
+        
         public void StartTimer(string key)
         {
             _startTimers.TryAdd(key, Now());
@@ -63,6 +69,42 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
             return TimeSpan.Zero;
         }
 
+        #endregion
+        
+        #region Counters
+
+        private readonly ConcurrentDictionary<string, int> _counters = new ConcurrentDictionary<string, int>();
+        
+        public void IncrementCounter(string key)
+        {
+            _counters.AddOrUpdate(key, 1, (s, i) => i + 1);
+        }
+
+        public void DecrementCounter(string key)
+        {
+            _counters.AddOrUpdate(key, -1, (s, i) => i - 1);
+        }
+
+        public void SetCounter(string key, int value)
+        {
+            _counters.AddOrUpdate(key, value, (s, i) => value);
+        }
+
+        public int GetCounter(string key)
+        {
+            if (_counters.TryGetValue(key, out var value))
+                return value;
+            
+            return 0;
+        }
+
+        public IReadOnlyDictionary<string, int> GetAllCounters()
+        {
+            return _counters;
+        }
+
+        #endregion
+        
         private DateTime Now()
         {
             return DateTime.Now;

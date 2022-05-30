@@ -14,6 +14,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     {
         ICamera3DProvider Camera3DProvider { get; }
         IDisplayService DisplayService { get; }
+        IDebugInfoService DebugInfoService { get; }
         
         void BeginDraw(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null,
             SamplerState samplerState = null, DepthStencilState depthStencilState = null,

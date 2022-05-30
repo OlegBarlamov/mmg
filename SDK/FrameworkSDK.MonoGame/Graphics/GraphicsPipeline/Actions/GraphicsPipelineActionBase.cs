@@ -12,6 +12,9 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public string Name { get; }
 
         public bool IsDisabled { get; set; }
+
+        internal const string DebugInfoRenderingComponents = "render_comps";
+        internal const string DebugInfoRenderingMeshes = "render_meshes";
         
         protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();
         

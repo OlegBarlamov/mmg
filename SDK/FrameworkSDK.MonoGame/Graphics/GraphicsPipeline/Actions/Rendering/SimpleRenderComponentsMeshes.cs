@@ -23,8 +23,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             VertexBuffer = vertexBuffer ?? throw new ArgumentNullException(nameof(vertexBuffer));
             IndexBuffer = indexBuffer ?? throw new ArgumentNullException(nameof(indexBuffer));
         }
-
-
+        
         private int _index;
         private int _meshesIndex;
         private IReadOnlyList<IRenderableMesh> _meshes;
@@ -60,7 +59,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                         graphicDeviceContext.GraphicsDevice.DrawIndexedPrimitives(_mesh.Geometry.PrimitiveType, 0, 0,
                             _mesh.Geometry.GetPrimitivesCount());
                     }
+                    
+                    graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingMeshes);
                 }
+                
+                graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingComponents);
             }
         }
     }

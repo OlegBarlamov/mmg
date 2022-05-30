@@ -103,7 +103,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                             graphicDeviceContext.GraphicsDevice.DrawIndexedPrimitives(_geometry.PrimitiveType, 0, 0,
                                 _geometry.GetPrimitivesCount());
                         }
+                        
+                        graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingMeshes);
                     }
+                    
+                    graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingComponents);
                 }
             }
         }

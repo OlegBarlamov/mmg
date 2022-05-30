@@ -12,6 +12,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     {
         public ICamera3DProvider Camera3DProvider { get; }
         public IDisplayService DisplayService { get; }
+        public IDebugInfoService DebugInfoService { get; }
         private SpriteBatch SpriteBatch { get; }
         public GraphicsDevice GraphicsDevice { get; }
 
@@ -25,12 +26,14 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         }
 
         public PipelineGraphicDeviceContext([NotNull] SpriteBatch spriteBatch, [NotNull] GraphicsDevice graphicsDevice,
-            [NotNull] IDisplayService displayService, [NotNull] ICamera3DProvider camera3DProvider)
+            [NotNull] IDisplayService displayService, [NotNull] ICamera3DProvider camera3DProvider,
+            [NotNull] IDebugInfoService debugInfoService)
         {
             SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
             GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
             Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
+            DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
 
             _internalDrawContext = new DrawContext(SpriteBatch);
             _internalRenderContext = new RenderContext(GraphicsDevice);
