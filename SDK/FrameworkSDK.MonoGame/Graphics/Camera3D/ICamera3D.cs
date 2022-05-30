@@ -6,5 +6,6 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
     {
         Matrix GetProjection();
         Matrix GetView();
+        bool CheckBoundingBoxVisible(BoundingBox boundingBox);
     }
 }

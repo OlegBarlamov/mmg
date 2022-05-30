@@ -40,19 +40,28 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
         private Vector3 _position;
         private Vector3 _target;
         private Vector3 _up = Vector3.Up;
+        private readonly BoundingFrustum _boundingFrustum;
 
         public DirectionalCamera3D(Vector3 position, Vector3 target)
         {
-            Position = position;
-            Target = target;
-
-            BoundingFrustum boundingFrustum = new BoundingFrustum(View * Projection);
+            _position = position;
+            _target = target;
+            _boundingFrustum = new BoundingFrustum(Matrix.Identity);
+            
+            UpdateMatrices();
         }
 
-        protected override void UpdateMatrices()
+        public override bool CheckBoundingBoxVisible(BoundingBox boundingBox)
+        {
+            var containmentType = _boundingFrustum.Contains(boundingBox);
+            return containmentType == ContainmentType.Contains || containmentType == ContainmentType.Intersects;
+        }
+
+        protected sealed override void UpdateMatrices()
         {
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, FarPlaneDistance);
             View = Matrix.CreateLookAt(Position, Target, _up);
+            _boundingFrustum.Matrix = View * Projection;
         }
     }
 }

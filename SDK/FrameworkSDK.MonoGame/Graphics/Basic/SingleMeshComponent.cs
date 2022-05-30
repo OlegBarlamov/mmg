@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Mvc;
+using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Graphics.Basic
 {
@@ -30,6 +31,10 @@ namespace FrameworkSDK.MonoGame.Graphics.Basic
                 return _meshesByPass;
             }
         }
+
+        public override BoundingBox? BoundingBox => BoundingBoxInternal;
+        
+        protected abstract BoundingBox BoundingBoxInternal { get; }
 
         protected abstract IRenderableMesh Mesh { get; }
 

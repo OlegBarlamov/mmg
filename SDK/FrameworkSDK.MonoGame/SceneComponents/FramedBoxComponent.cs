@@ -19,6 +19,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
     
     public class FramedBoxComponent : SingleMeshComponent<BoxComponentDataModel>
     {
+        protected override BoundingBox BoundingBoxInternal { get; }
         protected override IRenderableMesh Mesh { get; }
         protected override string SingleGraphicsPassName { get; }
 
@@ -30,6 +31,9 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             mesh.SetScale(model.Scale);
             
             Mesh = mesh;
+            
+            var meshGeometrySize = Vector3.One;
+            BoundingBoxInternal = new BoundingBox((model.Position - meshGeometrySize/2) * model.Scale, (model.Position + meshGeometrySize/2) * model.Scale);
         }
     }
 }

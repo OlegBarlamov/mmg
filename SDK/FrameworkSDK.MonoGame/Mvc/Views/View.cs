@@ -45,7 +45,8 @@ namespace FrameworkSDK.MonoGame.Mvc
         }
 
         public virtual IReadOnlyList<string> GraphicsPassNames => DefaultViewPassNames;
-        
+        public virtual BoundingBox? BoundingBox { get; } = null;
+
         public virtual IReadOnlyDictionary<string, IReadOnlyList<IRenderableMesh>> MeshesByPass { get; } = new Dictionary<string, IReadOnlyList<IRenderableMesh>>();
 
         public virtual void Draw(GameTime gameTime, IDrawContext context)

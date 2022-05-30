@@ -23,6 +23,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
     public class Grid3DComponentView : SingleMeshComponent<Grid3DComponentData>
     {
+        protected override BoundingBox BoundingBoxInternal { get; }
         protected override IRenderableMesh Mesh => _mesh;
         protected override string SingleGraphicsPassName { get; }
 
@@ -34,6 +35,8 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
             _mesh = GenerateMesh(model.AxesLength, model.CellsSize, model.XAxeColor, model.YAxeColor, model.ZAxeColor, model.CellsColor);
             _mesh.SetPosition(model.Position);
+            
+            BoundingBoxInternal = new BoundingBox(Vector3.Zero, new Vector3(model.AxesLength));
         }
 
         private FixedSimpleMesh GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)

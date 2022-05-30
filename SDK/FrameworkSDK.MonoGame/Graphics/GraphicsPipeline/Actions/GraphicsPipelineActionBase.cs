@@ -48,5 +48,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             
         }
+
+        protected static bool IsComponentVisibleByActiveCamera(IGraphicDeviceContext graphicDeviceContext, IGraphicComponent component)
+        {
+            return component.BoundingBox != null && graphicDeviceContext.Camera3DProvider.GetActiveCamera()
+                .CheckBoundingBoxVisible(component.BoundingBox.Value);
+        }
     }
 }

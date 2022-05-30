@@ -53,7 +53,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
         private float _aspectRatio = DefaultCamera3DService.DefaultAspectRatio;
         private float _nearPlaneDistance = DefaultCamera3DService.DefaultNearPlaneDistance;
         private float _farPlaneDistance = DefaultCamera3DService.DefaultFarPlaneDistance;
-        
+
         public Matrix GetProjection()
         {
             return Projection;
@@ -63,7 +63,9 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
         {
             return View;
         }
-        
+
+        public abstract bool CheckBoundingBoxVisible(BoundingBox boundingBox);
+
         protected abstract void UpdateMatrices();
     }
 }
