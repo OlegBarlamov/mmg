@@ -51,6 +51,7 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterFactory(typeof(ICamera3DService), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));
             serviceRegistrator.RegisterFactory(typeof(ICamera3DProvider), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));
             
+            serviceRegistrator.RegisterType<IDebugInfoService, DefaultDebugInfoService>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
             serviceRegistrator.RegisterType<IAppStateService, AppStateService>();
             serviceRegistrator.RegisterType<IGameHeartServices, GameHeartServicesHolder>();

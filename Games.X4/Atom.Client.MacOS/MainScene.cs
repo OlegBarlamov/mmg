@@ -1,4 +1,5 @@
 using System;
+using Console.FrameworkAdapter;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -33,7 +34,7 @@ namespace Atom.Client.MacOS
 
         private IView _boxView;
         
-        public MainScene(MainSceneDataModel model, [NotNull] ICamera3DService camera3DService, IInputService inputService)
+        public MainScene(MainSceneDataModel model, [NotNull] ICamera3DService camera3DService, IInputService inputService, IConsoleResourcePackage consoleResourcePackage)
             :base("MainScene")
         {
             DataModel = model;
@@ -58,6 +59,14 @@ namespace Atom.Client.MacOS
                 };
                 _boxView = AddView(boxData);
             }
+
+            AddView(new DebugInfoComponentData
+            {
+                Font = consoleResourcePackage.ConsoleFont,
+                FontColor = Color.White,
+                Position = new Vector2(10f),
+                Tab = 20f,
+            });
 
             _cameraController = new FirstPersonCameraController(inputService, _camera);
         }

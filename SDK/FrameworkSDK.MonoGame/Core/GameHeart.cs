@@ -16,36 +16,34 @@ namespace FrameworkSDK.MonoGame
 		public event Action ResourceLoading;
 		public event Action ResourceUnloading;
 		
-	    [NotNull]
-        private GraphicsDeviceManager GraphicsDeviceManager { get; }
+	    [NotNull] private GraphicsDeviceManager GraphicsDeviceManager { get; }
 
-        [NotNull]
-        private IGameHost GameApp { get; }
+        [NotNull] private IGameHost GameApp { get; }
 
-        [NotNull]
-		private ModuleLogger Logger { get; }
+        [NotNull] private ModuleLogger Logger { get; }
 
-	    [NotNull]
-        private IGameParameters Parameters { get; }
+	    [NotNull] private IGameParameters Parameters { get; }
 
-        [NotNull]
-        private IGameHeartServices GameHeartServices { get; }
-        
-        [NotNull]
-        private AppStateService AppStateService { get; }
+        [NotNull] private IGameHeartServices GameHeartServices { get; }
+
+        [NotNull] private IDebugInfoService DebugInfoService { get; }
+
+        [NotNull] private AppStateService AppStateService { get; }
         
         public GameHeart(
 	        [NotNull] GameApp gameApp,
 	        [NotNull] IFrameworkLogger logger,
 	        [NotNull] IGameParameters parameters,
 	        [NotNull] IGameHeartServices gameHeartServices,
-	        [NotNull] IAppStateService appStateService)
+	        [NotNull] IAppStateService appStateService,
+	        [NotNull] IDebugInfoService debugInfoService)
 		{
 			if (gameApp == null) throw new ArgumentNullException(nameof(gameApp));
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 
 			Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 		    GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
+		    DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
 		    AppStateService = (AppStateService) appStateService;
 		    
 		    GraphicsDeviceManager = new GraphicsDeviceManager(this);
@@ -139,15 +137,17 @@ namespace FrameworkSDK.MonoGame
 		    try
 		    {
 			    AppStateService.IsUpdateStateActive = true;
+			    DebugInfoService.StartMeasure(nameof(Update));
 			    
 			    ProcessAppStateDelayedUpdateActions(gameTime);
 			    
 			    GameApp.Update(gameTime);
-
+			    
 			    base.Update(gameTime);
 		    }
 		    finally
 		    {
+			    DebugInfoService.StopMeasure(nameof(Update));
 			    AppStateService.IsUpdateStateActive = false;
 		    }
 	    }
@@ -157,6 +157,7 @@ namespace FrameworkSDK.MonoGame
 		    try
 		    {
 			    AppStateService.IsDrawStateActive = true;
+			    DebugInfoService.StartMeasure(nameof(Draw));
 			    
 			    ProcessAppStateDelayedDrawActions(gameTime);
 			    
@@ -167,6 +168,7 @@ namespace FrameworkSDK.MonoGame
 		    }
 		    finally
 		    {
+			    DebugInfoService.StopMeasure(nameof(Draw));
 			    AppStateService.IsDrawStateActive = false;
 		    }
 	    }

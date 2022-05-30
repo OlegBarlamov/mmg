@@ -45,6 +45,8 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
         {
             Position = position;
             Target = target;
+
+            BoundingFrustum boundingFrustum = new BoundingFrustum(View * Projection);
         }
 
         protected override void UpdateMatrices()
