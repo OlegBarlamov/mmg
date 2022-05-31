@@ -29,11 +29,9 @@ namespace Atom.Client.MacOS
         public ICamera3DService Camera3DService { get; }
 
         private BasicEffect _effect;
-        private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), Vector3.Zero);
+        private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10));
         private readonly FirstPersonCameraController _cameraController;
 
-        private IView _boxView;
-        
         public MainScene(MainSceneDataModel model, [NotNull] ICamera3DService camera3DService, IInputService inputService, IConsoleResourcePackage consoleResourcePackage)
             :base("MainScene")
         {
@@ -48,16 +46,19 @@ namespace Atom.Client.MacOS
             };
             AddView(gridData);
 
-            for (int i = 0; i < 50; i++)
+            for (int x = 0; x < 10; x++)
             {
-                var boxData = new BoxComponentDataModel
+                for (int z = 0; z < 10; z++)
                 {
-                    GraphicsPassName = "Render_Identical",
-                    Color = Color.Pink,
-                    //Scale = new Vector3(2),
-                    Position = new Vector3(i*3f,(int)((i / 5f)*2), 0),
-                };
-                _boxView = AddView(boxData);
+                    var boxData = new BoxComponentDataModel
+                    {
+                        GraphicsPassName = "Render_Identical",
+                        Color = Color.Pink,
+                        //Scale = new Vector3(2),
+                        Position = new Vector3(0.5f + x, 0.5f, 0.5f + z),
+                    };
+                    AddView(boxData);
+                }
             }
 
             AddView(new DebugInfoComponentData

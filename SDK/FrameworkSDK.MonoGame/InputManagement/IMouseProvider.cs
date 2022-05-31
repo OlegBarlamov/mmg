@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace FrameworkSDK.MonoGame.InputManagement
@@ -18,5 +19,7 @@ namespace FrameworkSDK.MonoGame.InputManagement
         bool LeftButtonReleasedOnce { get; }
         
         bool RightButtonReleasedOnce { get; }
+        
+        Point PositionDelta { get; }
     }
 }

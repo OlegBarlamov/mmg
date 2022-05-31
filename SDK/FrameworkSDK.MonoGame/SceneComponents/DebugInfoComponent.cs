@@ -44,6 +44,12 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             base.Draw(gameTime, context);
 
             var position = Data.Position;
+            
+            var fps = (int) (TimeSpan.FromSeconds(1).TotalMilliseconds /
+                      DebugInfoService.GetMeasure(nameof(IDrawable.Draw)).TotalMilliseconds);
+            context.DrawString(Data.Font, $"FPS: {fps}", Data.Position, Data.FontColor);
+            position += new Vector2(0, Data.Tab);
+            
             foreach (var timer in _timers)
             {
                 context.DrawString(Data.Font, $"{timer.Key}: {TimespanToString(DateTime.Now - timer.Value)}", position, Data.FontColor);

@@ -13,6 +13,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public DirectionalCamera3D TargetCamera { get; }
 
         private const float Speed = 0.01f;
+        private const float RotationSpeed = 0.003f;
         
         private IInputService InputService { get; }
         
@@ -24,14 +25,18 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
         public void Update(GameTime gameTime)
         {
-            if (InputService.Keyboard.Key(Keys.Up) || InputService.Keyboard.Key(Keys.W))
+            if (InputService.Keyboard.Key(Keys.W))
             {
-                TargetCamera.Position += GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                TargetCamera.Position += delta;
+                TargetCamera.Target += delta;
             }
 
-            if (InputService.Keyboard.Key(Keys.Down) || InputService.Keyboard.Key(Keys.S))
+            if (InputService.Keyboard.Key(Keys.S))
             {
-                TargetCamera.Position -= GetForwardDirection()* gameTime.ElapsedGameTime.Milliseconds * Speed;
+                var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                TargetCamera.Position -= delta;
+                TargetCamera.Target -= delta;
             }
             
             if (InputService.Keyboard.Key(Keys.D))
@@ -50,12 +55,43 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
             if (InputService.Keyboard.Key(Keys.Right))
             {
-                TargetCamera.Position += GetRightDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;;
+                RotateLeftRight(-gameTime.ElapsedGameTime.Milliseconds * RotationSpeed);
             }
             if (InputService.Keyboard.Key(Keys.Left))
             {
-                TargetCamera.Position -= GetRightDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;;
+                RotateLeftRight(gameTime.ElapsedGameTime.Milliseconds * RotationSpeed);
             }
+
+            if (InputService.Keyboard.Key(Keys.Up))
+            {
+                RotateDownUp(gameTime.ElapsedGameTime.Milliseconds * RotationSpeed);
+            }
+            if (InputService.Keyboard.Key(Keys.Down))
+            {
+                RotateDownUp(- gameTime.ElapsedGameTime.Milliseconds * RotationSpeed);
+            }
+
+            if (InputService.Mouse.PositionDelta != Point.Zero)
+            {
+                RotateLeftRight(-InputService.Mouse.PositionDelta.X * RotationSpeed);
+                RotateDownUp(-InputService.Mouse.PositionDelta.Y * RotationSpeed);
+            }
+        }
+
+        private void RotateLeftRight(float factor)
+        {
+            var forward = TargetCamera.Target - TargetCamera.Position;
+            forward = Vector3.Transform(forward,
+                Matrix.CreateFromAxisAngle(TargetCamera.Up, factor));
+            TargetCamera.Target = forward + TargetCamera.Position;
+        }
+
+        private void RotateDownUp(float factor)
+        {
+            var forward = TargetCamera.Target - TargetCamera.Position;
+            forward = Vector3.Transform(forward,
+                Matrix.CreateFromAxisAngle(GetRightDirection(), factor));
+            TargetCamera.Target = forward + TargetCamera.Position;
         }
 
         private Vector3 GetForwardDirection()

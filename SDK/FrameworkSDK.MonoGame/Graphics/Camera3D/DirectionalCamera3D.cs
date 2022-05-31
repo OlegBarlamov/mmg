@@ -50,7 +50,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
             
             UpdateMatrices();
         }
-
+        
         public override bool CheckBoundingBoxVisible(BoundingBox boundingBox)
         {
             var containmentType = _boundingFrustum.Contains(boundingBox);
@@ -60,7 +60,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
         protected sealed override void UpdateMatrices()
         {
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, FarPlaneDistance);
-            View = Matrix.CreateLookAt(Position, Target, _up);
+            View = Matrix.CreateLookAt(Position, Target, Up);
             _boundingFrustum.Matrix = View * Projection;
         }
     }
