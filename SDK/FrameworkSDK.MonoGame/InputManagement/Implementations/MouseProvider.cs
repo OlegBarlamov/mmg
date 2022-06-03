@@ -16,6 +16,13 @@ namespace FrameworkSDK.MonoGame.InputManagement.Implementations
         public bool LeftButtonReleasedOnce { get;private set; }
         public bool RightButtonReleasedOnce { get;private set; }
         public Point PositionDelta { get; private set; }
+        public Point Position { get; private set; }
+
+        public void SetPosition(Point point)
+        {
+            Mouse.SetPosition(point.X, point.Y);
+            Current = Mouse.GetState();
+        }
 
         public MouseProvider()
         {
@@ -42,6 +49,7 @@ namespace FrameworkSDK.MonoGame.InputManagement.Implementations
             RightButtonReleasedOnce = IsReleased(Current.RightButton) && IsPressed(Previous.RightButton);
 
             PositionDelta = Current.Position - Previous.Position;
+            Position = Current.Position;
         }
 
         private static bool IsPressed(ButtonState buttonState)

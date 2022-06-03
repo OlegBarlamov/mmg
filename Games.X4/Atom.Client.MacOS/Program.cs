@@ -24,6 +24,7 @@ namespace Atom.Client.MacOS
                 .UseGame<X4GameApp>()
                     .UseMvc()
                     .PreloadResourcePackage<ColorsTexturesPackage>()
+                    .PreloadResourcePackage<X4GameResourcePackage>()
                     .UseGameComponents()
                         .UseInGameConsole()
                         .UseConsoleMessagesProvider(loggerConsoleMessageProvider)

@@ -10,7 +10,18 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
     internal class DisplayService : IDisplayService
     {
         public event Action DeviceReset;
-        
+
+        public GraphicsDevice GraphicsDevice
+        {
+            get
+            {
+                if (!GameHeartServices.IsServicesLoaded)
+                    return null;
+
+                return GameHeartServices.GraphicsDeviceManager.GraphicsDevice;
+            }
+        }
+
         public GraphicsProfile GraphicsProfile
         {
             get

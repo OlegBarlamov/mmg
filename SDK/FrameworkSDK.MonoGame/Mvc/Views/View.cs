@@ -36,7 +36,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         public void Destroy()
         {
-            throw new NotImplementedException();
+            // TODO implement destroy
         }
 
         public override string ToString()
@@ -45,7 +45,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         }
 
         public virtual IReadOnlyList<string> GraphicsPassNames => DefaultViewPassNames;
-        public virtual BoundingBox? BoundingBox { get; } = null;
+        public virtual BoundingBox? BoundingBox { get; protected set; } = null;
 
         public virtual IReadOnlyDictionary<string, IReadOnlyList<IRenderableMesh>> MeshesByPass { get; } = new Dictionary<string, IReadOnlyList<IRenderableMesh>>();
 

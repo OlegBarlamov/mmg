@@ -104,6 +104,22 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
         }
 
         #endregion
+
+        #region Labels
+
+        private readonly ConcurrentDictionary<string, string> _labelsMap = new ConcurrentDictionary<string, string>();
+        
+        public void SetLabel(string key, string label)
+        {
+            _labelsMap.AddOrUpdate(key, label, (s, s1) => label);
+        }
+
+        public IReadOnlyDictionary<string, string> GetAllLabels()
+        {
+            return _labelsMap;
+        }
+        
+        #endregion
         
         private DateTime Now()
         {

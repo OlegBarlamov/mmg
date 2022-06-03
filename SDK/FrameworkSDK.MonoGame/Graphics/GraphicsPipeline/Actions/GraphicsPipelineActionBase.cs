@@ -15,6 +15,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         internal const string DebugInfoRenderingComponents = "render_comps";
         internal const string DebugInfoRenderingMeshes = "render_meshes";
+        internal const string DebugInfoDrawComponents = "draw_comps";
         
         protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();
         
@@ -54,7 +55,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         protected static bool IsComponentVisibleByActiveCamera(IGraphicDeviceContext graphicDeviceContext, IGraphicComponent component)
         {
-            return component.BoundingBox != null && graphicDeviceContext.Camera3DProvider.GetActiveCamera()
+            return component.BoundingBox == null || graphicDeviceContext.Camera3DProvider.GetActiveCamera()
                 .CheckBoundingBoxVisible(component.BoundingBox.Value);
         }
     }

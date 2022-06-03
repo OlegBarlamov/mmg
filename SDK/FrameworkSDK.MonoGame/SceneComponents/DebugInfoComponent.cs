@@ -18,6 +18,8 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public float Tab = 10f;
 
         public Color FontColor = Color.White;
+
+        public string GraphicsPassName = View.DefaultViewPassName;
     }
     
     public class DebugInfoComponent : View<DebugInfoComponentData>
@@ -28,15 +30,21 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         private readonly IReadOnlyDictionary<string, TimeSpan> _measures;
         private readonly IReadOnlyDictionary<string, DateTime> _timers;
         private readonly IReadOnlyDictionary<string, int> _counters;
-        
+        private readonly IReadOnlyDictionary<string, string> _labels;
+
+        public override IReadOnlyList<string> GraphicsPassNames { get; }
+
         public DebugInfoComponent([NotNull] DebugInfoComponentData data, [NotNull] IDebugInfoService debugInfoService)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
 
+            GraphicsPassNames = new[] {data.GraphicsPassName};
+            
             _measures = DebugInfoService.GetAllMeasures();
             _timers = DebugInfoService.GetAllTimers();
             _counters = DebugInfoService.GetAllCounters();
+            _labels = DebugInfoService.GetAllLabels();
         }
 
         public override void Draw(GameTime gameTime, IDrawContext context)
@@ -65,6 +73,12 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             foreach (var counter in _counters)
             {
                 context.DrawString(Data.Font, $"{counter.Key}: {counter.Value.ToString()}", position, Data.FontColor);
+                position += new Vector2(0, Data.Tab);
+            }
+            
+            foreach (var label in _labels)
+            {
+                context.DrawString(Data.Font, $"{label.Key}: {label.Value}", position, Data.FontColor);
                 position += new Vector2(0, Data.Tab);
             }
         }

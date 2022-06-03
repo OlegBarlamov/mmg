@@ -21,5 +21,9 @@ namespace FrameworkSDK.MonoGame.InputManagement
         bool RightButtonReleasedOnce { get; }
         
         Point PositionDelta { get; }
+        
+        Point Position { get; }
+
+        void SetPosition(Point point);
     }
 }

@@ -29,5 +29,10 @@ namespace FrameworkSDK.Services.Randoms
 	    {
 	        return Guid.NewGuid();
 	    }
+
+	    public float NextFloat(float minValue, float maxValue)
+	    {
+		    return (float) (minValue + NextDouble() * (maxValue - minValue));
+	    }
 	}
 }

@@ -8,6 +8,7 @@ namespace FrameworkSDK.MonoGame.Services
     {
         event Action DeviceReset;
         
+        GraphicsDevice GraphicsDevice { get; }
         GraphicsProfile GraphicsProfile { get; set; }
         bool IsFullScreen { get; set; }
         bool HardwareModeSwitch { get; set; }

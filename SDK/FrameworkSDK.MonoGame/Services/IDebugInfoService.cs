@@ -21,5 +21,8 @@ namespace FrameworkSDK.MonoGame.Services
         void SetCounter(string key, int value);
         int GetCounter(string key);
         IReadOnlyDictionary<string, int> GetAllCounters();
+
+        void SetLabel(string key, string label);
+        IReadOnlyDictionary<string, string> GetAllLabels();
     }
 }

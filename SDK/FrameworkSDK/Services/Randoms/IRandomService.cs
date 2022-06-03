@@ -10,5 +10,7 @@ namespace FrameworkSDK.Common
 		double NextDouble();
 
 		Guid NewGuid();
+
+		float NextFloat(float minValue, float maxValue);
 	}
 }

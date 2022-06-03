@@ -160,6 +160,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingMeshes, 0);
             graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingComponents, 0);
+            graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoDrawComponents, 0);
             
             for (_iterableIndex = 0; _iterableIndex < Actions.Count; _iterableIndex++)
             {

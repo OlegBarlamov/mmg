@@ -33,11 +33,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AstronomicalMap.cs" />
+    <Compile Include="Components\StarViewComponent.cs" />
+    <Compile Include="FirstPersonCameraProvider.cs" />
     <Compile Include="MainModule.cs" />
     <Compile Include="MainScene.cs" />
+    <Compile Include="MainSceneDataModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="X4GameApp.cs" />
+    <Compile Include="X4GameResourcePackage.cs" />
     <MonoGameContentReference Include="Content/content.mgcb">
       <Link>Content/content.mgcb</Link>
     </MonoGameContentReference>
@@ -140,9 +145,6 @@
       <Project>{3fa53468-2750-459f-82f7-a607298376dc}</Project>
       <Name>Logging</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets" Condition="Exists('..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets')" />

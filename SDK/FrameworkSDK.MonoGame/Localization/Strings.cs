@@ -45,7 +45,7 @@ namespace FrameworkSDK.MonoGame.Localization
 	        public static string RemovedMultipleControllersFromScene => Localization.GetString() ?? "Controllers:\"{0}\"(total:{1}) removed from scene {2}.";
 
 			public static string AddViewToScene => Localization.GetString() ?? "View {0} for controller {1} added to scene {2}.";
-	        public static string DestroyViewFromScene => Localization.GetString() ?? "View {0} for controller {1} removed from scene {3}.";
+	        public static string DestroyViewFromScene => Localization.GetString() ?? "View {0} for controller {1} removed from scene {2}.";
         }
         
         public static class Warnings

@@ -18,7 +18,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             for (int i = 0; i < associatedComponents.Count; i++)
             {
                 var component = associatedComponents[i];
-                component.Draw(gameTime, graphicDeviceContext);
+                if (IsComponentVisibleByActiveCamera(graphicDeviceContext, component))
+                {
+                    component.Draw(gameTime, graphicDeviceContext);
+                    graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoDrawComponents);
+                }
             }
         }
     }
