@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
-using Atom.Client.MacOS.Components;
 using Atom.Client.MacOS.Services;
 using Atom.Client.MacOS.Services.Implementations;
 using Console.Core;
+using Console.FrameworkAdapter;
+using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -13,7 +13,6 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NetExtensions.Geometry;
 
 namespace Atom.Client.MacOS.Scenes
 {
@@ -24,7 +23,8 @@ namespace Atom.Client.MacOS.Scenes
         private IConsoleController ConsoleController { get; }
         private IDebugInfoService DebugInfoService { get; }
         private IAstronomicMapGenerator MapGenerator { get; }
-        
+        private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
+
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
             FarPlaneDistance = float.MaxValue
@@ -40,14 +40,16 @@ namespace Atom.Client.MacOS.Scenes
             ICamera3DService camera3DService,
             IConsoleController consoleController,
             IDebugInfoService debugInfoService,
-            [NotNull] IAstronomicMapGenerator mapGenerator)
-            :base("MainScene")
+            [NotNull] IAstronomicMapGenerator mapGenerator,
+            [NotNull] IExecutableCommandsCollection executableCommandsCollection)
+            :base(nameof(MainScene))
         {
             DataModel = model;
             Camera3DService = camera3DService ?? throw new ArgumentNullException(nameof(camera3DService));
             ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             MapGenerator = mapGenerator ?? throw new ArgumentNullException(nameof(mapGenerator));
+            ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -78,6 +80,12 @@ namespace Atom.Client.MacOS.Scenes
             }
             
             _astronomicalMapUpdater = new DefaultAstronomicalMapUpdater(DataModel.AstronomicalMap, MapGenerator, DebugInfoService, _camera);
+            
+            ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
+                (x, y, z) =>
+                {
+                    _camera.Position = new Vector3(x, y, z);
+                }));
         }
 
         private void RemoveMapPointFromScene(AstronomicalMapCell cell)

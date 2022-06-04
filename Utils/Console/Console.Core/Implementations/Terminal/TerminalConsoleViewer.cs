@@ -91,6 +91,11 @@ namespace Console.Core.Implementations.Terminal
             System.Console.Clear();
         }
 
+        public void AddMessage(IConsoleMessage consoleMessage)
+        {
+            _messagesForWrite.Enqueue(consoleMessage);
+        }
+
         private async void ListenMessagesFunc()
         {
             var token = _lifeTimeTokenSource.Token;

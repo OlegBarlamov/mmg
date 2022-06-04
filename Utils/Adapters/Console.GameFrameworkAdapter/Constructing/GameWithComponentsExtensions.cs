@@ -7,7 +7,7 @@ namespace Console.FrameworkAdapter
     {
         public static IGameWithConsoleFactory UseInGameConsole(this IGameFactoryWithExternalComponents gameFactory)
         {
-            gameFactory.RegisterExternalGameComponent<ConsoleGameComponent>();
+            gameFactory.RegisterExternalGameComponent<ConsoleGameExternalComponent>();
             var gameWithConsoleFactory = new GameWithConsoleFactory(gameFactory);
             gameWithConsoleFactory.AddServices<InGameConsoleServicesModule>();
             return gameWithConsoleFactory;

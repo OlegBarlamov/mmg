@@ -73,6 +73,11 @@ namespace Console.Core.Implementations.ExternalProcess
             }
         }
         
+        public void AddMessage(IConsoleMessage consoleMessage)
+        {
+            _processWrapper.NewMessages(new[] {consoleMessage});
+        }
+
         private async void MessagesesProviderOnNewMessages()
         {
             if (!_processWrapper.IsRunning)

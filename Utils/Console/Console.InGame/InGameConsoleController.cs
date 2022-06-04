@@ -124,6 +124,11 @@ namespace Console.InGame
             _model.Clear();
         }
 
+        public void AddMessage(IConsoleMessage consoleMessage)
+        {
+            _model.AddMessages(new[] {consoleMessage});
+        }
+
         public void Update(GameTime gameTime)
         {
             if (_isDisposed) throw new ObjectDisposedException(nameof(InGameConsoleController));

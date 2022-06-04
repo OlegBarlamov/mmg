@@ -50,7 +50,7 @@ namespace Console.FrameworkAdapter
         {
             GameFactoryWithExternalComponents.AddServices(new ServicesModuleDelegate(registrator =>
             {
-                registrator.RegisterType<TConsoleCommandExecutor, TConsoleCommandExecutor>();
+                registrator.RegisterType<IConsoleCommandExecutor, TConsoleCommandExecutor>();
             }));
             return this;
         }

@@ -5,6 +5,7 @@ using Atom.Client.MacOS.Scenes;
 using Atom.Client.MacOS.Services;
 using Atom.Client.MacOS.Services.Implementations;
 using Console.FrameworkAdapter;
+using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
@@ -27,6 +28,7 @@ namespace Atom.Client.MacOS
         private MainResourcePackage MainResourcePackage { get; }
         private IResourcesService ResourcesService { get; }
         private IAstronomicMapGenerator AstronomicMapGenerator { get; }
+        private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
 
         private SceneBase _currentScene;
         private LoadingScene _loadingScene;
@@ -41,7 +43,8 @@ namespace Atom.Client.MacOS
             [NotNull] MainSceneDataModel mainSceneDataModel,
             [NotNull] MainResourcePackage mainResourcePackage,
             [NotNull] IResourcesService resourcesService,
-            [NotNull] IAstronomicMapGenerator astronomicMapGenerator)
+            [NotNull] IAstronomicMapGenerator astronomicMapGenerator,
+            [NotNull] IExecutableCommandsCollection executableCommandsCollection)
         {
             ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
             LoadingSceneResources = loadingSceneResources ?? throw new ArgumentNullException(nameof(loadingSceneResources));
@@ -50,6 +53,16 @@ namespace Atom.Client.MacOS
             MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
             ResourcesService = resourcesService ?? throw new ArgumentNullException(nameof(resourcesService));
             AstronomicMapGenerator = astronomicMapGenerator ?? throw new ArgumentNullException(nameof(astronomicMapGenerator));
+            ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
+            
+            ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<string>("scene", "Switch current scene",
+                scene =>
+                {
+                    if (scene == _mainScene.Name)
+                        _currentScene = _mainScene;
+                    if (scene == _loadingScene.Name)
+                        _currentScene = _loadingScene;
+                }));
         }
 
         protected override void Dispose()
@@ -76,7 +89,12 @@ namespace Atom.Client.MacOS
 
             AstronomicMapGenerator.GenerateMapAsync(Point3D.Zero,
                     new Point3D(MainSceneDataModel.AstronomicMapViewRadius), _appLifeTimeTokenSource.Token)
-                .ContinueWith(task => { MainSceneDataModel.Initialize(task.Result); }).ConfigureAwait(true);
+                .ContinueWith(task =>
+                {
+                    MainSceneDataModel.Initialize(task.Result);
+                    _currentScene = _mainScene;
+                })
+                .ConfigureAwait(true);
         }
 
         protected override void OnContentUnloading()
@@ -91,11 +109,6 @@ namespace Atom.Client.MacOS
             base.Update(gameTime);
             
             DefaultConsoleManipulator.Update(gameTime);
-
-            if (MainResourcePackage.IsLoaded && MainSceneDataModel.Initialized)
-            {
-                _currentScene = _mainScene;
-            }
         }
     }
 }

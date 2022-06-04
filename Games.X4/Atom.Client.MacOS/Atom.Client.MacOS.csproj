@@ -33,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AppComponents\ConsoleCommandsExecutor.cs" />
     <Compile Include="AppComponents\ScenesContainerComponent.cs" />
+    <Compile Include="ConsoleCommands\ExitConsoleCommand.cs" />
     <Compile Include="ScenesComponents\StarViewComponent.cs" />
     <Compile Include="MainServicesModule.cs" />
     <Compile Include="Map\AstronomicalMap.cs" />

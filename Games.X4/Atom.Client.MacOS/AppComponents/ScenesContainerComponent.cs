@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 
 namespace Atom.Client.MacOS.AppComponents
 {
+    [UsedImplicitly]
     internal class ScenesContainerComponent : IAppComponent
     {
         private IScenesContainer ScenesContainer { get; }

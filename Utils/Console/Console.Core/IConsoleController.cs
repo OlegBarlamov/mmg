@@ -1,4 +1,5 @@
 using System;
+using Console.Core.Models;
 
 namespace Console.Core
 {
@@ -13,5 +14,7 @@ namespace Console.Core
         void ClearCurrent();
 
         void ClearAll();
+
+        void AddMessage(IConsoleMessage consoleMessage);
     }
 }

@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 namespace Console.FrameworkAdapter
 {
     [UsedImplicitly]
-    public class ConsoleGameComponent : IExternalGameComponent
+    public class ConsoleGameExternalComponent : IExternalGameComponent
     {
         [NotNull] private IConsoleResourcePackage ConsoleResourcePackage { get; }
         [NotNull] private IResourcesService ResourcesService { get; }
@@ -19,7 +19,7 @@ namespace Console.FrameworkAdapter
         [NotNull] private IDisplayService DisplayService { get; }
         [NotNull] private InGameConsoleController InGameConsoleController { get; }
         
-        public ConsoleGameComponent(
+        public ConsoleGameExternalComponent(
             [NotNull] IConsoleController consoleController,
             [NotNull] IConsoleResourcePackage consoleResourcePackage,
             [NotNull] IResourcesService resourcesService,
