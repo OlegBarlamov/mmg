@@ -138,7 +138,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			else
 			{
 				//separate view
-				AddView(view, null);
+				AddView(view, null, scheme.Model);
 			}
 		}
 
@@ -157,7 +157,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 	        if (scheme.Controller != null)
 	            AddControllerInternal(scheme.Controller);
 	        else
-	            AddView(scheme.View, null);
+	            AddView(scheme.View, null, scheme.Model);
 
 	        return scheme.View;
         }
@@ -169,12 +169,32 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (!Views.ContainsView(view))
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewNotExists, view, this);
 
+            //TODO can be optimized by using hashtable
 			var targetView = Views.First(mapping => mapping.View == view);
             if (targetView.Controller != null)
                 RemoveController(targetView.Controller);
             else
 			    RemoveView(targetView);
 		}
+
+	    public void RemoveView([NotNull] object model)
+	    {
+		    if (model == null) throw new ArgumentNullException(nameof(model));
+		    
+		    var validate = MvcStrategy.ValidateByModel(model);
+		    if (!validate.IsViewExist)
+			    throw new ScenesException(Strings.Exceptions.Scenes.ViewForModelNotExists, model, this);
+		    
+		    //TODO can be optimized by using hashtable
+		    var targetView = Views.FirstOrDefault(mapping => mapping.Model == model);
+		    if (targetView == null)
+			    throw new ScenesException(Strings.Exceptions.Scenes.ViewForModelNotExists, model, this);
+
+		    if (targetView.Controller != null)
+			    RemoveController(targetView.Controller);
+		    else 
+				RemoveView(targetView);
+	    }
 
 		public void ClearControllers()
 		{
@@ -291,7 +311,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		private void OnControllerAttachedInternal(IController controller)
 		{
 			if (controller.View != null)
-				AddView(controller.View, controller);
+				AddView(controller.View, controller, controller.DataModel);
 
             controller.OnAddedToScene(this);
 		}
@@ -321,10 +341,10 @@ namespace FrameworkSDK.MonoGame.Mvc
             view.Destroy();
 		}
 
-		private void AddView([NotNull] IView view, [CanBeNull] IController controller)
+		private void AddView([NotNull] IView view, [CanBeNull] IController controller, [CanBeNull] object model)
 		{
 			CheckOwner(view);
-			var mapping = new ViewMapping(view, controller);
+			var mapping = new ViewMapping(view, controller, model);
             if (Views.ContainsView(view))
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewAlreadyExists, view, this);
 

@@ -16,6 +16,12 @@ namespace Logging.FrameworkAdapter
             return SetupLogSystem(appFactory, new ILoggerProvider[0], isDebug);
         }
 
+        public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory,
+            ILoggerProvider loggerProvider, bool isDebug = false)
+        {
+            return appFactory.SetupLogSystem(new[] {loggerProvider}, isDebug);
+        }
+
         public static DefaultAppFactory SetupLogSystem([NotNull] this DefaultAppFactory appFactory, ILoggerProvider[] loggerProviders, bool isDebug = false)
         {
             var config = new LogSystemConfig

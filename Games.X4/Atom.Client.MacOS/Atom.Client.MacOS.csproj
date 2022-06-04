@@ -33,17 +33,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AstronomicalMap.cs" />
-    <Compile Include="Components\StarViewComponent.cs" />
-    <Compile Include="FirstPersonCameraProvider.cs" />
-    <Compile Include="MainModule.cs" />
-    <Compile Include="MainScene.cs" />
-    <Compile Include="MainSceneDataModel.cs" />
+    <Compile Include="AppComponents\ConsoleCommandsExecutor.cs" />
+    <Compile Include="AppComponents\ScenesContainerComponent.cs" />
+    <Compile Include="ScenesComponents\StarViewComponent.cs" />
+    <Compile Include="MainServicesModule.cs" />
+    <Compile Include="Map\AstronomicalMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\LoadingSceneResources.cs" />
+    <Compile Include="Resources\MainResourcePackage.cs" />
+    <Compile Include="Scenes\LoadingScene.cs" />
+    <Compile Include="Scenes\MainScene.cs" />
+    <Compile Include="Scenes\MainSceneDataModel.cs" />
+    <Compile Include="Services\IAstronomicalMapUpdater.cs" />
+    <Compile Include="Services\IAstronomicMapGenerator.cs" />
+    <Compile Include="Services\Implementations\DefaultAstronomicalMapUpdater.cs" />
+    <Compile Include="Services\Implementations\DefaultAstronomicMapGenerator.cs" />
+    <Compile Include="Services\Implementations\ScenesResolverHolder.cs" />
     <Compile Include="X4GameApp.cs" />
-    <Compile Include="X4GameResourcePackage.cs" />
-    <MonoGameContentReference Include="Content/content.mgcb">
+    <MonoGameContentReference Include="__Content\content.mgcb">
       <Link>Content/content.mgcb</Link>
     </MonoGameContentReference>
   </ItemGroup>

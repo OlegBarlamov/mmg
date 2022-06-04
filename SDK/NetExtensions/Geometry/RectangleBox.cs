@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using NetExtensions.Collections;
 
 namespace NetExtensions.Geometry
 {
@@ -127,6 +129,39 @@ namespace NetExtensions.Geometry
       Width = size.X;
       Height = size.Y;
       Depth = size.Z;
+    }
+
+    public IEnumerable<Point3D> EnumeratePoints()
+    {
+      for (int x = Left; x <= Right; x++)
+      {
+        for (int y = Top; y <= Bottom; y++)
+        {
+          for (int z = Forward; z <= Backward; z++)
+            yield return new Point3D(x, y, z);
+        }
+      }
+    }
+    
+    public bool Intersects(RectangleBox value)
+    {
+      return value.Left < this.Right && this.Left < value.Right && value.Top < this.Bottom && this.Top < value.Bottom && value.Forward < this.Backward && this.Forward < value.Backward;
+    }
+    
+    public static RectangleBox Intersect(RectangleBox value1, RectangleBox value2)
+    {
+      if (value1.Intersects(value2))
+      {
+        int num1 = Math.Min(value1.X + value1.Width, value2.X + value2.Width);
+        int x = Math.Max(value1.X, value2.X);
+        int y = Math.Max(value1.Y, value2.Y);
+        int num2 = Math.Min(value1.Y + value1.Height, value2.Y + value2.Height);
+        int num3 = Math.Min(value1.Z + value1.Depth, value2.Z + value2.Depth);
+        int z = Math.Max(value1.Z, value2.Z);
+        return new RectangleBox(x, y, z, num1 - x, num2 - y, num3 - z);
+      }
+      else
+        return Empty;
     }
 
     public static RectangleBox FromStartEnd(Point3D start, Point3D end)

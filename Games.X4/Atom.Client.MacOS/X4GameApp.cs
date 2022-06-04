@@ -1,64 +1,89 @@
 using System;
-using Console.Core.Models;
+using System.Threading;
+using Atom.Client.MacOS.Resources;
+using Atom.Client.MacOS.Scenes;
+using Atom.Client.MacOS.Services;
+using Atom.Client.MacOS.Services.Implementations;
 using Console.FrameworkAdapter;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
-using FrameworkSDK.MonoGame.Services;
+using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Geometry;
 
 namespace Atom.Client.MacOS
 {
+    [UsedImplicitly]
     public class X4GameApp : GameApp
     {
         protected override SceneBase CurrentScene => _currentScene;
 
-        private SceneBase _currentScene;
-        
+        private IScenesResolver ScenesResolver => ScenesResolverHolder.ScenesResolver;
+        [NotNull] private ScenesResolverHolder ScenesResolverHolder { get; }
+        private LoadingSceneResources LoadingSceneResources { get; }
         private DefaultConsoleManipulator DefaultConsoleManipulator { get; }
-        public IScenesContainer ScenesContainer { get; }
-        public MainSceneDataModel MainSceneDataModel { get; }
-        public CommandExecutorMediator CommandExecutorMediator { get; }
-        public IAppTerminator AppTerminator { get; }
+        private MainSceneDataModel MainSceneDataModel { get; }
+        private MainResourcePackage MainResourcePackage { get; }
+        private IResourcesService ResourcesService { get; }
+        private IAstronomicMapGenerator AstronomicMapGenerator { get; }
 
-        private readonly IScenesResolver _scenesResolver;
+        private SceneBase _currentScene;
+        private LoadingScene _loadingScene;
+        private MainScene _mainScene;
+        
+        private readonly CancellationTokenSource _appLifeTimeTokenSource = new CancellationTokenSource();
 
-        public X4GameApp([NotNull] DefaultConsoleManipulator defaultConsoleManipulator, [NotNull] IScenesContainer scenesContainer,
-            [NotNull] MainSceneDataModel mainSceneDataModel, [NotNull] CommandExecutorMediator commandExecutorMediator,
-            [NotNull] IAppTerminator appTerminator)
+        public X4GameApp(
+            [NotNull] ScenesResolverHolder scenesResolverHolder,
+            [NotNull] LoadingSceneResources loadingSceneResources,
+            [NotNull] DefaultConsoleManipulator defaultConsoleManipulator,
+            [NotNull] MainSceneDataModel mainSceneDataModel,
+            [NotNull] MainResourcePackage mainResourcePackage,
+            [NotNull] IResourcesService resourcesService,
+            [NotNull] IAstronomicMapGenerator astronomicMapGenerator)
         {
+            ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
+            LoadingSceneResources = loadingSceneResources ?? throw new ArgumentNullException(nameof(loadingSceneResources));
             DefaultConsoleManipulator = defaultConsoleManipulator ?? throw new ArgumentNullException(nameof(defaultConsoleManipulator));
-            ScenesContainer = scenesContainer ?? throw new ArgumentNullException(nameof(scenesContainer));
             MainSceneDataModel = mainSceneDataModel ?? throw new ArgumentNullException(nameof(mainSceneDataModel));
-            CommandExecutorMediator = commandExecutorMediator ?? throw new ArgumentNullException(nameof(commandExecutorMediator));
-            AppTerminator = appTerminator ?? throw new ArgumentNullException(nameof(appTerminator));
-
-            ScenesContainer.RegisterScene<MainSceneDataModel, MainScene>();
-
-            _scenesResolver = ScenesContainer.CreateResolver();
-            
-            CommandExecutorMediator.Command += CommandExecutorMediatorOnCommand;
-            CommandExecutorMediator.AddCommand(new ConsoleCommand("exit", "Terminate app", "Close the application"));
+            MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
+            ResourcesService = resourcesService ?? throw new ArgumentNullException(nameof(resourcesService));
+            AstronomicMapGenerator = astronomicMapGenerator ?? throw new ArgumentNullException(nameof(astronomicMapGenerator));
         }
 
-        private void CommandExecutorMediatorOnCommand(string command)
+        protected override void Dispose()
         {
-            if (command == "exit")
-            {
-                AppTerminator.Terminate();
-            }
+            _appLifeTimeTokenSource.Dispose();
+            
+            base.Dispose();
         }
 
         protected override void OnContentLoaded()
         {
             base.OnContentLoaded();
-
-            _currentScene = _scenesResolver.ResolveScene(MainSceneDataModel);
+            
+            ResourcesService.LoadPackage(MainResourcePackage);
         }
 
         protected override void OnInitialized()
         {
             base.OnInitialized();
+
+            _loadingScene = (LoadingScene) ScenesResolver.ResolveScene(LoadingSceneResources);
+            _mainScene = (MainScene) ScenesResolver.ResolveScene(MainSceneDataModel);
+            _currentScene = _loadingScene;
+
+            AstronomicMapGenerator.GenerateMapAsync(Point3D.Zero,
+                    new Point3D(MainSceneDataModel.AstronomicMapViewRadius), _appLifeTimeTokenSource.Token)
+                .ContinueWith(task => { MainSceneDataModel.Initialize(task.Result); }).ConfigureAwait(true);
+        }
+
+        protected override void OnContentUnloading()
+        {
+            _appLifeTimeTokenSource.Cancel();
+            
+            base.OnContentUnloading();
         }
 
         protected override void Update(GameTime gameTime)
@@ -66,6 +91,11 @@ namespace Atom.Client.MacOS
             base.Update(gameTime);
             
             DefaultConsoleManipulator.Update(gameTime);
+
+            if (MainResourcePackage.IsLoaded && MainSceneDataModel.Initialized)
+            {
+                _currentScene = _mainScene;
+            }
         }
     }
 }

@@ -31,5 +31,11 @@ namespace FrameworkSDK.DependencyInjection
             var module = Activator.CreateInstance<TModule>();
             serviceRegistrator.RegisterModule(module);
         }
+
+        public static void RegisterFactory<TService>([NotNull] this IServiceRegistrator serviceRegistrator,
+            [NotNull] ServiceFactoryDelegate factory, ResolveType resolveType = ResolveType.Singletone)
+        {
+            serviceRegistrator.RegisterFactory(typeof(TService), factory, resolveType);
+        }
     }
 }

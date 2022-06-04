@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Atom.Client.MacOS.Components;
+using Atom.Client.MacOS.Services;
+using Atom.Client.MacOS.Services.Implementations;
 using Console.Core;
-using Console.FrameworkAdapter;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -12,59 +13,43 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGameExtensions.Geometry;
 using NetExtensions.Geometry;
 
-namespace Atom.Client.MacOS
+namespace Atom.Client.MacOS.Scenes
 {
     public class MainScene : Scene
     {
         private MainSceneDataModel DataModel { get; }
         private ICamera3DService Camera3DService { get; }
-        private AstronomicalMapGenerator MapGenerator { get; }
         private IConsoleController ConsoleController { get; }
         private IDebugInfoService DebugInfoService { get; }
-
-        private BasicEffect _effect;
+        private IAstronomicMapGenerator MapGenerator { get; }
+        
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
             FarPlaneDistance = float.MaxValue
         };
         private readonly FirstPersonCameraController _cameraController;
-        private readonly List<StarViewComponent> _starComponents = new List<StarViewComponent>();
-        private List<AstronomicalMapCell> _activeCells = new List<AstronomicalMapCell>();
 
-        private RectangleBox _activeCellsRec;
-        private AstronomicalMapCell _cameraCell;
-
-        public MainScene(MainSceneDataModel model, [NotNull] ICamera3DService camera3DService, IInputService inputService, IConsoleResourcePackage consoleResourcePackage,
-            [NotNull] AstronomicalMapGenerator mapGenerator, FirstPersonCameraProvider firstPersonCameraProvider,
-            [NotNull] IConsoleController consoleController, [NotNull] IDebugInfoService debugInfoService)
+        private BasicEffect _effect;
+        private IAstronomicalMapUpdater _astronomicalMapUpdater;
+        
+        public MainScene(
+            MainSceneDataModel model,
+            IInputService inputService,
+            ICamera3DService camera3DService,
+            IConsoleController consoleController,
+            IDebugInfoService debugInfoService,
+            [NotNull] IAstronomicMapGenerator mapGenerator)
             :base("MainScene")
         {
             DataModel = model;
             Camera3DService = camera3DService ?? throw new ArgumentNullException(nameof(camera3DService));
-            MapGenerator = mapGenerator ?? throw new ArgumentNullException(nameof(mapGenerator));
             ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
+            MapGenerator = mapGenerator ?? throw new ArgumentNullException(nameof(mapGenerator));
 
             Camera3DService.SetActiveCamera(_camera);
-            firstPersonCameraProvider.Camera = _camera;
-            
-            var gridData = new Grid3DComponentData
-            {
-                GraphicsPassName = "Render_Identical"
-            };
-            AddView(gridData);
-            
-            AddView(new DebugInfoComponentData
-            {
-                Font = consoleResourcePackage.ConsoleFont,
-                FontColor = Color.White,
-                Position = new Vector2(10f),
-                Tab = 20f,
-                GraphicsPassName = "debug"
-            });
 
             _cameraController = new FirstPersonCameraController(inputService, _camera, DebugInfoService);
         }
@@ -72,8 +57,45 @@ namespace Atom.Client.MacOS
         protected override void OnFirstOpening()
         {
             base.OnFirstOpening();
+            
+            AddView(new Grid3DComponentData
+            {
+                GraphicsPassName = "Render_Identical"
+            });
+            AddView(new DebugInfoComponentData
+            {
+                Font = DataModel.MainResourcePackage.DebugInfoFont,
+                FontColor = Color.White,
+                Position = new Vector2(10f),
+                Tab = 20f,
+                GraphicsPassName = "debug"
+            });
+
+            foreach (var mapPoint in DataModel.AstronomicalMap.EnumerateCells())
+            {
+                var cell = mapPoint.Item2;
+                AddMapPointToScene(cell);
+            }
+            
+            _astronomicalMapUpdater = new DefaultAstronomicalMapUpdater(DataModel.AstronomicalMap, MapGenerator, DebugInfoService, _camera);
         }
 
+        private void RemoveMapPointFromScene(AstronomicalMapCell cell)
+        {
+            foreach (var star in cell.Stars)
+            {
+                RemoveView(star);
+            }
+        }
+
+        private void AddMapPointToScene(AstronomicalMapCell cell)
+        {
+            foreach (var star in cell.Stars)
+            {
+                AddView(star);
+            }
+        }
+        
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -83,57 +105,15 @@ namespace Atom.Client.MacOS
                 _cameraController.Update(gameTime);
             }
 
-            _cameraCell = DataModel.AstronomicalMap.FindPoint(_camera.Position);
-            _activeCellsRec = RectangleBox.FromCenterAndRadius(_cameraCell.MapPoint, new Point3D(2));
-            DebugInfoService.SetLabel("sector", _cameraCell.MapPoint.ToString());
-            DebugInfoService.SetLabel("active_rec", _activeCellsRec.ToString());
+            var mapUpdates = _astronomicalMapUpdater.Update(gameTime);
 
-            var newActiveCells = new List<AstronomicalMapCell>();
-            
-            //_activeCells.Clear();
-            foreach (var pointAndCell in DataModel.AstronomicalMap.EnumerateCells(_activeCellsRec.Start, _activeCellsRec.End))
+            foreach (var mapUpdatesAddedPoint in mapUpdates.AddedPoints)
             {
-                var point = pointAndCell.Item1;
-                var cell = pointAndCell.Item2;
-
-                if (cell == null)
-                {
-                    cell = MapGenerator.GenerateCell(point);
-                    DataModel.AstronomicalMap.SetCell(point, cell);
-                    foreach (var starModel in cell.Stars)
-                    {
-                        _starComponents.Add((StarViewComponent) AddView(starModel));
-                    }
-                }
-                else
-                {
-                    if (!_activeCells.Contains(cell))
-                    {
-                        foreach (var starModel in cell.Stars)
-                        {
-                            _starComponents.Add((StarViewComponent) AddView(starModel));
-                        }
-                    }
-                }
-                
-                newActiveCells.Add(cell);
+                AddMapPointToScene(mapUpdatesAddedPoint);
             }
-
-            _activeCells = newActiveCells;
-
-            var toRemoveComponents = new List<StarViewComponent>();
-            foreach (var starComponent in _starComponents)
+            foreach (var mapUpdatesRemovedPoint in mapUpdates.RemovedPoints)
             {
-                if (!_activeCellsRec.Contains(starComponent.Model.MapCell))
-                {
-                    RemoveView(starComponent);
-                    toRemoveComponents.Add(starComponent);
-                }
-            }
-
-            foreach (var starViewComponent in toRemoveComponents)
-            {
-                _starComponents.Remove(starViewComponent);
+                RemoveMapPointFromScene(mapUpdatesRemovedPoint);
             }
         }
 

@@ -7,7 +7,7 @@ namespace FrameworkSDK.MonoGame.Resources
     {
         Texture2D DiffuseColor(Color color);
 
-        Texture2D GradientColor(Color color1, Color color2, int width, int height, float angle,
+        Texture2D GradientColor(Color color1, Color color2, int width, int height, float angleDegrees,
             float offset = 0);
     }
 }

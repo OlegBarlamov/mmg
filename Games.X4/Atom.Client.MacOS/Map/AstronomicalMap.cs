@@ -84,32 +84,10 @@ namespace Atom.Client.MacOS
                 }
             }
         }
-    }
 
-    public class AstronomicalMapGenerator
-    {
-        public IRandomService RandomService { get; }
-
-        public AstronomicalMapGenerator([NotNull] IRandomService randomService)
+        public IEnumerable<(Point3D, AstronomicalMapCell)> EnumerateCells()
         {
-            RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
+            return GetCells().Select((pair => (pair.Key, pair.Value)));
         }
-        
-        public AstronomicalMapCell GenerateCell(Point3D point)
-        {
-            var cell = new AstronomicalMapCell(point);
-
-            var maxPos = cell.World + cell.Size;
-            var minPos = cell.World - cell.Size;
-
-            var stars = Enumerable.Range(0, 10).Select(i => new StarModel(RandomService.NextVector3(minPos, maxPos), point)).ToArray();
-            foreach (var starModel in stars)
-            {
-                cell.AddStar(starModel);
-            }
-
-            return cell;
-        }
-        
     }
 }

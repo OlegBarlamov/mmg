@@ -8,11 +8,13 @@ namespace FrameworkSDK.MonoGame.Mvc
 	{
 	    [NotNull] public IView View { get; }
 		[CanBeNull] public IController Controller { get; }
+		[CanBeNull] public object Model { get; }
 
-		public ViewMapping([NotNull] IView view, [CanBeNull] IController controller)
+		public ViewMapping([NotNull] IView view, [CanBeNull] IController controller, [CanBeNull] object model)
 		{
 			View = view ?? throw new ArgumentNullException(nameof(view));
 		    Controller = controller;
+		    Model = model;
 		}
 
 		public bool IsMappedController([NotNull] IController controller)

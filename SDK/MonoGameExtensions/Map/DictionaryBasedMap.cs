@@ -29,5 +29,10 @@ namespace MonoGameExtensions.Map
         {
             _cells.AddOrUpdate(point, data, (p, cell) => data);
         }
+
+        protected IEnumerable<KeyValuePair<TPoint, TCell>> GetCells()
+        {
+            return _cells;
+        }
     }
 }
