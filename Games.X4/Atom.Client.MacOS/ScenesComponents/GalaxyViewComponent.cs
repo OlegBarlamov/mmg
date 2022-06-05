@@ -13,13 +13,13 @@ using X4World.Objects;
 namespace Atom.Client.MacOS.Components
 {
     [UsedImplicitly]
-    public sealed class StarViewComponent : View<Star>
+    public sealed class GalaxyViewComponent : View<Galaxy>
     {
         public MainResourcePackage ResourcePackage { get; }
         public ICamera3DProvider Camera3DProvider { get; }
         public IDisplayService DisplayService { get; }
 
-        public StarViewComponent([NotNull] Star model, [NotNull] MainResourcePackage resourcePackage,
+        public GalaxyViewComponent([NotNull] Galaxy model, [NotNull] MainResourcePackage resourcePackage,
             [NotNull] ICamera3DProvider camera3DProvider, IDisplayService displayService)
         {
             ResourcePackage = resourcePackage ?? throw new ArgumentNullException(nameof(resourcePackage));
@@ -32,25 +32,23 @@ namespace Atom.Client.MacOS.Components
         public override void Draw(GameTime gameTime, IDrawContext context)
         {
             base.Draw(gameTime, context);
+
+            if (Vector3.Distance(((DirectionalCamera3D)Camera3DProvider.GetActiveCamera()).Position,DataModel.WorldPosition) < 7) 
+                return;
             
-            var leftTopStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.WorldPosition + (-GetRightVector() + GetUpVector()) * DataModel.Size / 2,
+            var leftTopStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.WorldPosition + (-GetRightVector() + GetUpVector()) * DataModel.Size,
                                                  Camera3DProvider.GetActiveCamera().GetProjection(),
                                                  Camera3DProvider.GetActiveCamera().GetView(),
                                                  Matrix.Identity);
-            var endStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.WorldPosition + (GetRightVector() - GetUpVector()) * DataModel.Size / 2,
+            var endStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.WorldPosition + (GetRightVector() - GetUpVector()) * DataModel.Size,
                 Camera3DProvider.GetActiveCamera().GetProjection(),
                 Camera3DProvider.GetActiveCamera().GetView(),
                 Matrix.Identity);
 
             var rec = new Rectangle(leftTopStarOnScreenPoint.EmitZ().ToPoint(),
                 (endStarOnScreenPoint - leftTopStarOnScreenPoint).EmitZ().ToPoint());
-            if (rec.IsEmpty)
-            {
-                rec.Width = 1;
-                rec.Height = 1;
-            }
-            
-            context.Draw(ResourcePackage.StarTexture, rec, Color.White);
+
+            context.Draw(ResourcePackage.GalaxyTexture, rec, Color.White);
         }
 
         private Vector3 GetRightVector()

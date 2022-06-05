@@ -9,10 +9,12 @@ namespace Atom.Client.MacOS.Resources
     {
         public SpriteFont DebugInfoFont { get; private set; }
         public Texture2D StarTexture { get; private set; }
+        public Texture2D GalaxyTexture { get; private set; }
         
         protected override void Load(IContentLoaderApi content)
         {
             StarTexture = content.Load<Texture2D>("star");
+            GalaxyTexture = content.Load<Texture2D>("galaxy");
             DebugInfoFont = content.Load<SpriteFont>("debug_font");
         }
     }

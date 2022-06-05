@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework;
 using MonoGameExtensions.Geometry;
 using NetExtensions.Collections;
 using NetExtensions.Geometry;
+using X4World;
+using X4World.Maps;
 
 namespace Atom.Client.MacOS
 {
@@ -19,7 +21,7 @@ namespace Atom.Client.MacOS
         public ColorsTexturesPackage ColorsTexturesPackage { get; }
         public MainResourcePackage MainResourcePackage { get; }
 
-        public AstronomicalMap AstronomicalMap { get; private set; }
+        public GalaxiesMap GalaxiesMap { get; private set; }
         
         public bool Initialized { get; private set; }
 
@@ -29,9 +31,9 @@ namespace Atom.Client.MacOS
             MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
         }
 
-        public void Initialize([NotNull] AstronomicalMap map)
+        public void Initialize([NotNull] GalaxiesMap map)
         {
-            AstronomicalMap = map ?? throw new ArgumentNullException(nameof(map));
+            GalaxiesMap = map ?? throw new ArgumentNullException(nameof(map));
             Initialized = true;
         }
     }

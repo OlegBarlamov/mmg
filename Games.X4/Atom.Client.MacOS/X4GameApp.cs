@@ -5,13 +5,13 @@ using Atom.Client.MacOS.Scenes;
 using Atom.Client.MacOS.Services;
 using Atom.Client.MacOS.Services.Implementations;
 using Console.FrameworkAdapter;
-using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Geometry;
+using X4World.Generation;
 
 namespace Atom.Client.MacOS
 {
@@ -27,7 +27,7 @@ namespace Atom.Client.MacOS
         private MainSceneDataModel MainSceneDataModel { get; }
         private MainResourcePackage MainResourcePackage { get; }
         private IResourcesService ResourcesService { get; }
-        private IAstronomicMapGenerator AstronomicMapGenerator { get; }
+        private IGalaxiesMapGenerator GalaxiesMapGenerator { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
 
         private SceneBase _currentScene;
@@ -43,7 +43,7 @@ namespace Atom.Client.MacOS
             [NotNull] MainSceneDataModel mainSceneDataModel,
             [NotNull] MainResourcePackage mainResourcePackage,
             [NotNull] IResourcesService resourcesService,
-            [NotNull] IAstronomicMapGenerator astronomicMapGenerator,
+            [NotNull] IGalaxiesMapGenerator galaxiesMapGenerator,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection)
         {
             ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
@@ -52,17 +52,8 @@ namespace Atom.Client.MacOS
             MainSceneDataModel = mainSceneDataModel ?? throw new ArgumentNullException(nameof(mainSceneDataModel));
             MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
             ResourcesService = resourcesService ?? throw new ArgumentNullException(nameof(resourcesService));
-            AstronomicMapGenerator = astronomicMapGenerator ?? throw new ArgumentNullException(nameof(astronomicMapGenerator));
+            GalaxiesMapGenerator = galaxiesMapGenerator ?? throw new ArgumentNullException(nameof(galaxiesMapGenerator));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
-            
-            ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<string>("scene", "Switch current scene",
-                scene =>
-                {
-                    if (scene == _mainScene.Name)
-                        _currentScene = _mainScene;
-                    if (scene == _loadingScene.Name)
-                        _currentScene = _loadingScene;
-                }));
         }
 
         protected override void Dispose()
@@ -87,7 +78,7 @@ namespace Atom.Client.MacOS
             _mainScene = (MainScene) ScenesResolver.ResolveScene(MainSceneDataModel);
             _currentScene = _loadingScene;
 
-            AstronomicMapGenerator.GenerateMapAsync(Point3D.Zero,
+            GalaxiesMapGenerator.GenerateMapAsync(Point3D.Zero,
                     new Point3D(MainSceneDataModel.AstronomicMapViewRadius), _appLifeTimeTokenSource.Token)
                 .ContinueWith(task =>
                 {

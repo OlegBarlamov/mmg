@@ -11,6 +11,7 @@ using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using NetExtensions;
+using X4World.Generation;
 
 namespace Atom.Client.MacOS
 {
@@ -20,10 +21,12 @@ namespace Atom.Client.MacOS
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             serviceRegistrator.RegisterType<MainSceneDataModel, MainSceneDataModel>();
-            serviceRegistrator.RegisterType<IAstronomicMapGenerator, DefaultAstronomicMapGenerator>();
             serviceRegistrator.RegisterInstance(new ScenesResolverHolder());
             serviceRegistrator.RegisterFactory<IScenesResolver>((locator, type) => locator.Resolve<ScenesResolverHolder>().ScenesResolver);
             serviceRegistrator.RegisterType<IExecutableCommandsCollection, ExecutableCommandsCollection>();
+            
+            serviceRegistrator.RegisterType<IGalaxiesMapGenerator, DefaultGalaxiesMapGenerator>();
+            serviceRegistrator.RegisterType<IStarsMapGenerator, DefaultStarsMapGenerator>();
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();
             

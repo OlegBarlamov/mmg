@@ -34,6 +34,18 @@
 /processorParam:TextureFormat=Compressed
 /build:Font.spritefont
 
+#begin PngItem_784359.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:PngItem_784359.png;galaxy.png
+
 #begin —Pngtree—white light dream light fresh_3846040.png
 /importer:TextureImporter
 /processor:TextureProcessor

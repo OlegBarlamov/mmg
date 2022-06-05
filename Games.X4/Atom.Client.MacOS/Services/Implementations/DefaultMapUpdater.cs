@@ -7,30 +7,40 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Collections;
 using NetExtensions.Geometry;
+using X4World;
+using X4World.Generation;
+using X4World.Maps;
+using X4World.Objects;
 
 namespace Atom.Client.MacOS.Services.Implementations
 {
-    public class DefaultAstronomicalMapUpdater : IAstronomicalMapUpdater
+    public class DefaultMapUpdater : IMapUpdater
     {
-        [NotNull] private AstronomicalMap Map { get; }
-        [NotNull] private IAstronomicMapGenerator AstronomicMapGenerator { get; }
+        [NotNull] private GalaxiesMap Map { get; }
+        [NotNull] private IGalaxiesMapGenerator GalaxiesMapGenerator { get; }
+        public IStarsMapGenerator StarsMapGenerator { get; }
         [NotNull] private IDebugInfoService DebugInfoService { get; }
         [NotNull] private DirectionalCamera3D ActiveCamera { get; }
 
         private Point3D _lastCameraMapPoint = Point3D.Zero;
         
-        private readonly List<AstronomicalMapCell> _cellsPendingToBeAdded = new List<AstronomicalMapCell>();
-        private readonly List<AstronomicalMapCell> _cellsPendingToBeRemoved = new List<AstronomicalMapCell>(); 
-        private readonly List<AstronomicalMapCell> _tempArray = new List<AstronomicalMapCell>();
+        private readonly List<GalaxiesMapCell> _cellsPendingToBeAdded = new List<GalaxiesMapCell>();
+        private readonly List<GalaxiesMapCell> _cellsPendingToBeRemoved = new List<GalaxiesMapCell>(); 
+        private readonly List<GalaxiesMapCell> _tempArray = new List<GalaxiesMapCell>();
+
+        private readonly List<Star> _starsPendingToBeAdded = new List<Star>();
+        private readonly List<Star> _starsPendingToBeRemoved = new List<Star>();
             
-        public DefaultAstronomicalMapUpdater(
-            [NotNull] AstronomicalMap map,
-            [NotNull] IAstronomicMapGenerator astronomicMapGenerator,
+        public DefaultMapUpdater(
+            [NotNull] GalaxiesMap map,
+            [NotNull] IGalaxiesMapGenerator galaxiesMapGenerator,
+            [NotNull] IStarsMapGenerator starsMapGenerator,
             [NotNull] IDebugInfoService debugInfoService,
             [NotNull] DirectionalCamera3D activeCamera)
         {
             Map = map ?? throw new ArgumentNullException(nameof(map));
-            AstronomicMapGenerator = astronomicMapGenerator ?? throw new ArgumentNullException(nameof(astronomicMapGenerator));
+            GalaxiesMapGenerator = galaxiesMapGenerator ?? throw new ArgumentNullException(nameof(galaxiesMapGenerator));
+            StarsMapGenerator = starsMapGenerator ?? throw new ArgumentNullException(nameof(starsMapGenerator));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             ActiveCamera = activeCamera ?? throw new ArgumentNullException(nameof(activeCamera));
         }
@@ -82,22 +92,41 @@ namespace Atom.Client.MacOS.Services.Implementations
                         var cell = Map.GetCell(point);
                         if (cell == null)
                         {
-                            cell = AstronomicMapGenerator.GenerateCell(point);
+                            cell = GalaxiesMapGenerator.GenerateCell(point);
                             Map.SetCell(point, cell);
                         }
                         _cellsPendingToBeAdded.Add(cell);
                     }
                 }
+
+                foreach (var galaxy in mapPoint.Galaxies)
+                {
+                    if (galaxy.Stars.Count == 0) 
+                        StarsMapGenerator.GenerateStarsForGalaxy(galaxy);
+                    
+                    _starsPendingToBeAdded.AddRange(galaxy.Stars);
+                }
+                
+                var lastPoint = Map.GetCell(_lastCameraMapPoint);
+                foreach (var galaxy in lastPoint.Galaxies)
+                {
+                    _starsPendingToBeRemoved.AddRange(galaxy.Stars);
+                }
             }
 
             _lastCameraMapPoint = mapPoint.MapPoint;
+
+            var addedMapPoints = GetFirstElements(_cellsPendingToBeAdded, 1).ToArray();
+            var removedMapPoints = GetFirstElements(_cellsPendingToBeRemoved, 1).ToArray();
+            var addedStars = GetFirstElements(_starsPendingToBeAdded, 5).ToArray();
+            var removedStars = GetFirstElements(_starsPendingToBeRemoved, 5).ToArray();
             
-            var result = new MapUpdateResult(
-                GetFirstElements(_cellsPendingToBeAdded, 1).ToArray(),
-                GetFirstElements(_cellsPendingToBeRemoved, 1).ToArray());
+            var result = new MapUpdateResult(addedMapPoints, removedMapPoints, addedStars, removedStars);
             
-            _cellsPendingToBeAdded.RemoveRange(result.AddedPoints);
-            _cellsPendingToBeRemoved.RemoveRange(result.RemovedPoints);
+            _cellsPendingToBeAdded.RemoveRange(addedMapPoints);
+            _cellsPendingToBeRemoved.RemoveRange(removedMapPoints);
+            _starsPendingToBeAdded.RemoveRange(addedStars);
+            _starsPendingToBeRemoved.RemoveRange(removedStars);
 
             return result;
         }

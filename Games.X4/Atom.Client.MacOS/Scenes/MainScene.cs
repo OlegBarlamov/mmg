@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Atom.Client.MacOS.Services;
 using Atom.Client.MacOS.Services.Implementations;
 using Console.Core;
@@ -13,6 +14,9 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using X4World.Generation;
+using X4World.Maps;
+using X4World.Objects;
 
 namespace Atom.Client.MacOS.Scenes
 {
@@ -22,7 +26,8 @@ namespace Atom.Client.MacOS.Scenes
         private ICamera3DService Camera3DService { get; }
         private IConsoleController ConsoleController { get; }
         private IDebugInfoService DebugInfoService { get; }
-        private IAstronomicMapGenerator MapGenerator { get; }
+        private IGalaxiesMapGenerator MapGenerator { get; }
+        public IStarsMapGenerator StarsMapGenerator { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
@@ -32,7 +37,7 @@ namespace Atom.Client.MacOS.Scenes
         private readonly FirstPersonCameraController _cameraController;
 
         private BasicEffect _effect;
-        private IAstronomicalMapUpdater _astronomicalMapUpdater;
+        private IMapUpdater _mapUpdater;
         
         public MainScene(
             MainSceneDataModel model,
@@ -40,7 +45,8 @@ namespace Atom.Client.MacOS.Scenes
             ICamera3DService camera3DService,
             IConsoleController consoleController,
             IDebugInfoService debugInfoService,
-            [NotNull] IAstronomicMapGenerator mapGenerator,
+            [NotNull] IGalaxiesMapGenerator mapGenerator,
+            [NotNull] IStarsMapGenerator starsMapGenerator,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection)
             :base(nameof(MainScene))
         {
@@ -49,6 +55,7 @@ namespace Atom.Client.MacOS.Scenes
             ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             MapGenerator = mapGenerator ?? throw new ArgumentNullException(nameof(mapGenerator));
+            StarsMapGenerator = starsMapGenerator ?? throw new ArgumentNullException(nameof(starsMapGenerator));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
 
             Camera3DService.SetActiveCamera(_camera);
@@ -73,13 +80,20 @@ namespace Atom.Client.MacOS.Scenes
                 GraphicsPassName = "debug"
             });
 
-            foreach (var mapPoint in DataModel.AstronomicalMap.EnumerateCells())
+            foreach (var mapPoint in DataModel.GalaxiesMap.EnumerateCells())
             {
                 var cell = mapPoint.Item2;
                 AddMapPointToScene(cell);
+                if (mapPoint.Item2.ContainsPoint(_camera.Position))
+                {
+                    foreach (var galaxy in mapPoint.Item2.Galaxies)
+                    {
+                        AddStarsToScene(galaxy.Stars);
+                    }
+                }
             }
             
-            _astronomicalMapUpdater = new DefaultAstronomicalMapUpdater(DataModel.AstronomicalMap, MapGenerator, DebugInfoService, _camera);
+            _mapUpdater = new DefaultMapUpdater(DataModel.GalaxiesMap, MapGenerator, StarsMapGenerator, DebugInfoService, _camera);
             
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
                 (x, y, z) =>
@@ -88,19 +102,35 @@ namespace Atom.Client.MacOS.Scenes
                 }));
         }
 
-        private void RemoveMapPointFromScene(AstronomicalMapCell cell)
+        private void RemoveMapPointFromScene(GalaxiesMapCell cell)
         {
-            foreach (var star in cell.Stars)
+            foreach (var galaxy in cell.Galaxies)
             {
-                RemoveView(star);
+                RemoveView(galaxy);
             }
         }
 
-        private void AddMapPointToScene(AstronomicalMapCell cell)
+        private void AddMapPointToScene(GalaxiesMapCell cell)
         {
-            foreach (var star in cell.Stars)
+            foreach (var galaxy in cell.Galaxies)
+            {
+                AddView(galaxy);
+            }
+        }
+
+        private void AddStarsToScene(IEnumerable<Star> stars)
+        {
+            foreach (var star in stars)
             {
                 AddView(star);
+            }
+        }
+        
+        private void RemoveStarsToScene(IEnumerable<Star> stars)
+        {
+            foreach (var star in stars)
+            {
+                RemoveView(star);
             }
         }
         
@@ -113,7 +143,7 @@ namespace Atom.Client.MacOS.Scenes
                 _cameraController.Update(gameTime);
             }
 
-            var mapUpdates = _astronomicalMapUpdater.Update(gameTime);
+            var mapUpdates = _mapUpdater.Update(gameTime);
 
             foreach (var mapUpdatesAddedPoint in mapUpdates.AddedPoints)
             {
