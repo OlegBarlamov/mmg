@@ -34,7 +34,8 @@ namespace Console.FrameworkAdapter.Commands
 
         private string GenerateTitle()
         {
-            return $"{Text} {string.Join(" ", ExpectedTypes.Select(x => x.Title))}";
+            var convertTypeToString = ExpectedTypes.Select((type, i) => i + 1 > MinimumParametersNumber ? $"[{type.Title}]" : type.Title); 
+            return $"{Text} {string.Join(" ", convertTypeToString)}";
         }
     }
 }
