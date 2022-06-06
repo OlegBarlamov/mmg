@@ -18,10 +18,8 @@ namespace NetExtensions.Collections
 		public static void For<T>(this T[,] array, [NotNull] Func<T, int, int, bool> action)
 		{
 			if (action == null) throw new ArgumentNullException(nameof(action));
-			var n = array.GetLength(0);
-			var m = array.GetLength(1);
-			for (int i = 0; i < n; i++)
-			for (int j = 0; j < m; j++)
+			for (int i = 0; i < array.GetLength(0); i++)
+			for (int j = 0; j < array.GetLength(1); j++)
 			{
 				if (action(array[i, j], i, j))
 					return;

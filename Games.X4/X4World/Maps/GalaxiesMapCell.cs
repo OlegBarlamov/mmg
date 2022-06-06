@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using MonoGameExtensions;
+using MonoGameExtensions.DataStructures;
 using MonoGameExtensions.Geometry;
-using MonoGameExtensions.Map;
 using NetExtensions.Geometry;
 using X4World.Objects;
 
@@ -13,31 +11,23 @@ namespace X4World.Maps
     {
         public Point3D MapPoint { get; }
         
+        /// <summary>
+        /// Center of the cell
+        /// </summary>
         public Vector3 World { get; }
         
-        public Vector3 Size { get; } = new Vector3(WorldConstants.GalaxiesMapCellSize);
+        /// <summary>
+        /// Width/Height/Depth of the cell
+        /// </summary>
+        public float Size { get; } = WorldConstants.GalaxiesMapCellSize;
 
-        public IReadOnlyList<Galaxy> Galaxies {get; }
+        public AutoSplitOctreeNode<Galaxy> GalaxiesTree { get; }
 
-        private readonly List<Galaxy> _galaxies;
-
-        public GalaxiesMapCell(Point3D mapPoint) : this(mapPoint, new Galaxy[0])
-        {
-        }
-        
-        public GalaxiesMapCell(Point3D mapPoint, IReadOnlyList<Galaxy> stars)
+        public GalaxiesMapCell(Point3D mapPoint)
         {
             MapPoint = mapPoint;
             World = mapPoint.ToVector3() * Size;
-            
-            _galaxies = new List<Galaxy>(stars);
-            Galaxies = _galaxies;
-        }
-
-        public void AddGalaxy([NotNull] Galaxy galaxy)
-        {
-            if (galaxy == null) throw new ArgumentNullException(nameof(galaxy));
-            _galaxies.Add(galaxy);
+            GalaxiesTree = new AutoSplitOctreeNode<Galaxy>(World, Size, 10);
         }
         
         public Point3D GetPointOnMap()
@@ -47,9 +37,9 @@ namespace X4World.Maps
 
         public bool ContainsPoint(Vector3 point)
         {
-            return point.X > World.X && point.X < World.X + WorldConstants.GalaxiesMapCellSize * 2 &&
-                   point.Y > World.Y && point.Y < World.Y + WorldConstants.GalaxiesMapCellSize * 2 &&
-                   point.Z > World.Z && point.Z < World.Z + WorldConstants.GalaxiesMapCellSize * 2;
+            return point.X > World.X - WorldConstants.GalaxiesMapCellSize / 2 && point.X < World.X + WorldConstants.GalaxiesMapCellSize / 2 &&
+                   point.Y > World.Y - WorldConstants.GalaxiesMapCellSize / 2 && point.Y < World.Y + WorldConstants.GalaxiesMapCellSize / 2 &&
+                   point.Z > World.Z - WorldConstants.GalaxiesMapCellSize / 2 && point.Z < World.Z + WorldConstants.GalaxiesMapCellSize / 2;
         }
     }
 }

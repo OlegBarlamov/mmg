@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
+using MonoGameExtensions.DataStructures;
 using MonoGameExtensions.Geometry;
-using MonoGameExtensions.Map;
 using NetExtensions.Geometry;
 
 namespace X4World.Maps
@@ -15,7 +14,7 @@ namespace X4World.Maps
             return GetCell(point);
         }
 
-        public IEnumerable<(Point3D, GalaxiesMapCell)> EnumerateCells(Point3D start, Point3D end)
+        public IEnumerable<KeyValuePair<Point3D, GalaxiesMapCell>> EnumerateCells(Point3D start, Point3D end)
         {
             for (int x = start.X; x <= end.X; x++)
             {
@@ -24,15 +23,15 @@ namespace X4World.Maps
                     for (int z = start.Z; z <= end.Z; z++)
                     {
                         var point = new Point3D(x, y, z);
-                        yield return (point, GetCell(point));
+                        yield return new KeyValuePair<Point3D, GalaxiesMapCell>(point, GetCell(point));
                     }
                 }
             }
         }
 
-        public IEnumerable<(Point3D, GalaxiesMapCell)> EnumerateCells()
+        public IEnumerable<KeyValuePair<Point3D, GalaxiesMapCell>> EnumerateCells()
         {
-            return GetCells().Select((pair => (pair.Key, pair.Value)));
+            return GetCells();
         }
     }
 }

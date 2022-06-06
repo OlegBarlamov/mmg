@@ -2,16 +2,13 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Atom.Client.MacOS.Resources;
-using Atom.Client.MacOS.Services;
 using Atom.Client.MacOS.Services.Implementations;
-using Console.Core;
 using Console.FrameworkAdapter;
 using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using NetExtensions;
-using X4World.Generation;
 
 namespace Atom.Client.MacOS
 {
@@ -24,9 +21,6 @@ namespace Atom.Client.MacOS
             serviceRegistrator.RegisterInstance(new ScenesResolverHolder());
             serviceRegistrator.RegisterFactory<IScenesResolver>((locator, type) => locator.Resolve<ScenesResolverHolder>().ScenesResolver);
             serviceRegistrator.RegisterType<IExecutableCommandsCollection, ExecutableCommandsCollection>();
-            
-            serviceRegistrator.RegisterType<IGalaxiesMapGenerator, DefaultGalaxiesMapGenerator>();
-            serviceRegistrator.RegisterType<IStarsMapGenerator, DefaultStarsMapGenerator>();
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();
             

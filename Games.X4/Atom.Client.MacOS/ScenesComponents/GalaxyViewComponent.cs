@@ -26,21 +26,18 @@ namespace Atom.Client.MacOS.Components
             Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
             DisplayService = displayService;
 
-            BoundingBox = new BoundingBox(model.WorldPosition - model.Size / 2, model.WorldPosition + model.Size / 2);
+            BoundingBox = new BoundingBox(model.Position - model.Size / 2, model.Position + model.Size / 2);
         }
 
         public override void Draw(GameTime gameTime, IDrawContext context)
         {
             base.Draw(gameTime, context);
 
-            if (Vector3.Distance(((DirectionalCamera3D)Camera3DProvider.GetActiveCamera()).Position,DataModel.WorldPosition) < 7) 
-                return;
-            
-            var leftTopStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.WorldPosition + (-GetRightVector() + GetUpVector()) * DataModel.Size,
+            var leftTopStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.Position + (-GetRightVector() + GetUpVector()) * DataModel.Size,
                                                  Camera3DProvider.GetActiveCamera().GetProjection(),
                                                  Camera3DProvider.GetActiveCamera().GetView(),
                                                  Matrix.Identity);
-            var endStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.WorldPosition + (GetRightVector() - GetUpVector()) * DataModel.Size,
+            var endStarOnScreenPoint = DisplayService.GraphicsDevice.Viewport.Project(DataModel.Position + (GetRightVector() - GetUpVector()) * DataModel.Size,
                 Camera3DProvider.GetActiveCamera().GetProjection(),
                 Camera3DProvider.GetActiveCamera().GetView(),
                 Matrix.Identity);

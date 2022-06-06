@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace MonoGameExtensions.Map
+namespace MonoGameExtensions.DataStructures
 {
     public class DictionaryBasedMap<TPoint, TCell> : IMap<TPoint, TCell> where TPoint : struct where TCell : class, IMapCell<TPoint>
     {

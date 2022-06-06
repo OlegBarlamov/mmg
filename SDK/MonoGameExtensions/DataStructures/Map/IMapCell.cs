@@ -1,4 +1,4 @@
-namespace MonoGameExtensions.Map
+namespace MonoGameExtensions.DataStructures
 {
     public interface IMapCell<out TPoint> where TPoint : struct
     {

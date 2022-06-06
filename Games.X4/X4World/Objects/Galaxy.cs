@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using MonoGameExtensions;
 using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class Galaxy
+    public class Galaxy : ILocatable3D
     {
-        public Vector3 WorldPosition { get; }
+        public Vector3 Position { get; }
         
         public Vector3 Size { get; } = new Vector3(5);
         
@@ -20,7 +21,7 @@ namespace X4World.Objects
         public Galaxy([NotNull] GalaxiesMapCell cell, Vector3 worldPosition)
         {
             OwnedCell = cell ?? throw new ArgumentNullException(nameof(cell));
-            WorldPosition = worldPosition;
+            Position = worldPosition;
 
             Stars = _stars;
         }

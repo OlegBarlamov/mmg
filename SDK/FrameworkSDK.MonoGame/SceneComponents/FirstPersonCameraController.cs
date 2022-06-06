@@ -29,30 +29,39 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
         public void Update(GameTime gameTime)
         {
+            var speed = Speed;
+            if (InputService.Keyboard.Key(Keys.LeftShift))
+            {
+                speed *= 5;
+            }
+            if (InputService.Keyboard.Key(Keys.RightShift))
+            {
+                speed *= 5;
+            }
             if (InputService.Keyboard.Key(Keys.W))
             {
-                var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * speed;
                 TargetCamera.Position += delta;
                 TargetCamera.Target += delta;
             }
 
             if (InputService.Keyboard.Key(Keys.S))
             {
-                var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * speed;
                 TargetCamera.Position -= delta;
                 TargetCamera.Target -= delta;
             }
             
             if (InputService.Keyboard.Key(Keys.D))
             {
-                var delta = GetRightDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                var delta = GetRightDirection() * gameTime.ElapsedGameTime.Milliseconds * speed;
                 TargetCamera.Position += delta;
                 TargetCamera.Target += delta;
             }
             
             if (InputService.Keyboard.Key(Keys.A))
             {
-                var delta = GetRightDirection() * gameTime.ElapsedGameTime.Milliseconds * Speed;
+                var delta = GetRightDirection() * gameTime.ElapsedGameTime.Milliseconds * speed;
                 TargetCamera.Position -= delta;
                 TargetCamera.Target -= delta;
             }

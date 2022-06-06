@@ -76,7 +76,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                 new SimpleRenderComponentsMeshes<TVertexType>(name, effect, vertexBuffer, indexBuffer));
         }
         
-        public static IGraphicsPipelineBuilder RenderIdentical<TVertexType>([NotNull] this IGraphicsPipelineBuilder builder,
+        public static IGraphicsPipelineBuilder RenderGrouped<TVertexType>([NotNull] this IGraphicsPipelineBuilder builder,
             [NotNull] Effect effect, [NotNull] VertexBuffer vertexBuffer, [NotNull] IndexBuffer indexBuffer, [NotNull] string name = View.DefaultViewPassName)
             where TVertexType : struct, IVertexType
         {

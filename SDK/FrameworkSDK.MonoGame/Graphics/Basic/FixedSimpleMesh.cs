@@ -45,7 +45,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Basic
 
         public void UpdateWordMatrix()
         {
-            World = Matrix.CreateTranslation(_position) * Matrix.CreateScale(_scale);
+            World = Matrix.Identity * Matrix.CreateScale(_scale) * Matrix.CreateTranslation(_position);
         }
     }
 }

@@ -15,9 +15,6 @@ namespace Atom.Client.MacOS
     [UsedImplicitly]
     public class MainSceneDataModel
     {
-        // 2 cells around player
-        public const int AstronomicMapViewRadius = 2;
-
         public ColorsTexturesPackage ColorsTexturesPackage { get; }
         public MainResourcePackage MainResourcePackage { get; }
 

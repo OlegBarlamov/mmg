@@ -171,7 +171,7 @@ namespace NetExtensions.Geometry
     
     public static RectangleBox FromCenterAndRadius(Point3D center, Point3D radius)
     {
-      return new RectangleBox(center.X - radius.X, center.Y - radius.Y, center.Z - radius.Z, radius.X * 2 + 1, radius.Y * 2 + 1, radius.Z * 2 + 1);
+      return new RectangleBox(center.X - radius.X, center.Y - radius.Y, center.Z - radius.Z, center.X + radius.X, center.Y + radius.Y, center.Z + radius.Z);
     }
 
     public static bool operator ==(RectangleBox a, RectangleBox b)

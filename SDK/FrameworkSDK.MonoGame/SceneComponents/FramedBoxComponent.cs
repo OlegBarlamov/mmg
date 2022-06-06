@@ -15,6 +15,15 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public Color Color = Color.Red;
 
         public string GraphicsPassName = View.DefaultViewPassName;
+
+        public static BoxComponentDataModel FromBoundingBox(BoundingBox boundingBox)
+        {
+            return new BoxComponentDataModel
+            {
+                Position = (boundingBox.Max + boundingBox.Min) / 2,
+                Scale = boundingBox.Max - boundingBox.Min
+            };
+        }
     }
     
     public class FramedBoxComponent : SingleMeshComponent<BoxComponentDataModel>
@@ -33,7 +42,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             Mesh = mesh;
             
             var meshGeometrySize = Vector3.One;
-            BoundingBoxInternal = new BoundingBox((model.Position - meshGeometrySize/2) * model.Scale, (model.Position + meshGeometrySize/2) * model.Scale);
+            BoundingBoxInternal = new BoundingBox(model.Position - meshGeometrySize/2 * model.Scale, model.Position + meshGeometrySize/2 * model.Scale);
         }
     }
 }
