@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace MonoGameExtensions.DataStructures
@@ -11,5 +10,6 @@ namespace MonoGameExtensions.DataStructures
         TData Data { get; }
         BoundingBox BoundingBox { get; }
         OctreeChildrenNodes<TData> Children { get; }
+        IOctreeNode<TData> Parent { get; }
     }
 }

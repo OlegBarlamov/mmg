@@ -51,6 +51,14 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             {
                 var meshGeometryType = mesh.Geometry.GetType();
                 _meshesByGeometryType[meshGeometryType][detachingComponent].Remove(mesh);
+                if (_meshesByGeometryType[meshGeometryType][detachingComponent].Count == 0)
+                {
+                    _meshesByGeometryType[meshGeometryType].Remove(detachingComponent);
+                    if (_meshesByGeometryType[meshGeometryType].Count == 0)
+                    {
+                        _meshesByGeometryType.Remove(meshGeometryType);
+                    }
+                }
             }
         }
 

@@ -7,6 +7,8 @@ using Console.FrameworkAdapter;
 using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Services;
+using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using NetExtensions;
 
@@ -21,6 +23,8 @@ namespace Atom.Client.MacOS
             serviceRegistrator.RegisterInstance(new ScenesResolverHolder());
             serviceRegistrator.RegisterFactory<IScenesResolver>((locator, type) => locator.Resolve<ScenesResolverHolder>().ScenesResolver);
             serviceRegistrator.RegisterType<IExecutableCommandsCollection, ExecutableCommandsCollection>();
+            
+            serviceRegistrator.RegisterInstance<ITicksTasksProcessor>(new FixedVelocityTasksProcessor(5));
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();
             

@@ -63,7 +63,7 @@ namespace MonoGameExtensions.DataStructures
 
         private void AddItemToChildren(TData item)
         {
-            var targetChild = this.GetChildContainsPoint<AutoSplitOctreeNode<TData>, IReadOnlyCollection<TData>>(item.Position);
+            var targetChild = (AutoSplitOctreeNode<TData>)this.GetChildContainsPoint(item.Position);
             targetChild.AddItem(item);
         }
     }

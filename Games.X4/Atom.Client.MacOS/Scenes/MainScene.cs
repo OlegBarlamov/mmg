@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using Console.Core;
 using Console.FrameworkAdapter;
 using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.Common;
+using FrameworkSDK.MonoGame.Core;
+using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -29,6 +33,7 @@ namespace Atom.Client.MacOS.Scenes
         private IConsoleController ConsoleController { get; }
         private IDebugInfoService DebugInfoService { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
+        public ITicksTasksProcessor TicksTasksProcessor { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
@@ -37,6 +42,8 @@ namespace Atom.Client.MacOS.Scenes
         private readonly FirstPersonCameraController _cameraController;
 
         private BasicEffect _effect;
+        
+        private readonly Dictionary<string, FramedBoxComponent> _componentsInScene = new Dictionary<string, FramedBoxComponent>();
 
         public MainScene(
             MainSceneDataModel model,
@@ -45,7 +52,9 @@ namespace Atom.Client.MacOS.Scenes
             [NotNull] IRandomService randomService,
             IConsoleController consoleController,
             IDebugInfoService debugInfoService,
-            [NotNull] IExecutableCommandsCollection executableCommandsCollection)
+            [NotNull] IExecutableCommandsCollection executableCommandsCollection,
+            [NotNull] ITicksTasksProcessor ticksTasksProcessor
+            )
             :base(nameof(MainScene))
         {
             DataModel = model;
@@ -55,6 +64,7 @@ namespace Atom.Client.MacOS.Scenes
             ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
+            TicksTasksProcessor = ticksTasksProcessor ?? throw new ArgumentNullException(nameof(ticksTasksProcessor));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -77,27 +87,6 @@ namespace Atom.Client.MacOS.Scenes
                 Tab = 20f,
                 GraphicsPassName = "debug"
             });
-            
-            for (int i = 0; i < 10; i++)
-            {
-                var model = new BoxComponentDataModel
-                {
-                    Color = ColorsExtensions.GetRandomColor(new Random()),
-                    GraphicsPassName = "Render_Grouped",
-                    Position = new Vector3(i*2),
-                    Scale = new Vector3(1+i)
-                };
-                AddView(model);
-            }
-
-            foreach (var mapCell in DataModel.GalaxiesMap.EnumerateCells())
-            {
-                var cell = mapCell.Value;
-                cell.GalaxiesTree.NodeSubdivided += GalaxiesTreeOnNodeSubdivided;
-                var boxModel = BoxComponentDataModel.FromBoundingBox(cell.GalaxiesTree.BoundingBox);
-                boxModel.GraphicsPassName = "Render_Grouped";
-                AddView(boxModel);
-            }
 
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
                 (x, y, z) =>
@@ -106,20 +95,8 @@ namespace Atom.Client.MacOS.Scenes
                 }));
         }
         
-        private void GalaxiesTreeOnNodeSubdivided(AutoSplitOctreeNode<Galaxy> node)
-        {
-            node.NodeSubdivided -= GalaxiesTreeOnNodeSubdivided;
-            foreach (var child in node.Children.Nodes)
-            {
-                ((AutoSplitOctreeNode<Galaxy>) child).NodeSubdivided += GalaxiesTreeOnNodeSubdivided;
-                
-                var boxModel = BoxComponentDataModel.FromBoundingBox(child.BoundingBox);
-                boxModel.GraphicsPassName = "Render_Grouped";
-                boxModel.Color = ColorsExtensions.GetNextColor();
-                AddView(boxModel);
-            }
-        }
-
+        private AutoSplitOctreeNode<Galaxy> _cameraGalaxiesNode;
+        private CancellationTokenSource _newCellCancellationTokenSource;
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -127,17 +104,62 @@ namespace Atom.Client.MacOS.Scenes
             if (!ConsoleController.IsShowed)
             {
                 _cameraController.Update(gameTime);
-            }
 
-            if (InputService.Keyboard.KeyPressedOnce(Keys.G))
-            {
-                var mapCell = DataModel.GalaxiesMap.GetCell(Point3D.Zero);
-                var randomPos = RandomService.NextVector3(mapCell.World - new Vector3(mapCell.Size) / 2,
-                    mapCell.World + new Vector3(mapCell.Size) / 2);
-                var g = new Galaxy(mapCell, randomPos);
-                mapCell.GalaxiesTree.AddItem(g);
-                AddView(g);
+                var newCameraPointOnMap = DataModel.GalaxiesMap.FindPoint(_camera.Position);
+                var newGalaxiesNode = (AutoSplitOctreeNode<Galaxy>)newCameraPointOnMap.GalaxiesTree.GetLeafWithPoint(_camera.Position);
+                
+                if (newGalaxiesNode != _cameraGalaxiesNode)
+                {
+                    _cameraGalaxiesNode = newGalaxiesNode;
+                    
+                    _newCellCancellationTokenSource?.Cancel();
+                    _newCellCancellationTokenSource = new CancellationTokenSource();
+                    
+                    foreach (var boxComponent in _componentsInScene)
+                    {
+                        var box = boxComponent.Value.BoundingBox.Value;
+                        var center = (box.Max + box.Min) / 2;
+                        var size = (box.Max - box.Min).Length();
+                        if ((_camera.Position - center).Length() > 1000f + size / 2)
+                        {
+                            TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                            {
+                                RemoveView(boxComponent.Value);
+                                _componentsInScene.Remove(boxComponent.Value.BoundingBox.Value.ToString());
+                                    
+                            }, _newCellCancellationTokenSource.Token));
+                        }
+                    }
+                    
+                    var mapRec = RectangleBox.FromCenterAndRadius(newCameraPointOnMap.MapPoint, new Point3D(1));
+                    foreach (var mapPoint in mapRec.EnumeratePoints())
+                    {
+                        var mapCell = DataModel.GalaxiesMap.GetCell(mapPoint);
+                        if (mapCell == null)
+                            continue;
+
+                        foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, 1000f))
+                        {
+                            if (!_componentsInScene.ContainsKey(leaf.BoundingBox.ToString()))
+                            {
+                                TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                                {
+                                    var boxModel = BoxComponentDataModel.FromBoundingBox(leaf.BoundingBox);
+                                    boxModel.GraphicsPassName = "Render_Grouped";
+                                    boxModel.Color = Color.Pink;
+                                    _componentsInScene.Add(leaf.BoundingBox.ToString(), (FramedBoxComponent)AddView(boxModel));
+                                    
+                                }, _newCellCancellationTokenSource.Token));
+                            }
+                        }
+                    }
+                }
+                
+                DebugInfoService.SetCounter("my_components", _componentsInScene.Count);
+                
             }
+            
+            TicksTasksProcessor.Update(gameTime);
         }
 
         public override void Dispose()

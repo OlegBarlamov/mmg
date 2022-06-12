@@ -5,13 +5,16 @@ using Atom.Client.MacOS.Resources;
 using Atom.Client.MacOS.Scenes;
 using Atom.Client.MacOS.Services.Implementations;
 using Console.FrameworkAdapter;
+using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
+using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Geometry;
 using X4World.Maps;
+using X4World.Objects;
 
 namespace Atom.Client.MacOS
 {
@@ -27,6 +30,7 @@ namespace Atom.Client.MacOS
         private MainSceneDataModel MainSceneDataModel { get; }
         private MainResourcePackage MainResourcePackage { get; }
         private IResourcesService ResourcesService { get; }
+        public IRandomService RandomService { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
 
         private SceneBase _currentScene;
@@ -42,6 +46,7 @@ namespace Atom.Client.MacOS
             [NotNull] MainSceneDataModel mainSceneDataModel,
             [NotNull] MainResourcePackage mainResourcePackage,
             [NotNull] IResourcesService resourcesService,
+            [NotNull] IRandomService randomService,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection)
         {
             ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
@@ -50,6 +55,7 @@ namespace Atom.Client.MacOS
             MainSceneDataModel = mainSceneDataModel ?? throw new ArgumentNullException(nameof(mainSceneDataModel));
             MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
             ResourcesService = resourcesService ?? throw new ArgumentNullException(nameof(resourcesService));
+            RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
         }
 
@@ -98,16 +104,26 @@ namespace Atom.Client.MacOS
             DefaultConsoleManipulator.Update(gameTime);
         }
 
-        private static Task<GalaxiesMap> GenerateMapAsync(CancellationToken cancellationToken)
+        private Task<GalaxiesMap> GenerateMapAsync(CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 
                 var map = new GalaxiesMap();
-                var cell = new GalaxiesMapCell(new Point3D(0));
-                map.SetCell(new Point3D(0), cell);
-                
+                var pointsBox = RectangleBox.FromCenterAndRadius(Point3D.Zero, new Point3D(5));
+                foreach (var point in pointsBox.EnumeratePoints())
+                {
+                    var cell = new GalaxiesMapCell(point);
+                    for (int i = 0; i < 20; i++)
+                    {
+                        var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,
+                            cell.World + new Vector3(cell.Size) / 2);
+                        var galaxy = new Galaxy(cell, randomPos);
+                        cell.GalaxiesTree.AddItem(galaxy);
+                    }
+                    map.SetCell(point, cell);
+                }
                 return map;
             }, TaskCreationOptions.LongRunning);
         }

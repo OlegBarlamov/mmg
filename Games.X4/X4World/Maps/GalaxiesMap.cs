@@ -10,7 +10,7 @@ namespace X4World.Maps
     {
         public GalaxiesMapCell FindPoint(Vector3 worldPoint)
         {
-            var point = Point3DExtensions.Point3DFromVector3(worldPoint / WorldConstants.GalaxiesMapCellSize);
+            var point = Point3DExtensions.Point3DFromVector3((worldPoint - new Vector3(WorldConstants.GalaxiesMapCellSize / 2)) / WorldConstants.GalaxiesMapCellSize);
             return GetCell(point);
         }
 
