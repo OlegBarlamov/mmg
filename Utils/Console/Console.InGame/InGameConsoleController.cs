@@ -14,6 +14,7 @@ namespace Console.InGame
     {
         public bool IsShowed => _isShowed;
 
+        internal RenderingMessagesFilter RenderingMessagesFilter { get; }
         private IConsoleMessagesProvider ConsoleMessagesProvider { get; }
         private IConsoleCommandExecutor ConsoleCommandExecutor { get; }
 
@@ -34,7 +35,8 @@ namespace Console.InGame
             ConsoleMessagesProvider = consoleMessagesProvider ?? throw new ArgumentNullException(nameof(consoleMessagesProvider));
             ConsoleCommandExecutor = consoleCommandExecutor ?? throw new ArgumentNullException(nameof(consoleCommandExecutor));
 
-            _model = new ConsoleModel(consoleCommandExecutor, _renderersProvider);
+            RenderingMessagesFilter = new RenderingMessagesFilter();
+            _model = new ConsoleModel(consoleCommandExecutor, _renderersProvider, RenderingMessagesFilter);
             _view = new ConsoleView(_model, _renderersProvider);
             
             _model.UserCommand += ModelOnUserCommand;

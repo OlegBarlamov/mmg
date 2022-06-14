@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Console.FrameworkAdapter.Commands
+namespace Console.Core.Commands
 {
     public abstract class ParametrizedExecutableConsoleCommand : ExecutableConsoleCommand
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Console.FrameworkAdapter.Commands.Types;
+using Console.Core.Commands.Types;
 
-namespace Console.FrameworkAdapter.Commands
+namespace Console.Core.Commands
 {
     public abstract class FixedTypedExecutableConsoleCommand : TypedExecutableConsoleCommand
     {

@@ -33,7 +33,25 @@ namespace FrameworkSDK.Services
 	        return _bufferedTypes;
         }
 
-	    public void Dispose()
+        public Type FindTypeFromFullName(string typeName)
+        {
+	        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+	        {
+		        var type = assembly.GetType(typeName);
+		        if (type == null)
+			        continue;
+		        return type;
+	        }
+	        return null;
+        }
+
+        public Type FindTypeFromShortName(string name)
+        {
+	        return GetAllTypes().FirstOrDefault(type =>
+		        string.Equals(name, type.Name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public void Dispose()
 	    {
 		    lock (_locker)
 		    {

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using Console.FrameworkAdapter.Commands;
+using Console.Core.Commands;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
 
@@ -10,22 +9,36 @@ namespace Console.FrameworkAdapter
 {
     public class ExecutableCommandsCollection : IExecutableCommandsCollection
     {
+        [NotNull] private IServiceLocator ServiceLocator { get; }
+        private bool _commandsLoaded;
         private readonly ConcurrentDictionary<string, IExecutableConsoleCommand> _registeredCommands;
 
         public ExecutableCommandsCollection([NotNull] IServiceLocator serviceLocator)
         {
-            if (serviceLocator == null) throw new ArgumentNullException(nameof(serviceLocator));
-            
-            var commands = serviceLocator.ResolveMultiple<IExecutableConsoleCommand>();
-            _registeredCommands = new ConcurrentDictionary<string, IExecutableConsoleCommand>(commands
-                .Select(x => new KeyValuePair<string, IExecutableConsoleCommand>(x.Text, x)));
+            ServiceLocator = serviceLocator ?? throw new ArgumentNullException(nameof(serviceLocator));
+
+            _registeredCommands = new ConcurrentDictionary<string, IExecutableConsoleCommand>();
         }
-        
+
         public IReadOnlyDictionary<string, IExecutableConsoleCommand> GetAvailableCommands()
         {
+            if (!_commandsLoaded)
+                PreloadCommands();
+            
             return _registeredCommands;
         }
-        
+
+        public void PreloadCommands()
+        {
+            _commandsLoaded = true;
+
+            var commands = ServiceLocator.ResolveMultiple<IExecutableConsoleCommand>();
+            foreach (var consoleCommand in commands)
+            {
+                _registeredCommands.AddOrUpdate(consoleCommand.Text, consoleCommand, (text, command) => command);
+            }
+        }
+
         public void AddCommand([NotNull] IExecutableConsoleCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));

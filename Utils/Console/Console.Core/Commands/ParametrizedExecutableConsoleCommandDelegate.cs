@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-namespace Console.FrameworkAdapter.Commands
+namespace Console.Core.Commands
 {
     public sealed class ParametrizedExecutableConsoleCommandDelegate : ParametrizedExecutableConsoleCommand
     {

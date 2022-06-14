@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Console.FrameworkAdapter.Commands.Types
+namespace Console.Core.Commands.Types
 {
     public static class ConsoleCommandTypeDescriptionAssociator
     {
@@ -22,6 +22,9 @@ namespace Console.FrameworkAdapter.Commands.Types
         
         public static IConsoleCommandTypeDescription GetConsoleCommandTypeDescription(Type netType)
         {
+            if (netType.IsEnum && !AssociatedTypes.ContainsKey(netType))
+                return new EnumTypeDescription(netType);
+            
             return AssociatedTypes[netType];
         }
     }

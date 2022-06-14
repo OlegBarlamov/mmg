@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Console.Core.Models;
 using JetBrains.Annotations;
 
-namespace Console.FrameworkAdapter.Commands
+namespace Console.Core.Commands
 {
     public abstract class ExecutableConsoleCommand : IExecutableConsoleCommand
     {

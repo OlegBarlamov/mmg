@@ -1,4 +1,4 @@
-namespace Console.FrameworkAdapter.Commands.Types
+namespace Console.Core.Commands.Types
 {
     public class StringTypeDescription : IConsoleCommandTypeDescription
     {

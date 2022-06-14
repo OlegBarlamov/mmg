@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Console.Core.Models;
-using Console.FrameworkAdapter.Commands;
+using Console.Core.Commands;
 
 namespace Console.FrameworkAdapter
 {
@@ -9,5 +8,6 @@ namespace Console.FrameworkAdapter
         void AddCommand(IExecutableConsoleCommand command);
         void RemoveCommand(IExecutableConsoleCommand command);
         IReadOnlyDictionary<string, IExecutableConsoleCommand> GetAvailableCommands();
+        void PreloadCommands();
     }
 }

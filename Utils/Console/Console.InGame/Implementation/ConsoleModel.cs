@@ -32,6 +32,8 @@ namespace Console.InGame.Implementation
         public IReadOnlyCollection<CommandSuggestion> VisibleCommandSuggestions { get; private set; } =
             Array.Empty<CommandSuggestion>();
 
+        public IReadOnlyCollection<string> MessagesSources => _allMessagesSources;
+
         public int VisibleSelectedSuggestionIndex { get; private set; } = -1;
         public bool MoreSuggestionLeft { get; private set; }
         public bool MoreSuggestionRight { get; private set; }
@@ -42,6 +44,7 @@ namespace Console.InGame.Implementation
 
         private InGameConsoleConfig Config { get; set; }
         [NotNull] private RenderersProvider RenderersProvider { get; }
+        [NotNull] private IRenderingMessagesFilter RenderingMessagesFilter { get; }
 
         private bool _needUpdateVisibleMessages;
         private bool _scrolledByEnd = true;
@@ -59,20 +62,21 @@ namespace Console.InGame.Implementation
         private float _scrollOffsetY;
         private int _enteredCommandSelectedIndex = -1;
 
-        private float notUsedOffsetY = 0;
-
         private bool _initialized;
         
+        private readonly List<string> _allMessagesSources = new List<string>();
         private readonly List<IRenderingMessage> _allMessages = new List<IRenderingMessage>();
         private readonly object _allMessagesLocker = new object();
         private readonly InputController _inputController = new InputController();
         private readonly CommandSuggestionsProvider _commandSuggestionsProvider;
         private readonly List<string> _enteredCommands = new List<string>();
         
-        public ConsoleModel([NotNull] IConsoleCommandExecutor commandsProvider, [NotNull] RenderersProvider renderersProvider)
+        public ConsoleModel([NotNull] IConsoleCommandExecutor commandsProvider, [NotNull] RenderersProvider renderersProvider,
+            [NotNull] IRenderingMessagesFilter renderingMessagesFilter)
         {
             if (commandsProvider == null) throw new ArgumentNullException(nameof(commandsProvider));
             RenderersProvider = renderersProvider ?? throw new ArgumentNullException(nameof(renderersProvider));
+            RenderingMessagesFilter = renderingMessagesFilter ?? throw new ArgumentNullException(nameof(renderingMessagesFilter));
 
             _commandSuggestionsProvider = new CommandSuggestionsProvider(commandsProvider);
         }
@@ -109,7 +113,11 @@ namespace Console.InGame.Implementation
             var newMessages = new List<IRenderingMessage>();
             foreach (var message in messages)
             {
-                var formatted= FormatConsoleMessage(message);
+                var source = message.Source;
+                if (!_allMessagesSources.Contains(source))
+                    _allMessagesSources.Add(source);
+                
+                var formatted = FormatConsoleMessage(message);
                 foreach (var formattedMessage in formatted)
                     newMessages.Add(formattedMessage);
             }
@@ -176,6 +184,9 @@ namespace Console.InGame.Implementation
                     for (i = _allMessages.Count - 1; i >= 0; i--)
                     {
                         var message = _allMessages[i];
+                        if (!RenderingMessagesFilter.Validate(message))
+                            continue;
+                        
                         totalHeight += message.Size.Y + Config.ConsoleMessagesInterval;
 
                         newVisibleMessages.Insert(0, message);
@@ -213,7 +224,8 @@ namespace Console.InGame.Implementation
                                 extraOffset = currentOffset;
 
                                 var hiddenMessage = _allMessages[_startVisibleIndex];
-                                currentOffset -= hiddenMessage.Size.Y;
+                                if (RenderingMessagesFilter.Validate(hiddenMessage))
+                                    currentOffset -= hiddenMessage.Size.Y;
                                 if (currentOffset > 0)
                                     _startVisibleIndex++;
                             }
@@ -229,7 +241,8 @@ namespace Console.InGame.Implementation
                                 }
                                 _startVisibleIndex--;
                                 var shownMessage = _allMessages[_startVisibleIndex];
-                                currentOffset += shownMessage.Size.Y;
+                                if (RenderingMessagesFilter.Validate(shownMessage))
+                                    currentOffset += shownMessage.Size.Y;
                                 extraOffset = currentOffset;
                             }
                         }
@@ -241,6 +254,9 @@ namespace Console.InGame.Implementation
                     for (i = _startVisibleIndex; i < _allMessages.Count; i++)
                     {
                         var message = _allMessages[i];
+                        if (!RenderingMessagesFilter.Validate(message))
+                            continue;
+                        
                         totalHeight += message.Size.Y + Config.ConsoleMessagesInterval;
 
                         newVisibleMessages.Add(message);
@@ -476,7 +492,7 @@ namespace Console.InGame.Implementation
                     
                     if (estimateTextSize.Value.X < availableWidth)
                     {
-                        yield return new TextMessage(estimateMessageText, color, estimateTextSize.Value, Config.ConsoleFont);
+                        yield return new TextMessage(estimateMessageText, message.Source, message.LogLevel, color, estimateTextSize.Value, Config.ConsoleFont);
                         break;
                     }
 
@@ -491,7 +507,7 @@ namespace Console.InGame.Implementation
                     estimateMessageText = estimateMessageText.Substring(availableCharactersLength);
                     estimateTextSize = null;
                     
-                    yield return new TextMessage(availableText, color, resultEstimateTextSize, Config.ConsoleFont);
+                    yield return new TextMessage(availableText, message.Source, message.LogLevel, color, resultEstimateTextSize, Config.ConsoleFont);
                 }
             }
 
@@ -503,7 +519,7 @@ namespace Console.InGame.Implementation
                     var renderer = RenderersProvider.GetRenderer(contentType);
                     var startSize = renderer.Measure(message.Content,
                         new Vector2(Config.DefaultWidth, Config.DefaultHeight));
-                    var customDataMessage = new CustomMessage(message.Content, renderer, startSize);
+                    var customDataMessage = new CustomMessage(message.Content, message.Source, message.LogLevel, renderer, startSize);
                     yield return customDataMessage;
                 }
             }

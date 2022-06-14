@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Console.Core;
+using Console.Core.Commands;
 using Console.FrameworkAdapter;
-using Console.FrameworkAdapter.Commands;
 using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Core;
-using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -16,8 +15,6 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGameExtensions;
 using MonoGameExtensions.DataStructures;
 using NetExtensions.Geometry;
 using X4World.Objects;
@@ -120,7 +117,7 @@ namespace Atom.Client.MacOS.Scenes
                         var box = boxComponent.Value.BoundingBox.Value;
                         var center = (box.Max + box.Min) / 2;
                         var size = (box.Max - box.Min).Length();
-                        if ((_camera.Position - center).Length() > 1000f + size / 2)
+                        if ((_camera.Position - center).Length() > 1500f + size / 2)
                         {
                             TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
                             {
@@ -138,7 +135,7 @@ namespace Atom.Client.MacOS.Scenes
                         if (mapCell == null)
                             continue;
 
-                        foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, 1000f))
+                        foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, 1500f))
                         {
                             if (!_componentsInScene.ContainsKey(leaf.BoundingBox.ToString()))
                             {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Console.FrameworkAdapter.Commands
+namespace Console.Core.Commands
 {
     public class ConsoleCommandExecutionException : Exception
     {

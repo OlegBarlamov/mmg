@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Console.Core;
 using Console.Core.Models;
 using JetBrains.Annotations;
 
-namespace Console.FrameworkAdapter
+namespace Console.Core
 {
     public class CommandExecutorMediator : IConsoleCommandExecutor, IDisposable
     {

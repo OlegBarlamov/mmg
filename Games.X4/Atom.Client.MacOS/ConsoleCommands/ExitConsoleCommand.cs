@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Console.FrameworkAdapter.Commands;
+using Console.Core.Commands;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 

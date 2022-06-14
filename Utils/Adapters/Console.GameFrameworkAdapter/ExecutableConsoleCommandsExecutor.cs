@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Console.Core;
+using Console.Core.Commands;
 using Console.Core.Models;
-using Console.FrameworkAdapter.Commands;
-using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 

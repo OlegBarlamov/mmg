@@ -3,8 +3,10 @@ using System.Linq;
 using System.Reflection;
 using Atom.Client.MacOS.Resources;
 using Atom.Client.MacOS.Services.Implementations;
+using Console.Core.Commands;
 using Console.FrameworkAdapter;
 using Console.FrameworkAdapter.Commands;
+using Console.InGame.Commands;
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Services;
@@ -33,6 +35,11 @@ namespace Atom.Client.MacOS
 
         private void RegisterConsoleCommands(IServiceRegistrator serviceRegistrator)
         {
+            serviceRegistrator.RegisterType<IExecutableConsoleCommand, AddLogLevelFilterCommand>();
+            serviceRegistrator.RegisterType<IExecutableConsoleCommand, AddSourceFilterCommand>();
+            serviceRegistrator.RegisterType<IExecutableConsoleCommand, ClearFilterCommand>();
+            serviceRegistrator.RegisterType<IExecutableConsoleCommand, ShowEnumValuesConsoleCommand>();
+            
             var consoleCommandTypes = AppDomain.CurrentDomain.GetAllTypes()
                 .Where(type => type.IsClass)
                 .Where(type => !type.IsAbstract)
