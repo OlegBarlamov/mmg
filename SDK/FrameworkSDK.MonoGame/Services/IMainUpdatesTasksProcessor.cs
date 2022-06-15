@@ -1,12 +1,9 @@
-using FrameworkSDK.MonoGame.Core;
 using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Services
 {
-    public interface ITicksTasksProcessor
+    public interface IMainUpdatesTasksProcessor : IDelayedTasksProcessor
     {
-        void EnqueueTask(IDelayedTask task);
-
         void Update(GameTime gameTime);
     }
 }

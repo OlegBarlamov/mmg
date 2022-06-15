@@ -16,13 +16,18 @@ namespace MonoGameExtensions.DataStructures
             return node.Children.Map[new Point3D(Math.Sign(diff.X), Math.Sign(diff.Y), Math.Sign(diff.Z))];
         }
 
+        public static bool ContainsPoint<TData>(this IOctreeNode<TData> node, Vector3 point)
+        {
+            return node.BoundingBox.Contains(point) == ContainmentType.Contains;
+        }
+
         /// <summary>
         /// No checks that the point inside the node!!
         /// </summary>
         public static IOctreeNode<TData> GetLeafWithPoint<TData>(this IOctreeNode<TData> node, Vector3 point)
         {
             var currentNode = node;
-            while (!currentNode.Children.IsEmpty)
+            while (currentNode.ContainsPoint(point) && !currentNode.Children.IsEmpty)
             {
                 currentNode = currentNode.GetChildContainsPoint(point);
             }

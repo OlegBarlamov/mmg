@@ -45,8 +45,6 @@
     <Compile Include="Scenes\LoadingScene.cs" />
     <Compile Include="Scenes\MainScene.cs" />
     <Compile Include="Scenes\MainSceneDataModel.cs" />
-    <Compile Include="Services\IMapUpdater.cs" />
-    <Compile Include="Services\Implementations\DefaultMapUpdater.cs" />
     <Compile Include="Services\Implementations\ScenesResolverHolder.cs" />
     <Compile Include="X4GameApp.cs" />
     <MonoGameContentReference Include="__Content\content.mgcb">

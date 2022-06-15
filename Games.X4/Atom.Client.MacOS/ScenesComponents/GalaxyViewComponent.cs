@@ -45,7 +45,15 @@ namespace Atom.Client.MacOS.Components
             var rec = new Rectangle(leftTopStarOnScreenPoint.EmitZ().ToPoint(),
                 (endStarOnScreenPoint - leftTopStarOnScreenPoint).EmitZ().ToPoint());
 
-            context.Draw(ResourcePackage.GalaxyTexture, rec, Color.White);
+            if ((DataModel.Position - ((DirectionalCamera3D) Camera3DProvider.GetActiveCamera()).Position).Length() <
+                DataModel.Size.X / 2)
+            {
+                // no draw
+            }
+            else
+            {
+                context.Draw(ResourcePackage.GalaxyTexture, rec, Color.White);
+            }
         }
 
         private Vector3 GetRightVector()

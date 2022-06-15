@@ -19,6 +19,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions.DataStructures;
 using NetExtensions.Geometry;
+using X4World;
 using X4World.Objects;
 
 namespace Atom.Client.MacOS.Scenes
@@ -32,7 +33,8 @@ namespace Atom.Client.MacOS.Scenes
         private IConsoleController ConsoleController { get; }
         private IDebugInfoService DebugInfoService { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
-        public ITicksTasksProcessor TicksTasksProcessor { get; }
+        private IMainUpdatesTasksProcessor MainUpdatesTasksProcessor { get; }
+        private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
@@ -42,7 +44,8 @@ namespace Atom.Client.MacOS.Scenes
 
         private BasicEffect _effect;
         
-        private readonly Dictionary<string, IGraphicComponent> _objectsOnScene = new Dictionary<string, IGraphicComponent>();
+        private readonly Dictionary<string, IGraphicComponent> _objectsOnGalaxiesScene = new Dictionary<string, IGraphicComponent>();
+        private readonly Dictionary<string, IGraphicComponent> _objectsOnStarsScene = new Dictionary<string, IGraphicComponent>();
 
         public MainScene(
             MainSceneDataModel model,
@@ -52,7 +55,8 @@ namespace Atom.Client.MacOS.Scenes
             IConsoleController consoleController,
             IDebugInfoService debugInfoService,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection,
-            [NotNull] ITicksTasksProcessor ticksTasksProcessor
+            [NotNull] IMainUpdatesTasksProcessor mainUpdatesTasksProcessor,
+            [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor
             )
             :base(nameof(MainScene))
         {
@@ -63,7 +67,8 @@ namespace Atom.Client.MacOS.Scenes
             ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
-            TicksTasksProcessor = ticksTasksProcessor ?? throw new ArgumentNullException(nameof(ticksTasksProcessor));
+            MainUpdatesTasksProcessor = mainUpdatesTasksProcessor ?? throw new ArgumentNullException(nameof(mainUpdatesTasksProcessor));
+            BackgroundTasksProcessor = backgroundTasksProcessor ?? throw new ArgumentNullException(nameof(backgroundTasksProcessor));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -95,7 +100,9 @@ namespace Atom.Client.MacOS.Scenes
         }
         
         private AutoSplitOctreeNode<Galaxy> _cameraGalaxiesNode;
+        private AutoSplitOctreeNode<Star> _cameraStarsNode;
         private CancellationTokenSource _newCellCancellationTokenSource;
+        private CancellationTokenSource _newStarsCellCancellationTokenSource;
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -112,19 +119,20 @@ namespace Atom.Client.MacOS.Scenes
                     _cameraGalaxiesNode = newGalaxiesNode;
                     
                     _newCellCancellationTokenSource?.Cancel();
+                    _newCellCancellationTokenSource?.Dispose();
                     _newCellCancellationTokenSource = new CancellationTokenSource();
                     
-                    foreach (var boxComponent in _objectsOnScene)
+                    foreach (var boxComponent in _objectsOnGalaxiesScene)
                     {
                         var box = boxComponent.Value.BoundingBox.Value;
                         var center = (box.Max + box.Min) / 2;
                         var size = (box.Max - box.Min).Length();
-                        if ((_camera.Position - center).Length() > 1500f + size / 2)
+                        if ((_camera.Position - center).Length() > WorldConstants.GalaxiesMapCellSize * 1.5f + size / 2)
                         {
-                            TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
                             {
                                 RemoveView((IView)boxComponent.Value);
-                                _objectsOnScene.Remove(boxComponent.Key);
+                                _objectsOnGalaxiesScene.Remove(boxComponent.Key);
                                     
                             }, _newCellCancellationTokenSource.Token));
                         }
@@ -137,21 +145,41 @@ namespace Atom.Client.MacOS.Scenes
                         if (mapCell == null)
                             continue;
 
-                        foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, 1500f))
+                        foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, WorldConstants.GalaxiesMapCellSize * 1.5f))
                         {
                             var galaxies = leaf.Data;
                             foreach (var galaxy in galaxies)
                             {
-                                if (!_objectsOnScene.ContainsKey(galaxy.Name))
+                                if (!_objectsOnGalaxiesScene.ContainsKey(galaxy.Name))
                                 {
-                                    _objectsOnScene.Add(galaxy.Name, AddView(galaxy));
+                                    MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                                        {
+                                            _objectsOnGalaxiesScene.Add(galaxy.Name, AddView(galaxy));
+                                            
+                                        }, _newCellCancellationTokenSource.Token));
                                 }
+
+                                if (leaf == newGalaxiesNode)
+                                {
+                                    // the current octree-node
+                                    if (galaxy.StarsOctree.Data.Count == 0)
+                                    {
+                                        BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                                        {
+                                            for (int i = 0; i < 100; i++)
+                                            {
+                                                var position = RandomService.NextVector3(-galaxy.Size / 2, galaxy.Size / 2);
+                                                var newStar = new Star(position, galaxy, NamesGenerator.Hash(HashType.SmallGuid, $"{galaxy.Name}_star"));
+                                                galaxy.AddStar(newStar);
+                                            }
+                                        }, CancellationToken.None));
+                                    }
+                                }  
                             }
-                            
-                            
-                            if (!_objectsOnScene.ContainsKey(leaf.BoundingBox.ToString()))
+
+                            if (!_objectsOnGalaxiesScene.ContainsKey(leaf.BoundingBox.ToString()))
                             {
-                                TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                                MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
                                 {
                                     var boxModel = BoxComponentDataModel.FromBoundingBox(leaf.BoundingBox);
                                     boxModel.GraphicsPassName = "Render_Grouped";
@@ -160,19 +188,81 @@ namespace Atom.Client.MacOS.Scenes
                                     box.SetName(box.BoundingBox.ToString());
                                     AddView(box);
                                     
-                                    _objectsOnScene.Add(box.Name, box);
+                                    _objectsOnGalaxiesScene.Add(box.Name, box);
                                     
                                 }, _newCellCancellationTokenSource.Token));
                             }
                         }
                     }
                 }
+                else
+                {
+                    var galaxies = newGalaxiesNode.Data;
+                    AutoSplitOctreeNode<Star> newStarsNode = null;
+                    Galaxy activeGalaxy = null;
+
+                    foreach (var galaxy in galaxies)
+                    {
+                        if ((galaxy.Position - _camera.Position).Length() < galaxy.Size.X / 2)
+                        {
+                            // Update stars scene
+                            var starsOctree = galaxy.StarsOctree;
+                            activeGalaxy = galaxy;
+                            newStarsNode = (AutoSplitOctreeNode<Star>)starsOctree.GetLeafWithPoint(_camera.Position - galaxy.Position);
+                        }
+                    }
+
+                    if (newStarsNode != _cameraStarsNode)
+                    {
+                        _cameraStarsNode = newStarsNode;
+
+                        if (activeGalaxy != null)
+                        {
+                            var localPosition = _camera.Position - activeGalaxy.Position;
+
+                            _newStarsCellCancellationTokenSource?.Cancel();
+                            _newStarsCellCancellationTokenSource?.Dispose();
+                            _newStarsCellCancellationTokenSource = new CancellationTokenSource();
+
+                            foreach (var starsLeaf in newStarsNode.EnumerateLeafsInRangeAroundPoint(localPosition, 50f))
+                            {
+                                var stars = starsLeaf.Data;
+                                var boundingBoxInWorld =
+                                    new BoundingBox(starsLeaf.BoundingBox.Min + activeGalaxy.Position,
+                                        starsLeaf.BoundingBox.Max + activeGalaxy.Position);
+
+                                if (!_objectsOnStarsScene.ContainsKey(boundingBoxInWorld.ToString()))
+                                {
+                                    MainUpdatesTasksProcessor.EnqueueTask(
+                                        new SimpleDelayedTask(time =>
+                                        {
+                                            var boxModel = BoxComponentDataModel.FromBoundingBox(boundingBoxInWorld);
+                                            boxModel.GraphicsPassName = "Render_Grouped";
+                                            boxModel.Color = Color.Orange;
+                                            var box = new FramedBoxComponent(boxModel);
+                                            box.SetName(boundingBoxInWorld.ToString());
+                                            AddView(box);
+
+                                            _objectsOnStarsScene.Add(box.Name, box);
+                                        }, _newStarsCellCancellationTokenSource.Token));
+                                }
+
+                                // foreach (var star in stars)
+                                // {
+                                //     
+                                // }
+                            }
+                        }
+                    }
+                }
                 
-                DebugInfoService.SetCounter("my_components", _objectsOnScene.Count);
+                
+                
+                DebugInfoService.SetCounter("my_components", _objectsOnGalaxiesScene.Count);
                 
             }
             
-            TicksTasksProcessor.Update(gameTime);
+            MainUpdatesTasksProcessor.Update(gameTime);
         }
 
         public override void Dispose()

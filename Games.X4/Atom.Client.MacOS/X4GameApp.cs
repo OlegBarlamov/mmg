@@ -115,7 +115,7 @@ namespace Atom.Client.MacOS
                 foreach (var point in pointsBox.EnumeratePoints())
                 {
                     var cell = new GalaxiesMapCell(point);
-                    for (int i = 0; i < 20; i++)
+                    for (int i = 0; i < 40; i++)
                     {
                         var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,
                             cell.World + new Vector3(cell.Size) / 2);

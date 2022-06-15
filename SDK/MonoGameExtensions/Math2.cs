@@ -171,6 +171,28 @@ namespace MonoGameExtensions
 
 			return b;
 		}
+		
+		public static float Max(params float[] values)
+		{
+			float max = float.MinValue;
+			foreach (var value in values)
+			{
+				if (value > max)
+					max = value;
+			}
+			return max;
+		}
+		
+		public static float Min(params float[] values)
+		{
+			float min = float.MaxValue;
+			foreach (var value in values)
+			{
+				if (value < min)
+					min = value;
+			}
+			return min;
+		}
 
 		/// <summary>
 		/// Gets the minimum from two values.

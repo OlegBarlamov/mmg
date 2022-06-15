@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Services.Implementations
 {
-    public class FixedVelocityTasksProcessor : ITicksTasksProcessor, IDisposable
+    public class FixedVelocityTasksProcessor : IMainUpdatesTasksProcessor, IDisposable
     {
         public int Velocity { get; }
         private readonly ConcurrentQueue<IDelayedTask> _tasks = new ConcurrentQueue<IDelayedTask>();
@@ -29,7 +29,7 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
                 if (_tasks.TryDequeue(out var task))
                 {
                     if (!task.Cancelled)
-                        task.Execute(gameTime);
+                        task.Execute();
                 }
                 else
                 {

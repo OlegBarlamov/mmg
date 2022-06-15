@@ -8,7 +8,7 @@ namespace FrameworkSDK.MonoGame.Core
     public class SimpleDelayedTask : IDelayedTask
     {
         public bool Cancelled => CancellationToken.IsCancellationRequested;
-        
+
         private Action<GameTime> ExecuteAction { get; }
         public CancellationToken CancellationToken { get; }
 
@@ -21,6 +21,12 @@ namespace FrameworkSDK.MonoGame.Core
         public void Execute(GameTime gameTime)
         {
             ExecuteAction(gameTime);
+        }
+
+        private static readonly GameTime EmptyGameTime = new GameTime();
+        public void Execute()
+        {
+            ExecuteAction(EmptyGameTime);
         }
     }
 }

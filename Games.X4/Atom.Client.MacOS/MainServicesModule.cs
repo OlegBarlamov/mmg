@@ -26,7 +26,8 @@ namespace Atom.Client.MacOS
             serviceRegistrator.RegisterFactory<IScenesResolver>((locator, type) => locator.Resolve<ScenesResolverHolder>().ScenesResolver);
             serviceRegistrator.RegisterType<IExecutableCommandsCollection, ExecutableCommandsCollection>();
             
-            serviceRegistrator.RegisterInstance<ITicksTasksProcessor>(new FixedVelocityTasksProcessor(5));
+            serviceRegistrator.RegisterInstance<IMainUpdatesTasksProcessor>(new FixedVelocityTasksProcessor(5));
+            serviceRegistrator.RegisterInstance<IBackgroundTasksProcessor>(new ThreadPoolTasksProcessor());
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();
             
