@@ -119,7 +119,7 @@ namespace Atom.Client.MacOS
                     {
                         var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,
                             cell.World + new Vector3(cell.Size) / 2);
-                        var galaxy = new Galaxy(cell, randomPos);
+                        var galaxy = new Galaxy(cell, randomPos, NamesGenerator.Hash(HashType.SmallGuid, "galaxy"));
                         cell.GalaxiesTree.AddItem(galaxy);
                     }
                     map.SetCell(point, cell);

@@ -35,7 +35,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public FramedBoxComponent(BoxComponentDataModel model)
         {
             SingleGraphicsPassName = model.GraphicsPassName;
-            var mesh = new FixedSimpleMesh(this, new BoxGeometry(model.Color));
+            var mesh = new FixedSimpleMesh(this, new FramedBoxGeometry(model.Color));
             mesh.SetPosition(model.Position);
             mesh.SetScale(model.Scale);
             
@@ -43,6 +43,11 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             
             var meshGeometrySize = Vector3.One;
             BoundingBoxInternal = new BoundingBox(model.Position - meshGeometrySize/2 * model.Scale, model.Position + meshGeometrySize/2 * model.Scale);
+        }
+
+        public void SetName(string name)
+        {
+            Name = name;
         }
     }
 }

@@ -76,17 +76,7 @@ namespace MonoGameExtensions.DataStructures
                 RightTopForward,
                 LeftTopForward,
             };
-            Map = new Dictionary<Point3D, IOctreeNode<TData>>
-            {
-                {new Point3D(-1, -1, -1), LeftBottomBackward},
-                {new Point3D(1, -1, -1), RightBottomBackward},
-                {new Point3D(1, -1, 1), RightBottomForward},
-                {new Point3D(-1, -1, 1), LeftBottomForward},
-                {new Point3D(-1, 1, -1), LeftTopBackward},
-                {new Point3D(1, 1, -1), RightTopBackward},
-                {new Point3D(1, 1, 1), RightTopForward},
-                {new Point3D(-1, 1, 1), LeftTopForward},
-            };
+            Map = GenerateMap();
         }
 
         public OctreeChildrenNodes([NotNull] IReadOnlyList<IOctreeNode<TData>> nodesLeftBottomBackwardCounterClockwise)
@@ -101,7 +91,17 @@ namespace MonoGameExtensions.DataStructures
             RightTopForward = nodesLeftBottomBackwardCounterClockwise[6];
             LeftTopForward = nodesLeftBottomBackwardCounterClockwise[7];
             Nodes = nodesLeftBottomBackwardCounterClockwise;
-            Map = new Dictionary<Point3D, IOctreeNode<TData>>
+            Map = GenerateMap();
+        }
+
+        private OctreeChildrenNodes()
+        {
+            Nodes = new IOctreeNode<TData>[0];
+        }
+
+        private Dictionary<Point3D, IOctreeNode<TData>> GenerateMap()
+        {
+            return new Dictionary<Point3D, IOctreeNode<TData>>
             {
                 {new Point3D(-1, -1, -1), LeftBottomBackward},
                 {new Point3D(1, -1, -1), RightBottomBackward},
@@ -111,12 +111,28 @@ namespace MonoGameExtensions.DataStructures
                 {new Point3D(1, 1, -1), RightTopBackward},
                 {new Point3D(1, 1, 1), RightTopForward},
                 {new Point3D(-1, 1, 1), LeftTopForward},
-            };
-        }
+                
+                // Edge cases
+                {new Point3D(0, 0, 0), LeftBottomBackward},
+                
+                {new Point3D(-1, -1, 0), LeftBottomBackward},
+                {new Point3D(0, -1, -1), LeftBottomBackward},
+                {new Point3D(0, 0, -1), LeftBottomBackward},
+                {new Point3D(0, -1, 0), LeftBottomBackward},
+                {new Point3D(-1, 0, 0), LeftBottomBackward},
 
-        private OctreeChildrenNodes()
-        {
-            Nodes = new IOctreeNode<TData>[0];
+                {new Point3D(1, 1, 0), RightTopForward},
+                {new Point3D(0, 1, 1), RightTopForward},
+                {new Point3D(0, 0, 1), RightTopForward},
+                {new Point3D(0, 1, 0), RightTopForward},
+                {new Point3D(1, 0, 0), RightTopForward},
+                
+                {new Point3D(1, -1, 0), RightBottomForward},
+                {new Point3D(0, -1, 1), LeftBottomForward},
+                
+                {new Point3D(-1, 1, 0), LeftTopBackward},
+                {new Point3D(0, 1, -1), RightTopBackward},
+            };
         }
     }
 }

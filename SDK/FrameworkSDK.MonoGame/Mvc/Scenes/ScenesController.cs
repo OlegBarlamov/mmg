@@ -56,7 +56,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			}
 			catch (Exception e)
 			{
-				Logger.Error("Scene {0} Update unhandled exception.", e, currentScene);
+				Logger.Error("Scene {0} Update unhandled exception", e, currentScene);
 			}
 		}
 

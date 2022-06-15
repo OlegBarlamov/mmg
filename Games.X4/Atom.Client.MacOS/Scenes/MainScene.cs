@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Atom.Client.MacOS.Components;
 using Console.Core;
 using Console.Core.Commands;
 using Console.FrameworkAdapter;
 using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Core;
+using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
@@ -40,7 +42,7 @@ namespace Atom.Client.MacOS.Scenes
 
         private BasicEffect _effect;
         
-        private readonly Dictionary<string, FramedBoxComponent> _componentsInScene = new Dictionary<string, FramedBoxComponent>();
+        private readonly Dictionary<string, IGraphicComponent> _objectsOnScene = new Dictionary<string, IGraphicComponent>();
 
         public MainScene(
             MainSceneDataModel model,
@@ -112,7 +114,7 @@ namespace Atom.Client.MacOS.Scenes
                     _newCellCancellationTokenSource?.Cancel();
                     _newCellCancellationTokenSource = new CancellationTokenSource();
                     
-                    foreach (var boxComponent in _componentsInScene)
+                    foreach (var boxComponent in _objectsOnScene)
                     {
                         var box = boxComponent.Value.BoundingBox.Value;
                         var center = (box.Max + box.Min) / 2;
@@ -121,13 +123,13 @@ namespace Atom.Client.MacOS.Scenes
                         {
                             TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
                             {
-                                RemoveView(boxComponent.Value);
-                                _componentsInScene.Remove(boxComponent.Value.BoundingBox.Value.ToString());
+                                RemoveView((IView)boxComponent.Value);
+                                _objectsOnScene.Remove(boxComponent.Key);
                                     
                             }, _newCellCancellationTokenSource.Token));
                         }
                     }
-                    
+
                     var mapRec = RectangleBox.FromCenterAndRadius(newCameraPointOnMap.MapPoint, new Point3D(1));
                     foreach (var mapPoint in mapRec.EnumeratePoints())
                     {
@@ -137,14 +139,28 @@ namespace Atom.Client.MacOS.Scenes
 
                         foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, 1500f))
                         {
-                            if (!_componentsInScene.ContainsKey(leaf.BoundingBox.ToString()))
+                            var galaxies = leaf.Data;
+                            foreach (var galaxy in galaxies)
+                            {
+                                if (!_objectsOnScene.ContainsKey(galaxy.Name))
+                                {
+                                    _objectsOnScene.Add(galaxy.Name, AddView(galaxy));
+                                }
+                            }
+                            
+                            
+                            if (!_objectsOnScene.ContainsKey(leaf.BoundingBox.ToString()))
                             {
                                 TicksTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
                                 {
                                     var boxModel = BoxComponentDataModel.FromBoundingBox(leaf.BoundingBox);
                                     boxModel.GraphicsPassName = "Render_Grouped";
                                     boxModel.Color = Color.Pink;
-                                    _componentsInScene.Add(leaf.BoundingBox.ToString(), (FramedBoxComponent)AddView(boxModel));
+                                    var box = new FramedBoxComponent(boxModel);
+                                    box.SetName(box.BoundingBox.ToString());
+                                    AddView(box);
+                                    
+                                    _objectsOnScene.Add(box.Name, box);
                                     
                                 }, _newCellCancellationTokenSource.Token));
                             }
@@ -152,7 +168,7 @@ namespace Atom.Client.MacOS.Scenes
                     }
                 }
                 
-                DebugInfoService.SetCounter("my_components", _componentsInScene.Count);
+                DebugInfoService.SetCounter("my_components", _objectsOnScene.Count);
                 
             }
             

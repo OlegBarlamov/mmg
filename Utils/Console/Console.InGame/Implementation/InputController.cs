@@ -99,7 +99,7 @@ namespace Console.InGame.Implementation
                     case Keys.D:
                         return IsUpperCase ? 'D' :'d';
                     case Keys.E:
-                        return IsUpperCase ? 'R' :'e';
+                        return IsUpperCase ? 'E' :'e';
                     case Keys.F:
                         return IsUpperCase ? 'F' :'f';
                     case Keys.G:

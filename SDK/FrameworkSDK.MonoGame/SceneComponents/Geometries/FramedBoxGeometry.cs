@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.SceneComponents.Geometries
 {
-    public class BoxGeometry : IMeshGeometry
+    public class FramedBoxGeometry : IMeshGeometry
     {
         public PrimitiveType PrimitiveType { get; } = PrimitiveType.LineList;
         public VertexDeclaration VertexDeclaration { get; } = VertexPositionColor.VertexDeclaration;
@@ -27,7 +27,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Geometries
         private readonly Array _vertices;
         private readonly int[] _indices;
         
-        public BoxGeometry(Color color)
+        public FramedBoxGeometry(Color color)
         {
             _vertices = new[]
             {
