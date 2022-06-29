@@ -74,6 +74,21 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             GraphicsDevice.Clear(color);
         }
 
+        public void SetBlendState(BlendState blendState)
+        {
+            GraphicsDevice.BlendState = blendState;
+        }
+
+        public void SetDepthStencilState(DepthStencilState depthStencilState)
+        {
+            GraphicsDevice.DepthStencilState = depthStencilState;
+        }
+
+        public void SetRasterizerState(RasterizerState rasterizerState)
+        {
+            GraphicsDevice.RasterizerState = rasterizerState;
+        }
+
         public void Draw(Texture2D texture, Vector2? position = null, Rectangle? destinationRectangle = null,
             Rectangle? sourceRectangle = null, Vector2? origin = null, float rotation = 0, Vector2? scale = null,
             Color? color = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)

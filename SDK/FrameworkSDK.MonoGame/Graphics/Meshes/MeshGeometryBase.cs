@@ -31,9 +31,9 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
 
         public abstract int GetPrimitivesCount();
 
-        protected abstract TVertexType[] GetVertices();
+        public abstract TVertexType[] GetVertices();
 
-        protected abstract Array GetIndices();
+        public abstract Array GetIndices();
         
         void IMeshGeometry.FillVertexBuffer(VertexBuffer vertexBuffer)
         {

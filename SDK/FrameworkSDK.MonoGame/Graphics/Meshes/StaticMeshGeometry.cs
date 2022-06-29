@@ -31,12 +31,12 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
             return PrimitivesCount;
         }
 
-        protected override TVertexType[] GetVertices()
+        public override TVertexType[] GetVertices()
         {
             return Vertices;
         }
 
-        protected override Array GetIndices()
+        public override Array GetIndices()
         {
             return IndicesArray;
         }

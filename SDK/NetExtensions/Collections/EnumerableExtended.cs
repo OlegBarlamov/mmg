@@ -5,6 +5,16 @@ namespace NetExtensions.Collections
 {
     public static class EnumerableExtended
     {
+        public static void Repeat(Action action, int count)
+        {
+            Repeat(i => action(), count);
+        }
+        
+        public static void Repeat(Action<int> action, int count)
+        {
+            For(0, count, action);
+        }
+        
         public static void For(int start, int end, [NotNull] Action<int> action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));

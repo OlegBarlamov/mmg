@@ -90,6 +90,40 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                 new SetActiveCameraAction(GenerateActionName(nameof(SetActiveCameraAction)), effect));
         }
 
+        public static IGraphicsPipelineBuilder SetBlendState([NotNull] this IGraphicsPipelineBuilder builder, BlendState blendState)
+        {
+            return builder.Do(context =>
+            {
+                context.SetBlendState(blendState);
+            }, GenerateActionName(nameof(SetBlendState)));
+        }
+        
+        public static IGraphicsPipelineBuilder SetDepthStencilState([NotNull] this IGraphicsPipelineBuilder builder, DepthStencilState depthStencilState)
+        {
+            return builder.Do(context =>
+            {
+                context.SetDepthStencilState(depthStencilState);
+            }, GenerateActionName(nameof(SetDepthStencilState)));
+        }
+        
+        public static IGraphicsPipelineBuilder SetRasterizerState([NotNull] this IGraphicsPipelineBuilder builder, RasterizerState rasterizerState)
+        {
+            return builder.Do(context =>
+            {
+                context.SetRasterizerState(rasterizerState);
+            }, GenerateActionName(nameof(SetRasterizerState)));
+        }
+
+        public static IGraphicsPipelineBuilder SetRenderingConfigs([NotNull] this IGraphicsPipelineBuilder builder, BlendState blendState, DepthStencilState depthStencilState, RasterizerState rasterizerState)
+        {
+            return builder.Do(context =>
+            {
+                context.SetDepthStencilState(depthStencilState);
+                context.SetBlendState(blendState);
+                context.SetRasterizerState(rasterizerState);
+            }, GenerateActionName(nameof(SetRenderingConfigs)));
+        }
+
         private static string GenerateActionName(string prefix = "")
         {
             return NamesGenerator.Hash(HashType.Number, prefix);

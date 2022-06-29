@@ -27,5 +27,11 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         void SetRenderTargetToDisplay();
 
         void Clear(Color color);
+
+        void SetBlendState(BlendState blendState);
+
+        void SetDepthStencilState(DepthStencilState depthStencilState);
+
+        void SetRasterizerState(RasterizerState rasterizerState);
     }
 }

@@ -12,10 +12,12 @@ using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.Materials;
+using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.SceneComponents;
+using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -49,7 +51,8 @@ namespace Atom.Client.MacOS.Scenes
         };
         private readonly FirstPersonCameraController _cameraController;
 
-        private BasicEffect _effect;
+        private BasicEffect _texturesShader;
+        private BasicEffect _coloredShader;
         
         private readonly Dictionary<string, IGraphicComponent> _objectsOnGalaxiesScene = new Dictionary<string, IGraphicComponent>();
         private readonly Dictionary<string, IGraphicComponent> _objectsOnStarsScene = new Dictionary<string, IGraphicComponent>();
@@ -104,6 +107,12 @@ namespace Atom.Client.MacOS.Scenes
             });
 
             AddView(new PlaneComponentData(new TextureMaterial(DataModel.MainResourcePackage.A))
+            {
+                GraphicsPassName = "Render_Textured"
+            });
+
+            AddView(new RawGeometryComponentData(new TextureMaterial(DataModel.ColorsTexturesPackage.Get(Color.White)),
+                StaticGeometries.Sphere)
             {
                 GraphicsPassName = "Render_Textured"
             });
@@ -278,36 +287,38 @@ namespace Atom.Client.MacOS.Scenes
         {
             base.Dispose();
             
-            _effect?.Dispose();
+            _texturesShader?.Dispose();
+            _coloredShader?.Dispose();
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
         {
-            _effect = new BasicEffect(GameHeartServices.GraphicsDeviceManager.GraphicsDevice);
+            _texturesShader = new BasicEffect(GameHeartServices.GraphicsDeviceManager.GraphicsDevice)
+            {
+                VertexColorEnabled = false, TextureEnabled = true
+            };
+            _texturesShader.EnableDefaultLighting();
+
+            _coloredShader = new BasicEffect(GameHeartServices.GraphicsDeviceManager.GraphicsDevice)
+            {
+                TextureEnabled = false,
+                VertexColorEnabled = true
+            };
 
             var vertexBuffer = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
             var indexBuffer = graphicsPipelineBuilder.CreateIndexBuffer(200);
             
-            var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 100);
-            var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(200);
-            
+            var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 500);
+            var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(1000);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
-                .SetActiveCamera(_effect)
-                .AddAction(new GraphicsPipelineActionDelegate("switch_to_colors", (time, context, components) =>
-                 {
-                     _effect.TextureEnabled = false;
-                     _effect.VertexColorEnabled = true;
-                 }))
+                .SetRenderingConfigs(BlendState.Opaque, DepthStencilState.Default, RasterizerStates.Default)
+                .SetActiveCamera(_coloredShader)
                 //.SimpleRender<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2, "Render")
-                .RenderGrouped<VertexPositionColor>(_effect, vertexBuffer, indexBuffer,  "Render_Grouped")
-                .AddAction(new GraphicsPipelineActionDelegate("switch_to_textures", (time, context, components) =>
-                {
-                    _effect.VertexColorEnabled = false;
-                    _effect.TextureEnabled = true;
-                }))
-                .RenderGrouped<VertexPositionNormalTexture>(_effect, vertexBuffer2, indexBuffer2,  "Render_Textured")
+                //.RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
+                .SetActiveCamera(_texturesShader)
+                .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()
                 .DrawComponents("debug")
