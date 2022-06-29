@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions;
 using MonoGameExtensions.DataStructures;
+using NetExtensions.Helpers;
 using X4World.Maps;
 
 namespace X4World.Objects
@@ -27,7 +28,7 @@ namespace X4World.Objects
             Position = worldPosition;
             Name = name;
 
-            StarsOctree = new AutoSplitOctreeNode<Star>(Vector3.Zero, Math2.Max(Size.X, Size.Y, Size.Z), 10);
+            StarsOctree = new AutoSplitOctreeNode<Star>(Vector3.Zero, MathExtended.Max(Size.X, Size.Y, Size.Z), 10);
         }
 
         public void AddStar([NotNull] Star star)

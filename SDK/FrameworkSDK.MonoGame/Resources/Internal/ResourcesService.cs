@@ -16,7 +16,7 @@ namespace FrameworkSDK.MonoGame.Resources
     {
         [NotNull] private IGameHeartServices GameHeartServices { get; }
         [NotNull] private IContentContainersFactory ContentContainersFactory { get; }
-        [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
+        [NotNull] private ITextureGeneratorInternal TextureGeneratorInternal { get; }
         [NotNull] private IRenderTargetsFactory RenderTargetsFactory { get; }
 
         [NotNull] private ModuleLogger Logger { get; }
@@ -32,13 +32,13 @@ namespace FrameworkSDK.MonoGame.Resources
         public ResourcesService(
             [NotNull] IGameHeartServices gameHeartServices,
             [NotNull] IContentContainersFactory contentContainersFactory,
-            [NotNull] ITextureGeneratorService textureGeneratorService,
+            [NotNull] ITextureGeneratorInternal textureGeneratorInternal,
             [NotNull] IRenderTargetsFactory renderTargetsFactory,
             [NotNull] IFrameworkLogger frameworkLogger)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             ContentContainersFactory = contentContainersFactory ?? throw new ArgumentNullException(nameof(contentContainersFactory));
-            TextureGeneratorService = textureGeneratorService ?? throw new ArgumentNullException(nameof(textureGeneratorService));
+            TextureGeneratorInternal = textureGeneratorInternal ?? throw new ArgumentNullException(nameof(textureGeneratorInternal));
             RenderTargetsFactory = renderTargetsFactory ?? throw new ArgumentNullException(nameof(renderTargetsFactory));
             Logger = new ModuleLogger(frameworkLogger, LogCategories.Resources);
 
@@ -92,7 +92,7 @@ namespace FrameworkSDK.MonoGame.Resources
                 var contentContainer = ContentContainersFactory.Create(package);
                 if (_loadedPackages.TryAdd(package, contentContainer))
                 {
-                    var apiContainer = new ContentLoaderApi(contentContainer, TextureGeneratorService, RenderTargetsFactory);
+                    var apiContainer = new ContentLoaderApi(contentContainer, TextureGeneratorInternal, RenderTargetsFactory);
                     package.Load(apiContainer);
                     Logger.Info(Strings.Info.Resources.FinishLoadingResourcePackage, package.GetTypeName());
                 }

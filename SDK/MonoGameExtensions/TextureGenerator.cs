@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions.Geometry;
 using NetExtensions;
+using NetExtensions.Geometry;
 
 namespace MonoGameExtensions
 {
@@ -38,7 +39,7 @@ namespace MonoGameExtensions
 				angle = angle - 180;
 			}
 
-			var line1 = Line2D.FromPointAngle(new Vector2((float)width / 2, (float)height / 2), MathHelper.ToRadians(angle));
+			var line1 = Line2D.FromPointAngle(new Vector2((float)width / 2, (float)height / 2).ToPointF(), MathHelper.ToRadians(angle));
 
 			var top = new Vector2(0, 0);
 			var bot = new Vector2(width - 1, height - 1);
@@ -48,11 +49,11 @@ namespace MonoGameExtensions
 				bot = new Vector2(0, height - 1);
 			}
 
-			var beginPerpLine = Line2D.FromNormalAndPoint(line1, top);
-			var endPerpLine = Line2D.FromNormalAndPoint(line1, bot);
+			var beginPerpLine = Line2D.FromNormalAndPoint(line1, top.ToPointF());
+			var endPerpLine = Line2D.FromNormalAndPoint(line1, bot.ToPointF());
 
-			var begin = line1.GetIntersection(beginPerpLine);
-			var end = line1.GetIntersection(endPerpLine);
+			var begin = line1.GetIntersection(beginPerpLine).ToVector2();
+			var end = line1.GetIntersection(endPerpLine).ToVector2();
 
 			var distance = new Vector2(begin.X, begin.Y) - new Vector2(end.X, end.Y);
 			var distance1 = distance.Length() * (1 - offset) / 2;
@@ -66,11 +67,11 @@ namespace MonoGameExtensions
 			for (int x = 0; x < width; x++)
 				for (int y = 0; y < height; y++)
 				{
-					var currentPerpLine = Line2D.FromNormalAndPoint(line1, new Vector2(x, y));
-					var current = line1.GetIntersection(currentPerpLine);
+					var currentPerpLine = Line2D.FromNormalAndPoint(line1, new Vector2(x, y).ToPointF());
+					var current = line1.GetIntersection(currentPerpLine).ToVector2();
 					
 					Vector2 d = begin - current;
-					if (d.Length() < distance1)
+					if (d.Length() <= distance1)
 					{
 						arrayColor[x, y] = Color.FromNonPremultiplied(color1.ToVector4() + dColor1 * d.Length());
 						continue;
@@ -88,7 +89,7 @@ namespace MonoGameExtensions
 			return texture;
 		}
 
-		private static Texture2D GetEmptyTexture(GraphicsDevice graphicsDevice, int width, int height)
+		public static Texture2D GetEmptyTexture(this GraphicsDevice graphicsDevice, int width, int height)
 		{
 			return new Texture2D(graphicsDevice, width, height);
 		}
@@ -98,7 +99,7 @@ namespace MonoGameExtensions
 		/// </summary>
 		/// <param name="targetTexture">The target texture.</param>
 		/// <param name="data">pixels data.</param>
-		private static void SetDataToTexture(Texture2D targetTexture, Color[,] data)
+		public static void SetDataToTexture(this Texture2D targetTexture, Color[,] data)
 		{
 			var dataWidth = data.GetLength(0);
 			var dataHeight = data.GetLength(1);
@@ -120,7 +121,7 @@ namespace MonoGameExtensions
 		/// </summary>
 		/// <param name="targetTexture">The target texture.</param>
 		/// <param name="data">The horizontal line of pixels.</param>
-		private static void SetDataToTextureHorizontal(Texture2D targetTexture, Color[] data)
+		public static void SetDataToTextureHorizontal(this Texture2D targetTexture, Color[] data)
 		{
 			int dataLenght = data.Length;
 
@@ -143,7 +144,7 @@ namespace MonoGameExtensions
 		/// </summary>
 		/// <param name="targetTexture">The target texture.</param>
 		/// <param name="data">The vertical line of pixels.</param>
-		private static void SetDataToTextureVertical(Texture2D targetTexture, Color[] data)
+		public static void SetDataToTextureVertical(this Texture2D targetTexture, Color[] data)
 		{
 			int dataLenght = data.Length;
 
@@ -166,7 +167,7 @@ namespace MonoGameExtensions
 		/// </summary>
 		/// <param name="targetTexture">The target texture.</param>
 		/// <param name="color">The color.</param>
-		private static void SetDataToTexture(Texture2D targetTexture, Color color)
+		public static void SetDataToTexture(this Texture2D targetTexture, Color color)
 		{
 			var resData = new Color[targetTexture.Width * targetTexture.Height];
 			for (int i = 0; i < resData.Length; i++)

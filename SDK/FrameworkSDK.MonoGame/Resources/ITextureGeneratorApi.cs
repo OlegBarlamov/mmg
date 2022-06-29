@@ -9,5 +9,7 @@ namespace FrameworkSDK.MonoGame.Resources
 
         Texture2D GradientColor(Color color1, Color color2, int width, int height, float angleDegrees,
             float offset = 0);
+
+        Texture2D HeightMap(int[,] heights, int minValue, int maxValue, Color minValueColor, Color maxValueColor);
     }
 }

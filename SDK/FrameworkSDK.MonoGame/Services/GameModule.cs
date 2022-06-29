@@ -35,7 +35,7 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterType<IContentContainersFactory, ContentContainersFactory>();
             serviceRegistrator.RegisterType<IResourceReferencesService, ResourceReferencesService>();
             serviceRegistrator.RegisterType<IResourcesService, ResourcesService>();
-            serviceRegistrator.RegisterType<ITextureGeneratorService, TextureGeneratorService>();
+            serviceRegistrator.RegisterType<ITextureGeneratorInternal, TextureGeneratorInternal>();
             serviceRegistrator.RegisterType<IRenderTargetsFactory, RenderTargetsFactory>();
          
             //Mvc

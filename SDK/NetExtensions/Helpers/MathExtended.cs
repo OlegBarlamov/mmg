@@ -1,10 +1,14 @@
 using System;
-using Microsoft.Xna.Framework;
 
-namespace MonoGameExtensions
+namespace NetExtensions.Helpers
 {
-    public static class Math2
+    public static class MathExtended
 	{
+		public static double ToRadians(double degrees)
+		{
+			return degrees * Math.PI / 180;
+		}
+		
 		/// <summary>
 		/// Determines whether value in interval (without bounds).
 		/// </summary>
@@ -104,44 +108,6 @@ namespace MonoGameExtensions
 				value = left;
 			if (value > right)
 				value = right;
-		}
-
-		/// <summary>
-		/// Determines whether the point1 more then point2. If Y is stronger coordinate then X.
-		/// </summary>
-		/// <param name="point1">The point1.</param>
-		/// <param name="point2">The point2.</param>
-		/// <returns>
-		///   <c>true</c> if point1 more then point2; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsPointMoreDominanteY(Point point1, Point point2)
-		{
-			if (point1.Y > point2.Y)
-				return true;
-
-			if (point2.Y > point1.Y)
-				return false;
-
-			return point1.X > point2.X;
-		}
-
-		/// <summary>
-		/// Determines whether the point1 more then point2. If X is stronger coordinate then Y.
-		/// </summary>
-		/// <param name="point1">The point1.</param>
-		/// <param name="point2">The point2.</param>
-		/// <returns>
-		///   <c>true</c> if point1 more then point2; otherwise, <c>false</c>.
-		/// </returns>
-		public static bool IsPointMoreDominanteX(Point point1, Point point2)
-		{
-			if (point1.X > point2.X)
-				return true;
-
-			if (point2.X > point1.X)
-				return false;
-
-			return point1.Y > point2.Y;
 		}
 
 		/// <summary>

@@ -6,6 +6,7 @@ using Console.Core;
 using Console.Core.Commands;
 using Console.FrameworkAdapter;
 using FrameworkSDK.Common;
+using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
@@ -20,7 +21,9 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions.DataStructures;
+using NetExtensions.Collections;
 using NetExtensions.Geometry;
+using NetExtensions.Helpers;
 using X4World;
 using X4World.Objects;
 
@@ -38,6 +41,7 @@ namespace Atom.Client.MacOS.Scenes
         private IMainUpdatesTasksProcessor MainUpdatesTasksProcessor { get; }
         private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
         public ColorsTexturesPackage ColorsTexturesPackage { get; }
+        public IFrameworkLogger Logger { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
@@ -60,7 +64,8 @@ namespace Atom.Client.MacOS.Scenes
             [NotNull] IExecutableCommandsCollection executableCommandsCollection,
             [NotNull] IMainUpdatesTasksProcessor mainUpdatesTasksProcessor,
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
-            [NotNull] ColorsTexturesPackage colorsTexturesPackage
+            [NotNull] ColorsTexturesPackage colorsTexturesPackage,
+            [NotNull] IFrameworkLogger logger
         )
             :base(nameof(MainScene))
         {
@@ -74,6 +79,7 @@ namespace Atom.Client.MacOS.Scenes
             MainUpdatesTasksProcessor = mainUpdatesTasksProcessor ?? throw new ArgumentNullException(nameof(mainUpdatesTasksProcessor));
             BackgroundTasksProcessor = backgroundTasksProcessor ?? throw new ArgumentNullException(nameof(backgroundTasksProcessor));
             ColorsTexturesPackage = colorsTexturesPackage ?? throw new ArgumentNullException(nameof(colorsTexturesPackage));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -97,7 +103,7 @@ namespace Atom.Client.MacOS.Scenes
                 GraphicsPassName = "debug"
             });
 
-            AddView(new PlaneComponentData(new TextureMaterial(ColorsTexturesPackage.Get(Color.Yellow)))
+            AddView(new PlaneComponentData(new TextureMaterial(DataModel.MainResourcePackage.A))
             {
                 GraphicsPassName = "Render_Textured"
             });

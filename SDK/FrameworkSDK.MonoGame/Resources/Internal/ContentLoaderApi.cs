@@ -1,6 +1,5 @@
 using System;
 using FrameworkSDK.MonoGame.Graphics;
-using FrameworkSDK.MonoGame.Graphics.Services;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -12,14 +11,14 @@ namespace FrameworkSDK.MonoGame.Resources
     internal class ContentLoaderApi : IContentLoaderApi
     {
         private IContentContainer Container { get; }
-        private ITextureGeneratorService TextureGeneratorService { get; }
+        private ITextureGeneratorInternal TextureGeneratorInternal { get; }
         private IRenderTargetsFactory RenderTargetsFactory { get; }
 
-        public ContentLoaderApi([NotNull] IContentContainer container, [NotNull] ITextureGeneratorService textureGeneratorService,
+        public ContentLoaderApi([NotNull] IContentContainer container, [NotNull] ITextureGeneratorInternal textureGeneratorInternal,
             [NotNull] IRenderTargetsFactory renderTargetsFactory)
         {
             Container = container ?? throw new ArgumentNullException(nameof(container));
-            TextureGeneratorService = textureGeneratorService ?? throw new ArgumentNullException(nameof(textureGeneratorService));
+            TextureGeneratorInternal = textureGeneratorInternal ?? throw new ArgumentNullException(nameof(textureGeneratorInternal));
             RenderTargetsFactory = renderTargetsFactory ?? throw new ArgumentNullException(nameof(renderTargetsFactory));
         }
         
@@ -30,7 +29,7 @@ namespace FrameworkSDK.MonoGame.Resources
 
         public Texture2D DiffuseColor(Color color)
         {
-            var result = TextureGeneratorService.DiffuseColor(color);
+            var result = TextureGeneratorInternal.DiffuseColor(color);
             Container.AddResource(result);
             return result;
         }
@@ -38,9 +37,14 @@ namespace FrameworkSDK.MonoGame.Resources
         public Texture2D GradientColor(Color color1, Color color2, int width, int height, float angle,
             float offset = 0)
         {
-            var result = TextureGeneratorService.GradientColor(color1, color2, width, height, angle, offset);
+            var result = TextureGeneratorInternal.GradientColor(color1, color2, width, height, angle, offset);
             Container.AddResource(result);
             return result;
+        }
+
+        public Texture2D HeightMap(int[,] heights, int minValue, int maxValue, Color minValueColor, Color maxValueColor)
+        {
+            return TextureGeneratorInternal.HeightMap(heights, minValue, maxValue, minValueColor, maxValueColor);
         }
 
         public RenderTarget2D CreateRenderTarget(int width, int height, bool mipMap, SurfaceFormat preferredFormat,

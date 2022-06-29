@@ -1,7 +1,8 @@
 using System;
-using Microsoft.Xna.Framework;
+using System.Drawing;
+using NetExtensions.Helpers;
 
-namespace MonoGameExtensions.Geometry
+namespace NetExtensions.Geometry
 {
 	/// <summary>
 	/// Ax + By + C = 0
@@ -15,10 +16,10 @@ namespace MonoGameExtensions.Geometry
 				if (!IsVertical)
 					return int.MinValue;
 
-				if (Math.Abs(A) < float.Epsilon)
+				if (Math.Abs(A) < double.Epsilon)
 					throw new Exception("getting a property of the Line2D: incorrect data in Line2D while get Left property");
 
-				return Math2.Round(-C / A);
+				return MathExtended.Round(-C / A);
 			}
 
 		}
@@ -30,10 +31,10 @@ namespace MonoGameExtensions.Geometry
 				if (!IsHorizontal)
 					return int.MinValue;
 
-				if (Math.Abs(B) < float.Epsilon)
+				if (Math.Abs(B) < double.Epsilon)
 					throw new Exception("getting a property of the Line2D: incorrect data in Line2D while get Top property");
 
-				return Math2.Round(-C / B);
+				return MathExtended.Round(-C / B);
 			}
 		}
 
@@ -46,37 +47,37 @@ namespace MonoGameExtensions.Geometry
 			{
 				if (IsVertical)
 				{
-					if (Math.Abs(A) < float.Epsilon)
+					if (Math.Abs(A) < double.Epsilon)
 						throw new Exception("getting a property of the Line2D: incorrect data in Line2D while get Center property");
 
-					return new Point(Math2.Round(-C / A), 0);
+					return new Point(MathExtended.Round(-C / A), 0);
 				}
 
 				if (IsHorizontal)
 				{
-					if (Math.Abs(B) < float.Epsilon)
+					if (Math.Abs(B) < double.Epsilon)
 						throw new Exception("getting a property of the Line2D: incorrect data in Line2D while get Center property");
 
-					return new Point(0, Math2.Round(-C / B));
+					return new Point(0, MathExtended.Round(-C / B));
 				}
 
-				if (Math.Abs(A) < float.Epsilon || Math.Abs(B) < float.Epsilon)
+				if (Math.Abs(A) < double.Epsilon || Math.Abs(B) < double.Epsilon)
 					throw new Exception("getting a property of the Line2D: the Line2D was vertical or horizontal but its was not definitely");
 
-				return new Point(0, Math2.Round(-C / B));
+				return new Point(0, MathExtended.Round(-C / B));
 			}
 		}
 
-		public float Rotation
+		public double Rotation
 		{
 			get
 			{
 				if (IsVertical)
-					return (float)Math.PI / 2;
+					return Math.PI / 2;
 
-				return (float)Math.Atan(Inclination);
+				return Math.Atan(Inclination);
 			}
-			set { Inclination = (float)Math.Tan(value); }
+			set { Inclination = Math.Tan(value); }
 		}
 
 		/// <summary>
@@ -86,7 +87,7 @@ namespace MonoGameExtensions.Geometry
 		/// <value>
 		/// The inclination.
 		/// </value>
-		public float Inclination
+		public double Inclination
 		{
 			get { return -A / B; }
 			set { A = -value * B; }
@@ -99,19 +100,19 @@ namespace MonoGameExtensions.Geometry
 		/// <value>
 		/// The shift.
 		/// </value>
-		public float Shift
+		public double Shift
 		{
 			get { return -C / B; }
 			set { C = -value * B; }
 		}
-		public bool IsVertical { get { return Math.Abs(B) < float.Epsilon; } }
-		public bool IsHorizontal { get { return Math.Abs(A) < float.Epsilon; } }
+		public bool IsVertical { get { return Math.Abs(B) < double.Epsilon; } }
+		public bool IsHorizontal { get { return Math.Abs(A) < double.Epsilon; } }
 
-		public float A;
-		public float B;
-		public float C;
+		public double A;
+		public double B;
+		public double C;
 
-		public Line2D(float a, float b, float c)
+		public Line2D(double a, double b, double c)
 		{
 			A = a;
 			B = b;
@@ -124,20 +125,20 @@ namespace MonoGameExtensions.Geometry
 		/// </summary>
 		/// <param name="inclination">The inclination.</param>
 		/// <param name="shift">The shift.</param>
-		public Line2D(float inclination, float shift)
+		public Line2D(double inclination, double shift)
 		{
 			B = 1;
 			Inclination = inclination;
 			Shift = shift;
 		}
 		
-		public static Line2D FromAngle(float angle, float shift = 0)
+		public static Line2D FromAngle(double angle, double shift = 0)
 		{
-			var inclination = (float)Math.Tan(MathHelper.ToRadians(angle));
+			var inclination = Math.Tan(MathExtended.ToRadians(angle));
 			return new Line2D(inclination, shift);
 		}
 
-		public static Line2D FromTwoPoints(Vector2 point1, Vector2 point2)
+		public static Line2D FromTwoPoints(PointF point1, PointF point2)
 		{
 			var inclination = (point2.Y - point1.Y) / (point2.X - point1.X);
 			var shift = (point1.X * point1.Y - point1.X * point2.Y) / (point2.X - point1.X) + point1.Y;
@@ -145,28 +146,28 @@ namespace MonoGameExtensions.Geometry
 			return new Line2D(inclination, shift);
 		}
 
-		public static Line2D FromVector2(Vector2 vector)
+		public static Line2D FromVector2(PointF vector)
 		{
-			return FromTwoPoints(new Vector2(0, 0), new Vector2(vector.X, vector.Y));
+			return FromTwoPoints(new PointF(0, 0), new PointF(vector.X, vector.Y));
 		}
 
-		public static Line2D FromPointAngle(Vector2 point, float angle)
+		public static Line2D FromPointAngle(PointF point, double angle)
 		{
-			if (Math.Abs(MathHelper.ToDegrees(angle) - 90) < float.Epsilon)
+			if (Math.Abs(angle - 90) < double.Epsilon)
 				return new Line2D(1, 0, -point.X);
 
-			var inclination = (float)Math.Tan(angle);
+			var inclination = (double)Math.Tan(angle);
 			var shift = point.Y - inclination * point.X;
 
 			return new Line2D(inclination, shift);
 		}
 
-		public static Line2D FromNormalAndPoint(Line2D normal, Vector2 point)
+		public static Line2D FromNormalAndPoint(Line2D normal, PointF point)
 		{
 			return new Line2D(normal.B, -normal.A, -normal.B * point.X + normal.A * point.Y);
 		}
 
-		public bool Contains(Vector2 point)
+		public bool Contains(PointF point)
 		{
 			return Contains(point.X, point.Y);
 		}
@@ -176,26 +177,26 @@ namespace MonoGameExtensions.Geometry
 			return Contains(point.X, point.Y);
 		}
 
-		public bool Contains(float x, float y)
+		public bool Contains(double x, double y)
 		{
-			return Math.Abs(A * x + B * y + C) < float.Epsilon;
+			return Math.Abs(A * x + B * y + C) < double.Epsilon;
 		}
 
 		public bool Contains(int x, int y)
 		{
-			return Math2.Round(A * x + B * y + C) == 0;
+			return MathExtended.Round(A * x + B * y + C) == 0;
 		}
 
 		/// <summary>
 		/// Moves location to current position + offset.
 		/// </summary>
 		/// <param name="offset">The offset.</param>
-		public void Move(Vector2 offset)
+		public void Move(PointF offset)
 		{
 			if (!IsVertical)
 			{
-				float x = offset.X;
-				float y = -C / B + offset.Y;
+				double x = offset.X;
+				double y = -C / B + offset.Y;
 
 				C = -A * x - B * y;
 			}
@@ -208,8 +209,8 @@ namespace MonoGameExtensions.Geometry
 		{
 			if (!IsVertical)
 			{
-				float x = point.X;
-				float y = point.Y;
+				double x = point.X;
+				double y = point.Y;
 
 				C = -A * x - B * y;
 			}
@@ -219,33 +220,33 @@ namespace MonoGameExtensions.Geometry
 
 		public bool Equals(Line2D other)
 		{
-			return Math.Abs(A - other.A) < float.Epsilon && Math.Abs(B - other.B) < float.Epsilon &&
-			       Math.Abs(C - other.C) < float.Epsilon;
+			return Math.Abs(A - other.A) < double.Epsilon && Math.Abs(B - other.B) < double.Epsilon &&
+			       Math.Abs(C - other.C) < double.Epsilon;
 		}
 		
-		public void AddRotation(float angle)
+		public void AddRotation(double angle)
 		{
 			Rotation += angle;
 		}
 
 		public void RotateTo90()
 		{
-			AddRotation(MathHelper.ToRadians(90));
+			AddRotation(MathExtended.ToRadians(90));
 		}
 
 		public void RotateToMinus90()
 		{
-			AddRotation(MathHelper.ToRadians(-90));
+			AddRotation(MathExtended.ToRadians(-90));
 		}
 
 		public void RotateTo180()
 		{
-			AddRotation(MathHelper.ToRadians(180));
+			AddRotation(MathExtended.ToRadians(180));
 		}
 
 		public void RotateToMinus180()
 		{
-			AddRotation(MathHelper.ToRadians(-180));
+			AddRotation(MathExtended.ToRadians(-180));
 		}
 
 		public void ResetRotation()
@@ -255,26 +256,26 @@ namespace MonoGameExtensions.Geometry
 
 		public bool IsNormalTo(Line2D line)
 		{
-			return Math.Abs(A * line.A + B * line.B) < float.Epsilon;
+			return Math.Abs(A * line.A + B * line.B) < double.Epsilon;
 		}
 
 		public bool IsParallel(Line2D line)
 		{
-			return Math.Abs(A / line.A - B / line.B) < float.Epsilon;
+			return Math.Abs(A / line.A - B / line.B) < double.Epsilon;
 		}
 
-		public Vector2 GetIntersection(Line2D line)
+		public PointF GetIntersection(Line2D line)
 		{
 			if (IsParallel(line))
-				return new Vector2(float.NaN, float.NaN);
+				return new PointF(float.NaN, float.NaN);
 
-			if (Math.Abs(line.A) < float.Epsilon)
+			if (Math.Abs(line.A) < double.Epsilon)
 				return line.GetIntersection(this);
 
-			float y = (A * line.C / line.A - C) / (B - line.B * A / line.A);
-			float x = -(line.B * y + line.C) / line.A;
+			double y = (A * line.C / line.A - C) / (B - line.B * A / line.A);
+			double x = -(line.B * y + line.C) / line.A;
 
-			return new Vector2(x, y);
+			return new PointF((float)x, (float)y);
 		}
 
 		public bool IsIntersect(Line2D line)
