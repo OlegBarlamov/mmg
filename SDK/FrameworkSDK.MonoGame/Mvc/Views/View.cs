@@ -4,6 +4,7 @@ using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.MonoGame.Graphics;
 using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Meshes;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 

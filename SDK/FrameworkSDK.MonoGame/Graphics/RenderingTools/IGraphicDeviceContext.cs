@@ -1,5 +1,6 @@
 ﻿using System;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
+using FrameworkSDK.MonoGame.Graphics.Services;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -15,7 +16,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         ICamera3DProvider Camera3DProvider { get; }
         IDisplayService DisplayService { get; }
         IDebugInfoService DebugInfoService { get; }
-        
+
         void BeginDraw(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null,
             SamplerState samplerState = null, DepthStencilState depthStencilState = null,
             RasterizerState rasterizerState = null, Effect effect = null, Matrix? transformMatrix = null);
@@ -26,8 +27,5 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         void SetRenderTargetToDisplay();
 
         void Clear(Color color);
-        
-        // TODO temporary
-        GraphicsDevice GraphicsDevice { get; }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Mvc;
 using Microsoft.Xna.Framework;
 
-namespace FrameworkSDK.MonoGame.Graphics.Basic
+namespace FrameworkSDK.MonoGame.Graphics.Meshes
 {
     public abstract class SingleMeshComponent<TData, TController> : View<TData, TController> where TController : IController
     {

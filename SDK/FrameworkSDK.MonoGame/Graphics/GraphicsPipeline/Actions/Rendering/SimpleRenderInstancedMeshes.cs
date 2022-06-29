@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -8,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
-    public class RenderIdenticalMeshes<TVertexType> : GraphicsPipelineActionBase
+    public class SimpleRenderInstancedMeshes<TVertexType> : GraphicsPipelineActionBase
         where TVertexType : struct, IVertexType
     {
         public Effect Effect { get; }
@@ -17,7 +18,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         private readonly Dictionary<Type, Dictionary<IGraphicComponent, List<IRenderableMesh>>> _meshesByGeometryType = new Dictionary<Type, Dictionary<IGraphicComponent, List<IRenderableMesh>>>();
         
-        public RenderIdenticalMeshes([NotNull] string name,
+        public SimpleRenderInstancedMeshes([NotNull] string name,
             [NotNull] Effect effect, [NotNull] VertexBuffer vertexBuffer,
             [NotNull] IndexBuffer indexBuffer) : base(name)
         {
@@ -82,8 +83,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext,
             IReadOnlyList<IGraphicComponent> associatedComponents)
         {
-            graphicDeviceContext.GraphicsDevice.SetVertexBuffer(VertexBuffer);
-            graphicDeviceContext.GraphicsDevice.Indices = IndexBuffer;
+            graphicDeviceContext.GeometryRenderer.SetBuffers(VertexBuffer, IndexBuffer);
             
             foreach (var meshesByGeometryName in _meshesByGeometryType)
             {
@@ -96,20 +96,20 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                     _meshes = meshByComponent.Value;
                     _geometry = _meshes[0].Geometry;
                     
-                    VertexBuffer.SetData((TVertexType[]) _geometry.GetVertices());
-                    IndexBuffer.SetData(_geometry.GetIndices());
+                    graphicDeviceContext.GeometryRenderer.Charge(_geometry);
 
                     for (_meshesIndex = 0; _meshesIndex < _meshes.Count; _meshesIndex++)
                     {
                         _mesh = _meshes[_meshesIndex];
-                        ((IEffectMatrices) Effect).World = _mesh.World;
 
                         foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
                         {
+                            ((IEffectMatrices) Effect).World = _mesh.World;
+                            _mesh.Material.ApplyToEffect(Effect);
+                            
                             pass.Apply();
 
-                            graphicDeviceContext.GraphicsDevice.DrawIndexedPrimitives(_geometry.PrimitiveType, 0, 0,
-                                _geometry.GetPrimitivesCount());
+                            graphicDeviceContext.GeometryRenderer.Render();
                         }
                         
                         graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingMeshes);

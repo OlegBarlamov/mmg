@@ -10,14 +10,12 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
     {
         IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
 
-        //TODO temporary?
-        GraphicsDevice GraphicsDevice { get; }
-        
-        IDisplayService DisplayService { get; }
-        
-        
         IGraphicsPipelineBuilder AddAction(IGraphicsPipelineAction action);
 
         IGraphicsPipeline Build();
+
+        VertexBuffer CreateVertexBugger(VertexDeclaration vertexDeclaration, int vertexCount);
+
+        IndexBuffer CreateIndexBuffer(int indicesCount);
     }
 }

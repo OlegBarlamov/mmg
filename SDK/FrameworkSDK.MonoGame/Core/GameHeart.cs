@@ -6,7 +6,6 @@ using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame
 {
@@ -63,8 +62,8 @@ namespace FrameworkSDK.MonoGame
 
         private void GraphicsDeviceManagerOnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
-	        //TODO make it configurable
-	        e.GraphicsDeviceInformation.GraphicsProfile = GraphicsProfile.HiDef;
+	        GraphicsDeviceManager.PreparingDeviceSettings -= GraphicsDeviceManagerOnPreparingDeviceSettings;
+	        e.GraphicsDeviceInformation.GraphicsProfile = Parameters.GraphicsProfile;
         }
 
         protected override void Initialize()
@@ -190,6 +189,9 @@ namespace FrameworkSDK.MonoGame
 	    
 	    private void GameHostOnDisposed(object sender, EventArgs eventArgs)
 	    {
+		    GameApp.DisposedEvent -= GameHostOnDisposed;
+		    GraphicsDeviceManager.PreparingDeviceSettings -= GraphicsDeviceManagerOnPreparingDeviceSettings;
+		    
 		    Activated -= OnAppActivated;
 		    Deactivated -= OnAppDeactivated;
 		    

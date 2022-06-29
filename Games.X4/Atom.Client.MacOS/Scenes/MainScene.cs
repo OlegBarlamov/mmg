@@ -10,8 +10,10 @@ using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
+using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.SceneComponents;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
@@ -35,6 +37,7 @@ namespace Atom.Client.MacOS.Scenes
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
         private IMainUpdatesTasksProcessor MainUpdatesTasksProcessor { get; }
         private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
+        public ColorsTexturesPackage ColorsTexturesPackage { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
@@ -56,8 +59,9 @@ namespace Atom.Client.MacOS.Scenes
             IDebugInfoService debugInfoService,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection,
             [NotNull] IMainUpdatesTasksProcessor mainUpdatesTasksProcessor,
-            [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor
-            )
+            [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
+            [NotNull] ColorsTexturesPackage colorsTexturesPackage
+        )
             :base(nameof(MainScene))
         {
             DataModel = model;
@@ -69,6 +73,7 @@ namespace Atom.Client.MacOS.Scenes
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
             MainUpdatesTasksProcessor = mainUpdatesTasksProcessor ?? throw new ArgumentNullException(nameof(mainUpdatesTasksProcessor));
             BackgroundTasksProcessor = backgroundTasksProcessor ?? throw new ArgumentNullException(nameof(backgroundTasksProcessor));
+            ColorsTexturesPackage = colorsTexturesPackage ?? throw new ArgumentNullException(nameof(colorsTexturesPackage));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -90,6 +95,11 @@ namespace Atom.Client.MacOS.Scenes
                 Position = new Vector2(10f),
                 Tab = 20f,
                 GraphicsPassName = "debug"
+            });
+
+            AddView(new PlaneComponentData(new TextureMaterial(ColorsTexturesPackage.Get(Color.Yellow)))
+            {
+                GraphicsPassName = "Render_Textured"
             });
 
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
@@ -246,17 +256,10 @@ namespace Atom.Client.MacOS.Scenes
                                             _objectsOnStarsScene.Add(box.Name, box);
                                         }, _newStarsCellCancellationTokenSource.Token));
                                 }
-
-                                // foreach (var star in stars)
-                                // {
-                                //     
-                                // }
                             }
                         }
                     }
                 }
-                
-                
                 
                 DebugInfoService.SetCounter("my_components", _objectsOnGalaxiesScene.Count);
                 
@@ -274,20 +277,31 @@ namespace Atom.Client.MacOS.Scenes
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
         {
-            _effect = new BasicEffect(graphicsPipelineBuilder.GraphicsDevice);
-            _effect.VertexColorEnabled = true;
+            _effect = new BasicEffect(GameHeartServices.GraphicsDeviceManager.GraphicsDevice);
 
-            var vertexBuffer = new VertexBuffer(graphicsPipelineBuilder.GraphicsDevice, VertexPositionColor.VertexDeclaration, 100, BufferUsage.WriteOnly);
-            var indexBuffer = new IndexBuffer(graphicsPipelineBuilder.GraphicsDevice, typeof(int), 200, BufferUsage.WriteOnly);
+            var vertexBuffer = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
+            var indexBuffer = graphicsPipelineBuilder.CreateIndexBuffer(200);
             
-            var vertexBuffer2 = new VertexBuffer(graphicsPipelineBuilder.GraphicsDevice, VertexPositionColor.VertexDeclaration, 100, BufferUsage.WriteOnly);
-            var indexBuffer2 = new IndexBuffer(graphicsPipelineBuilder.GraphicsDevice, typeof(int), 200, BufferUsage.WriteOnly);
+            var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 100);
+            var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(200);
+            
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetActiveCamera(_effect)
-                .SimpleRender<VertexPositionColor>(_effect, vertexBuffer, indexBuffer, "Render")
-                .RenderGrouped<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2,  "Render_Grouped")
+                .AddAction(new GraphicsPipelineActionDelegate("switch_to_colors", (time, context, components) =>
+                 {
+                     _effect.TextureEnabled = false;
+                     _effect.VertexColorEnabled = true;
+                 }))
+                //.SimpleRender<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2, "Render")
+                .RenderGrouped<VertexPositionColor>(_effect, vertexBuffer, indexBuffer,  "Render_Grouped")
+                .AddAction(new GraphicsPipelineActionDelegate("switch_to_textures", (time, context, components) =>
+                {
+                    _effect.VertexColorEnabled = false;
+                    _effect.TextureEnabled = true;
+                }))
+                .RenderGrouped<VertexPositionNormalTexture>(_effect, vertexBuffer2, indexBuffer2,  "Render_Textured")
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()
                 .DrawComponents("debug")

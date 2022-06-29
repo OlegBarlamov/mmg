@@ -36,5 +36,11 @@ namespace FrameworkSDK.MonoGame.Constructing
             gameFactory.AddComponent<MvcAppComponent>();
             return gameFactory;
         }
+
+        public static IGameFactory UseHighPolygonal(this IGameFactory gameFactory)
+        {
+            gameFactory.AddServices<HighPolygonalServicesModule>();
+            return gameFactory;
+        }
     }
 }

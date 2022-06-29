@@ -1,4 +1,5 @@
 using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using Microsoft.Xna.Framework;
@@ -35,7 +36,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public FramedBoxComponent(BoxComponentDataModel model)
         {
             SingleGraphicsPassName = model.GraphicsPassName;
-            var mesh = new FixedSimpleMesh(this, new FramedBoxGeometry(model.Color));
+            var mesh = new FixedSimpleMesh(this, new ColoredFramedBoxGeometry(model.Color));
             mesh.SetPosition(model.Position);
             mesh.SetScale(model.Scale);
             

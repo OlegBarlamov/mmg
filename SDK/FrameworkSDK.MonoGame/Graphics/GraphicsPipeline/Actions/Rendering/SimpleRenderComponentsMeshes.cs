@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -33,6 +34,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext,
             IReadOnlyList<IGraphicComponent> associatedComponents)
         {
+            graphicDeviceContext.GeometryRenderer.SetBuffers(VertexBuffer, IndexBuffer);
+            
             for (_index = 0; _index < associatedComponents.Count; _index++)
             {
                 _component = associatedComponents[_index];
@@ -43,21 +46,18 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
                 for (_meshesIndex = 0; _meshesIndex < _meshes.Count; _meshesIndex++)
                 {
+                    _mesh = _meshes[_meshesIndex];
+
+                    graphicDeviceContext.GeometryRenderer.Charge(_mesh.Geometry);
+
                     foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
                     {
-                        _mesh = _meshes[_meshesIndex];
-
                         ((IEffectMatrices) Effect).World = _mesh.World;
+                        _mesh.Material.ApplyToEffect(Effect);
+                        
                         pass.Apply();
-
-                        VertexBuffer.SetData((TVertexType[]) _mesh.Geometry.GetVertices());
-                        IndexBuffer.SetData(_mesh.Geometry.GetIndices());
-
-                        graphicDeviceContext.GraphicsDevice.SetVertexBuffer(VertexBuffer);
-                        graphicDeviceContext.GraphicsDevice.Indices = IndexBuffer;
-
-                        graphicDeviceContext.GraphicsDevice.DrawIndexedPrimitives(_mesh.Geometry.PrimitiveType, 0, 0,
-                            _mesh.Geometry.GetPrimitivesCount());
+                        
+                        graphicDeviceContext.GeometryRenderer.Render();
                     }
                     
                     graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingMeshes);

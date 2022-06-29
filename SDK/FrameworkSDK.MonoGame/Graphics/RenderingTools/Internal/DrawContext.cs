@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
 {
-    public class DrawContext : IDrawContext
+    internal class DrawContext : IDrawContext
     {
 	    private SpriteBatch SpriteBatch { get; }
 

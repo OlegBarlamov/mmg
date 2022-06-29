@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Mvc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -92,7 +92,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
                 indices.Add(++index);
             }
 
-            return new FixedSimpleMesh(this, PrimitiveType.LineList,
+            return FixedSimpleMesh.FromVertices(this, PrimitiveType.LineList,
                 VertexPositionColor.VertexDeclaration, vertices.ToArray(), indices.ToArray(), indices.Count / 2);
         }
     }

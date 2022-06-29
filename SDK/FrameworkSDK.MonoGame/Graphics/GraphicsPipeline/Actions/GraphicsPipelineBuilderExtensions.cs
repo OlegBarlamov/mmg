@@ -81,7 +81,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             where TVertexType : struct, IVertexType
         {
             return builder.AddAction(
-                new RenderIdenticalMeshes<TVertexType>(name, effect, vertexBuffer, indexBuffer));
+                new SimpleRenderInstancedMeshes<TVertexType>(name, effect, vertexBuffer, indexBuffer));
         }
 
         public static IGraphicsPipelineBuilder SetActiveCamera([NotNull] this IGraphicsPipelineBuilder builder, IEffectMatrices effect)

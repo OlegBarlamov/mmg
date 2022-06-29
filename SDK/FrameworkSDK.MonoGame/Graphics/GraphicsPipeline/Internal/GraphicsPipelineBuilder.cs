@@ -15,12 +15,13 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
     internal class GraphicsPipelineBuilder : IGraphicsPipelineBuilder
     {
-        public IRenderTargetsFactoryService RenderTargetsFactoryService { get; } =  AppContext.ServiceLocator.Resolve<IRenderTargetsFactoryService>();
-        public IDisplayService DisplayService { get; } = AppContext.ServiceLocator.Resolve<IDisplayService>();
-        
-        public GraphicsDevice GraphicsDevice { get; }
+        public IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
+
+        private GraphicsDevice GraphicsDevice { get; }
         private IFrameworkLogger FrameworkLogger { get; }
         private IDebugInfoService DebugInfoService { get; }
+        private IDisplayService DisplayService { get; }
+        private IIndicesBuffersFactory IndicesBuffersFactory { get; }
 
         private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
         private readonly IReadOnlyObservableList<IGraphicComponent> _graphicComponents;
@@ -32,12 +33,18 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService,
         [NotNull] GraphicsDevice graphicsDevice,
         [NotNull] IFrameworkLogger frameworkLogger,
-        [NotNull] IDebugInfoService debugInfoService)
+        [NotNull] IDebugInfoService debugInfoService,
+        [NotNull] IRenderTargetsFactoryService renderTargetsFactoryService,
+        [NotNull] IDisplayService displayService,
+        [NotNull] IIndicesBuffersFactory indicesBuffersFactory)
         {
             GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
             GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
             FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
+            RenderTargetsFactoryService = renderTargetsFactoryService ?? throw new ArgumentNullException(nameof(renderTargetsFactoryService));
+            DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
+            IndicesBuffersFactory = indicesBuffersFactory ?? throw new ArgumentNullException(nameof(indicesBuffersFactory));
             _graphicComponents = graphicComponents ?? throw new ArgumentNullException(nameof(graphicComponents));
         }
 
@@ -58,6 +65,16 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             _actions.Clear();
             
             return new GraphicsPipeline(actions, _graphicComponents, GraphicsPipelinePassAssociateService, FrameworkLogger, DebugInfoService);
+        }
+
+        public VertexBuffer CreateVertexBugger(VertexDeclaration vertexDeclaration, int vertexCount)
+        {
+            return new VertexBuffer(GraphicsDevice, vertexDeclaration, vertexCount, BufferUsage.WriteOnly);
+        }
+
+        public IndexBuffer CreateIndexBuffer(int indicesCount)
+        {
+            return IndicesBuffersFactory.CreateIndexBuffer(indicesCount);
         }
     }
 }

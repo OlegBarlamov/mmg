@@ -115,13 +115,13 @@ namespace Atom.Client.MacOS
                 foreach (var point in pointsBox.EnumeratePoints())
                 {
                     var cell = new GalaxiesMapCell(point);
-                    for (int i = 0; i < 40; i++)
-                    {
-                        var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,
-                            cell.World + new Vector3(cell.Size) / 2);
-                        var galaxy = new Galaxy(cell, randomPos, NamesGenerator.Hash(HashType.SmallGuid, "galaxy"));
-                        cell.GalaxiesTree.AddItem(galaxy);
-                    }
+                    // for (int i = 0; i < 40; i++)
+                    // {
+                    //     var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,
+                    //         cell.World + new Vector3(cell.Size) / 2);
+                    //     var galaxy = new Galaxy(cell, randomPos, NamesGenerator.Hash(HashType.SmallGuid, "galaxy"));
+                    //     cell.GalaxiesTree.AddItem(galaxy);
+                    // }
                     map.SetCell(point, cell);
                 }
                 return map;

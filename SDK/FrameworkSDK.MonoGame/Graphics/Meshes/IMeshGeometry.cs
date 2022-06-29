@@ -1,13 +1,16 @@
+using System;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace FrameworkSDK.MonoGame.Graphics.Basic
+namespace FrameworkSDK.MonoGame.Graphics.Meshes
 {
     public interface IMeshGeometry
     {
         PrimitiveType PrimitiveType { get; }
         VertexDeclaration VertexDeclaration { get; }
-        object GetVertices();
-        int[] GetIndices();
+        Array GetVertices();
+        Array GetIndices();
         int GetPrimitivesCount();
+
+        void FillVertexBuffer(VertexBuffer vertexBuffer);
     }
 }
