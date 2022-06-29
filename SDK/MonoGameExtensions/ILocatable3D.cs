@@ -4,6 +4,6 @@ namespace MonoGameExtensions
 {
     public interface ILocatable3D
     {
-        Vector3 Position { get; }
+        Vector3 Position { get; set; }
     }
 }

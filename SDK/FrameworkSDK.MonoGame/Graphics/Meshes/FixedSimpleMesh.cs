@@ -9,12 +9,12 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
 {
     public sealed class FixedSimpleMesh : IRenderableMesh
     {
-        public IRenderableComponent Parent { get; }
+        public IRenderableComponent Parent { get; set; }
         
         public IMeshGeometry Geometry { get; }
         public IMeshMaterial Material { get; set; } = StaticMaterials.EmptyMaterial;
 
-        public Matrix World { get; set; } = Matrix.Identity;
+        public Matrix World { get; private set; } = Matrix.Identity;
 
         public Vector3 Position
         {
@@ -27,28 +27,34 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
             get => _scale;
             set => SetScale(value);
         }
+        
+        public Vector3 Rotation
+        {
+            get => _rotation;
+            set => SetRotation(value);
+        }
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _scale = Vector3.One;
+        private Vector3 _rotation = Vector3.Zero;
 
-        public FixedSimpleMesh([NotNull] IRenderableComponent parent, [NotNull] IMeshGeometry geometry)
+        public FixedSimpleMesh([NotNull] IMeshGeometry geometry)
         {
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Geometry = geometry ?? throw new ArgumentNullException(nameof(geometry));
         }
 
-        public static FixedSimpleMesh FromVertices<TVertexType>([NotNull] IRenderableComponent parent, PrimitiveType primitiveType, VertexDeclaration vertexDeclaration,
+        public static FixedSimpleMesh FromVertices<TVertexType>(PrimitiveType primitiveType, VertexDeclaration vertexDeclaration,
             [NotNull] TVertexType[] vertices, [NotNull] int[] indices, int primitivesCount) where TVertexType : struct, IVertexType
         {
             var geometry = new StaticMeshGeometry<TVertexType>(vertexDeclaration, primitiveType, vertices, indices, primitivesCount);
-            return new FixedSimpleMesh(parent, geometry);
+            return new FixedSimpleMesh(geometry);
         }
         
-        public static FixedSimpleMesh FromVertices<TVertexType>([NotNull] IRenderableComponent parent, PrimitiveType primitiveType, VertexDeclaration vertexDeclaration,
+        public static FixedSimpleMesh FromVertices<TVertexType>(PrimitiveType primitiveType, VertexDeclaration vertexDeclaration,
             [NotNull] TVertexType[] vertices, [NotNull] short[] indices, int primitivesCount) where TVertexType : struct, IVertexType
         {
             var geometry = new StaticMeshGeometry<TVertexType>(vertexDeclaration, primitiveType, vertices, indices, primitivesCount);
-            return new FixedSimpleMesh(parent, geometry);
+            return new FixedSimpleMesh(geometry);
         }
 
         public void SetPosition(Vector3 position)
@@ -62,10 +68,16 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
             _scale = scale;
             UpdateWordMatrix();
         }
-
-        public void UpdateWordMatrix()
+        
+        public void SetRotation(Vector3 rotation)
         {
-            World = Matrix.Identity * Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Position);
+            _rotation = rotation;
+            UpdateWordMatrix();
+        }
+
+        private void UpdateWordMatrix()
+        {
+            World = Matrix.Identity * Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Position) * Matrix.CreateFromYawPitchRoll(Rotation.X, Rotation.Y, Rotation.Z);
         }
     }
 }

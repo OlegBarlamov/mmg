@@ -2,6 +2,7 @@
 using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.Logging;
 using JetBrains.Annotations;
+using Microsoft.Xna.Framework;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Mvc
@@ -39,7 +40,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
             _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByController, controller);
-	        var result = ResolveByControllerInternal(controller);
+            if (controller.View != null && controller.DataModel != null)
+	        {
+		        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByControllerSkipped, controller);
+		        return MvcComponentGroup.FromController(controller);
+	        }
+            var result = ResolveByControllerInternal(controller);
 	        _moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByControllerFinished, controller, result);
 
 	        Setup(result);
@@ -51,7 +57,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (view == null) throw new ArgumentNullException(nameof(view));
 
 			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByView, view);
-			var result = ResolveByViewInternal(view);
+			if (view.Controller != null && view.DataModel != null)
+			{
+				_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByViewSkipped, view);
+				return MvcComponentGroup.FromView(view);
+			}
+	        var result = ResolveByViewInternal(view);
 			_moduleLogger.Debug(Strings.Info.Mapping.ResolvingMvcByViewFinished, view, result);
 			
 			Setup(result);

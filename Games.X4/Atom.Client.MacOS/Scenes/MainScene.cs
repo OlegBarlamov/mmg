@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Atom.Client.MacOS.Components;
 using Console.Core;
 using Console.Core.Commands;
 using Console.FrameworkAdapter;
@@ -17,6 +16,7 @@ using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.SceneComponents;
+using FrameworkSDK.MonoGame.SceneComponents.Controllers;
 using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
@@ -92,11 +92,22 @@ namespace Atom.Client.MacOS.Scenes
         protected override void OnFirstOpening()
         {
             base.OnFirstOpening();
-            
-            AddView(new Grid3DComponentData
+
+            var gridData = new Grid3DComponentData
             {
                 GraphicsPassName = "Render_Grouped"
+            };
+            var gridComponent = new Grid3DComponentView<FunctionController<Grid3DComponentData>>(gridData);
+            var gridController = new FunctionController<Grid3DComponentData>((controller, time) =>
+            {
+                controller.DataModel.Rotation += new Vector3(0, (float)time.ElapsedGameTime.TotalSeconds, 0);
             });
+            ((IController)gridController).SetDataModel(gridData);
+            ((IController)gridController).SetView(gridComponent);
+            
+            ((IView)gridComponent).SetController(gridController);
+            AddView(gridComponent);
+            
             AddView(new DebugInfoComponentData
             {
                 Font = DataModel.MainResourcePackage.DebugInfoFont,
@@ -106,15 +117,34 @@ namespace Atom.Client.MacOS.Scenes
                 GraphicsPassName = "debug"
             });
 
-            AddView(new PlaneComponentData(new TextureMaterial(DataModel.MainResourcePackage.A))
+            AddView(new PlaneComponentData
             {
                 GraphicsPassName = "Render_Textured"
             });
-
-            AddView(new RawGeometryComponentData(new TextureMaterial(DataModel.ColorsTexturesPackage.Get(Color.White)),
-                StaticGeometries.Sphere)
+            
+            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
             {
                 GraphicsPassName = "Render_Textured"
+            });
+            
+            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            {
+                GraphicsPassName = "Render_Textured",
+                Position = new Vector3(5),
+            });
+            
+            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            {
+                GraphicsPassName = "Render_Textured",
+                Position = new Vector3(10),
+                Scale = new Vector3(2),
+            });
+            
+            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            {
+                GraphicsPassName = "Render_Textured",
+                Position = new Vector3(20),
+                Scale = new Vector3(1, 3, 1),
             });
 
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
@@ -162,14 +192,14 @@ namespace Atom.Client.MacOS.Scenes
                             }, _newCellCancellationTokenSource.Token));
                         }
                     }
-
+                
                     var mapRec = RectangleBox.FromCenterAndRadius(newCameraPointOnMap.MapPoint, new Point3D(1));
                     foreach (var mapPoint in mapRec.EnumeratePoints())
                     {
                         var mapCell = DataModel.GalaxiesMap.GetCell(mapPoint);
                         if (mapCell == null)
                             continue;
-
+                
                         foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, WorldConstants.GalaxiesMapCellSize * 1.5f))
                         {
                             var galaxies = leaf.Data;
@@ -183,7 +213,7 @@ namespace Atom.Client.MacOS.Scenes
                                             
                                         }, _newCellCancellationTokenSource.Token));
                                 }
-
+                
                                 if (leaf == newGalaxiesNode)
                                 {
                                     // the current octree-node
@@ -201,7 +231,7 @@ namespace Atom.Client.MacOS.Scenes
                                     }
                                 }  
                             }
-
+                
                             if (!_objectsOnGalaxiesScene.ContainsKey(leaf.BoundingBox.ToString()))
                             {
                                 MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
@@ -225,7 +255,7 @@ namespace Atom.Client.MacOS.Scenes
                     var galaxies = newGalaxiesNode.Data;
                     AutoSplitOctreeNode<Star> newStarsNode = null;
                     Galaxy activeGalaxy = null;
-
+                
                     foreach (var galaxy in galaxies)
                     {
                         if ((galaxy.Position - _camera.Position).Length() < galaxy.Size.X / 2)
@@ -236,26 +266,26 @@ namespace Atom.Client.MacOS.Scenes
                             newStarsNode = (AutoSplitOctreeNode<Star>)starsOctree.GetLeafWithPoint(_camera.Position - galaxy.Position);
                         }
                     }
-
+                
                     if (newStarsNode != _cameraStarsNode)
                     {
                         _cameraStarsNode = newStarsNode;
-
+                
                         if (activeGalaxy != null)
                         {
                             var localPosition = _camera.Position - activeGalaxy.Position;
-
+                
                             _newStarsCellCancellationTokenSource?.Cancel();
                             _newStarsCellCancellationTokenSource?.Dispose();
                             _newStarsCellCancellationTokenSource = new CancellationTokenSource();
-
+                
                             foreach (var starsLeaf in newStarsNode.EnumerateLeafsInRangeAroundPoint(localPosition, 50f))
                             {
                                 var stars = starsLeaf.Data;
                                 var boundingBoxInWorld =
                                     new BoundingBox(starsLeaf.BoundingBox.Min + activeGalaxy.Position,
                                         starsLeaf.BoundingBox.Max + activeGalaxy.Position);
-
+                
                                 if (!_objectsOnStarsScene.ContainsKey(boundingBoxInWorld.ToString()))
                                 {
                                     MainUpdatesTasksProcessor.EnqueueTask(
@@ -267,7 +297,7 @@ namespace Atom.Client.MacOS.Scenes
                                             var box = new FramedBoxComponent(boxModel);
                                             box.SetName(boundingBoxInWorld.ToString());
                                             AddView(box);
-
+                
                                             _objectsOnStarsScene.Add(box.Name, box);
                                         }, _newStarsCellCancellationTokenSource.Token));
                                 }
@@ -308,15 +338,15 @@ namespace Atom.Client.MacOS.Scenes
             var vertexBuffer = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
             var indexBuffer = graphicsPipelineBuilder.CreateIndexBuffer(200);
             
-            var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 500);
-            var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(1000);
+            var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
+            var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(5000);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.Opaque, DepthStencilState.Default, RasterizerStates.Default)
                 .SetActiveCamera(_coloredShader)
                 //.SimpleRender<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2, "Render")
-                //.RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
+                .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
                 .SetActiveCamera(_texturesShader)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")
                 .BeginDraw(new BeginDrawConfig())

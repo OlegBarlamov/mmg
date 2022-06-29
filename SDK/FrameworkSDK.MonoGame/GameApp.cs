@@ -8,6 +8,7 @@ using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.ExternalComponents;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
+using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Localization;
@@ -113,6 +114,7 @@ namespace FrameworkSDK.MonoGame
 
             try
             {
+                StaticMaterials.InitializeDefaultMaterial(GameHeartServices.GraphicsDeviceManager.GraphicsDevice);
                 _graphicDeviceContext = GraphicsPipelineFactoryService.CreateGraphicDeviceContext();
                 OnInitialized();
             }

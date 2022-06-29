@@ -1,21 +1,14 @@
-using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
-using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.SceneComponents
 {
-    public class BoxComponentDataModel
+    public class BoxComponentDataModel : ViewModel3D
     {
-        public Vector3 Position = Vector3.Zero;
-        
-        public Vector3 Scale = Vector3.One;
-        
         public Color Color = Color.Red;
-
-        public string GraphicsPassName = View.DefaultViewPassName;
 
         public static BoxComponentDataModel FromBoundingBox(BoundingBox boundingBox)
         {
@@ -27,23 +20,19 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         }
     }
     
-    public class FramedBoxComponent : SingleMeshComponent<BoxComponentDataModel>
+    public class FramedBoxComponent : RenderablePrimitive<BoxComponentDataModel>
     {
-        protected override BoundingBox BoundingBoxInternal { get; }
-        protected override IRenderableMesh Mesh { get; }
-        protected override string SingleGraphicsPassName { get; }
+        protected override BoundingBox MeshBoundingBox { get; }
 
-        public FramedBoxComponent(BoxComponentDataModel model)
+        public FramedBoxComponent(BoxComponentDataModel viewModel) : base(CreateMesh(viewModel.Color), viewModel)
         {
-            SingleGraphicsPassName = model.GraphicsPassName;
-            var mesh = new FixedSimpleMesh(this, new ColoredFramedBoxGeometry(model.Color));
-            mesh.SetPosition(model.Position);
-            mesh.SetScale(model.Scale);
-            
-            Mesh = mesh;
-            
             var meshGeometrySize = Vector3.One;
-            BoundingBoxInternal = new BoundingBox(model.Position - meshGeometrySize/2 * model.Scale, model.Position + meshGeometrySize/2 * model.Scale);
+            MeshBoundingBox = new BoundingBox(viewModel.Position - meshGeometrySize/2 * viewModel.Scale, viewModel.Position + meshGeometrySize/2 * viewModel.Scale);
+        }
+
+        private static IRenderableMesh CreateMesh(Color color)
+        {
+            return new FixedSimpleMesh(new ColoredFramedBoxGeometry(color));
         }
 
         public void SetName(string name)

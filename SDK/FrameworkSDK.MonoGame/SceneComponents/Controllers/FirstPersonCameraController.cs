@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace FrameworkSDK.MonoGame.SceneComponents
+namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
 {
     public class FirstPersonCameraController : IUpdatable
     {

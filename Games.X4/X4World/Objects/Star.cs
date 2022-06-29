@@ -8,7 +8,7 @@ namespace X4World.Objects
     {
         public Vector3 WorldPosition => GetWorldPosition(); 
         
-        public Vector3 Position { get; }
+        public Vector3 Position { get; set; }
         public string Name { get; }
         
         public Vector3 Size { get; } = new Vector3(1f);

@@ -38,6 +38,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         public void Destroy()
         {
             // TODO implement destroy
+            OnDestroy();
         }
 
         public override string ToString()
@@ -73,6 +74,11 @@ namespace FrameworkSDK.MonoGame.Mvc
         protected virtual void OnDetached([NotNull] SceneBase scene)
         {
 
+        }
+
+        protected virtual void OnDestroy()
+        {
+            
         }
 
         protected void AddChild([NotNull] IView childView)

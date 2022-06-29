@@ -1,46 +1,30 @@
-using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.SceneComponents
 {
-    public class PlaneComponentData
+    public class PlaneComponentData : SolidPrimitiveViewModel
     {
-        public Vector3 Position = Vector3.Zero;
-        
-        public Vector3 Scale = Vector3.One;
-
-        public string GraphicsPassName = View.DefaultViewPassName;
-
-        public IMeshMaterial Material;
-
-        public PlaneComponentData(IMeshMaterial material)
-        {
-            Material = material;
-        }
     }
     
-    public class PlaneComponent : SingleMeshComponent<PlaneComponentData>
+    public class PlaneComponent<TController> : RenderablePrimitive<PlaneComponentData, TController> where TController : IController
     {
-        protected override BoundingBox BoundingBoxInternal { get; }
-        protected override IRenderableMesh Mesh { get; }
-        protected override string SingleGraphicsPassName { get; }
-
-        public PlaneComponent(PlaneComponentData data)
+        protected override BoundingBox MeshBoundingBox { get; }
+        public PlaneComponent(PlaneComponentData data) : base(new FixedSimpleMesh(StaticGeometries.Plane), data)
         {
-            SingleGraphicsPassName = data.GraphicsPassName;
-            
-            Mesh = new FixedSimpleMesh(this, StaticGeometries.Plane)
-            {
-                Position = data.Position,
-                Scale = data.Scale,
-                Material = data.Material,
-            };
-            
             var meshGeometrySize = new Vector3(1, float.Epsilon, 1);
-            BoundingBoxInternal = new BoundingBox(data.Position - meshGeometrySize/2 * data.Scale, data.Position + meshGeometrySize/2 * data.Scale);
+            MeshBoundingBox = new BoundingBox(data.Position - meshGeometrySize/2 * data.Scale, data.Position + meshGeometrySize/2 * data.Scale);
+        }
+    }
+
+    public class PlaneComponent : PlaneComponent<EmptyController>
+    {
+        public PlaneComponent(PlaneComponentData data) : base(data)
+        {
         }
     }
 }

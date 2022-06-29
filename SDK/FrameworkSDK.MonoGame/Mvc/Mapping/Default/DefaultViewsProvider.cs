@@ -31,6 +31,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 				!type.IsAbstract &&
 				!type.IsInterface &&
 				type.IsPublic &&
+				!type.IsNested &&
+				!type.IsGenericType &&
 				type.IsSubClassOf(typeof(View)));
 		}
 	}

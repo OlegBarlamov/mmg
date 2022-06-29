@@ -15,7 +15,9 @@ namespace FrameworkSDK.MonoGame.Localization
                 public static string ResolvingMvcByView => Localization.GetString() ?? "Resolving mvc by view '{0}'.";
                 public static string ResolvingMvcByModelFinished => Localization.GetString() ?? "Resolving by model {0} finished with result: {1}.";
                 public static string ResolvingMvcByControllerFinished => Localization.GetString() ?? "Resolving by controller {0} finished with result: {1}.";
+                public static string ResolvingMvcByControllerSkipped => Localization.GetString() ?? "Resolving by controller {0} skipped.";
                 public static string ResolvingMvcByViewFinished => Localization.GetString() ?? "Resolving by view {0} finished with result: {1}.";
+                public static string ResolvingMvcByViewSkipped => Localization.GetString() ?? "Resolving by view {0} skipped.";
                 public static string ControllerExists => Localization.GetString() ?? "Controller already exists in {0}.";
                 public static string ModelExists => Localization.GetString() ?? "Model already exists in {0}.";
                 public static string ViewExists => Localization.GetString() ?? "View already exists in {0}.";

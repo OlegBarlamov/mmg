@@ -1,7 +1,9 @@
 using System;
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.Logging;
+using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
+using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 

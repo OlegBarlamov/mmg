@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.Mvc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.SceneComponents
 {
-    public class Grid3DComponentData
+    public class Grid3DComponentData : ViewModel3D
     {
-        public string GraphicsPassName = View.DefaultViewPassName;
-
-        public Vector3 Position = Vector3.Zero; 
-        
         public float AxesLength = 10f;
         public float CellsSize = 1f;
         
@@ -21,25 +19,29 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public Color CellsColor = Color.WhiteSmoke;
     }
 
-    public class Grid3DComponentView : SingleMeshComponent<Grid3DComponentData>
+    public class Grid3DComponentView : Grid3DComponentView<EmptyController>
     {
-        protected override BoundingBox BoundingBoxInternal { get; }
-        protected override IRenderableMesh Mesh => _mesh;
-        protected override string SingleGraphicsPassName { get; }
-
-        private readonly FixedSimpleMesh _mesh;
-        
-        public Grid3DComponentView(Grid3DComponentData model)
+        public Grid3DComponentView(Grid3DComponentData model) : base(model)
         {
-            SingleGraphicsPassName = model.GraphicsPassName;
+        }
+    }
 
-            _mesh = GenerateMesh(model.AxesLength, model.CellsSize, model.XAxeColor, model.YAxeColor, model.ZAxeColor, model.CellsColor);
-            _mesh.SetPosition(model.Position);
-            
-            BoundingBoxInternal = new BoundingBox(Vector3.Zero, new Vector3(model.AxesLength));
+    public class Grid3DComponentView<TController> : RenderablePrimitive<Grid3DComponentData, TController> where TController : IController
+    {
+        protected override BoundingBox MeshBoundingBox { get; }
+
+        public Grid3DComponentView(Grid3DComponentData model) : base(GenerateMesh(model), model)
+        {
+            MeshBoundingBox = new BoundingBox(Vector3.Zero, new Vector3(model.AxesLength));
         }
 
-        private FixedSimpleMesh GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)
+        private static FixedSimpleMesh GenerateMesh(Grid3DComponentData model)
+        {
+            return GenerateMesh(model.AxesLength, model.CellsSize, model.XAxeColor, model.YAxeColor, model.ZAxeColor,
+                model.CellsColor);
+        }
+
+        private static FixedSimpleMesh GenerateMesh(float axesLength, float cellSize, Color xAxeColor, Color yAxeColor, Color zAxeColor, Color cellsColor)
         {
             var vertices = new List<VertexPositionColor>();
             var indices = new List<int>();
@@ -92,7 +94,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
                 indices.Add(++index);
             }
 
-            return FixedSimpleMesh.FromVertices(this, PrimitiveType.LineList,
+            return FixedSimpleMesh.FromVertices(PrimitiveType.LineList,
                 VertexPositionColor.VertexDeclaration, vertices.ToArray(), indices.ToArray(), indices.Count / 2);
         }
     }

@@ -14,8 +14,8 @@ namespace X4World.Objects
     {
         public string Name { get; }
     
-        public Vector3 Position { get; }
-        
+        public Vector3 Position { get; set; }
+
         public Vector3 Size { get; } = new Vector3(100);
 
         public GalaxiesMapCell OwnedCell { get; }
