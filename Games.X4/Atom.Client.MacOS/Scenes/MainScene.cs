@@ -10,7 +10,6 @@ using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
-using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
@@ -23,9 +22,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions.DataStructures;
-using NetExtensions.Collections;
 using NetExtensions.Geometry;
-using NetExtensions.Helpers;
 using X4World;
 using X4World.Objects;
 
@@ -92,20 +89,15 @@ namespace Atom.Client.MacOS.Scenes
         protected override void OnFirstOpening()
         {
             base.OnFirstOpening();
-
-            var gridData = new Grid3DComponentData
+            
+            var gridComponent = new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
             {
                 GraphicsPassName = "Render_Grouped"
-            };
-            var gridComponent = new Grid3DComponentView<FunctionController<Grid3DComponentData>>(gridData);
-            var gridController = new FunctionController<Grid3DComponentData>((controller, time) =>
-            {
-                controller.DataModel.Rotation += new Vector3(0, (float)time.ElapsedGameTime.TotalSeconds, 0);
             });
-            ((IController)gridController).SetDataModel(gridData);
-            ((IController)gridController).SetView(gridComponent);
-            
-            ((IView)gridComponent).SetController(gridController);
+            gridComponent.AssignControllerToPrimitive(new FunctionController<Grid3DComponentData>((controller, time) =>
+            {
+                controller.DataModel.Rotation += new Vector3(0, (float) time.ElapsedGameTime.TotalSeconds, 0);
+            }));
             AddView(gridComponent);
             
             AddView(new DebugInfoComponentData
@@ -117,30 +109,30 @@ namespace Atom.Client.MacOS.Scenes
                 GraphicsPassName = "debug"
             });
 
-            AddView(new PlaneComponentData
+            AddView(new PlanePrimitiveComponentData
             {
                 GraphicsPassName = "Render_Textured"
             });
             
-            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
             {
                 GraphicsPassName = "Render_Textured"
             });
             
-            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
             {
                 GraphicsPassName = "Render_Textured",
                 Position = new Vector3(5),
             });
             
-            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
             {
                 GraphicsPassName = "Render_Textured",
                 Position = new Vector3(10),
                 Scale = new Vector3(2),
             });
             
-            AddView(new RawGeometryComponentData(StaticGeometries.Sphere)
+            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
             {
                 GraphicsPassName = "Render_Textured",
                 Position = new Vector3(20),

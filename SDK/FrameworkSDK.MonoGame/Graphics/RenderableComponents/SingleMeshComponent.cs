@@ -9,10 +9,10 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
     {
         public override IReadOnlyList<string> GraphicsPassNames { get; }
         public override IReadOnlyDictionary<string, IReadOnlyList<IRenderableMesh>> MeshesByPass { get; }
-        
-        public override BoundingBox? BoundingBox => MeshBoundingBox;
-        
-        protected abstract BoundingBox MeshBoundingBox { get; }
+
+        public override BoundingBox? BoundingBox => CurrentBoundingBox ?? (CurrentBoundingBox = ConstructBoundingBox());
+
+        protected BoundingBox? CurrentBoundingBox;
 
         protected IRenderableMesh Mesh { get; }
 
@@ -27,6 +27,8 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
             };
         }
 
+        protected abstract BoundingBox ConstructBoundingBox();
+        
     }
 
     public abstract class SingleMeshComponent<TData> : SingleMeshComponent<TData, EmptyController>

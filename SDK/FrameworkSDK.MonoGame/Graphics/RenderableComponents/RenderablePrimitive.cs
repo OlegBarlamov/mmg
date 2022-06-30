@@ -6,7 +6,7 @@ using FrameworkSDK.MonoGame.Mvc;
 
 namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
 {
-    public abstract class RenderablePrimitive<TData, TController> : SingleMeshComponent<TData, TController> where TData : ViewModel3D where TController : IController
+    public abstract class RenderablePrimitive<TData, TController> : SingleMeshComponent<TData, TController> where TData : ViewModel3D where TController : class, IController
     {
         protected RenderablePrimitive(IRenderableMesh mesh, TData viewModel)
             : base(mesh, viewModel.GraphicsPassName)
@@ -16,6 +16,16 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
             viewModel.PlacementChanged += DataModelOnPlacementChanged;
             
             SetDataModel(viewModel);
+        }
+
+        public void AssignControllerToPrimitive(TController controller)
+        {
+            if (Controller != null)
+                throw new FrameworkMonoGameException($"Renderable primitive {Name} already has controller assigned: {Controller}");
+            
+            SetController(controller);
+            controller.SetDataModel(DataModel);
+            controller.SetView(this);
         }
 
         protected override void OnDestroy()
@@ -28,6 +38,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
         private void DataModelOnPlacementChanged(object sender, EventArgs e)
         {
             Mesh.CopyWorldParameters(DataModel);
+            CurrentBoundingBox = ConstructBoundingBox();
         }
     }
 

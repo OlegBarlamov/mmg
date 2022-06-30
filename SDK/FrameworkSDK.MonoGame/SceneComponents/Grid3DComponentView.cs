@@ -26,13 +26,15 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         }
     }
 
-    public class Grid3DComponentView<TController> : RenderablePrimitive<Grid3DComponentData, TController> where TController : IController
+    public class Grid3DComponentView<TController> : RenderablePrimitive<Grid3DComponentData, TController> where TController : class, IController
     {
-        protected override BoundingBox MeshBoundingBox { get; }
-
         public Grid3DComponentView(Grid3DComponentData model) : base(GenerateMesh(model), model)
         {
-            MeshBoundingBox = new BoundingBox(Vector3.Zero, new Vector3(model.AxesLength));
+        }
+        
+        protected override BoundingBox ConstructBoundingBox()
+        {
+            return new BoundingBox(Vector3.Zero, new Vector3(DataModel.AxesLength));
         }
 
         private static FixedSimpleMesh GenerateMesh(Grid3DComponentData model)

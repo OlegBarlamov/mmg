@@ -92,14 +92,16 @@ namespace FrameworkSDK.MonoGame.Mvc
                 Logger.Debug(Strings.Exceptions.Mapping.MappingForInstanceNotFound, controller);
                 return new MvcComponentGroup
                 {
-                    Controller = controller
+                    View = controller.View,
+                    Controller = controller,
+                    Model = controller.DataModel
                 };
             }
 
             var mapping = _mappingByController[targetType];
 
-            var model = ResolveModel(mapping);
-            var view = ResolveView(mapping, model);
+            var model = controller.DataModel ?? ResolveModel(mapping);
+            var view = controller.View ?? ResolveView(mapping, model);
             return new MvcComponentGroup
             {
                 Model = model,
@@ -116,15 +118,17 @@ namespace FrameworkSDK.MonoGame.Mvc
                 Logger.Debug(Strings.Exceptions.Mapping.MappingForInstanceNotFound, view);
                 return new MvcComponentGroup
                 {
-                    View = view
+                    View = view,
+                    Controller = view.Controller,
+                    Model = view.DataModel
                 };
             }
             
 
             var mapping = _mappingByView[targetType];
 
-            var model = ResolveModel(mapping);
-            var controller = ResolveController(mapping, model);
+            var model = view.DataModel ?? ResolveModel(mapping);
+            var controller = view.Controller ?? ResolveController(mapping, model);
             return new MvcComponentGroup
             {
                 Model = model,

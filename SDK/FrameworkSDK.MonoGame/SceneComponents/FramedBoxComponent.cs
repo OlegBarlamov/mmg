@@ -22,12 +22,8 @@ namespace FrameworkSDK.MonoGame.SceneComponents
     
     public class FramedBoxComponent : RenderablePrimitive<BoxComponentDataModel>
     {
-        protected override BoundingBox MeshBoundingBox { get; }
-
         public FramedBoxComponent(BoxComponentDataModel viewModel) : base(CreateMesh(viewModel.Color), viewModel)
         {
-            var meshGeometrySize = Vector3.One;
-            MeshBoundingBox = new BoundingBox(viewModel.Position - meshGeometrySize/2 * viewModel.Scale, viewModel.Position + meshGeometrySize/2 * viewModel.Scale);
         }
 
         private static IRenderableMesh CreateMesh(Color color)
@@ -38,6 +34,12 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         public void SetName(string name)
         {
             Name = name;
+        }
+
+        protected override BoundingBox ConstructBoundingBox()
+        {
+            var meshGeometrySize = Vector3.One;
+            return new BoundingBox(DataModel.Position - meshGeometrySize/2 * DataModel.Scale, DataModel.Position + meshGeometrySize/2 * DataModel.Scale);
         }
     }
 }
