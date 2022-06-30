@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
@@ -6,6 +7,7 @@ namespace MonoGameExtensions.DataStructures
 {
     public abstract class OctreeNodeBase<TData> : IOctreeNode<TData>
     {
+        public event Action<IOctreeNode<TData>> NodeSubdivided; 
         public Vector3 Center { get; }
         /// <summary>
         /// Width/Height/Depth
@@ -13,7 +15,7 @@ namespace MonoGameExtensions.DataStructures
         public float Size { get; }
         public int Level { get; }
         public BoundingBox BoundingBox { get; }
-        public TData Data { get; set; }
+        public IReadOnlyCollection<TData> DataObjects { get; set; }
         public IOctreeNode<TData> Parent { get; }
         public OctreeChildrenNodes<TData> Children { get; private set; } = OctreeChildrenNodes<TData>.Empty;
 
@@ -62,7 +64,8 @@ namespace MonoGameExtensions.DataStructures
                 factory(this, Center + new Vector3(1, 1, 1) * Size / 4, Size / 2, Level + 1),
                 factory(this, Center + new Vector3(-1, 1, 1) * Size / 4, Size / 2, Level + 1)
             );
+            
+            NodeSubdivided?.Invoke(this);
         }
-        
     }
 }

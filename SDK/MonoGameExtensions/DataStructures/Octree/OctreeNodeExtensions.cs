@@ -74,7 +74,7 @@ namespace MonoGameExtensions.DataStructures
             }
         }
 
-        public static float GetDistanceFromPoint<T, TData>(this T node, Vector3 point) where T : IOctreeNode<TData>
+        public static float GetDistanceFromPoint<TData>(this IOctreeNode<TData> node, Vector3 point)
         {
             return Vector3.Distance(point, node.Center) - node.Size / 2;
         } 

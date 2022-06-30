@@ -90,15 +90,10 @@ namespace Atom.Client.MacOS.Scenes
         {
             base.OnFirstOpening();
             
-            var gridComponent = new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
+            AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
             {
                 GraphicsPassName = "Render_Grouped"
-            });
-            gridComponent.AssignControllerToPrimitive(new FunctionController<Grid3DComponentData>((controller, time) =>
-            {
-                controller.DataModel.Rotation += new Vector3(0, (float) time.ElapsedGameTime.TotalSeconds, 0);
             }));
-            AddView(gridComponent);
             
             AddView(new DebugInfoComponentData
             {
@@ -109,35 +104,17 @@ namespace Atom.Client.MacOS.Scenes
                 GraphicsPassName = "debug"
             });
 
-            AddView(new PlanePrimitiveComponentData
+            foreach (var keyValuePair in DataModel.GlobalWorldMap.EnumerateCells())
             {
-                GraphicsPassName = "Render_Textured"
-            });
-            
-            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
-            {
-                GraphicsPassName = "Render_Textured"
-            });
-            
-            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
-            {
-                GraphicsPassName = "Render_Textured",
-                Position = new Vector3(5),
-            });
-            
-            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
-            {
-                GraphicsPassName = "Render_Textured",
-                Position = new Vector3(10),
-                Scale = new Vector3(2),
-            });
-            
-            AddView(new GeometryPrimitiveComponentData(StaticGeometries.Sphere)
-            {
-                GraphicsPassName = "Render_Textured",
-                Position = new Vector3(20),
-                Scale = new Vector3(1, 3, 1),
-            });
+                var cell = keyValuePair.Value;
+                var octreeComponentData = new OctreeDebugRendererComponentData<IGalaxiesLevelObject>(cell.Content.GalaxiesLevelObjects)
+                {
+                    Color = Color.Pink,
+                    GraphicsPassName = "Render_Grouped"
+                };
+                var octreeComponentView = new OctreeDebugRendererComponent<IGalaxiesLevelObject>(octreeComponentData);
+                AddView(octreeComponentView);
+            }
 
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
                 (x, y, z) =>
@@ -158,145 +135,145 @@ namespace Atom.Client.MacOS.Scenes
             {
                 _cameraController.Update(gameTime);
 
-                var newCameraPointOnMap = DataModel.GalaxiesMap.FindPoint(_camera.Position);
-                var newGalaxiesNode = (AutoSplitOctreeNode<Galaxy>)newCameraPointOnMap.GalaxiesTree.GetLeafWithPoint(_camera.Position);
-                
-                if (newGalaxiesNode != _cameraGalaxiesNode)
-                {
-                    _cameraGalaxiesNode = newGalaxiesNode;
-                    
-                    _newCellCancellationTokenSource?.Cancel();
-                    _newCellCancellationTokenSource?.Dispose();
-                    _newCellCancellationTokenSource = new CancellationTokenSource();
-                    
-                    foreach (var boxComponent in _objectsOnGalaxiesScene)
-                    {
-                        var box = boxComponent.Value.BoundingBox.Value;
-                        var center = (box.Max + box.Min) / 2;
-                        var size = (box.Max - box.Min).Length();
-                        if ((_camera.Position - center).Length() > WorldConstants.GalaxiesMapCellSize * 1.5f + size / 2)
-                        {
-                            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
-                            {
-                                RemoveView((IView)boxComponent.Value);
-                                _objectsOnGalaxiesScene.Remove(boxComponent.Key);
-                                    
-                            }, _newCellCancellationTokenSource.Token));
-                        }
-                    }
-                
-                    var mapRec = RectangleBox.FromCenterAndRadius(newCameraPointOnMap.MapPoint, new Point3D(1));
-                    foreach (var mapPoint in mapRec.EnumeratePoints())
-                    {
-                        var mapCell = DataModel.GalaxiesMap.GetCell(mapPoint);
-                        if (mapCell == null)
-                            continue;
-                
-                        foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, WorldConstants.GalaxiesMapCellSize * 1.5f))
-                        {
-                            var galaxies = leaf.Data;
-                            foreach (var galaxy in galaxies)
-                            {
-                                if (!_objectsOnGalaxiesScene.ContainsKey(galaxy.Name))
-                                {
-                                    MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
-                                        {
-                                            _objectsOnGalaxiesScene.Add(galaxy.Name, AddView(galaxy));
-                                            
-                                        }, _newCellCancellationTokenSource.Token));
-                                }
-                
-                                if (leaf == newGalaxiesNode)
-                                {
-                                    // the current octree-node
-                                    if (galaxy.StarsOctree.Data.Count == 0)
-                                    {
-                                        BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
-                                        {
-                                            for (int i = 0; i < 100; i++)
-                                            {
-                                                var position = RandomService.NextVector3(-galaxy.Size / 2, galaxy.Size / 2);
-                                                var newStar = new Star(position, galaxy, NamesGenerator.Hash(HashType.SmallGuid, $"{galaxy.Name}_star"));
-                                                galaxy.AddStar(newStar);
-                                            }
-                                        }, CancellationToken.None));
-                                    }
-                                }  
-                            }
-                
-                            if (!_objectsOnGalaxiesScene.ContainsKey(leaf.BoundingBox.ToString()))
-                            {
-                                MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
-                                {
-                                    var boxModel = BoxComponentDataModel.FromBoundingBox(leaf.BoundingBox);
-                                    boxModel.GraphicsPassName = "Render_Grouped";
-                                    boxModel.Color = Color.Pink;
-                                    var box = new FramedBoxComponent(boxModel);
-                                    box.SetName(box.BoundingBox.ToString());
-                                    AddView(box);
-                                    
-                                    _objectsOnGalaxiesScene.Add(box.Name, box);
-                                    
-                                }, _newCellCancellationTokenSource.Token));
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    var galaxies = newGalaxiesNode.Data;
-                    AutoSplitOctreeNode<Star> newStarsNode = null;
-                    Galaxy activeGalaxy = null;
-                
-                    foreach (var galaxy in galaxies)
-                    {
-                        if ((galaxy.Position - _camera.Position).Length() < galaxy.Size.X / 2)
-                        {
-                            // Update stars scene
-                            var starsOctree = galaxy.StarsOctree;
-                            activeGalaxy = galaxy;
-                            newStarsNode = (AutoSplitOctreeNode<Star>)starsOctree.GetLeafWithPoint(_camera.Position - galaxy.Position);
-                        }
-                    }
-                
-                    if (newStarsNode != _cameraStarsNode)
-                    {
-                        _cameraStarsNode = newStarsNode;
-                
-                        if (activeGalaxy != null)
-                        {
-                            var localPosition = _camera.Position - activeGalaxy.Position;
-                
-                            _newStarsCellCancellationTokenSource?.Cancel();
-                            _newStarsCellCancellationTokenSource?.Dispose();
-                            _newStarsCellCancellationTokenSource = new CancellationTokenSource();
-                
-                            foreach (var starsLeaf in newStarsNode.EnumerateLeafsInRangeAroundPoint(localPosition, 50f))
-                            {
-                                var stars = starsLeaf.Data;
-                                var boundingBoxInWorld =
-                                    new BoundingBox(starsLeaf.BoundingBox.Min + activeGalaxy.Position,
-                                        starsLeaf.BoundingBox.Max + activeGalaxy.Position);
-                
-                                if (!_objectsOnStarsScene.ContainsKey(boundingBoxInWorld.ToString()))
-                                {
-                                    MainUpdatesTasksProcessor.EnqueueTask(
-                                        new SimpleDelayedTask(time =>
-                                        {
-                                            var boxModel = BoxComponentDataModel.FromBoundingBox(boundingBoxInWorld);
-                                            boxModel.GraphicsPassName = "Render_Grouped";
-                                            boxModel.Color = Color.Orange;
-                                            var box = new FramedBoxComponent(boxModel);
-                                            box.SetName(boundingBoxInWorld.ToString());
-                                            AddView(box);
-                
-                                            _objectsOnStarsScene.Add(box.Name, box);
-                                        }, _newStarsCellCancellationTokenSource.Token));
-                                }
-                            }
-                        }
-                    }
-                }
+                // var newCameraPointOnMap = DataModel.GalaxiesMap.FindPoint(_camera.Position);
+                // var newGalaxiesNode = (AutoSplitOctreeNode<Galaxy>)newCameraPointOnMap.GalaxiesTree.GetLeafWithPoint(_camera.Position);
+                //
+                // if (newGalaxiesNode != _cameraGalaxiesNode)
+                // {
+                //     _cameraGalaxiesNode = newGalaxiesNode;
+                //     
+                //     _newCellCancellationTokenSource?.Cancel();
+                //     _newCellCancellationTokenSource?.Dispose();
+                //     _newCellCancellationTokenSource = new CancellationTokenSource();
+                //     
+                //     foreach (var boxComponent in _objectsOnGalaxiesScene)
+                //     {
+                //         var box = boxComponent.Value.BoundingBox.Value;
+                //         var center = (box.Max + box.Min) / 2;
+                //         var size = (box.Max - box.Min).Length();
+                //         if ((_camera.Position - center).Length() > WorldConstants.GalaxiesMapCellSize * 1.5f + size / 2)
+                //         {
+                //             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                //             {
+                //                 RemoveView((IView)boxComponent.Value);
+                //                 _objectsOnGalaxiesScene.Remove(boxComponent.Key);
+                //                     
+                //             }, _newCellCancellationTokenSource.Token));
+                //         }
+                //     }
+                //
+                //     var mapRec = RectangleBox.FromCenterAndRadius(newCameraPointOnMap.MapPoint, new Point3D(1));
+                //     foreach (var mapPoint in mapRec.EnumeratePoints())
+                //     {
+                //         var mapCell = DataModel.GalaxiesMap.GetCell(mapPoint);
+                //         if (mapCell == null)
+                //             continue;
+                //
+                //         foreach (var leaf in mapCell.GalaxiesTree.EnumerateLeafsInRangeAroundPoint(_camera.Position, WorldConstants.GalaxiesMapCellSize * 1.5f))
+                //         {
+                //             var galaxies = leaf.Data;
+                //             foreach (var galaxy in galaxies)
+                //             {
+                //                 if (!_objectsOnGalaxiesScene.ContainsKey(galaxy.Name))
+                //                 {
+                //                     MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                //                         {
+                //                             _objectsOnGalaxiesScene.Add(galaxy.Name, AddView(galaxy));
+                //                             
+                //                         }, _newCellCancellationTokenSource.Token));
+                //                 }
+                //
+                //                 if (leaf == newGalaxiesNode)
+                //                 {
+                //                     // the current octree-node
+                //                     if (galaxy.StarsOctree.Data.Count == 0)
+                //                     {
+                //                         BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                //                         {
+                //                             for (int i = 0; i < 100; i++)
+                //                             {
+                //                                 var position = RandomService.NextVector3(-galaxy.Size / 2, galaxy.Size / 2);
+                //                                 var newStar = new Star(position, galaxy, NamesGenerator.Hash(HashType.SmallGuid, $"{galaxy.Name}_star"));
+                //                                 galaxy.AddStar(newStar);
+                //                             }
+                //                         }, CancellationToken.None));
+                //                     }
+                //                 }  
+                //             }
+                //
+                //             if (!_objectsOnGalaxiesScene.ContainsKey(leaf.BoundingBox.ToString()))
+                //             {
+                //                 MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
+                //                 {
+                //                     var boxModel = FramedBoxComponentDataModel.FromBoundingBox(leaf.BoundingBox);
+                //                     boxModel.GraphicsPassName = "Render_Grouped";
+                //                     boxModel.Color = Color.Pink;
+                //                     var box = new FramedBoxComponent(boxModel);
+                //                     box.SetName(box.BoundingBox.ToString());
+                //                     AddView(box);
+                //                     
+                //                     _objectsOnGalaxiesScene.Add(box.Name, box);
+                //                     
+                //                 }, _newCellCancellationTokenSource.Token));
+                //             }
+                //         }
+                //     }
+                // }
+                // else
+                // {
+                //     var galaxies = newGalaxiesNode.Data;
+                //     AutoSplitOctreeNode<Star> newStarsNode = null;
+                //     Galaxy activeGalaxy = null;
+                //
+                //     foreach (var galaxy in galaxies)
+                //     {
+                //         if ((galaxy.Position - _camera.Position).Length() < galaxy.Size.X / 2)
+                //         {
+                //             // Update stars scene
+                //             var starsOctree = galaxy.StarsOctree;
+                //             activeGalaxy = galaxy;
+                //             newStarsNode = (AutoSplitOctreeNode<Star>)starsOctree.GetLeafWithPoint(_camera.Position - galaxy.Position);
+                //         }
+                //     }
+                //
+                //     if (newStarsNode != _cameraStarsNode)
+                //     {
+                //         _cameraStarsNode = newStarsNode;
+                //
+                //         if (activeGalaxy != null)
+                //         {
+                //             var localPosition = _camera.Position - activeGalaxy.Position;
+                //
+                //             _newStarsCellCancellationTokenSource?.Cancel();
+                //             _newStarsCellCancellationTokenSource?.Dispose();
+                //             _newStarsCellCancellationTokenSource = new CancellationTokenSource();
+                //
+                //             foreach (var starsLeaf in newStarsNode.EnumerateLeafsInRangeAroundPoint(localPosition, 50f))
+                //             {
+                //                 var stars = starsLeaf.Data;
+                //                 var boundingBoxInWorld =
+                //                     new BoundingBox(starsLeaf.BoundingBox.Min + activeGalaxy.Position,
+                //                         starsLeaf.BoundingBox.Max + activeGalaxy.Position);
+                //
+                //                 if (!_objectsOnStarsScene.ContainsKey(boundingBoxInWorld.ToString()))
+                //                 {
+                //                     MainUpdatesTasksProcessor.EnqueueTask(
+                //                         new SimpleDelayedTask(time =>
+                //                         {
+                //                             var boxModel = FramedBoxComponentDataModel.FromBoundingBox(boundingBoxInWorld);
+                //                             boxModel.GraphicsPassName = "Render_Grouped";
+                //                             boxModel.Color = Color.Orange;
+                //                             var box = new FramedBoxComponent(boxModel);
+                //                             box.SetName(boundingBoxInWorld.ToString());
+                //                             AddView(box);
+                //
+                //                             _objectsOnStarsScene.Add(box.Name, box);
+                //                         }, _newStarsCellCancellationTokenSource.Token));
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
                 
                 DebugInfoService.SetCounter("my_components", _objectsOnGalaxiesScene.Count);
                 

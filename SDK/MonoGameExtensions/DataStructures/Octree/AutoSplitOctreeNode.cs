@@ -5,9 +5,8 @@ using Microsoft.Xna.Framework;
 
 namespace MonoGameExtensions.DataStructures
 {
-    public class AutoSplitOctreeNode<TData> : OctreeNodeBase<IReadOnlyCollection<TData>> where TData : ILocatable3D
+    public class AutoSplitOctreeNode<TData> : OctreeNodeBase<TData> where TData : ILocatable3D
     {
-        public event Action<AutoSplitOctreeNode<TData>> NodeSubdivided; 
         public int MaxElementsCount { get; }
         public bool Subdivided => !Children.IsEmpty;
         
@@ -24,7 +23,7 @@ namespace MonoGameExtensions.DataStructures
             if (maxElementsCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxElementsCount));
             
             MaxElementsCount = maxElementsCount;
-            Data = _items;
+            DataObjects = _items;
         }
 
         public void AddItem(TData item)
@@ -51,11 +50,9 @@ namespace MonoGameExtensions.DataStructures
             {
                 AddItemToChildren(item);
             }
-            
-            NodeSubdivided?.Invoke(this);    
         }
 
-        private static IOctreeNode<IReadOnlyCollection<TData>> NodeFactory(IOctreeNode<IReadOnlyCollection<TData>> parentnode, Vector3 center, float size, int level)
+        private static IOctreeNode<TData> NodeFactory(IOctreeNode<TData> parentnode, Vector3 center, float size, int level)
         {
             var parent = (AutoSplitOctreeNode<TData>)parentnode;
             return new AutoSplitOctreeNode<TData>(parent, center, size, level, parent.MaxElementsCount);

@@ -6,13 +6,13 @@ using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.SceneComponents
 {
-    public class BoxComponentDataModel : ViewModel3D
+    public class FramedBoxComponentDataModel : ViewModel3D
     {
         public Color Color = Color.Red;
 
-        public static BoxComponentDataModel FromBoundingBox(BoundingBox boundingBox)
+        public static FramedBoxComponentDataModel FromBoundingBox(BoundingBox boundingBox)
         {
-            return new BoxComponentDataModel
+            return new FramedBoxComponentDataModel
             {
                 Position = (boundingBox.Max + boundingBox.Min) / 2,
                 Scale = boundingBox.Max - boundingBox.Min
@@ -20,9 +20,9 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         }
     }
     
-    public class FramedBoxComponent : RenderablePrimitive<BoxComponentDataModel>
+    public class FramedBoxComponent : RenderablePrimitive<FramedBoxComponentDataModel>
     {
-        public FramedBoxComponent(BoxComponentDataModel viewModel) : base(CreateMesh(viewModel.Color), viewModel)
+        public FramedBoxComponent(FramedBoxComponentDataModel viewModel) : base(CreateMesh(viewModel.Color), viewModel)
         {
         }
 

@@ -10,19 +10,22 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class Galaxy : ILocatable3D, INamed
+    public class Galaxy : IGalaxiesLevelObject, INamed
     {
         public string Name { get; }
-    
         public Vector3 Position { get; set; }
-
-        public Vector3 Size { get; } = new Vector3(100);
-
-        public GalaxiesMapCell OwnedCell { get; }
+        public Vector3 Size { get; }
+        public GlobalWorldMapCell OwnedCell { get; }
+        
+        public bool IsGenerated { get; }
+        
+        // All data which are needed to generate content
+        public float SubstanceAmount { get; }
+        
         
         public AutoSplitOctreeNode<Star> StarsOctree { get; }
 
-        public Galaxy([NotNull] GalaxiesMapCell cell, Vector3 worldPosition, string name)
+        public Galaxy([NotNull] GlobalWorldMapCell cell, Vector3 worldPosition, string name)
         {
             OwnedCell = cell ?? throw new ArgumentNullException(nameof(cell));
             Position = worldPosition;

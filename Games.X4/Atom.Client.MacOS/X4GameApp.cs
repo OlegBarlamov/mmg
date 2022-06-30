@@ -104,17 +104,17 @@ namespace Atom.Client.MacOS
             DefaultConsoleManipulator.Update(gameTime);
         }
 
-        private Task<GalaxiesMap> GenerateMapAsync(CancellationToken cancellationToken)
+        private Task<GlobalWorldMap> GenerateMapAsync(CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 
-                var map = new GalaxiesMap();
+                var map = new GlobalWorldMap();
                 var pointsBox = RectangleBox.FromCenterAndRadius(Point3D.Zero, new Point3D(5));
                 foreach (var point in pointsBox.EnumeratePoints())
                 {
-                    var cell = new GalaxiesMapCell(point);
+                    var cell = new GlobalWorldMapCell(point);
                     // for (int i = 0; i < 40; i++)
                     // {
                     //     var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,

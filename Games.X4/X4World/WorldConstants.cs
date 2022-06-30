@@ -33,7 +33,10 @@ namespace X4World
     ///  Children: [Other planets]
     ///    Parent [nothing]
     ///      Parent [nothing]
-    ///  
+    ///    
+    /// Why do I need High level grid?
+    ///  - For world generation.
+    /// 
     /// </summary>
     public static class WorldConstants
     {

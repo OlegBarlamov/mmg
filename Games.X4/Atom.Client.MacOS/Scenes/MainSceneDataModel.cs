@@ -18,7 +18,7 @@ namespace Atom.Client.MacOS
         public ColorsTexturesPackage ColorsTexturesPackage { get; }
         public MainResourcePackage MainResourcePackage { get; }
 
-        public GalaxiesMap GalaxiesMap { get; private set; }
+        public GlobalWorldMap GlobalWorldMap { get; private set; }
         
         public bool Initialized { get; private set; }
 
@@ -28,9 +28,9 @@ namespace Atom.Client.MacOS
             MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
         }
 
-        public void Initialize([NotNull] GalaxiesMap map)
+        public void Initialize([NotNull] GlobalWorldMap map)
         {
-            GalaxiesMap = map ?? throw new ArgumentNullException(nameof(map));
+            GlobalWorldMap = map ?? throw new ArgumentNullException(nameof(map));
             Initialized = true;
         }
     }
