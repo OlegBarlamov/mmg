@@ -12,8 +12,8 @@ namespace MonoGameExtensions.DataStructures
         
         private readonly ConcurrentQueue<TData> _items = new ConcurrentQueue<TData>();
         
-        public AutoSplitOctreeNode(Vector3 center, float size, int maxElementsCount)
-            : this(null, center, size, 0, maxElementsCount)
+        public AutoSplitOctreeNode(Vector3 center, float size, int elementsCountToSplit)
+            : this(null, center, size, 0, elementsCountToSplit)
         {
         }
 

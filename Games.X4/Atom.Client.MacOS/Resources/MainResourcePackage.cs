@@ -16,6 +16,8 @@ namespace Atom.Client.MacOS.Resources
         
         public Texture2D A { get; private set; }
         
+        public Texture2D Yellow { get; private set; }
+        
         protected override void Load(IContentLoaderApi content)
         {
             StarTexture = content.Load<Texture2D>("star");
@@ -24,6 +26,8 @@ namespace Atom.Client.MacOS.Resources
 
             var array = ArrayGenerator.GetRandomArray(0, 1, 10, 10, new Random());
             A = content.HeightMap(array, 0, 1, Color.White, Color.Blue);
+
+            Yellow = content.DiffuseColor(Color.Yellow);
         }
     }
 }

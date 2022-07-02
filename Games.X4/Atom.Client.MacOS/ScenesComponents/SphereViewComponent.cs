@@ -18,11 +18,11 @@ using X4World.Objects;
 namespace Atom.Client.MacOS.Components
 {
     [UsedImplicitly]
-    public sealed class GalaxyViewComponent : SingleMeshComponent<GalaxyAsPoint>
+    public sealed class SphereViewComponent : SingleMeshComponent<SphereAsPoint>
     {
         public MainResourcePackage ResourcePackage { get; }
         
-        public GalaxyViewComponent([NotNull] GalaxyAsPoint model, [NotNull] MainResourcePackage resourcePackage,
+        public SphereViewComponent([NotNull] SphereAsPoint model, [NotNull] MainResourcePackage resourcePackage,
             [NotNull] ICamera3DProvider camera3DProvider, IDisplayService displayService)
             : base(new FixedSimpleMesh(StaticGeometries.Sphere), "Render_Textured")
         {
@@ -30,14 +30,14 @@ namespace Atom.Client.MacOS.Components
             
             SetDataModel(model);
             
-            Mesh.Material = new TextureMaterial(ResourcePackage.Yellow);
+            Mesh.Material = new TextureMaterial(ResourcePackage.A);
             Mesh.Position = DataModel.GetWorldPosition();
-            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 100);
+            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 1);
         }
 
         protected override BoundingBox ConstructBoundingBox()
         {
-            var size = new Vector3(DataModel.AggregatedData.Power * 100);
+            var size = new Vector3(DataModel.AggregatedData.Power * 1);
             return new BoundingBox(DataModel.GetWorldPosition() -  size / 2, DataModel.GetWorldPosition() + size / 2);
         }
     }

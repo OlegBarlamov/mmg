@@ -12,7 +12,10 @@ using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Collections;
 using NetExtensions.Geometry;
+using NetExtensions.Helpers;
+using X4World.Generation;
 using X4World.Maps;
 using X4World.Objects;
 
@@ -32,6 +35,7 @@ namespace Atom.Client.MacOS
         private IResourcesService ResourcesService { get; }
         public IRandomService RandomService { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
+        public IRandomSeedProvider RandomSeedProvider { get; }
 
         private SceneBase _currentScene;
         private LoadingScene _loadingScene;
@@ -47,7 +51,8 @@ namespace Atom.Client.MacOS
             [NotNull] MainResourcePackage mainResourcePackage,
             [NotNull] IResourcesService resourcesService,
             [NotNull] IRandomService randomService,
-            [NotNull] IExecutableCommandsCollection executableCommandsCollection)
+            [NotNull] IExecutableCommandsCollection executableCommandsCollection,
+            [NotNull] IRandomSeedProvider randomSeedProvider)
         {
             ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
             LoadingSceneResources = loadingSceneResources ?? throw new ArgumentNullException(nameof(loadingSceneResources));
@@ -57,6 +62,7 @@ namespace Atom.Client.MacOS
             ResourcesService = resourcesService ?? throw new ArgumentNullException(nameof(resourcesService));
             RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
+            RandomSeedProvider = randomSeedProvider ?? throw new ArgumentNullException(nameof(randomSeedProvider));
         }
 
         protected override void Dispose()
@@ -78,13 +84,13 @@ namespace Atom.Client.MacOS
             base.OnInitialized();
 
             _loadingScene = (LoadingScene) ScenesResolver.ResolveScene(LoadingSceneResources);
-            _mainScene = (MainScene) ScenesResolver.ResolveScene(MainSceneDataModel);
             _currentScene = _loadingScene;
 
             GenerateMapAsync(_appLifeTimeTokenSource.Token)
                 .ContinueWith(task =>
                 {
                     MainSceneDataModel.Initialize(task.Result);
+                    _mainScene = (MainScene) ScenesResolver.ResolveScene(MainSceneDataModel);
                     _currentScene = _mainScene;
                 })
                 .ConfigureAwait(true);
@@ -110,21 +116,10 @@ namespace Atom.Client.MacOS
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 
-                var map = new GlobalWorldMap();
-                var pointsBox = RectangleBox.FromCenterAndRadius(Point3D.Zero, new Point3D(5));
-                foreach (var point in pointsBox.EnumeratePoints())
-                {
-                    var cell = new GlobalWorldMapCell(point);
-                    // for (int i = 0; i < 40; i++)
-                    // {
-                    //     var randomPos = RandomService.NextVector3(cell.World - new Vector3(cell.Size) / 2,
-                    //         cell.World + new Vector3(cell.Size) / 2);
-                    //     var galaxy = new Galaxy(cell, randomPos, NamesGenerator.Hash(HashType.SmallGuid, "galaxy"));
-                    //     cell.GalaxiesTree.AddItem(galaxy);
-                    // }
-                    map.SetCell(point, cell);
-                }
-                return map;
+               var cellGenerator = new WorldMapCellGenerator(RandomSeedProvider);
+               var worldMapGenerator = new WorldMapGenerator(cellGenerator, RandomSeedProvider);
+               return (GlobalWorldMap)worldMapGenerator.Generate();
+               
             }, TaskCreationOptions.LongRunning);
         }
     }

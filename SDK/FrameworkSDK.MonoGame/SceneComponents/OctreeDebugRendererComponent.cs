@@ -87,8 +87,6 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             else
             {
                 node.NodeSubdivided -= OctreeRootNodeOnNodeSubdivided;
-                var nodeBox = _childComponents[node];
-                RemoveChild(nodeBox);
             }
         }
     }

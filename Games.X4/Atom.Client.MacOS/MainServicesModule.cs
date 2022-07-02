@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Atom.Client.MacOS.Resources;
+using Atom.Client.MacOS.Services;
 using Atom.Client.MacOS.Services.Implementations;
 using Console.Core.Commands;
 using Console.FrameworkAdapter;
@@ -13,6 +14,9 @@ using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using NetExtensions;
+using X4World.Generation;
+using X4World.Maps;
+using X4World.Objects;
 
 namespace Atom.Client.MacOS
 {
@@ -30,6 +34,9 @@ namespace Atom.Client.MacOS
             serviceRegistrator.RegisterInstance<IBackgroundTasksProcessor>(new ThreadPoolTasksProcessor());
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();
+            
+            serviceRegistrator.RegisterType<IDetailsGenerator<WorldMapCellContent>, WorldMapCellContentDetailsGenerator>();
+            serviceRegistrator.RegisterType<IDetailsGeneratorProvider, FixedDetailsGeneratorProvider>();
             
             RegisterConsoleCommands(serviceRegistrator);
         }

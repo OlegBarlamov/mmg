@@ -35,16 +35,22 @@
   <ItemGroup>
     <Compile Include="AppComponents\ScenesContainerComponent.cs" />
     <Compile Include="ConsoleCommands\ExitConsoleCommand.cs" />
+    <Compile Include="Controllers\GlobalWorldMapController.cs" />
+    <Compile Include="Controllers\IGlobalWorldMapController.cs" />
+    <Compile Include="Controllers\IWrappedObjectsController.cs" />
+    <Compile Include="Controllers\WrappedObjectsController.cs" />
     <Compile Include="ScenesComponents\GalaxyViewComponent.cs" />
-    <Compile Include="ScenesComponents\StarViewComponent.cs" />
     <Compile Include="MainServicesModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\LoadingSceneResources.cs" />
     <Compile Include="Resources\MainResourcePackage.cs" />
+    <Compile Include="ScenesComponents\SphereViewComponent.cs" />
+    <Compile Include="ScenesComponents\WorldMapCellContentViewComponent.cs" />
     <Compile Include="Scenes\LoadingScene.cs" />
     <Compile Include="Scenes\MainScene.cs" />
     <Compile Include="Scenes\MainSceneDataModel.cs" />
+    <Compile Include="Services\IDetailsGeneratorProvider.cs" />
     <Compile Include="Services\Implementations\ScenesResolverHolder.cs" />
     <Compile Include="X4GameApp.cs" />
     <MonoGameContentReference Include="__Content\content.mgcb">

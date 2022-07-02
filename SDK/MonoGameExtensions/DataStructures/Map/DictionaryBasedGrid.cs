@@ -3,21 +3,22 @@ using System.Collections.Generic;
 
 namespace MonoGameExtensions.DataStructures
 {
-    public class DictionaryBasedMap<TPoint, TCell> : IMap<TPoint, TCell> where TPoint : struct where TCell : class, IMapCell<TPoint>
+    public class DictionaryBasedGrid<TPoint, TCell> : IGrid<TPoint, TCell> where TPoint : struct where TCell : class, IGridCell<TPoint>
     {
+        protected IReadOnlyDictionary<TPoint, TCell> Cells => _cells;
         private readonly ConcurrentDictionary<TPoint, TCell> _cells;
 
-        public DictionaryBasedMap(IReadOnlyDictionary<TPoint, TCell> initialMap)
+        public DictionaryBasedGrid(IReadOnlyDictionary<TPoint, TCell> initialMap)
         {
             _cells = new ConcurrentDictionary<TPoint, TCell>(initialMap);
         }
         
-        public DictionaryBasedMap()
+        public DictionaryBasedGrid()
             :this(new Dictionary<TPoint, TCell>())
         {
         }
 
-        public TCell GetCell(TPoint point)
+        public virtual TCell GetCell(TPoint point)
         {
             if (_cells.TryGetValue(point, out var cell))
                 return cell;
@@ -25,7 +26,7 @@ namespace MonoGameExtensions.DataStructures
             return null;
         }
 
-        public void SetCell(TPoint point, TCell data)
+        public virtual void SetCell(TPoint point, TCell data)
         {
             _cells.AddOrUpdate(point, data, (p, cell) => data);
         }

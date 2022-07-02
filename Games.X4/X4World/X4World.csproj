@@ -16,8 +16,4 @@
       <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Generations" />
-    </ItemGroup>
-
 </Project>

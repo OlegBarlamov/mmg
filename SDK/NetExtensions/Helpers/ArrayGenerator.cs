@@ -65,11 +65,36 @@ namespace NetExtensions.Helpers
 
         public static int[,] GetRandomArray(int minValue, int maxValue, int width, int height, Random seed)
         {
-            var array = new int[width, height];
+            return GetRandomArray(minValue, maxValue, width, height, seed, i => i);
+        }
+
+        public static T[,] GetRandomArray<T>(int minValue, int maxValue, int width, int height, Random seed, Func<int, T> cast)
+        {
+            var array = new T[width, height];
             for (int x = 0; x< width; x++)
             for (int y = 0; y < height; y++)
             {
-                array[x, y] = seed.Next(minValue, maxValue + 1);
+                var value = seed.Next(minValue, maxValue + 1);
+                array[x, y] = cast.Invoke(value);
+            }
+
+            return array;
+        }
+        
+        public static int[,,] GetRandomArray(int minValue, int maxValue, int width, int height, int depth, Random seed)
+        {
+            return GetRandomArray(minValue, maxValue, width, height, depth, seed, i => i);
+        }
+        
+        public static T[,,] GetRandomArray<T>(int minValue, int maxValue, int width, int height, int depth, Random seed, Func<int, T> cast)
+        {
+            var array = new T[width, height, depth];
+            for (int x = 0; x< width; x++)
+            for (int y = 0; y < height; y++)
+            for (int z = 0; z < depth; z++)
+            {
+                var value = seed.Next(minValue, maxValue + 1);
+                array[x, y, z] = cast.Invoke(value);
             }
 
             return array;

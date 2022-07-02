@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Localization;
 using FrameworkSDK.MonoGame.Graphics;
-using FrameworkSDK.MonoGame.Graphics.Basic;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -118,7 +117,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (!_children.Contains(childView))
                 throw new ScenesException(Strings.Exceptions.Scenes.ChildComponentNotExists, this, childView);
 
-            scene.RemoveView(childView);
+            RemoveChildInternal(childView);
+        }
+
+        private void RemoveChildInternal(IView childView)
+        {
+            _ownedScene.RemoveView(childView);
             _children.Remove(childView);
         }
 
@@ -131,8 +135,10 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         void ISceneComponent.OnRemovedFromScene(SceneBase scene)
         {
-            foreach (var child in _children)
-                RemoveChild(child);
+            while (_children.Count > 0)
+            {
+                RemoveChildInternal(_children[0]);
+            }
 
             _ownedScene = null;
             OnDetached(scene);

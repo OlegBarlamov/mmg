@@ -132,6 +132,11 @@ namespace MonoGameExtensions.DataStructures
                 
                 {new Point3D(-1, 1, 0), LeftTopBackward},
                 {new Point3D(0, 1, -1), RightTopBackward},
+                
+                {new Point3D(-1, 0, -1), LeftTopBackward},
+                {new Point3D(1, 0, -1), RightTopBackward},
+                {new Point3D(-1, 0, 1), LeftTopForward},
+                {new Point3D(1, 0, 1), RightTopForward},
             };
         }
     }

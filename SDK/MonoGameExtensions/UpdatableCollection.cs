@@ -8,15 +8,15 @@ namespace MonoGameExtensions
 {
 	public class UpdatableCollection<T> : ICollection<T>
 	{
-		public int Count => _clearAll ? 0 : ActiveControllers.Count + _controllersToAdd.Count - _controllersToRemove.Count;
+		public int Count => _clearAll ? 0 : ActiveItems.Count + _itemsToAdd.Count - _itemsToRemove.Count;
 
 		public bool IsReadOnly => false;
 
 		[NotNull]
-		private readonly List<T> _controllersToAdd = new List<T>();
+		private readonly List<T> _itemsToAdd = new List<T>();
 		[NotNull]
-		private readonly List<T> _controllersToRemove = new List<T>();
-		[NotNull] private List<T> ActiveControllers { get; }
+		private readonly List<T> _itemsToRemove = new List<T>();
+		[NotNull] private List<T> ActiveItems { get; }
 
 		private bool _clearAll;
 
@@ -24,33 +24,33 @@ namespace MonoGameExtensions
 		{
 			if (_clearAll)
 			{
-				ActiveControllers.Clear();
+				ActiveItems.Clear();
 			}
 			else
 			{
-				ActiveControllers.AddRange(_controllersToAdd);
-				foreach (var toRemove in _controllersToRemove)
-					ActiveControllers.Remove(toRemove);
+				ActiveItems.AddRange(_itemsToAdd);
+				foreach (var toRemove in _itemsToRemove)
+					ActiveItems.Remove(toRemove);
 			}
 
-			_controllersToAdd.Clear();
-			_controllersToRemove.Clear();
+			_itemsToAdd.Clear();
+			_itemsToRemove.Clear();
 			_clearAll = false;
 		}
 
 		public UpdatableCollection()
 		{
-			ActiveControllers = new List<T>();
+			ActiveItems = new List<T>();
 		}
 
 		public UpdatableCollection(IEnumerable<T> items)
 		{
-			ActiveControllers = new List<T>(items);
+			ActiveItems = new List<T>(items);
 		}
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			return ActiveControllers.GetEnumerator();
+			return ActiveItems.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -60,7 +60,7 @@ namespace MonoGameExtensions
 
 		public void Add(T item)
 		{
-			_controllersToAdd.Add(item);
+			_itemsToAdd.Add(item);
 		}
 
 		public void Clear()
@@ -73,17 +73,17 @@ namespace MonoGameExtensions
             if (_clearAll)
                 return new T[0];
 
-	        return new List<T>(ActiveControllers
-	            .Concat(_controllersToAdd)
-	            .Except(_controllersToRemove));
+	        return new List<T>(ActiveItems
+	            .Concat(_itemsToAdd)
+	            .Except(_itemsToRemove));
 	    }
 
 
         public bool Contains(T item)
 		{
-			return !_clearAll && ActiveControllers
-				       .Concat(_controllersToAdd)
-				       .Except(_controllersToRemove)
+			return !_clearAll && ActiveItems
+				       .Concat(_itemsToAdd)
+				       .Except(_itemsToRemove)
 				       .Contains(item);
 		}
 
@@ -94,7 +94,7 @@ namespace MonoGameExtensions
 
 		public bool Remove(T item)
 		{
-			_controllersToRemove.Add(item);
+			_itemsToRemove.Add(item);
 			return true;
 		}
 	}

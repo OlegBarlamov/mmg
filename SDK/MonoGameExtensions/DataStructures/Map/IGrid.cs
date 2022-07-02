@@ -1,6 +1,6 @@
 namespace MonoGameExtensions.DataStructures
 {
-    public interface IMap<in TPoint, TCell> where TPoint : struct where TCell : IMapCell<TPoint>
+    public interface IGrid<in TPoint, TCell> where TPoint : struct where TCell : IGridCell<TPoint>
     {
         TCell GetCell(TPoint point);
 

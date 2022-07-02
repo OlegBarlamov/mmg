@@ -28,9 +28,9 @@ namespace Atom.Client.MacOS
             MainResourcePackage = mainResourcePackage ?? throw new ArgumentNullException(nameof(mainResourcePackage));
         }
 
-        public void Initialize([NotNull] GlobalWorldMap map)
+        public void Initialize([NotNull] GlobalWorldMap grid)
         {
-            GlobalWorldMap = map ?? throw new ArgumentNullException(nameof(map));
+            GlobalWorldMap = grid ?? throw new ArgumentNullException(nameof(grid));
             Initialized = true;
         }
     }

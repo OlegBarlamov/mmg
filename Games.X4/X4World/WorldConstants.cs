@@ -40,6 +40,6 @@ namespace X4World
     /// </summary>
     public static class WorldConstants
     {
-        public const float GalaxiesMapCellSize = 5000f;
+        public const float WorldMapCellSize = 5000f;
     }
 }
