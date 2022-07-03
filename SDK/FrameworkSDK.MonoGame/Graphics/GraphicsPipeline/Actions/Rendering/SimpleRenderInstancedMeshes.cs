@@ -112,6 +112,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                             graphicDeviceContext.GeometryRenderer.Render();
                         }
                         
+                        graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingVertices, _geometry.GetVertices().Length);
                         graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingMeshes);
                     }
                     

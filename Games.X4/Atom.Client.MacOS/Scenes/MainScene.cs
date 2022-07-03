@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Atom.Client.MacOS.Controllers;
 using Atom.Client.MacOS.Services;
 using Console.Core;
@@ -6,6 +7,7 @@ using Console.Core.Commands;
 using Console.FrameworkAdapter;
 using FrameworkSDK.Common;
 using FrameworkSDK.Logging;
+using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
@@ -84,7 +86,7 @@ namespace Atom.Client.MacOS.Scenes
             Camera3DService.SetActiveCamera(_camera);
 
             _cameraController = new FirstPersonCameraController(inputService, _camera, DebugInfoService);
-            _globalWorldMapController = new GlobalWorldMapController(DataModel.GlobalWorldMap);
+            _globalWorldMapController = new GlobalWorldMapController(DataModel.GlobalWorldMap, debugInfoService);
             _globalWorldMapController.CellRevealed += GlobalWorldMapControllerOnCellRevealed;
             _globalWorldMapController.CellHidden += GlobalWorldMapControllerOnCellHidden;
             _globalWorldMapController.CellUnwrapped += GlobalWorldMapControllerOnCellUnwrapped;
@@ -96,32 +98,24 @@ namespace Atom.Client.MacOS.Scenes
 
         private void WrappedObjectsControllerOnObjectHidden(IWrappedDetails obj)
         {
-            try
+            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
                 RemoveView(obj);
-            }
-            catch (Exception e)
-            {
-                Logger.Log(e.Message, "m", FrameworkLogLevel.Error);
-            }
+            }, CancellationToken.None));
         }
 
         private void WrappedObjectsControllerOnObjectRevealed(IWrappedDetails obj)
         {
-            try
+            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
                 AddView(obj);
-            }
-            catch (Exception e)
-            {
-                Logger.Log(e.Message, "m", FrameworkLogLevel.Error);
-            }
+            }, CancellationToken.None));
         }
 
         private void GlobalWorldMapControllerOnCellWrapped(WorldMapCellContent cell)
         {
-            _wrappedObjectsController.AddWrappedObject(cell);
-            _wrappedObjectsController.RemoveUnwrappedObject(cell);
+            //_wrappedObjectsController.AddWrappedObject(cell);
+            //_wrappedObjectsController.RemoveUnwrappedObject(cell);
         }
 
         private void GlobalWorldMapControllerOnCellUnwrapped(WorldMapCellContent cell)
@@ -141,10 +135,6 @@ namespace Atom.Client.MacOS.Scenes
                 DetailsGeneratorProvider.GetGenerator(cell).Generate(cell);
             
             _wrappedObjectsController.AddWrappedObject(cell);
-            // BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask(time =>
-            // {
-            //     
-            // }, CancellationToken.None));
         }
 
         protected override void OnFirstOpening()

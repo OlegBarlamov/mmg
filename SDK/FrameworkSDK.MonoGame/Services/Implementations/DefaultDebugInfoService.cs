@@ -79,10 +79,20 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
         {
             _counters.AddOrUpdate(key, 1, (s, i) => i + 1);
         }
+        
+        public void IncrementCounter(string key, int value)
+        {
+            _counters.AddOrUpdate(key, 1, (s, i) => i + value);
+        }
 
         public void DecrementCounter(string key)
         {
             _counters.AddOrUpdate(key, -1, (s, i) => i - 1);
+        }
+        
+        public void DecrementCounter(string key, int value)
+        {
+            _counters.AddOrUpdate(key, -1, (s, i) => i - value);
         }
 
         public void SetCounter(string key, int value)

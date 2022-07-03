@@ -61,6 +61,16 @@ namespace Console.InGame
             WriteAwaitingMessages(_awaitingInitializingMessages);
         }
 
+        public void AddFilter(ConsoleLogLevel logLevel)
+        {
+            RenderingMessagesFilter.Add(logLevel);
+        }
+        
+        public void AddFilter(string source)
+        {
+            RenderingMessagesFilter.Add(source);
+        }
+
         public void Dispose()
         {
             if (_isDisposed) throw new ObjectDisposedException(nameof(InGameConsoleController)); 

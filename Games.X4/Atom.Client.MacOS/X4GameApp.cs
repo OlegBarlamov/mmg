@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 using Atom.Client.MacOS.Resources;
 using Atom.Client.MacOS.Scenes;
 using Atom.Client.MacOS.Services.Implementations;
+using Console.Core;
+using Console.Core.Models;
 using Console.FrameworkAdapter;
+using Console.InGame;
 using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
@@ -36,6 +39,7 @@ namespace Atom.Client.MacOS
         public IRandomService RandomService { get; }
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
         public IRandomSeedProvider RandomSeedProvider { get; }
+        public IConsoleController ConsoleController { get; }
 
         private SceneBase _currentScene;
         private LoadingScene _loadingScene;
@@ -52,7 +56,8 @@ namespace Atom.Client.MacOS
             [NotNull] IResourcesService resourcesService,
             [NotNull] IRandomService randomService,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection,
-            [NotNull] IRandomSeedProvider randomSeedProvider)
+            [NotNull] IRandomSeedProvider randomSeedProvider,
+            [NotNull] IConsoleController consoleController)
         {
             ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
             LoadingSceneResources = loadingSceneResources ?? throw new ArgumentNullException(nameof(loadingSceneResources));
@@ -63,6 +68,7 @@ namespace Atom.Client.MacOS
             RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
             RandomSeedProvider = randomSeedProvider ?? throw new ArgumentNullException(nameof(randomSeedProvider));
+            ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
         }
 
         protected override void Dispose()
@@ -83,6 +89,11 @@ namespace Atom.Client.MacOS
         {
             base.OnInitialized();
 
+            ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Error);
+            ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Critical);
+            ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Warning);
+            //((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Information);
+            
             _loadingScene = (LoadingScene) ScenesResolver.ResolveScene(LoadingSceneResources);
             _currentScene = _loadingScene;
 

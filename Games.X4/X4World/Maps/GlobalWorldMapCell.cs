@@ -17,7 +17,7 @@ namespace X4World.Maps
         /// <summary>
         /// Width/Height/Depth of the cell
         /// </summary>
-        public float Side { get; } = WorldConstants.WorldMapCellSize * 2;
+        public float Side { get; } = WorldConstants.WorldMapCellSize;
         
         public WorldMapCellContent Content { get; }
 

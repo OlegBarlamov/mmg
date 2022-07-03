@@ -15,6 +15,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         internal const string DebugInfoRenderingComponents = "render_comps";
         internal const string DebugInfoRenderingMeshes = "render_meshes";
+        internal const string DebugInfoRenderingVertices = "render_vertices";
         internal const string DebugInfoDrawComponents = "draw_comps";
         
         protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();

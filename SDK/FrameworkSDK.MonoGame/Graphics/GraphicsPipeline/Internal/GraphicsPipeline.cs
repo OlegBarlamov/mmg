@@ -158,6 +158,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         private int _iterableIndex;
         public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
         {
+            graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingVertices, 0);
             graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingMeshes, 0);
             graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoRenderingComponents, 0);
             graphicDeviceContext.DebugInfoService.SetCounter(GraphicsPipelineActionBase.DebugInfoDrawComponents, 0);

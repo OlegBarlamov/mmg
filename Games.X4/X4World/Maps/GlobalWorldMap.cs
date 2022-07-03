@@ -37,7 +37,11 @@ namespace X4World.Maps
 
         public GlobalWorldMapCell FindPoint(Vector3 worldPoint)
         {
-            var point = Point3DExtensions.Point3DFromVector3((worldPoint - new Vector3(WorldConstants.WorldMapCellSize / 2)) / WorldConstants.WorldMapCellSize);
+            var point = Point3DExtensions.Point3DFromVector3(new Vector3(
+                (worldPoint.X + Math.Sign(worldPoint.X) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
+                (worldPoint.Y + Math.Sign(worldPoint.Y) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
+                (worldPoint.Z + Math.Sign(worldPoint.Z) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize));
+            
             return GetCell(point);
         }
 

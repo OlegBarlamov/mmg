@@ -17,7 +17,9 @@ namespace FrameworkSDK.MonoGame.Services
 
 
         void IncrementCounter(string key);
+        void IncrementCounter(string key, int value);
         void DecrementCounter(string key);
+        void DecrementCounter(string key, int value);
         void SetCounter(string key, int value);
         int GetCounter(string key);
         IReadOnlyDictionary<string, int> GetAllCounters();
