@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Geometry;
-using X4World;
 using X4World.Maps;
 using X4World.Objects;
 
@@ -18,7 +17,7 @@ namespace Atom.Client.MacOS.Controllers
 
         private GlobalWorldMap GlobalWorldMap { get; }
 
-        private const int RevealRadius = 1;
+        private const int RevealRadius = 3;
 
         private Vector3? _lastPlayerPosition;
         private Point3D? _lastMapCell;
@@ -44,7 +43,7 @@ namespace Atom.Client.MacOS.Controllers
 
                 WrapCellsOutOfDistance(playerPosition);
                 HideCellsOutOfRange(minPoint, maxPoint);
-                RevealNewCellsInRange(minPoint, maxPoint);
+                RevealNewCellsInRadius(mapCell.MapPoint, RevealRadius);
             }
             else
             {
@@ -84,9 +83,9 @@ namespace Atom.Client.MacOS.Controllers
             }
         }
 
-        private void RevealNewCellsInRange(Point3D minPoint, Point3D maxPoint)
+        private void RevealNewCellsInRadius(Point3D center, int radius)
         {
-            var points = GlobalWorldMap.EnumerateCells(minPoint, maxPoint);
+            var points = GlobalWorldMap.EnumerateCells(center, radius);
             foreach (var keyValuePair in points)
             {
                 var cell = keyValuePair.Value;

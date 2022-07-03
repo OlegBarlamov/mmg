@@ -50,6 +50,7 @@
     <Compile Include="Scenes\LoadingScene.cs" />
     <Compile Include="Scenes\MainScene.cs" />
     <Compile Include="Scenes\MainSceneDataModel.cs" />
+    <Compile Include="Services\FixedDetailsGeneratorProvider.cs" />
     <Compile Include="Services\IDetailsGeneratorProvider.cs" />
     <Compile Include="Services\Implementations\ScenesResolverHolder.cs" />
     <Compile Include="X4GameApp.cs" />

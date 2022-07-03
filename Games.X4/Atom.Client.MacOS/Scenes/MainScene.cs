@@ -37,6 +37,7 @@ namespace Atom.Client.MacOS.Scenes
         public ColorsTexturesPackage ColorsTexturesPackage { get; }
         public IFrameworkLogger Logger { get; }
         public IDetailsGeneratorProvider DetailsGeneratorProvider { get; }
+        public IDisplayService DisplayService { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
@@ -61,7 +62,8 @@ namespace Atom.Client.MacOS.Scenes
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
             [NotNull] ColorsTexturesPackage colorsTexturesPackage,
             [NotNull] IFrameworkLogger logger,
-            [NotNull] IDetailsGeneratorProvider detailsGeneratorProvider
+            [NotNull] IDetailsGeneratorProvider detailsGeneratorProvider,
+            [NotNull] IDisplayService displayService
         )
             :base(nameof(MainScene))
         {
@@ -77,6 +79,7 @@ namespace Atom.Client.MacOS.Scenes
             ColorsTexturesPackage = colorsTexturesPackage ?? throw new ArgumentNullException(nameof(colorsTexturesPackage));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             DetailsGeneratorProvider = detailsGeneratorProvider ?? throw new ArgumentNullException(nameof(detailsGeneratorProvider));
+            DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -162,6 +165,13 @@ namespace Atom.Client.MacOS.Scenes
                 GraphicsPassName = "debug"
             });
 
+            AddView(new FpsCounterComponentData
+            {
+                GraphicsPassName = "debug",
+                Font = DataModel.MainResourcePackage.DebugInfoFont,
+                Position = new Vector2(DisplayService.PreferredBackBufferWidth - 100, 20),
+            });
+
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
                 (x, y, z) =>
                 {
@@ -216,7 +226,6 @@ namespace Atom.Client.MacOS.Scenes
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.Opaque, DepthStencilState.Default, RasterizerStates.Default)
                 .SetActiveCamera(_coloredShader)
-                //.SimpleRender<VertexPositionColor>(_effect, vertexBuffer2, indexBuffer2, "Render")
                 .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
                 .SetActiveCamera(_texturesShader)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")

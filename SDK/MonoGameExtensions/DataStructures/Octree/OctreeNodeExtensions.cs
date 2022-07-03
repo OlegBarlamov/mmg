@@ -53,7 +53,7 @@ namespace MonoGameExtensions.DataStructures
             }
         }
 
-        public static IEnumerable<IOctreeNode<TData>> EnumerateLeafsInRangeAroundPoint<TData>(this IOctreeNode<TData> node, Vector3 point, float range)
+        public static IEnumerable<IOctreeNode<TData>> EnumerateLeafsInRadiusAroundPoint<TData>(this IOctreeNode<TData> node, Vector3 point, float range)
         {
             var queue = new Queue<IOctreeNode<TData>>();
             var currentNode = node;

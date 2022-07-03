@@ -69,7 +69,7 @@ namespace X4World.Maps
 
         public IReadOnlyCollection<IWrappedDetails> GetInRadius(Vector3 center, float radius)
         {
-            return _octree.EnumerateLeafsInRangeAroundPoint(center, radius)
+            return _octree.EnumerateLeafsInRadiusAroundPoint(center, radius)
                 .SelectMany(x => x.DataObjects)
                 .ToArray();
         }

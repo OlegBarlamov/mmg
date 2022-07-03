@@ -35,7 +35,7 @@ namespace X4World.Objects
         public Vector3 Size { get; }
         public WorldMapCellAggregatedData WorldMapCellAggregatedData { get; }
 
-        public float DistanceToUnwrapDetails { get; } = WorldConstants.WorldMapCellSize;
+        public float DistanceToUnwrapDetails { get; } = WorldConstants.WorldMapCellSize * 2;
         
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }

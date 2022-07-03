@@ -56,6 +56,36 @@ namespace X4World.Maps
             }
         }
 
+        /// <summary>
+        /// For radius 2 - picture like:
+        /// 0 0 1 0 0
+        /// 0 1 1 1 0
+        /// 1 1 1 1 1
+        /// 0 1 1 1 0
+        /// 0 0 1 0 0 
+        /// </summary>
+        public IEnumerable<KeyValuePair<Point3D, GlobalWorldMapCell>> EnumerateCells(Point3D center, int radius)
+        {
+            var smallRectangleSize = new Point3D(radius - 1); 
+            var min = center - smallRectangleSize;
+            var max = center + smallRectangleSize;
+            foreach (var cell in EnumerateCells(min, max))
+                yield return cell;
+
+            var point = new Point3D(min.X - 1, center.Y, center.Z);
+            yield return new KeyValuePair<Point3D, GlobalWorldMapCell>(point, GetCell(point));
+            point = new Point3D(center.X, min.Y - 1, center.Z);
+            yield return new KeyValuePair<Point3D, GlobalWorldMapCell>(point, GetCell(point));
+            point = new Point3D(center.X, center.Y, min.Z - 1);
+            yield return new KeyValuePair<Point3D, GlobalWorldMapCell>(point, GetCell(point));
+            point = new Point3D(max.X + 1, center.Y, center.Z);
+            yield return new KeyValuePair<Point3D, GlobalWorldMapCell>(point, GetCell(point));
+            point = new Point3D(center.X, max.Y + 1, center.Z);
+            yield return new KeyValuePair<Point3D, GlobalWorldMapCell>(point, GetCell(point));
+            point = new Point3D(center.X, center.Y, max.Z + 1);
+            yield return new KeyValuePair<Point3D, GlobalWorldMapCell>(point, GetCell(point));
+        }
+
         public IEnumerable<KeyValuePair<Point3D, GlobalWorldMapCell>> EnumerateCells()
         {
             return GetCells();
