@@ -7,7 +7,6 @@ namespace FrameworkSDK.MonoGame.Mvc
 
     public class FunctionController<TModel> : Controller<TModel>
     {
-        public TModel DataModel => base.Model;
         public ControllerTickDelegate<TModel> Tick { get; }
         
         public FunctionController(ControllerTickDelegate<TModel> tick)

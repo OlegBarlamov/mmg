@@ -35,7 +35,7 @@ namespace Atom.Client.MacOS.Components
             Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 1);
         }
 
-        protected override BoundingBox ConstructBoundingBox()
+        protected override BoundingBox? ConstructBoundingBox()
         {
             var size = new Vector3(DataModel.AggregatedData.Power * 1);
             return new BoundingBox(DataModel.GetWorldPosition() -  size / 2, DataModel.GetWorldPosition() + size / 2);

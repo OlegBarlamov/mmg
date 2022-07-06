@@ -106,9 +106,13 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
         private void RotateDownUp(float factor)
         {
             var forward = TargetCamera.Target - TargetCamera.Position;
-            forward = Vector3.Transform(forward,
-                Matrix.CreateFromAxisAngle(GetRightDirection(), factor));
-            TargetCamera.Target = forward + TargetCamera.Position;
+            forward = Vector3.Transform(forward, Matrix.CreateFromAxisAngle(GetRightDirection(), factor));
+            bool upAndFrowardIsEqualOrOpposite = Math.Abs(Vector3.Dot(forward, TargetCamera.Up)) > 0.999f;
+            // To prevent flipping the world
+            if (!upAndFrowardIsEqualOrOpposite)
+            {
+                TargetCamera.Target = forward + TargetCamera.Position;
+            }
         }
 
         private Vector3 GetForwardDirection()

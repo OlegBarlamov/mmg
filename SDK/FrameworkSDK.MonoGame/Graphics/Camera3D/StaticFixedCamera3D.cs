@@ -18,7 +18,12 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
             Projection = projection;
             _boundingFrustum = new BoundingFrustum(View * Projection);
         }
-        
+
+        public virtual Vector3 GetPosition()
+        {
+            return Matrix.Invert(View).Translation;
+        }
+
         public Matrix GetProjection()
         {
             return Projection;

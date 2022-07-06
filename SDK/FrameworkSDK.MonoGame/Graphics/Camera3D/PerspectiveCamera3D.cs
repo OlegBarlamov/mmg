@@ -54,6 +54,11 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
         private float _nearPlaneDistance = DefaultCamera3DService.DefaultNearPlaneDistance;
         private float _farPlaneDistance = DefaultCamera3DService.DefaultFarPlaneDistance;
 
+        public virtual Vector3 GetPosition()
+        {
+            return Matrix.Invert(View).Translation;
+        }
+
         public Matrix GetProjection()
         {
             return Projection;

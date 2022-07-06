@@ -29,7 +29,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models
             }
         }
 
-        public Vector3 Rotation
+        public Matrix Rotation
         {
             get => _rotation;
             set
@@ -43,7 +43,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _scale = Vector3.One;
-        private Vector3 _rotation = Vector3.Zero;
+        private Matrix _rotation = Matrix.Identity;
         
         public void Dispose()
         {

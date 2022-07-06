@@ -7,6 +7,6 @@ namespace FrameworkSDK.MonoGame.Basic
     {
         Vector3 Scale { get; set; }
         
-        Vector3 Rotation { get; set; }
+        Matrix Rotation { get; set; }
     }
 }

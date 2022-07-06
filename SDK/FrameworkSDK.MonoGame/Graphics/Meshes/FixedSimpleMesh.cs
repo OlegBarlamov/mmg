@@ -28,7 +28,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
             set => SetScale(value);
         }
         
-        public Vector3 Rotation
+        public Matrix Rotation
         {
             get => _rotation;
             set => SetRotation(value);
@@ -36,7 +36,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _scale = Vector3.One;
-        private Vector3 _rotation = Vector3.Zero;
+        private Matrix _rotation = Matrix.Identity;
 
         public FixedSimpleMesh([NotNull] IMeshGeometry geometry)
         {
@@ -69,7 +69,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
             UpdateWordMatrix();
         }
         
-        public void SetRotation(Vector3 rotation)
+        public void SetRotation(Matrix rotation)
         {
             _rotation = rotation;
             UpdateWordMatrix();
@@ -77,7 +77,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Meshes
 
         private void UpdateWordMatrix()
         {
-            World = Matrix.Identity * Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Position) * Matrix.CreateFromYawPitchRoll(Rotation.X, Rotation.Y, Rotation.Z);
+            World = Matrix.CreateScale(Scale) * Rotation * Matrix.CreateTranslation(Position);
         }
     }
 }

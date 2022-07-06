@@ -23,10 +23,7 @@ namespace X4World.Generation
         {
             var map = GenerateData(data);
             var aggregatedData = new WorldMapCellAggregatedData(map);
-            var position = new Vector3(
-                point.X * WorldConstants.WorldMapCellSize,
-                point.Y * WorldConstants.WorldMapCellSize,
-                point.Z * WorldConstants.WorldMapCellSize);
+            var position = GlobalWorldMap.WorldFromMapPoint(point);
             
             var content = new WorldMapCellContent(point, position, WorldConstants.WorldMapCellSize, aggregatedData);
             return new GlobalWorldMapCell(point, content);

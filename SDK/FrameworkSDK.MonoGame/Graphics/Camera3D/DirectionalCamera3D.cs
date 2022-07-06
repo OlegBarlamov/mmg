@@ -57,6 +57,11 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera3D
             return containmentType == ContainmentType.Contains || containmentType == ContainmentType.Intersects;
         }
 
+        public override Vector3 GetPosition()
+        {
+            return _position;
+        }
+
         protected sealed override void UpdateMatrices()
         {
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, FarPlaneDistance);

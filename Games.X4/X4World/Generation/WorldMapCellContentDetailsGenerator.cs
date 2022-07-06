@@ -7,8 +7,6 @@ namespace X4World.Generation
 {
     public class WorldMapCellContentDetailsGenerator : IDetailsGenerator<WorldMapCellContent>
     {
-        private IDetailsGenerator<WorldMapCellContent> _detailsGeneratorImplementation;
-
         public void Generate(WorldMapCellContent target)
         {
             var aggregatedData = target.WorldMapCellAggregatedData;

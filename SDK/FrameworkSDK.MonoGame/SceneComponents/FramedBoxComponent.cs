@@ -36,7 +36,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             Name = name;
         }
 
-        protected override BoundingBox ConstructBoundingBox()
+        protected override BoundingBox? ConstructBoundingBox()
         {
             var meshGeometrySize = Vector3.One;
             return new BoundingBox(DataModel.Position - meshGeometrySize/2 * DataModel.Scale, DataModel.Position + meshGeometrySize/2 * DataModel.Scale);

@@ -27,7 +27,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
             };
         }
 
-        protected abstract BoundingBox ConstructBoundingBox();
+        protected abstract BoundingBox? ConstructBoundingBox();
         
     }
 

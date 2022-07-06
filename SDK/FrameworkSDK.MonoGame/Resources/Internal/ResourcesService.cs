@@ -16,7 +16,7 @@ namespace FrameworkSDK.MonoGame.Resources
     {
         [NotNull] private IGameHeartServices GameHeartServices { get; }
         [NotNull] private IContentContainersFactory ContentContainersFactory { get; }
-        [NotNull] private ITextureGeneratorInternal TextureGeneratorInternal { get; }
+        [NotNull] private ITextureGeneratorService TextureGeneratorInternal { get; }
         [NotNull] private IRenderTargetsFactory RenderTargetsFactory { get; }
 
         [NotNull] private ModuleLogger Logger { get; }
@@ -32,7 +32,7 @@ namespace FrameworkSDK.MonoGame.Resources
         public ResourcesService(
             [NotNull] IGameHeartServices gameHeartServices,
             [NotNull] IContentContainersFactory contentContainersFactory,
-            [NotNull] ITextureGeneratorInternal textureGeneratorInternal,
+            [NotNull] ITextureGeneratorService textureGeneratorInternal,
             [NotNull] IRenderTargetsFactory renderTargetsFactory,
             [NotNull] IFrameworkLogger frameworkLogger)
         {

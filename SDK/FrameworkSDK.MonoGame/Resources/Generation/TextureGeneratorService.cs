@@ -8,11 +8,11 @@ using MonoGameExtensions;
 namespace FrameworkSDK.MonoGame.Resources.Generation
 {
     [UsedImplicitly]
-    internal class TextureGeneratorInternal : ITextureGeneratorInternal
+    internal class TextureGeneratorService : ITextureGeneratorService
     {
         private IGameHeartServices GameHeartServices { get; }
 
-        public TextureGeneratorInternal([NotNull] IGameHeartServices gameHeartServices)
+        public TextureGeneratorService([NotNull] IGameHeartServices gameHeartServices)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
         }

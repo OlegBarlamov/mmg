@@ -6,7 +6,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 {
     public abstract class Controller<TModel> : Controller
     {
-        protected TModel Model => (TModel)((IController)this).DataModel;
+        protected TModel DataModel => (TModel)((IController)this).DataModel;
 
         protected Controller()
         {

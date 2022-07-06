@@ -50,6 +50,7 @@ namespace Atom.Client.MacOS.Scenes
         private readonly IWrappedObjectsController _wrappedObjectsController;
 
         private BasicEffect _texturesShader;
+        private BasicEffect _texturesShaderNoLights;
         private BasicEffect _coloredShader;
 
         public MainScene(
@@ -190,6 +191,7 @@ namespace Atom.Client.MacOS.Scenes
             
             _texturesShader?.Dispose();
             _coloredShader?.Dispose();
+            _texturesShaderNoLights?.Dispose();
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
@@ -205,18 +207,28 @@ namespace Atom.Client.MacOS.Scenes
                 TextureEnabled = false,
                 VertexColorEnabled = true
             };
+            
+            _texturesShaderNoLights = new BasicEffect(GameHeartServices.GraphicsDeviceManager.GraphicsDevice)
+            {
+                VertexColorEnabled = false, TextureEnabled = true
+            };
 
             var vertexBuffer = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
             var indexBuffer = graphicsPipelineBuilder.CreateIndexBuffer(200);
             
             var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
             var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(5000);
+            
+            var vertexBuffer3 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 100);
+            var indexBuffer3 = graphicsPipelineBuilder.CreateIndexBuffer(200);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.Opaque, DepthStencilState.Default, RasterizerStates.Default)
                 .SetActiveCamera(_coloredShader)
                 .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
+                .SetActiveCamera(_texturesShaderNoLights)
+                .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3,  "Render_Textured_No_Lights")
                 .SetActiveCamera(_texturesShader)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")
                 .BeginDraw(new BeginDrawConfig())

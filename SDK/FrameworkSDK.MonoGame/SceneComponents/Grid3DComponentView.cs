@@ -32,7 +32,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         {
         }
         
-        protected override BoundingBox ConstructBoundingBox()
+        protected override BoundingBox? ConstructBoundingBox()
         {
             return new BoundingBox(Vector3.Zero, new Vector3(DataModel.AxesLength));
         }

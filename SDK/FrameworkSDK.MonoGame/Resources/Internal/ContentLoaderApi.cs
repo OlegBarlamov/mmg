@@ -11,10 +11,10 @@ namespace FrameworkSDK.MonoGame.Resources
     internal class ContentLoaderApi : IContentLoaderApi
     {
         private IContentContainer Container { get; }
-        private ITextureGeneratorInternal TextureGeneratorInternal { get; }
+        private ITextureGeneratorService TextureGeneratorInternal { get; }
         private IRenderTargetsFactory RenderTargetsFactory { get; }
 
-        public ContentLoaderApi([NotNull] IContentContainer container, [NotNull] ITextureGeneratorInternal textureGeneratorInternal,
+        public ContentLoaderApi([NotNull] IContentContainer container, [NotNull] ITextureGeneratorService textureGeneratorInternal,
             [NotNull] IRenderTargetsFactory renderTargetsFactory)
         {
             Container = container ?? throw new ArgumentNullException(nameof(container));

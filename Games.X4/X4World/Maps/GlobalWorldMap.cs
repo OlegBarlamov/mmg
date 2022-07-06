@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.DataStructures;
+using MonoGameExtensions.Geometry;
 using NetExtensions.Geometry;
 using X4World.Generation;
 using Point3DExtensions = MonoGameExtensions.Geometry.Point3DExtensions;
@@ -18,6 +19,19 @@ namespace X4World.Maps
         {
             MapData = mapData ?? throw new ArgumentNullException(nameof(mapData));
             CellGenerator = cellGenerator ?? throw new ArgumentNullException(nameof(cellGenerator));
+        }
+
+        public static Point3D MapPointFromWorld(Vector3 worldPoint)
+        {
+            return Point3DExtensions.Point3DFromVector3(new Vector3(
+                (worldPoint.X + Math.Sign(worldPoint.X) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
+                (worldPoint.Y + Math.Sign(worldPoint.Y) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
+                (worldPoint.Z + Math.Sign(worldPoint.Z) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize));
+        }
+        
+        public static Vector3 WorldFromMapPoint(Point3D mapPoint)
+        {
+            return mapPoint.ToVector3() * WorldConstants.WorldMapCellSize;
         }
 
         public override GlobalWorldMapCell GetCell(Point3D point)
@@ -37,12 +51,7 @@ namespace X4World.Maps
 
         public GlobalWorldMapCell FindPoint(Vector3 worldPoint)
         {
-            var point = Point3DExtensions.Point3DFromVector3(new Vector3(
-                (worldPoint.X + Math.Sign(worldPoint.X) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
-                (worldPoint.Y + Math.Sign(worldPoint.Y) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
-                (worldPoint.Z + Math.Sign(worldPoint.Z) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize));
-            
-            return GetCell(point);
+            return GetCell(MapPointFromWorld(worldPoint));
         }
 
         public IEnumerable<KeyValuePair<Point3D, GlobalWorldMapCell>> EnumerateCells(Point3D min, Point3D max)
