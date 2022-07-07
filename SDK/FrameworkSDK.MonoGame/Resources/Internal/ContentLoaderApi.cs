@@ -27,6 +27,13 @@ namespace FrameworkSDK.MonoGame.Resources
             return Container.Load<T>(assetName);
         }
 
+        public Texture2D EmptyTexture(int width, int height)
+        {
+            var result = TextureGeneratorApi.EmptyTexture(width, height);
+            Container.AddResource(result);
+            return result;
+        }
+
         public Texture2D DiffuseColor(Color color)
         {
             var result = TextureGeneratorApi.DiffuseColor(color);

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Mvc;
@@ -16,6 +17,7 @@ namespace Atom.Client.MacOS.Components
         [NotNull] private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
         [NotNull] private ICamera3DProvider Camera3DProvider { get; }
         [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
+        private IRandomService RandomService { get; }
 
         private CancellationTokenSource _textureGenerationCancellationTokenSource;
 
@@ -23,12 +25,14 @@ namespace Atom.Client.MacOS.Components
             [NotNull] WorldMapCellContent model,
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
             [NotNull] ICamera3DProvider camera3DProvider,
-            [NotNull] ITextureGeneratorService textureGeneratorService)
+            [NotNull] ITextureGeneratorService textureGeneratorService,
+            [NotNull] IRandomService randomService)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
             BackgroundTasksProcessor = backgroundTasksProcessor ?? throw new ArgumentNullException(nameof(backgroundTasksProcessor));
             Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
             TextureGeneratorService = textureGeneratorService ?? throw new ArgumentNullException(nameof(textureGeneratorService));
+            RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
             SetModel(model);
         }
 
@@ -51,8 +55,11 @@ namespace Atom.Client.MacOS.Components
                 {
                     try
                     {
-                        var texture = MapCellTextureGenerator.GenerateAsync(GlobalWorldMap.WorldFromMapPoint(mapPoint),
-                            DataModel.WorldMapCellAggregatedData.SubstanceMap, TextureGeneratorService, token);
+                        var texture = MapCellTextureGenerator.GenerateAsync(
+                            DataModel.GetWorldPosition(),
+                            GlobalWorldMap.WorldFromMapPoint(mapPoint),
+                            DataModel.WorldMapCellAggregatedData.GalaxiesPoints,
+                            TextureGeneratorService, RandomService, token);
                         
                         token.ThrowIfCancellationRequested();
 

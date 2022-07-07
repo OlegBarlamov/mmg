@@ -127,7 +127,7 @@ namespace Atom.Client.MacOS
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 
-               var cellGenerator = new WorldMapCellGenerator(RandomSeedProvider);
+               var cellGenerator = new WorldMapCellGenerator(RandomService);
                var worldMapGenerator = new WorldMapGenerator(cellGenerator, RandomSeedProvider);
                return (GlobalWorldMap)worldMapGenerator.Generate();
                

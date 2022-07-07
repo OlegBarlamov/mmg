@@ -16,7 +16,14 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
             TextureGeneratorApi = textureGeneratorApi ?? throw new ArgumentNullException(nameof(textureGeneratorApi));
             ResourceReferencesService = resourceReferencesService ?? throw new ArgumentNullException(nameof(resourceReferencesService));
         }
-        
+
+        public Texture2D EmptyTexture(int width, int height)
+        {
+            var texture = TextureGeneratorApi.EmptyTexture(width, height);
+            CountTexture(texture);
+            return texture;
+        }
+
         public Texture2D DiffuseColor(Color color)
         {
             var texture = TextureGeneratorApi.DiffuseColor(color);

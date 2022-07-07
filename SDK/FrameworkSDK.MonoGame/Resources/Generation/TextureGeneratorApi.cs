@@ -17,6 +17,11 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
         }
 
+        public Texture2D EmptyTexture(int width, int height)
+        {
+            return GameHeartServices.GraphicsDeviceManager.GraphicsDevice.GetEmptyTexture(width, height);
+        }
+
         public Texture2D DiffuseColor(Color color)
         {
             return GameHeartServices.GraphicsDeviceManager.GraphicsDevice.GetTextureDiffuseColor(color);
