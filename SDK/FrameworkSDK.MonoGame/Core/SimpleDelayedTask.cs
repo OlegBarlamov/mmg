@@ -9,10 +9,15 @@ namespace FrameworkSDK.MonoGame.Core
     {
         public bool Cancelled => CancellationToken.IsCancellationRequested;
 
-        private Action<GameTime> ExecuteAction { get; }
+        private Action<GameTime, CancellationToken> ExecuteAction { get; }
         public CancellationToken CancellationToken { get; }
 
         public SimpleDelayedTask([NotNull] Action<GameTime> executeAction, CancellationToken cancellationToken)
+            :this((time, token) => executeAction(time), cancellationToken)
+        {
+        }
+        
+        public SimpleDelayedTask([NotNull] Action<GameTime, CancellationToken> executeAction, CancellationToken cancellationToken)
         {
             ExecuteAction = executeAction ?? throw new ArgumentNullException(nameof(executeAction));
             CancellationToken = cancellationToken;
@@ -20,13 +25,13 @@ namespace FrameworkSDK.MonoGame.Core
         
         public void Execute(GameTime gameTime)
         {
-            ExecuteAction(gameTime);
+            ExecuteAction(gameTime, CancellationToken);
         }
 
         private static readonly GameTime EmptyGameTime = new GameTime();
         public void Execute()
         {
-            ExecuteAction(EmptyGameTime);
+            ExecuteAction(EmptyGameTime, CancellationToken);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             _view = view ?? throw new ArgumentNullException(nameof(view));
         }
 
-        protected virtual void Initialize([NotNull] SceneBase scene)
+        protected virtual void OnAttached([NotNull] SceneBase scene)
         {
 
         }
@@ -142,7 +142,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             _ownedScene = scene ?? throw new ArgumentNullException(nameof(scene));
 
-            Initialize(_ownedScene);
+            OnAttached(_ownedScene);
         }
 
         void ISceneComponent.OnRemovedFromScene(SceneBase scene)

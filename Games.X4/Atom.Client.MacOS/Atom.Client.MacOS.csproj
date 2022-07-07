@@ -46,7 +46,8 @@
     <Compile Include="Resources\LoadingSceneResources.cs" />
     <Compile Include="Resources\MainResourcePackage.cs" />
     <Compile Include="ScenesComponents\SphereViewComponent.cs" />
-    <Compile Include="ScenesComponents\WorldMapCellContentViewComponent.cs" />
+    <Compile Include="ScenesComponents\WorldMapCellContent\WorldMapCellContentController.cs" />
+    <Compile Include="ScenesComponents\WorldMapCellContent\WorldMapCellContentViewComponent.cs" />
     <Compile Include="Scenes\LoadingScene.cs" />
     <Compile Include="Scenes\MainScene.cs" />
     <Compile Include="Scenes\MainSceneDataModel.cs" />
