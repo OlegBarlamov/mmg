@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Media;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Colors = System.Windows.Media.Colors;
+using Color = System.Windows.Media.Color;
+using Brush = System.Windows.Media.Brush;
 
 namespace ConsoleWindow
 {

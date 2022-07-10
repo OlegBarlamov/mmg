@@ -51,12 +51,12 @@ namespace Console.InGame
             if (config == null) throw new ArgumentNullException(nameof(config));
             if (graphicsDevice == null) throw new ArgumentNullException(nameof(graphicsDevice));
             if (_isInitialized) throw new InGameConsoleException("Console initialized already");
-            _isInitialized = true;
 
             CheckConfigValid(config);
             
             _model.Initialize(config);
             _view.Initialize(config, graphicsDevice);
+            _isInitialized = true;
 
             WriteAwaitingMessages(_awaitingInitializingMessages);
         }
