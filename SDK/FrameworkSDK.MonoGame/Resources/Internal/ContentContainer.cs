@@ -14,9 +14,9 @@ namespace FrameworkSDK.MonoGame.Resources
 {
     internal class ContentContainer : IContentContainer
     {
-        public IResourcePackage Package { get; }
-        
-        private IResourceReferencesService ResourceReferencesService { get; }
+        [NotNull] public IResourcePackage Package { get; }
+        [NotNull] private IDefaultResourcesService DefaultResourcesService { get; }
+        [NotNull] private IResourceReferencesService ResourceReferencesService { get; }
 
         private static ModuleLogger Logger { get; } = new ModuleLogger(AppContext.Logger, LogCategories.Resources); 
         
@@ -30,13 +30,15 @@ namespace FrameworkSDK.MonoGame.Resources
             [NotNull] IGameParameters gameParameters,
             [NotNull] IGameHeartServices heartServices,
             [NotNull] IResourceReferencesService resourceReferencesService,
+            [NotNull] IDefaultResourcesService defaultResourcesService,
             [NotNull] IResourcePackage package)
         {
             if (gameParameters == null) throw new ArgumentNullException(nameof(gameParameters));
             if (heartServices == null) throw new ArgumentNullException(nameof(heartServices));
             ResourceReferencesService = resourceReferencesService ?? throw new ArgumentNullException(nameof(resourceReferencesService));
             Package = package ?? throw new ArgumentNullException(nameof(package));
-
+            DefaultResourcesService = defaultResourcesService ?? throw new ArgumentNullException(nameof(defaultResourcesService));
+            
             _monoContentManager = new ContentManager(
                 heartServices.MonoGameServiceContainer,
                 gameParameters.ContentRootDirectory);
@@ -45,9 +47,22 @@ namespace FrameworkSDK.MonoGame.Resources
         public T Load<T>(string assetName)
         {
             if (_isDisposed) throw new ObjectDisposedException(nameof(ContentContainer));
-            
-            var result = _monoContentManager.Load<T>(assetName);
-            
+
+            T result;
+            try
+            {
+                result = _monoContentManager.Load<T>(assetName);
+            }
+            catch (Exception)
+            {
+                //TODO log message
+                
+                if (DefaultResourcesService.HasDefaultVersionFor<T>())
+                    return DefaultResourcesService.GetDefaultVersionFor<T>();
+                
+                throw;
+            }
+
             var record = ResourceRecord.Create<T>(assetName);
             _loadedResources.Add(record);
             ResourceReferencesService.AddResourceReference(record, this);
