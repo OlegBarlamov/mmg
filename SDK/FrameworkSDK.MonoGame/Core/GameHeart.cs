@@ -181,9 +181,14 @@ namespace FrameworkSDK.MonoGame
 	        Content.RootDirectory = parameters.ContentRootDirectory;
 
 	        IsMouseVisible = parameters.IsMouseVisible;
+	        IsFixedTimeStep = parameters.IsFixedTimeStamp;
+	        TargetElapsedTime = parameters.TargetElapsedTime;
+	        
 	        GraphicsDeviceManager.PreferredBackBufferWidth = parameters.BackBufferSize.Width;
 	        GraphicsDeviceManager.PreferredBackBufferHeight = parameters.BackBufferSize.Height;
 	        GraphicsDeviceManager.IsFullScreen = parameters.IsFullScreenMode;
+	        GraphicsDeviceManager.SynchronizeWithVerticalRetrace = parameters.SynchronizeWithVerticalRetrace;
+	        // TODO  Antializcing
 	        GraphicsDeviceManager.ApplyChanges();
 	    }
 	    

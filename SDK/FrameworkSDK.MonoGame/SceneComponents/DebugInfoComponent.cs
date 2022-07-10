@@ -47,9 +47,10 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 
             var position = DataModel.Position;
             
-            var fps = (int) (TimeSpan.FromSeconds(1).TotalMilliseconds /
+            // Potential draws per second. ~ Indicates potential performance capacity 
+            var dps = (int) (TimeSpan.FromSeconds(1).TotalMilliseconds /
                       DebugInfoService.GetMeasure(nameof(IDrawable.Draw)).TotalMilliseconds);
-            context.DrawString(DataModel.Font, $"FPS: {fps}", DataModel.Position, DataModel.FontColor);
+            context.DrawString(DataModel.Font, $"dps: ~{dps}", DataModel.Position, DataModel.FontColor);
             position += new Vector2(0, DataModel.Tab);
             
             foreach (var timer in _timers)

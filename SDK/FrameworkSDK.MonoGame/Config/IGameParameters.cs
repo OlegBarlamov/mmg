@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NetExtensions;
 using NetExtensions.Geometry;
@@ -12,6 +13,9 @@ namespace FrameworkSDK.MonoGame.Config
         bool IsFullScreenMode { get; }
         GameRunBehavior GameRunBehavior { get; }
         bool IsMouseVisible { get; }
-        GraphicsProfile GraphicsProfile { get; } 
+        GraphicsProfile GraphicsProfile { get; }
+        bool IsFixedTimeStamp { get; }
+        bool SynchronizeWithVerticalRetrace { get; }
+        TimeSpan TargetElapsedTime { get; } 
     }
 }

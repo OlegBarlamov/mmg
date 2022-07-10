@@ -15,30 +15,23 @@ namespace Atom.Client.Windows
 {
     internal class Program
     {
+#if DEBUG
+        private const bool IsDebug = true;
+#else
+        private const bool IsDebug = false;
+#endif
+        
         [STAThread]
         public static void Main()
         {
-            var loggerConsoleMessageProvider = new LoggerConsoleMessagesProvider();
-            using (var game = new DefaultAppFactory()
-                .SetupLogSystem(loggerConsoleMessageProvider, true)
-                .AddComponent<ScenesContainerComponent>()
-                .AddServices<MainServicesModule>()
-                .UseGame<X4GameApp>()
-                    .UseGameParameters(new DefaultGameParameters
-                    {
-                        IsMouseVisible = false,
-                        BackBufferSize = new SizeInt(1280, 768)
-                    })
-                    .UseMvc()
-                    .PreloadResourcePackage<ColorsTexturesPackage>()
-                    .PreloadResourcePackage<LoadingSceneResources>()
-                    .UseGameComponents()
-                        .UseInGameConsole()
-                        .UseConsoleMessagesProvider(loggerConsoleMessageProvider)
-                        .UseConsoleCommandExecutor<ExecutableConsoleCommandsExecutor>()
-                .Construct())
+            var gameParameters = new DefaultGameParameters
             {
-                game.Run();
+                BackBufferSize = new SizeInt(1280, 768),
+                IsMouseVisible = false,
+            };
+            using (var gameFactory = X4GameFactory.GetFactory(IsDebug, gameParameters).Construct())
+            {
+                gameFactory.Run();
             }
         }
     }
