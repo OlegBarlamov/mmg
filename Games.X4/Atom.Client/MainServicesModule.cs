@@ -32,12 +32,13 @@ namespace Atom.Client
             serviceRegistrator.RegisterType<IExecutableCommandsCollection, ExecutableCommandsCollection>();
             
             serviceRegistrator.RegisterInstance<IMainUpdatesTasksProcessor>(new FixedVelocityTasksProcessor(5));
-            serviceRegistrator.RegisterInstance<IBackgroundTasksProcessor>(new ThreadPoolTasksProcessor());
+            serviceRegistrator.RegisterType<IBackgroundTasksProcessor, ThreadPoolTasksProcessor>();
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();
             
             serviceRegistrator.RegisterType<IDetailsGenerator<WorldMapCellContent>, WorldMapCellContentDetailsGenerator>();
             serviceRegistrator.RegisterType<IDetailsGeneratorProvider, FixedDetailsGeneratorProvider>();
+            serviceRegistrator.RegisterType<IPlayerProvider, PlayerProvider>();
             
             RegisterConsoleCommands(serviceRegistrator);
         }

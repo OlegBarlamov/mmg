@@ -97,5 +97,11 @@ namespace MonoGameExtensions
 			_itemsToRemove.Add(item);
 			return true;
 		}
+
+		public T Find([NotNull] Func<T, bool> predicate)
+		{
+			return GetAllWithToAddItems().FirstOrDefault(predicate);
+		}
+		
 	}
 }

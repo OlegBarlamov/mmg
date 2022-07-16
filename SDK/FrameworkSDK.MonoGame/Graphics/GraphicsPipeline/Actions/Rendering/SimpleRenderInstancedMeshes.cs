@@ -85,6 +85,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             graphicDeviceContext.GeometryRenderer.SetBuffers(VertexBuffer, IndexBuffer);
             
+            // TODO get rid of foreaches here. It leads collection changed exceptinos.
             foreach (var meshesByGeometryName in _meshesByGeometryType)
             {
                 _meshesByComponents = meshesByGeometryName.Value;

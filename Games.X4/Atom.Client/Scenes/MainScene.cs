@@ -40,6 +40,7 @@ namespace Atom.Client.Scenes
         public IFrameworkLogger Logger { get; }
         public IDetailsGeneratorProvider DetailsGeneratorProvider { get; }
         public IDisplayService DisplayService { get; }
+        public IPlayerProvider PlayerProvider { get; }
 
         private readonly DirectionalCamera3D _camera = new DirectionalCamera3D(new Vector3(10, 10, 10), new Vector3(9, 10, 10))
         {
@@ -66,7 +67,8 @@ namespace Atom.Client.Scenes
             [NotNull] ColorsTexturesPackage colorsTexturesPackage,
             [NotNull] IFrameworkLogger logger,
             [NotNull] IDetailsGeneratorProvider detailsGeneratorProvider,
-            [NotNull] IDisplayService displayService
+            [NotNull] IDisplayService displayService,
+            [NotNull] IPlayerProvider playerProvider
         )
             :base(nameof(MainScene))
         {
@@ -83,6 +85,7 @@ namespace Atom.Client.Scenes
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             DetailsGeneratorProvider = detailsGeneratorProvider ?? throw new ArgumentNullException(nameof(detailsGeneratorProvider));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
+            PlayerProvider = playerProvider ?? throw new ArgumentNullException(nameof(playerProvider));
 
             Camera3DService.SetActiveCamera(_camera);
 
@@ -90,8 +93,6 @@ namespace Atom.Client.Scenes
             _globalWorldMapController = new GlobalWorldMapController(DataModel.GlobalWorldMap, debugInfoService);
             _globalWorldMapController.CellRevealed += GlobalWorldMapControllerOnCellRevealed;
             _globalWorldMapController.CellHidden += GlobalWorldMapControllerOnCellHidden;
-            _globalWorldMapController.CellUnwrapped += GlobalWorldMapControllerOnCellUnwrapped;
-            _globalWorldMapController.CellWrapped += GlobalWorldMapControllerOnCellWrapped;
             _wrappedObjectsController = new WrappedObjectsController(DetailsGeneratorProvider);
             _wrappedObjectsController.ObjectRevealed += WrappedObjectsControllerOnObjectRevealed; 
             _wrappedObjectsController.ObjectHidden += WrappedObjectsControllerOnObjectHidden; 
@@ -99,10 +100,7 @@ namespace Atom.Client.Scenes
 
         private void WrappedObjectsControllerOnObjectHidden(IWrappedDetails obj)
         {
-            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
-            {
-                RemoveView(obj);
-            }, CancellationToken.None));
+            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g => { RemoveView(obj); }, CancellationToken.None));
         }
 
         private void WrappedObjectsControllerOnObjectRevealed(IWrappedDetails obj)
@@ -111,18 +109,6 @@ namespace Atom.Client.Scenes
             {
                 AddView(obj);
             }, CancellationToken.None));
-        }
-
-        private void GlobalWorldMapControllerOnCellWrapped(WorldMapCellContent cell)
-        {
-            //_wrappedObjectsController.AddWrappedObject(cell);
-            //_wrappedObjectsController.RemoveUnwrappedObject(cell);
-        }
-
-        private void GlobalWorldMapControllerOnCellUnwrapped(WorldMapCellContent cell)
-        {
-            _wrappedObjectsController.AddUnwrappedObject(cell);
-            _wrappedObjectsController.RemoveWrappedObject(cell);
         }
 
         private void GlobalWorldMapControllerOnCellHidden(WorldMapCellContent cell)
@@ -134,7 +120,7 @@ namespace Atom.Client.Scenes
         {
             if (!cell.IsDetailsGenerated)
                 DetailsGeneratorProvider.GetGenerator(cell).Generate(cell);
-            
+
             _wrappedObjectsController.AddWrappedObject(cell);
         }
 
@@ -144,9 +130,9 @@ namespace Atom.Client.Scenes
             
             AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
             {
-                GraphicsPassName = "Render_Grouped"
+                GraphicsPassName = "Render_Grouped",
             }));
-            
+
             AddView(new DebugInfoComponentData
             {
                 Font = DataModel.MainResourcePackage.DebugInfoFont,
@@ -168,6 +154,12 @@ namespace Atom.Client.Scenes
                 {
                     _camera.Position = new Vector3(x, y, z);
                 }));
+            
+            ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<bool>("free_cam", "Enable or disable free camera mode",
+                value =>
+                {
+                    DebugServicesOnlyForDebug.DebugVariablesService.SetValue("free_camera",value);
+                }));
         }
         
         protected override void Update(GameTime gameTime)
@@ -177,10 +169,12 @@ namespace Atom.Client.Scenes
             if (!ConsoleController.IsShowed)
             {
                 _cameraController.Update(gameTime);
+                PlayerProvider.Update(gameTime);
             }
-            
-            _globalWorldMapController.Update(_camera.Position, gameTime);
-            _wrappedObjectsController.Update(_camera.Position, gameTime);
+
+            var playerPosition = PlayerProvider.GetPlayerPosition();
+            _globalWorldMapController.Update(playerPosition, gameTime);
+            _wrappedObjectsController.Update(playerPosition, gameTime);
 
             MainUpdatesTasksProcessor.Update(gameTime);
         }
@@ -224,7 +218,7 @@ namespace Atom.Client.Scenes
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
-                .SetRenderingConfigs(BlendState.Opaque, DepthStencilState.Default, RasterizerStates.Default)
+                .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .SetActiveCamera(_coloredShader)
                 .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
                 .SetActiveCamera(_texturesShaderNoLights)

@@ -109,7 +109,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 	    {
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
-	        var targetController = Controllers.FirstOrDefault(controller => controller.IsOwnedDataModel(model));
+	        var targetController = Controllers.Find(controller => controller.IsOwnedDataModel(model));
 	        if (targetController != null)
 	        {
 	            RemoveController(targetController);
@@ -122,7 +122,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 	    [CanBeNull]
 	    public IController FindControllerByActiveModel(object model)
 	    {
-	        return Controllers.FirstOrDefault(controller => controller.IsOwnedDataModel(model));
+	        return Controllers.Find(controller => controller.IsOwnedDataModel(model));
 	    }
 
         public void AddView([NotNull] IView view)
@@ -177,7 +177,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			    RemoveView(targetView);
 		}
 
-	    public void RemoveView([NotNull] object model)
+	    public IView RemoveView([NotNull] object model)
 	    {
 		    if (model == null) throw new ArgumentNullException(nameof(model));
 		    
@@ -186,14 +186,16 @@ namespace FrameworkSDK.MonoGame.Mvc
 			    throw new ScenesException(Strings.Exceptions.Scenes.ViewForModelNotExists, model, this);
 		    
 		    //TODO can be optimized by using hashtable
-		    var targetView = Views.FirstOrDefault(mapping => mapping.Model == model);
+		    var targetView = Views.Find(mapping => mapping.Model == model);
 		    if (targetView == null)
 			    throw new ScenesException(Strings.Exceptions.Scenes.ViewForModelNotExists, model, this);
-
+		    
 		    if (targetView.Controller != null)
 			    RemoveController(targetView.Controller);
 		    else 
 				RemoveView(targetView);
+
+		    return targetView.View;
 	    }
 
 		public void ClearControllers()
@@ -318,7 +320,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		private void OnControllerDetachedInternal(IController controller)
 		{
-			var targetMapping = Views.FirstOrDefault(mapping => mapping.IsMappedController(controller));
+			var targetMapping = Views.Find(mapping => mapping.IsMappedController(controller));
 			if (targetMapping != null)
 				RemoveView(targetMapping);
 

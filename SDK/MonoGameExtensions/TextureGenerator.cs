@@ -112,7 +112,7 @@ namespace MonoGameExtensions
 						dataWidth + 'x' + dataHeight, targetTexture.Width + 'x' + targetTexture.Height));
 			}
 
-			var data1D = Code.ConvertMassive2To1(data, true);
+			var data1D = Code.ConvertMassive2To1(data, false);
 			targetTexture.SetData(data1D);
 		}
 

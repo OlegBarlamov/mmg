@@ -11,6 +11,7 @@ namespace Console.Core.Commands.Types
             {typeof(int), new IntTypeDescription()},
             {typeof(string), new StringTypeDescription()},
             {typeof(float), new FloatTypeDescription()},
+            {typeof(bool), new BoolTypeDescription()},
         };
         
         public static void Associate([NotNull] Type netType, [NotNull] IConsoleCommandTypeDescription description)

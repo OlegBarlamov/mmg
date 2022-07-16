@@ -9,14 +9,15 @@ namespace Atom.Client.Controllers
 {
     class WrappedObjectsController : IWrappedObjectsController
     {
-        public IDetailsGeneratorProvider GeneratorProvider { get; }
         public event Action<IWrappedDetails> ObjectRevealed;
         public event Action<IWrappedDetails> ObjectHidden;
 
         private readonly IDictionary<string, IWrappedDetails> _unwrappedHashtable = new Dictionary<string, IWrappedDetails>();
         private readonly List<IWrappedDetails> _unwrappedObjects = new List<IWrappedDetails>(); 
-        //private readonly List<IWrappedDetails> _wrappedObjects = new List<IWrappedDetails>();
+        private readonly List<IWrappedDetails> _wrappedObjectsWithoutParent = new List<IWrappedDetails>();
 
+        private IDetailsGeneratorProvider GeneratorProvider { get; }
+        
         private Vector3? _lastPlayerPosition;
 
         private readonly Queue<IWrappedDetails> _objectsToWrap = new Queue<IWrappedDetails>();
@@ -55,24 +56,36 @@ namespace Atom.Client.Controllers
                 }
             }
 
+            for (var index = 0; index < _wrappedObjectsWithoutParent.Count; index++)
+            {
+                var wrappedObject = _wrappedObjectsWithoutParent[index];
+                var worldPosition = wrappedObject.GetWorldPosition();
+                if ((playerPosition - worldPosition).Length() < wrappedObject.DistanceToUnwrapDetails)
+                {
+                    _wrappedObjectsWithoutParent.Remove(wrappedObject);
+                    _objectsToUnwrap.Enqueue(wrappedObject);
+                    index--;
+                }
+            }
+
             while (_objectsToWrap.Count > 0)
             {
                 var objectToWrap = _objectsToWrap.Dequeue();
                 _unwrappedHashtable.Remove(objectToWrap.Name);
                 _unwrappedObjects.Remove(objectToWrap);
-                //_wrappedObjects.Add(objectToWrap);
                 ObjectRevealed?.Invoke(objectToWrap);
                 foreach (var detail in objectToWrap.Details)
                 {
                     ObjectHidden?.Invoke(detail);
                 }
+                if (objectToWrap.Parent == null)
+                    _wrappedObjectsWithoutParent.Add(objectToWrap);
             }
 
             while (_objectsToUnwrap.Count > 0)
             {
                 var objectToUnwrap = _objectsToUnwrap.Dequeue();
                 _unwrappedHashtable.Add(objectToUnwrap.Name, objectToUnwrap);
-                //_wrappedObjects.Remove(objectToUnwrap);
                 _unwrappedObjects.Add(objectToUnwrap);
                 if (!objectToUnwrap.IsDetailsGenerated)
                 {
@@ -89,8 +102,21 @@ namespace Atom.Client.Controllers
 
         public void AddWrappedObject(IWrappedDetails wrappedDetails)
         {
-            //_wrappedObjects.Add(wrappedDetails);
-            ObjectRevealed?.Invoke(wrappedDetails);
+            if (wrappedDetails.Parent != null)
+            {
+                AddUnwrappedObject(wrappedDetails.Parent);
+            }
+            else
+            {
+                _wrappedObjectsWithoutParent.Add(wrappedDetails);
+                ObjectRevealed?.Invoke(wrappedDetails);
+            }
+        }
+        
+        public void RemoveWrappedObject(IWrappedDetails wrappedDetails)
+        {
+            _wrappedObjectsWithoutParent.Remove(wrappedDetails);
+            ObjectHidden?.Invoke(wrappedDetails);
         }
 
         public void AddUnwrappedObject(IWrappedDetails wrappedDetails)
@@ -98,15 +124,8 @@ namespace Atom.Client.Controllers
             _unwrappedObjects.Add(wrappedDetails);
             foreach (var detail in wrappedDetails.Details)
             {
-                //_wrappedObjects.Add(detail);
                 ObjectRevealed?.Invoke(detail);
             }
-        }
-
-        public void RemoveWrappedObject(IWrappedDetails wrappedDetails)
-        {
-            //_wrappedObjects.Remove(wrappedDetails);
-            ObjectHidden?.Invoke(wrappedDetails);
         }
 
         public void RemoveUnwrappedObject(IWrappedDetails wrappedDetails)

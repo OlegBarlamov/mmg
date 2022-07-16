@@ -3,6 +3,7 @@ using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions;
 using NetExtensions.Helpers;
 
 namespace Atom.Client.Resources
@@ -24,8 +25,13 @@ namespace Atom.Client.Resources
             GalaxyTexture = content.Load<Texture2D>("galaxy");
             DebugInfoFont = content.Load<SpriteFont>("debug_font");
 
-            var array = ArrayGenerator.GetRandomArray(0, 1, 10, 10, new Random());
-            A = content.HeightMap(array, 0, 1, Color.White, Color.Blue);
+            var t = content.EmptyTexture(2, 2);
+            t.SetDataToTexture(new[,]
+            {
+                {Color.Red, Color.Blue},
+                {Color.Green, Color.Magenta},
+            });
+            A = t;
 
             Yellow = content.DiffuseColor(Color.Yellow);
         }

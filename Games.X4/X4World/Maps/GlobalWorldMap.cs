@@ -39,8 +39,15 @@ namespace X4World.Maps
             if (!Cells.ContainsKey(point))
             {
                 // TODO multithreading??
-                
-                var cellData = MapData[point.X + MapData.GetLength(0) / 2, point.Y + MapData.GetLength(1) / 2, point.Z + + MapData.GetLength(2) / 2];
+                var mapDataPoint = new Point3D(point.X + MapData.GetLength(0) / 2, point.Y + MapData.GetLength(1) / 2, point.Z + + MapData.GetLength(2) / 2);
+
+                byte cellData = 0;
+                if (mapDataPoint.X >= 0 && mapDataPoint.X < MapData.GetLength(0) &&
+                    mapDataPoint.Y >= 0 && mapDataPoint.Y < MapData.GetLength(1) &&
+                    mapDataPoint.Z >= 0 && mapDataPoint.Z < MapData.GetLength(2))
+                {
+                    cellData = MapData[mapDataPoint.X, mapDataPoint.Y, mapDataPoint.Z];
+                }
                 var cell = CellGenerator.Generate(point, cellData);
                 base.SetCell(point, cell);
                 return cell;

@@ -23,6 +23,7 @@ namespace FrameworkSDK.Services
             serviceRegistrator.RegisterType<IServicesCandidatesFinder, DefaultServicesCandidatesFinder>();
             serviceRegistrator.RegisterType<IServicesRegistrationsPriority, DefaultServicesRegistrationsPriority>();
             serviceRegistrator.RegisterType<DefaultServiceLocatorFactory, DefaultServiceLocatorFactory>();
+            serviceRegistrator.RegisterType<IDebugVariablesService, DefaultDebugVariablesService>();
         }
     }
 }

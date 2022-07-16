@@ -42,6 +42,7 @@ namespace FrameworkSDK.MonoGame.Services
          
             //Mvc
             serviceRegistrator.RegisterType<IScenesController, ScenesController>();
+            serviceRegistrator.RegisterType<ICurrentSceneProvider, CurrentSceneProvider>();
             serviceRegistrator.RegisterType<IMvcStrategyService, EmptyMvcStrategyService>();
 
             //Input

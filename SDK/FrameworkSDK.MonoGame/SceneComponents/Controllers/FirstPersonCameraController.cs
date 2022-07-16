@@ -38,6 +38,14 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
             {
                 speed *= 5;
             }
+            if (InputService.Keyboard.Key(Keys.LeftControl))
+            {
+                speed *= 25;
+            }
+            if (InputService.Keyboard.Key(Keys.RightControl))
+            {
+                speed *= 25;
+            }
             if (InputService.Keyboard.Key(Keys.W))
             {
                 var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * speed;
