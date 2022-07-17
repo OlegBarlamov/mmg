@@ -5,12 +5,14 @@ using FrameworkSDK.MonoGame.Resources.Generation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions;
+using X4World;
+using X4World.Objects;
 
-namespace X4World.Objects
+namespace Atom.Client.ScenesComponents.WorldMapCellContent
 {
     public static class MapCellTextureGenerator
     {
-        private const int TextureSize = 32;
+        private const int TextureSize = 320;
         
         public static Texture2D GenerateAsync(
             Vector3 cellCenter,
@@ -58,7 +60,7 @@ namespace X4World.Objects
                     if (uTextureCoordinate >= 0 && uTextureCoordinate < TextureSize &&
                         vTextureCoordinate >= 0 && vTextureCoordinate < TextureSize)
                     {
-                        colors[(int) uTextureCoordinate, (int) vTextureCoordinate] = Color.Yellow;
+                        colors[(int) uTextureCoordinate, (int) vTextureCoordinate] = Color.White;
                     }
                 }
 

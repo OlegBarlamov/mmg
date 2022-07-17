@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Atom.Client.ScenesComponents.WorldMapCellContent;
 using Atom.Client.Services;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Mvc;

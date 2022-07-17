@@ -32,12 +32,12 @@ namespace Atom.Client.Components
             
             Mesh.Material = new TextureMaterial(ResourcePackage.A);
             Mesh.Position = DataModel.GetWorldPosition();
-            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 1);
+            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 0.5f);
         }
 
         protected override BoundingBox? ConstructBoundingBox()
         {
-            var size = new Vector3(DataModel.AggregatedData.Power * 1);
+            var size = new Vector3(DataModel.AggregatedData.Power * 0.5f);
             return new BoundingBox(DataModel.GetWorldPosition() -  size / 2, DataModel.GetWorldPosition() + size / 2);
         }
     }

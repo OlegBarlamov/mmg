@@ -6,6 +6,8 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Geometries
         
         public static IcosahedronGeometry Icosahedron { get; } = new IcosahedronGeometry();
         
+        public static CubeGeometry Cube { get; } = new CubeGeometry();
+        
         /// <summary>
         /// 162 vertices
         /// 960 indices

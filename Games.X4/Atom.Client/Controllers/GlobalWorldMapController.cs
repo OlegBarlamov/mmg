@@ -17,7 +17,7 @@ namespace Atom.Client.Controllers
         private GlobalWorldMap GlobalWorldMap { get; }
         public IDebugInfoService DebugInfoService { get; }
 
-        private const int RevealRadius = 3;
+        private const int RevealRadius = 4;
 
         private Vector3? _lastPlayerPosition;
         private Point3D? _lastMapCell;

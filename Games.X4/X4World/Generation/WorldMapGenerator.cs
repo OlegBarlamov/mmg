@@ -32,7 +32,7 @@ namespace X4World.Generation
 
         private byte[,,] GenerateData()
         {
-            return ArrayGenerator.GetRandomArray(0, 30, 100, 100, 100, RandomSeedProvider.Seed, i => (byte)i);
+            return ArrayGenerator.GetRandomArray(10, 50, 100, 100, 100, RandomSeedProvider.Seed, i => (byte)i);
         }
     }
 }
