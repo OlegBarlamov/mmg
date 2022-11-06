@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>BoardPlatform.Data</AssemblyName>
+        <RootNamespace>BoardPlatform.Data</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
+      <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+    </ItemGroup>
+
+</Project>
