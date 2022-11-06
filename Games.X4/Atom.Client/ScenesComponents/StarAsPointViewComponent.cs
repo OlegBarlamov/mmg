@@ -18,26 +18,26 @@ using X4World.Objects;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public sealed class SphereViewComponent : SingleMeshComponent<StarAsSphere>
+    public sealed class StarAsPointViewComponent : SingleMeshComponent<StarAsPoint>
     {
         public MainResourcePackage ResourcePackage { get; }
         
-        public SphereViewComponent([NotNull] StarAsSphere model, [NotNull] MainResourcePackage resourcePackage,
+        public StarAsPointViewComponent([NotNull] StarAsPoint model, [NotNull] MainResourcePackage resourcePackage,
             [NotNull] ICamera3DProvider camera3DProvider, IDisplayService displayService)
-            : base(new FixedSimpleMesh(StaticGeometries.Sphere), "Render_Textured")
+            : base(new FixedSimpleMesh(StaticGeometries.TetrahedronGeometry), "Render_Textured")
         {
             ResourcePackage = resourcePackage ?? throw new ArgumentNullException(nameof(resourcePackage));
             
             SetDataModel(model);
             
-            Mesh.Material = new TextureMaterial(ResourcePackage.A);
+            Mesh.Material = new TextureMaterial(ResourcePackage.White);
             Mesh.Position = DataModel.GetWorldPosition();
-            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 0.5f);
+            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 10);
         }
 
         protected override BoundingBox? ConstructBoundingBox()
         {
-            var size = new Vector3(DataModel.AggregatedData.Power * 0.5f);
+            var size = Mesh.Scale;
             return new BoundingBox(DataModel.GetWorldPosition() -  size / 2, DataModel.GetWorldPosition() + size / 2);
         }
     }

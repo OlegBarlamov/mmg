@@ -17,7 +17,7 @@ namespace Atom.Client.Resources
         
         public Texture2D A { get; private set; }
         
-        public Texture2D Yellow { get; private set; }
+        public Texture2D White { get; private set; }
         
         protected override void Load(IContentLoaderApi content)
         {
@@ -33,7 +33,7 @@ namespace Atom.Client.Resources
             });
             A = t;
 
-            Yellow = content.DiffuseColor(Color.Yellow);
+            White = content.DiffuseColor(Color.White);
         }
     }
 }

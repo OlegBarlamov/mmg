@@ -13,5 +13,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Geometries
         /// 960 indices
         /// </summary>
         public static SphereGeometry Sphere { get; } = new SphereGeometry();
+        
+        public static TetrahedronGeometry TetrahedronGeometry { get; } = new TetrahedronGeometry();
     }
 }

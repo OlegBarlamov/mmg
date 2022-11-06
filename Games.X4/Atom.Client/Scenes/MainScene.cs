@@ -103,14 +103,23 @@ namespace Atom.Client.Scenes
 
         private void WrappedObjectsControllerOnObjectHidden(IWrappedDetails obj)
         {
-            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g => { RemoveView(obj); }, CancellationToken.None));
+            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
+            {
+                if (!(obj is WorldMapCellContent))
+                {
+                    RemoveView(obj);
+                }
+            }, CancellationToken.None));
         }
 
         private void WrappedObjectsControllerOnObjectRevealed(IWrappedDetails obj)
         {
             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
-                AddView(obj);
+                if (!(obj is WorldMapCellContent))
+                {
+                    AddView(obj);
+                }
             }, CancellationToken.None));
         }
 

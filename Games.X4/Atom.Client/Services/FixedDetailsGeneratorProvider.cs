@@ -17,7 +17,7 @@ namespace Atom.Client.Services
             _dictionary = new Dictionary<Type, IDetailsGenerator>
             {
                 {typeof(WorldMapCellContent), new WorldMapCellContentDetailsGenerator()},
-                {typeof(GalaxyAsPoint), new GalaxyAsPointDetailsGenerator(randomService)}
+                {typeof(StarAsPoint), new StarAsPointDetailsGenerator(randomService)}
             };
         }
         

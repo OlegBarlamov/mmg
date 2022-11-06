@@ -1,0 +1,5 @@
+- Planet system positioning rendering
+
+- Custom shadering
+- A star rendering
+- Planet details 
