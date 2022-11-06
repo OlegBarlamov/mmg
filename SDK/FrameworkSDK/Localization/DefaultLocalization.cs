@@ -3,7 +3,7 @@ using FrameworkSDK.Properties;
 
 namespace FrameworkSDK.Localization
 {
-    internal class DefaultLocalization : ILocalization
+    public class DefaultLocalization : ILocalization
     {
         public CultureInfo Culture { get; } = CultureInfo.CurrentCulture;
 

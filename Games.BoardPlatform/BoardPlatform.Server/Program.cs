@@ -1,37 +1,35 @@
-using System.IO;
-using BoardPlatform.WebClient.Services;
+using System;
+using AspNetCore.FrameworkAdapter;
+using FrameworkSDK.Constructing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 
-namespace BoardPlatform.WebClient
+namespace BoardPlatform.Server
 {
     public static class Program
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var factory = new AspNetCoreAppFactory(args);
+            factory.AddServices<ServerServicesModule>();
+            factory.Services.AddControllers();
 
-            builder.Services.AddControllers();
-
-            builder.Services.AddSingleton<IWebSocketsService, WebSocketsService>();
-            
-            var app = builder.Build();
-
-            // app.UseStaticFiles(new StaticFileOptions
-            // {
-            //     FileProvider = new PhysicalFileProvider(
-            //         Path.Combine(builder.Environment.ContentRootPath, "static")),
-            //     RequestPath = "/StaticFiles"
-            // });
-
+            var app = factory.Construct().Asp();
             app.UseWebSockets();
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
+            
             app.Run();
+        }
+
+        private static void Func()
+        {
+            while (true)
+            {
+                var line = Console.ReadLine();
+                Console.WriteLine("Hi: " + line);
+            }
         }
     }
 }

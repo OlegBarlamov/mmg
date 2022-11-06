@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.Services.Default
 {
-    internal class DefaultCmdArgsHolder : ICmdArgsHolder
+    public class DefaultCmdArgsHolder : ICmdArgsHolder
     {
         public IReadOnlyList<string> Args { get; }
 

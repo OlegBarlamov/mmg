@@ -7,7 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+      <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\AspNetCore.FrameworkAdapter\AspNetCore.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\BoardPlatform.Data\BoardPlatform.Data.csproj" />
     </ItemGroup>
 
 </Project>

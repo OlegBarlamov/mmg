@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 namespace FrameworkSDK.Services
 {
     [UsedImplicitly]
-    internal class FrameworkCoreServicesModule : IServicesModule
+    public class FrameworkCoreServicesModule : IServicesModule
     {
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {

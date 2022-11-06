@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.DependencyInjection.Default.Models
 {
-    internal class RegistrationsDomain
+    public class RegistrationsDomain
     {
         private readonly List<IRegistrationInfo> _allRegistrations;
         private readonly List<IRegistrationInfo> _newRegistrations = new List<IRegistrationInfo>();

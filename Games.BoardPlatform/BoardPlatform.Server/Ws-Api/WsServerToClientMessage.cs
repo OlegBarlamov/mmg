@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace BoardPlatform.WebClient
+namespace BoardPlatform.Server
 {
     public interface IWsServerToClientMessage
     {

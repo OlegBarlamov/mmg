@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoardPlatform.WebClient.Services
+namespace BoardPlatform.Server.Services
 {
     public interface IWebSocketsService
     {

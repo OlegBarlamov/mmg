@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardPlatform.DesktopClient
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardPlatform.Client.MacOS", "Games.BoardPlatform\BoardPlatform.Client.MacOS\BoardPlatform.Client.MacOS.csproj", "{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.FrameworkAdapter", "Utils\Adapters\AspNetCore.FrameworkAdapter\AspNetCore.FrameworkAdapter.csproj", "{0FC47953-B4A7-42B3-8AC2-D9A63D06010A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,10 @@ Global
 		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FC47953-B4A7-42B3-8AC2-D9A63D06010A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FC47953-B4A7-42B3-8AC2-D9A63D06010A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FC47953-B4A7-42B3-8AC2-D9A63D06010A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FC47953-B4A7-42B3-8AC2-D9A63D06010A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{850FA83C-7E64-4BF4-AA21-5864777183C5} = {8A5DF9CB-5077-4574-8D79-5ECE10417B5C}
@@ -123,5 +129,6 @@ Global
 		{D28DB4EA-AD4D-4B81-8131-D6809E6E3489} = {F771279D-B23A-40D6-9E54-FBA81BFB029F}
 		{261D6FC9-9BB8-46C4-86E4-627A51733D0C} = {F771279D-B23A-40D6-9E54-FBA81BFB029F}
 		{2D26E51C-6F6E-469D-8131-9C6B36121AF1} = {F771279D-B23A-40D6-9E54-FBA81BFB029F}
+		{0FC47953-B4A7-42B3-8AC2-D9A63D06010A} = {F771279D-B23A-40D6-9E54-FBA81BFB029F}
 	EndGlobalSection
 EndGlobal

@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 namespace FrameworkSDK.DependencyInjection.Default
 {
-	internal class DefaultServiceContainer : IFrameworkServiceContainer, IDisposableExtended
+	public class DefaultServiceContainer : IFrameworkServiceContainer, IDisposableExtended
 	{
 		public event EventHandler DisposedEvent;
 		public string Name { get; set; }
@@ -20,7 +20,6 @@ namespace FrameworkSDK.DependencyInjection.Default
 	    
 	    private bool _isDisposed;
 	    
-
 		bool IDisposableExtended.IsDisposed => _isDisposed;
 
 		public DefaultServiceContainer(IFrameworkLogger logger, [NotNull] RegistrationsDomain registrationsDomain)

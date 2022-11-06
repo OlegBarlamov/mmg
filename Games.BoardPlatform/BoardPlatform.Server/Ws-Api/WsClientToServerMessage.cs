@@ -1,4 +1,4 @@
-namespace BoardPlatform.WebClient
+namespace BoardPlatform.Server
 {
     public interface IWsClientToServerMessage
     {

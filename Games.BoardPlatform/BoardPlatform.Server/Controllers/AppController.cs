@@ -1,25 +1,39 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BoardPlatform.WebClient.Services;
+using BoardPlatform.Server.Services;
+using FrameworkSDK.Common;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace BoardPlatform.WebClient.Controllers
+namespace BoardPlatform.Server.Controllers
 {
     [ApiController]
     [Route("")]
     public class AppController : ControllerBase
     {
         private IWebSocketsService WebSocketsService { get; }
+        public ILogger<AppController> Logger { get; }
+        public IRandomService RandomService { get; }
 
-        public AppController(IWebSocketsService webSocketsService)
+
+        public AppController(IWebSocketsService webSocketsService, [NotNull] ILogger<AppController> logger,
+            [NotNull] IRandomService randomService)
         {
             WebSocketsService = webSocketsService ?? throw new ArgumentNullException(nameof(webSocketsService));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
         }
         
         [HttpGet]
         public string Index()
         {
+            Logger.LogInformation("This is a log message!");
+            Logger.LogError("This is a error message!");
+            
+            Logger.LogWarning("GUID: " + RandomService.NewGuid());
+            
             return "Server has started.";
         }
 

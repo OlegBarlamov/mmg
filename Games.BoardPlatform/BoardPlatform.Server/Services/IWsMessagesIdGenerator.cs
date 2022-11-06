@@ -1,6 +1,6 @@
 using System;
 
-namespace BoardPlatform.WebClient.Services
+namespace BoardPlatform.Server.Services
 {
     public interface IWsMessagesIdGenerator
     {

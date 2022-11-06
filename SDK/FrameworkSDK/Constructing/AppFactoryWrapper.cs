@@ -6,14 +6,14 @@ namespace FrameworkSDK.Constructing
 {
     public abstract class AppFactoryWrapper : IAppFactory
     {
-        public IAppFactory AppFactory { get; }
+        protected IAppFactory AppFactory { get; }
 
         public AppFactoryWrapper([NotNull] IAppFactory appFactory)
         {
             AppFactory = appFactory ?? throw new ArgumentNullException(nameof(appFactory));
         }
         
-        public IApp Construct()
+        public virtual IApp Construct()
         {
             return AppFactory.Construct();
         }
