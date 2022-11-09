@@ -8,7 +8,7 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter
 {
     [UsedImplicitly]
     public class ConsoleGameExternalComponent : IExternalGameComponent

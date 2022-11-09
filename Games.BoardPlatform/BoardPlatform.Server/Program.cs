@@ -1,8 +1,10 @@
-using System;
 using AspNetCore.FrameworkAdapter;
+using Console.FrameworkAdapter.Constructing;
+using FrameworkSDK;
 using FrameworkSDK.Constructing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BoardPlatform.Server
 {
@@ -10,26 +12,23 @@ namespace BoardPlatform.Server
     {
         public static void Main(string[] args)
         {
-            var factory = new AspNetCoreAppFactory(args);
-            factory.AddServices<ServerServicesModule>();
-            factory.Services.AddControllers();
-
-            var app = factory.Construct().Asp();
-            app.UseWebSockets();
-            app.UseHttpsRedirection();
-            app.UseAuthorization();
-            app.MapControllers();
+            var appBuilder = WebApplication.CreateBuilder(args);
+            appBuilder.Logging.AddConsole().SetMinimumLevel(LogLevel.Trace);
+            appBuilder.Services.AddControllers();
             
-            app.Run();
-        }
+            var app = appBuilder.UseFramework()
+                .AddServices<ConsoleCommandsExecutingServicesModule>()
+                .AddServices<ServerServicesModule>()
+                .AddComponent<TerminalConsoleSubsystem>()
+                .Construct()
+                .Asp();
+            
+            app.MapControllers();
+            app.UseWebSockets()
+                .UseHttpsRedirection()
+                .UseAuthorization();
 
-        private static void Func()
-        {
-            while (true)
-            {
-                var line = Console.ReadLine();
-                Console.WriteLine("Hi: " + line);
-            }
+            app.Run();
         }
     }
 }

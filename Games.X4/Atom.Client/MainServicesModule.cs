@@ -5,6 +5,7 @@ using Atom.Client.Resources;
 using Atom.Client.Scenes;
 using Atom.Client.Services;
 using Atom.Client.Services.Implementations;
+using Console.Core.CommandExecution;
 using Console.Core.Commands;
 using Console.FrameworkAdapter;
 using Console.FrameworkAdapter.Commands;

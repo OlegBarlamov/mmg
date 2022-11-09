@@ -4,7 +4,7 @@ namespace Console.Core
 {
     public static class ConsoleControllerExtensions
     {
-        public static void AddMessage(this IConsoleController consoleController, string message, string source = "console", ConsoleLogLevel consoleLogLevel = ConsoleLogLevel.Trace)
+        public static void AddMessage(this IConsoleController consoleController, string message, string source = "console", ConsoleLogLevel consoleLogLevel = ConsoleLogLevel.Information)
         {
             consoleController.AddMessage(new BasicConsoleMessage(
                 message,

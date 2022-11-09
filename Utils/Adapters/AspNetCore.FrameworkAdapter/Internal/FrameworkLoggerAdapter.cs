@@ -3,25 +3,25 @@ using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.FrameworkAdapter.Internal
+namespace AspNetCore.FrameworkAdapter
 {
-    internal class FrameworkLoggerWrapper : IFrameworkLogger
+    internal class FrameworkLoggerAdapter : IFrameworkLogger
     {
-        private ILoggerFactory LoggerFactory { get; }
+        public ILoggerFactory LoggerFactory { get; }
 
-        public FrameworkLoggerWrapper([NotNull] ILoggerFactory loggerFactory)
+        public FrameworkLoggerAdapter([NotNull] ILoggerFactory loggerFactory)
         {
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
         
-        public void Log(string message, string module, FrameworkLogLevel level)
+        public void Log(string message, string logCategory, FrameworkLogLevel level)
         {
-            LoggerFactory.CreateLogger(module).Log(ToLogLevel(level), message);
+            LoggerFactory.CreateLogger(logCategory).Log(ToLogLevel(level), message);
         }
 
-        private static LogLevel ToLogLevel(FrameworkLogLevel logLevel)
+        private LogLevel ToLogLevel(FrameworkLogLevel frameworkLogLevel)
         {
-            switch (logLevel)
+            switch (frameworkLogLevel)
             {
                 case FrameworkLogLevel.Trace:
                     return LogLevel.Trace;
@@ -36,7 +36,7 @@ namespace AspNetCore.FrameworkAdapter.Internal
                 case FrameworkLogLevel.Fatal:
                     return LogLevel.Critical;
                 default:
-                    return LogLevel.Information;
+                    throw new ArgumentOutOfRangeException(nameof(frameworkLogLevel), frameworkLogLevel, null);
             }
         }
     }

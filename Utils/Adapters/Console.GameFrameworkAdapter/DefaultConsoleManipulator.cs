@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter
 {
     [UsedImplicitly]
     public class DefaultConsoleManipulator : Controller

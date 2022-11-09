@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace AspNetCore.FrameworkAdapter
 {
-    public interface IAspNetCoreApp : IApp, IApplicationBuilder, IEndpointRouteBuilder 
+    public interface IAspWebApp : IApp, IApplicationBuilder, IEndpointRouteBuilder 
     {
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Console.Core.Commands;
 
-namespace Console.FrameworkAdapter
+namespace Console.Core.CommandExecution
 {
     public interface IExecutableCommandsCollection
     {

@@ -18,8 +18,8 @@ namespace BoardPlatform.Server.Controllers
         public IRandomService RandomService { get; }
 
 
-        public AppController(IWebSocketsService webSocketsService, [NotNull] ILogger<AppController> logger,
-            [NotNull] IRandomService randomService)
+        public AppController([NotNull] ILogger<AppController> logger,
+            [NotNull] IRandomService randomService, IWebSocketsService webSocketsService)
         {
             WebSocketsService = webSocketsService ?? throw new ArgumentNullException(nameof(webSocketsService));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));

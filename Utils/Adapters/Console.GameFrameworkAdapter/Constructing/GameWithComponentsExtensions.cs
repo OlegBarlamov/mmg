@@ -1,7 +1,7 @@
 using FrameworkSDK.Constructing;
 using FrameworkSDK.MonoGame.Constructing;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter.Constructing
 {
     public static class GameWithExternalComponentsExtensions 
     {

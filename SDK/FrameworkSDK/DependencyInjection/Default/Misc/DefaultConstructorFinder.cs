@@ -70,7 +70,7 @@ namespace FrameworkSDK.DependencyInjection.Default
 	    private static ConstructorInfo[] GetConstructors(Type targetType)
 	    {
 	        return targetType.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
-		        //TODO move to the Construtoris prioritizer
+		        //TODO move to the Constructors prioritizer
 		        .Where(info => info.GetCustomAttribute<ObsoleteAttribute>() == null).ToArray();
 	    }
     }

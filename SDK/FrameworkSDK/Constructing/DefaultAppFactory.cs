@@ -15,9 +15,9 @@ namespace FrameworkSDK
 {
     public class DefaultAppFactory : ComponentsBasedAppFactory, IAppFactory
     {
-        public IFrameworkLogger Logger { get; private set; }
-        public IFrameworkServiceContainer ServiceContainer { get; private set; }
-        public ILocalization Localization { get; private set; }
+        private IFrameworkLogger Logger { get; set; }
+        private IFrameworkServiceContainer ServiceContainer { get; set; }
+        private ILocalization Localization { get; set; }
         
         private readonly ICmdArgsHolder _cmdArgsHolder;
 

@@ -4,6 +4,7 @@ using System.Threading;
 using Atom.Client.Controllers;
 using Atom.Client.Services;
 using Console.Core;
+using Console.Core.CommandExecution;
 using Console.Core.Commands;
 using Console.FrameworkAdapter;
 using FrameworkSDK.Common;

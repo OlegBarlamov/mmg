@@ -1,11 +1,10 @@
 using System;
 using Console.Core;
-using FrameworkSDK.Constructing;
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Constructing;
 using JetBrains.Annotations;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter.Constructing
 {
     internal class GameWithConsoleFactory : GameFactoryWrapper, IGameWithConsoleFactory
     {

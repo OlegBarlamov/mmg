@@ -4,7 +4,7 @@ using Console.InGame;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter.Constructing
 {
     [UsedImplicitly]
     internal class InGameConsoleServicesModule : IServicesModule

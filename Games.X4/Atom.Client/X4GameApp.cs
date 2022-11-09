@@ -5,6 +5,7 @@ using Atom.Client.Resources;
 using Atom.Client.Scenes;
 using Atom.Client.Services.Implementations;
 using Console.Core;
+using Console.Core.CommandExecution;
 using Console.Core.Models;
 using Console.FrameworkAdapter;
 using Console.InGame;
@@ -12,15 +13,10 @@ using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
-using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using NetExtensions.Collections;
-using NetExtensions.Geometry;
-using NetExtensions.Helpers;
 using X4World.Generation;
 using X4World.Maps;
-using X4World.Objects;
 
 namespace Atom.Client
 {

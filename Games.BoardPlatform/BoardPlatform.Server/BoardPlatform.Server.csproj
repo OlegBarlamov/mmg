@@ -14,6 +14,7 @@
       <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
       <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
       <ProjectReference Include="..\..\Utils\Adapters\AspNetCore.FrameworkAdapter\AspNetCore.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Console.FrameworkAdapter\Console.FrameworkAdapter.csproj" />
       <ProjectReference Include="..\BoardPlatform.Data\BoardPlatform.Data.csproj" />
     </ItemGroup>
 

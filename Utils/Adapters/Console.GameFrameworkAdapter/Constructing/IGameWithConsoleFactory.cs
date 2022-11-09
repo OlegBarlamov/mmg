@@ -1,8 +1,7 @@
 using Console.Core;
-using FrameworkSDK;
 using FrameworkSDK.MonoGame.Constructing;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter.Constructing
 {
     public interface IGameWithConsoleFactory : IGameFactory
     {

@@ -2,16 +2,15 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <RootNamespace>Console.GameFrameworkAdapter</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <RootNamespace>Console.FrameworkAdapter</RootNamespace>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj" />
       <ProjectReference Include="..\..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
-      <ProjectReference Include="..\..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
       <ProjectReference Include="..\..\..\SDK\NetExtensions\NetExtensions.csproj" />
       <ProjectReference Include="..\..\Console\Console.Core\Console.Core.csproj" />
-      <ProjectReference Include="..\..\Console\Console.InGame\Console.InGame.csproj" />
     </ItemGroup>
 
 </Project>

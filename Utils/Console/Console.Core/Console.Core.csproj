@@ -13,4 +13,8 @@
       <Folder Include="Commands\DefaultCommands" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\SDK\NetExtensions\NetExtensions.csproj" />
+    </ItemGroup>
+
 </Project>

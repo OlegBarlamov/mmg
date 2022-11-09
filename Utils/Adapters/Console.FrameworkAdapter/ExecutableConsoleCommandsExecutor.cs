@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Console.Core;
+using Console.Core.CommandExecution;
 using Console.Core.Commands;
 using Console.Core.Models;
 using FrameworkSDK.Logging;
@@ -43,7 +44,7 @@ namespace Console.FrameworkAdapter
             }
             catch (ConsoleCommandExecutionException e)
             {
-                Logger.Log(e.Message, "Console", FrameworkLogLevel.Info);
+                Logger.Log(e.Message, "Console", FrameworkLogLevel.Error);
             }
         }
     }

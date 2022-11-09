@@ -2,7 +2,7 @@ using FrameworkSDK.MonoGame.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Console.FrameworkAdapter
+namespace Console.GameFrameworkAdapter
 {
     public sealed class DefaultResourcePackage : ResourcePackage, IConsoleResourcePackage
     {

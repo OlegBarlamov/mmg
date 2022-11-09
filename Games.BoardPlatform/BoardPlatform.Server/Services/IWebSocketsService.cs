@@ -5,6 +5,8 @@ using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace BoardPlatform.Server.Services
 {
@@ -19,6 +21,8 @@ namespace BoardPlatform.Server.Services
 
     public class WebSocketsService : IWebSocketsService
     {
+        public ILogger<WebSocketsService> Logger { get; }
+
         private class WorkingFunctionsState
         {
             public WebSocket Socket { get; }
@@ -35,6 +39,11 @@ namespace BoardPlatform.Server.Services
 
         private readonly ConcurrentQueue<IWsServerToClientMessage> _messagesToSend = new ConcurrentQueue<IWsServerToClientMessage>();
 
+        public WebSocketsService([NotNull] ILogger<WebSocketsService> logger)
+        {
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+        
         public Task HandleConnectionAsync(WebSocket webSocket, CancellationToken cancellationToken)
         {
             var state = new WorkingFunctionsState(webSocket, cancellationToken);

@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 
 namespace Console.FrameworkAdapter.Commands
 {
+    [RegisterConsoleCommand]
     public class ShowEnumValuesConsoleCommand : FixedTypedExecutableConsoleCommand<string>
     {
         public IAppDomainService AppDomainService { get; }

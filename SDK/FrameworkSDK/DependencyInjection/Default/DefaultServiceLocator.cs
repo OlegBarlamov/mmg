@@ -129,7 +129,8 @@ namespace FrameworkSDK.DependencyInjection.Default
         {
 	        var parametersTypes = parameters.Select(o => o.GetType()).ToArray();
 	        var constructor = ConstructorFinder.GetConstructor(this, type, parametersTypes);
-	        var dependencies = DependencyResolver.ResolveDependencies(this, constructor, parameters);
+	        var constructorParameters = constructor.GetParameters().Select(p => p.ParameterType).ToArray();
+	        var dependencies = DependencyResolver.ResolveDependencies(this, constructorParameters, parameters);
 	        var instance = constructor.Invoke(dependencies);
 	        return instance;
         }
