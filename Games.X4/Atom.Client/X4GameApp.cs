@@ -7,7 +7,7 @@ using Atom.Client.Services.Implementations;
 using Console.Core;
 using Console.Core.CommandExecution;
 using Console.Core.Models;
-using Console.FrameworkAdapter;
+using Console.GameFrameworkAdapter;
 using Console.InGame;
 using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame;

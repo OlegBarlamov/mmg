@@ -13,7 +13,6 @@ namespace BoardPlatform.Server
         public static void Main(string[] args)
         {
             var appBuilder = WebApplication.CreateBuilder(args);
-            appBuilder.Logging.AddConsole().SetMinimumLevel(LogLevel.Trace);
             appBuilder.Services.AddControllers();
             
             var app = appBuilder.UseFramework()

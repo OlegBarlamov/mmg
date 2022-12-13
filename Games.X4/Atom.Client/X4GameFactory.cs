@@ -1,6 +1,7 @@
 using Atom.Client.AppComponents;
 using Atom.Client.Resources;
 using Console.FrameworkAdapter;
+using Console.GameFrameworkAdapter.Constructing;
 using Console.LoggingAdapter;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;

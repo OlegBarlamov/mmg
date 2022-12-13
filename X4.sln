@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atom.Client.Windows", "Game
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atom.Client", "Games.X4\Atom.Client\Atom.Client.csproj", "{EDC8126C-1891-4AE9-B813-2E082C4569CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.FrameworkAdapter", "Utils\Adapters\Console.FrameworkAdapter\Console.FrameworkAdapter.csproj", "{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -231,6 +233,18 @@ Global
 		{EDC8126C-1891-4AE9-B813-2E082C4569CA}.Release|x64.Build.0 = Release|Any CPU
 		{EDC8126C-1891-4AE9-B813-2E082C4569CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{EDC8126C-1891-4AE9-B813-2E082C4569CA}.Release|x86.Build.0 = Release|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Release|x64.Build.0 = Release|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -249,6 +263,7 @@ Global
 		{638AFC89-C86D-4B62-8ADC-8D8CDA824D2F} = {301BC03D-EB28-40FD-81BF-DD1C8974F47C}
 		{A88925E8-AB17-4EDB-A887-642AED93C04D} = {DF2A148B-6B29-4CC7-924E-02EB55F44171}
 		{9DB5439E-E098-4627-9231-6B148B8751FF} = {A88925E8-AB17-4EDB-A887-642AED93C04D}
+		{20C99BBC-E6EF-4C46-AAC7-1D8902A930D3} = {301BC03D-EB28-40FD-81BF-DD1C8974F47C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FCC9E7EC-622B-41AE-9D75-37865D2F85FF}

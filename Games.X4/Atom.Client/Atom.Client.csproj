@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
     <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
     <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
+    <ProjectReference Include="..\..\Utils\Adapters\Console.FrameworkAdapter\Console.FrameworkAdapter.csproj" />
     <ProjectReference Include="..\..\Utils\Adapters\Console.GameFrameworkAdapter\Console.GameFrameworkAdapter.csproj" />
     <ProjectReference Include="..\..\Utils\Adapters\Console.LoggingAdapter\Console.LoggingAdapter.csproj" />
     <ProjectReference Include="..\..\Utils\Adapters\Logging.FrameworkAdapter\Logging.FrameworkAdapter.csproj" />

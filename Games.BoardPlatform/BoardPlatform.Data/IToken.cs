@@ -1,4 +1,4 @@
-namespace TablePlatform.Data
+namespace BoardPlatform.Data
 {
     public interface IToken
     {

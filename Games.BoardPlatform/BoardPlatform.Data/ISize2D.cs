@@ -1,6 +1,6 @@
-namespace TablePlatform.Data
+namespace BoardPlatform.Data
 {
-    public interface ISizable
+    public interface ISize2D
     {
         float Width { get; }
         float Height { get; }

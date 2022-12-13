@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
       <ProjectReference Include="..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
       <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
     </ItemGroup>
