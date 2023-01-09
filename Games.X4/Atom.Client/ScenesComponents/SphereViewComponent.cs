@@ -18,13 +18,12 @@ using X4World.Objects;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public sealed class SphereViewComponent : SingleMeshComponent<StarAsSphere>
+    public sealed class SphereViewComponent : RenderableView<PlanetSystemFarthest>
     {
         public MainResourcePackage ResourcePackage { get; }
         
-        public SphereViewComponent([NotNull] StarAsSphere model, [NotNull] MainResourcePackage resourcePackage,
+        public SphereViewComponent([NotNull] PlanetSystemFarthest model, [NotNull] MainResourcePackage resourcePackage,
             [NotNull] ICamera3DProvider camera3DProvider, IDisplayService displayService)
-            : base(new FixedSimpleMesh(StaticGeometries.Sphere), "Render_Textured")
         {
             ResourcePackage = resourcePackage ?? throw new ArgumentNullException(nameof(resourcePackage));
             

@@ -19,18 +19,19 @@ namespace X4World.Generation
         
         public void Generate(StarAsPoint target)
         {
-            var aggregatedData = target.AggregatedData;
-            var objects = new List<StarAsSphere>();
-            
-            for (int i = 0; i < aggregatedData.Power * 10; i++)
+            var planetsCount = RandomService.NextInteger(1, 30);
+
+            var planetsPositions = new List<Vector3>();
+            for (int i = 0; i < planetsCount; i++)
             {
                 var position = RandomService.NextVector3(new Vector3(-50), new Vector3(50));
-                var itemAggregatedData = new StarAsSphereAggregatedData(1);
-                var item = new StarAsSphere(target, position, itemAggregatedData);
-                objects.Add(item);
+                planetsPositions.Add(position);
             };
             
-            target.SetGeneratedData(objects);
+            var itemAggregatedData = new PlanetSystemFarthestAggregatedData(planetsPositions, target.AggregatedData);
+            var item = new PlanetSystemFarthest(target, Vector3.Zero, itemAggregatedData);
+
+            target.SetGeneratedData(new []{item});
         }
         
         void IDetailsGenerator.Generate(IGeneratorTarget target)

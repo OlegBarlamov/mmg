@@ -1,6 +1,8 @@
+using System;
+
 namespace BoardPlatform.Data
 {
-    public interface IToken
+    public interface IToken : IEquatable<IToken>
     {
         string GetId();
     }

@@ -13,18 +13,18 @@ namespace BoardPlatform.Server
     public enum WsServerToClientCommand
     {
         None = 0,
-        Connected = 1,
+        ConnectedHandshake = 1,
         WidgetExist = 2,
     }
     
     [Serializable]
-    public class WsServerToClientConnectedMessage : IWsServerToClientMessage
+    public class WsServerToClientConnectedHandshakeMessage : IWsServerToClientMessage
     {
         public long MessageId { get; }
-        public WsServerToClientCommand Command { get; } = WsServerToClientCommand.Connected;
+        public WsServerToClientCommand Command { get; } = WsServerToClientCommand.ConnectedHandshake;
         public object Payload { get; } = null;
 
-        public WsServerToClientConnectedMessage(long messageId)
+        public WsServerToClientConnectedHandshakeMessage(long messageId)
         {
             MessageId = messageId;
         }

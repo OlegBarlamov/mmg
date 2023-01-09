@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoardPlatform.Data.Repositories
@@ -12,6 +14,6 @@ namespace BoardPlatform.Data.Repositories
 
         Task UpdateWidget(IToken boardToken, IToken token, IRawWidgetData rawWidgetData);
 
-        Task<IWidget[]> GetAllWidgets(IToken boardToken);
+        Task<IEnumerable<IWidget>> GetAllWidgetsAsync(IToken boardToken, CancellationToken cancellationToken);
     }
 }

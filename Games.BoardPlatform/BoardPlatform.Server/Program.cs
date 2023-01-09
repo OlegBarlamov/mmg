@@ -1,4 +1,5 @@
 using AspNetCore.FrameworkAdapter;
+using BoardPlatform.Server.Services;
 using Console.FrameworkAdapter.Constructing;
 using FrameworkSDK;
 using FrameworkSDK.Constructing;
@@ -19,13 +20,13 @@ namespace BoardPlatform.Server
                 .AddServices<ConsoleCommandsExecutingServicesModule>()
                 .AddServices<ServerServicesModule>()
                 .AddComponent<TerminalConsoleSubsystem>()
+                .AddComponent<DebugStartupScript>()
                 .Construct()
                 .Asp();
             
             app.MapControllers();
             app.UseWebSockets()
-                .UseHttpsRedirection()
-                .UseAuthorization();
+                .UseHttpsRedirection();
 
             app.Run();
         }

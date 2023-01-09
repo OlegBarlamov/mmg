@@ -12,18 +12,20 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class StarAsSphereAggregatedData
+    public class PlanetSystemFarthestAggregatedData
     {
-        public float Power { get; }
-        public Color Color { get; }
+        public IReadOnlyCollection<Vector3> PointsPositions { get; }
+        public StarAsPointAggregatedData StarData { get; }
 
-        public StarAsSphereAggregatedData(float power)
+        public PlanetSystemFarthestAggregatedData([NotNull] IReadOnlyCollection<Vector3> pointsPositions,
+            [NotNull] StarAsPointAggregatedData starData)
         {
-            Power = power;
+            PointsPositions = pointsPositions ?? throw new ArgumentNullException(nameof(pointsPositions));
+            StarData = starData ?? throw new ArgumentNullException(nameof(starData));
         }
     }
     
-    public class StarAsSphere : IWrappedDetails 
+    public class PlanetSystemFarthest : IWrappedDetails 
     {
         public Vector3 Position { get; set; }
         public IWrappedDetails Parent { get; }
@@ -35,15 +37,15 @@ namespace X4World.Objects
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
         
-        public StarAsSphereAggregatedData AggregatedData { get; }
+        public PlanetSystemFarthestAggregatedData AggregatedData { get; }
         
 
-        public StarAsSphere(IWrappedDetails parent, Vector3 localPosition, StarAsSphereAggregatedData aggregatedData)
+        public PlanetSystemFarthest(IWrappedDetails parent, Vector3 localPosition, PlanetSystemFarthestAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            Name = $"{Parent.Name}_s{NamesGenerator.Hash(HashType.Number)}";
+            Name = $"{Parent.Name}_ps{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 1, 10);
         }
         

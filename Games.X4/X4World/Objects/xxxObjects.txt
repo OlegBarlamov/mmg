@@ -1,0 +1,3 @@
+- MapCell -> Texture with points
+- Star -> Tethragedron with light-shader
+- Planets as Points -> Star + planet's points 

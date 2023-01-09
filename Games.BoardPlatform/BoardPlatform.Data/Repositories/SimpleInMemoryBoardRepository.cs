@@ -30,5 +30,10 @@ namespace BoardPlatform.Data.Repositories
             Boards.TryRemove(token.GetId(), out _);
             return Task.CompletedTask;
         }
+
+        public Task<bool> BoardExist(IToken token)
+        {
+            return Task.FromResult(Boards.ContainsKey(token.GetId()));
+        }
     }
 }

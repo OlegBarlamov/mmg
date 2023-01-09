@@ -9,5 +9,7 @@ namespace BoardPlatform.Data.Repositories
         Task AddBoard(IBoard board);
 
         Task RemoveBoard(IToken token);
+
+        Task<bool> BoardExist(IToken token);
     }
 }

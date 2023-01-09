@@ -37,7 +37,7 @@ namespace X4World.Objects
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            Name = $"{Parent.Name}_g{NamesGenerator.Hash(HashType.Number)}";
+            Name = $"{Parent.Name}_s{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 100, 10);
         }
         
