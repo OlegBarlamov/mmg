@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace MonoGameExtensions
 {
@@ -57,5 +58,56 @@ namespace MonoGameExtensions
 			return point1.Y > point2.Y;
 		}
 
+		public static Point GetRight(this Point point, int shift = 1)
+		{
+			return new Point(point.X + shift, point.Y);
+		}
+		
+		public static Point GetLeft(this Point point, int shift = 1)
+		{
+			return new Point(point.X - shift, point.Y);
+		}
+		
+		public static Point GetTop(this Point point, int shift = 1)
+		{
+			return new Point(point.X - shift, point.Y - shift);
+		}
+
+		public static Point GetBottom(this Point point, int shift = 1)
+		{
+			return new Point(point.X - shift, point.Y + shift);
+		}
+		
+		public static Point GetRightTop(this Point point, int shiftX = 1, int shiftY = 1)
+		{
+			return new Point(point.X + shiftX, point.Y - shiftY);
+		}
+		
+		public static Point GetLeftTop(this Point point, int shiftX = 1, int shiftY = 1)
+		{
+			return new Point(point.X - shiftX, point.Y - shiftY);
+		}
+		
+		public static Point GetRightBottom(this Point point, int shiftX = 1, int shiftY = 1)
+		{
+			return new Point(point.X + shiftX, point.Y + shiftY);
+		}
+		
+		public static Point GetLeftBottom(this Point point, int shiftX = 1, int shiftY = 1)
+		{
+			return new Point(point.X - shiftX, point.Y + shiftY);
+		}
+
+		public static IEnumerable<Point> GetAdjusted(this Point point)
+		{
+			yield return point.GetTop();
+			yield return point.GetRightTop();
+			yield return point.GetRight();
+			yield return point.GetRightBottom();
+			yield return point.GetBottom();
+			yield return point.GetLeftBottom();
+			yield return point.GetLeft();
+			yield return point.GetLeftTop();
+		} 
 	}
 }

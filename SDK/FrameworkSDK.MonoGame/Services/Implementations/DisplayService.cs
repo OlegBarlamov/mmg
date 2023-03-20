@@ -216,6 +216,8 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
         {
             GameHeartServices.Loaded -= GameHeartServicesOnLoaded;
             GameHeartServices.GraphicsDeviceManager.DeviceReset -= GraphicsDeviceManagerOnDeviceReset;
+            
+            DeviceReset = null;
         }
 
         public void ToggleFullScreen()

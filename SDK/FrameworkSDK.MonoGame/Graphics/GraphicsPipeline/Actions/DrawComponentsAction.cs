@@ -1,29 +1,18 @@
-using System;
-using System.Collections.Generic;
-using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using JetBrains.Annotations;
-using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
-    public class DrawComponentsAction : GraphicsPipelineActionBase
+    public class DrawComponentsAction : DrawComponentsInCameraAction
     {
-        public DrawComponentsAction([NotNull] string name) : base(name)
+        public DrawComponentsAction([NotNull] string name) : base(name, CameraProvider)
         {
         }
-        
-        public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
+
+        private static ICamera2D CameraProvider(IGraphicDeviceContext context)
         {
-            for (int i = 0; i < associatedComponents.Count; i++)
-            {
-                var component = associatedComponents[i];
-                if (IsComponentVisibleByActiveCamera(graphicDeviceContext, component))
-                {
-                    component.Draw(gameTime, graphicDeviceContext);
-                    graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoDrawComponents);
-                }
-            }
+            return context.Camera2DProvider.GetActiveCamera();
         }
     }
 }

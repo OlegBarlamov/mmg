@@ -1,5 +1,4 @@
 using System;
-using System.Data.Common;
 using System.Threading;
 using Atom.Client.Controllers;
 using Atom.Client.Services;
@@ -11,14 +10,12 @@ using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
-using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.SceneComponents;
 using FrameworkSDK.MonoGame.SceneComponents.Controllers;
-using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -219,23 +216,23 @@ namespace Atom.Client.Scenes
                 VertexColorEnabled = false, TextureEnabled = true
             };
 
-            var vertexBuffer = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
-            var indexBuffer = graphicsPipelineBuilder.CreateIndexBuffer(200);
+            var vertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
+            var indexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(200);
             
-            var vertexBuffer2 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
-            var indexBuffer2 = graphicsPipelineBuilder.CreateIndexBuffer(5000);
+            var vertexBuffer2 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
+            var indexBuffer2 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(5000);
             
-            var vertexBuffer3 = graphicsPipelineBuilder.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 100);
-            var indexBuffer3 = graphicsPipelineBuilder.CreateIndexBuffer(200);
+            var vertexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 100);
+            var indexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(200);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
-                .SetActiveCamera(_coloredShader)
+                .ApplyActiveCameraToShader(_coloredShader)
                 .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
-                .SetActiveCamera(_texturesShaderNoLights)
+                .ApplyActiveCameraToShader(_texturesShaderNoLights)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3,  "Render_Textured_No_Lights")
-                .SetActiveCamera(_texturesShader)
+                .ApplyActiveCameraToShader(_texturesShader)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()

@@ -2,6 +2,7 @@
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.ExternalComponents;
+using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Processing;
@@ -30,6 +31,7 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterType<IDisplayService, DisplayService>();
             serviceRegistrator.RegisterType<IIndicesBuffersFactory, Int16IndicesBuffersFactory>();
             serviceRegistrator.RegisterType<IIndicesBuffersFiller, Int16IndicesBuffersFiller>();
+            serviceRegistrator.RegisterType<IVideoBuffersFactoryService, VideoBuffersFactoryService>();
 
             //Resources
             serviceRegistrator.RegisterType<IContentContainersFactory, ContentContainersFactory>();
@@ -55,6 +57,9 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterType<DefaultCamera3DService, DefaultCamera3DService>();
             serviceRegistrator.RegisterFactory(typeof(ICamera3DService), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));
             serviceRegistrator.RegisterFactory(typeof(ICamera3DProvider), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));
+            serviceRegistrator.RegisterType<DefaultCamera2DService, DefaultCamera2DService>();
+            serviceRegistrator.RegisterFactory(typeof(ICamera2DService), (locator, type) => locator.Resolve(typeof(DefaultCamera2DService)));
+            serviceRegistrator.RegisterFactory(typeof(ICamera2DProvider), (locator, type) => locator.Resolve(typeof(DefaultCamera2DService)));
             
             serviceRegistrator.RegisterType<IDebugInfoService, DefaultDebugInfoService>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();

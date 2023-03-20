@@ -10,22 +10,13 @@ namespace FrameworkSDK.MonoGame.Mvc
 {
     public abstract class Scene : SceneBase
     {
-        public static class DefaultPipelineActions
-        {
-            public const string Draw = "Default";
-            public const string RenderVertexPosition = "Render_VP";
-            public const string RenderVertexPositionColor = "Render_VPC";
-            public const string RenderVertexPositionTexture = "Render_VPT";
-        }
-        
         [NotNull] protected IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
         [NotNull] protected IGameHeartServices GameHeartServices { get; }
 
         [NotNull] private IGraphicsPipelineFactoryService GraphicsPipelineFactoryService { get; }
 
         [CanBeNull] private IGraphicsPipeline _usedGraphicsPipeline;
-        [CanBeNull] private IRenderTargetWrapper _defaultGraphicsPipelineRenderTarget;
-        
+
         private bool _initialized;
 
         protected Scene([NotNull] string name, object model = null)
@@ -52,10 +43,9 @@ namespace FrameworkSDK.MonoGame.Mvc
             base.Dispose();
             
             _usedGraphicsPipeline?.Dispose();
-            _defaultGraphicsPipelineRenderTarget?.Dispose();
         }
 
-        protected override IGraphicsPipeline GetGraphicsPipeline()
+        protected sealed override IGraphicsPipeline GetGraphicsPipeline()
         {
             return _usedGraphicsPipeline ?? throw new FrameworkMonoGameException($"Used graphics pipeline must be specified in Scene: {Name}");
         }
@@ -67,40 +57,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (!_initialized)
             {
                 _initialized = true;
+                _usedGraphicsPipeline = BuildGraphicsPipeline(GraphicsPipelineFactoryService.Create(GraphicComponents));
                 OnFirstOpening();
             }
         }
 
-        protected override void OnOpened()
-        {
-            base.OnOpened();
-            
-            if (_usedGraphicsPipeline == null)
-            {
-                _usedGraphicsPipeline = BuildGraphicsPipeline(GraphicsPipelineFactoryService.Create(GraphicComponents));
-            }
-
-        }
-
-        private IGraphicsPipeline CreateDefaultPipeline(IGraphicsPipelineBuilder builder)
-        {
-            _defaultGraphicsPipelineRenderTarget = RenderTargetsFactoryService.CreateFullScreenRenderTarget(
-                false,
-                SurfaceFormat.Color,
-                DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-
-            return builder
-                .SetRenderTarget(_defaultGraphicsPipelineRenderTarget.RenderTarget)
-                .BeginDraw(new BeginDrawConfig())
-                .DrawComponents(DefaultPipelineActions.Draw)
-                .EndDraw()
-                .DrawRenderTargetToDisplay(_defaultGraphicsPipelineRenderTarget.RenderTarget)
-                .Build();
-        }
-
-        [NotNull] protected virtual IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
-        {
-            return CreateDefaultPipeline(graphicsPipelineBuilder);
-        }
+        [NotNull]
+        protected abstract IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder);
     }
 }

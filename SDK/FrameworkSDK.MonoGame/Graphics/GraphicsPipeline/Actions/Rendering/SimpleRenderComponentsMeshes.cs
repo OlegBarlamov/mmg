@@ -34,7 +34,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext,
             IReadOnlyList<IGraphicComponent> associatedComponents)
         {
-            graphicDeviceContext.GeometryRenderer.SetBuffers(VertexBuffer, IndexBuffer);
+            graphicDeviceContext.RenderContext.GeometryRenderer.SetBuffers(VertexBuffer, IndexBuffer);
             
             for (_index = 0; _index < associatedComponents.Count; _index++)
             {
@@ -48,7 +48,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                 {
                     _mesh = _meshes[_meshesIndex];
 
-                    graphicDeviceContext.GeometryRenderer.Charge(_mesh.Geometry);
+                    graphicDeviceContext.RenderContext.GeometryRenderer.Charge(_mesh.Geometry);
 
                     foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
                     {
@@ -57,7 +57,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                         
                         pass.Apply();
                         
-                        graphicDeviceContext.GeometryRenderer.Render();
+                        graphicDeviceContext.RenderContext.GeometryRenderer.Render();
                     }
                     
                     graphicDeviceContext.DebugInfoService.IncrementCounter(DebugInfoRenderingVertices, _mesh.Geometry.GetVertices().Length);

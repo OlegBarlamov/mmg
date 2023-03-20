@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

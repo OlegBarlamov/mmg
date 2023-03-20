@@ -19,6 +19,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         private IReadOnlyObservableList<IGraphicComponent> GraphicComponents { get; }
         private IGraphicsPipelinePassAssociateService PipelinePassAssociateService { get; }
         private IDebugInfoService DebugInfoService { get; }
+        [CanBeNull] private IDisposable Resource { get; }
 
         private readonly ModuleLogger _logger;
         
@@ -32,12 +33,14 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             [NotNull] IReadOnlyObservableList<IGraphicComponent> graphicComponents,
             [NotNull] IGraphicsPipelinePassAssociateService pipelinePassAssociateService,
             [NotNull] IFrameworkLogger frameworkLogger,
-            [NotNull] IDebugInfoService debugInfoService)
+            [NotNull] IDebugInfoService debugInfoService,
+            [CanBeNull] IDisposable resource)
         {
             Actions = actions ?? throw new ArgumentNullException(nameof(actions));
             GraphicComponents = graphicComponents ?? throw new ArgumentNullException(nameof(graphicComponents));
             PipelinePassAssociateService = pipelinePassAssociateService ?? throw new ArgumentNullException(nameof(pipelinePassAssociateService));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
+            Resource = resource;
             _logger = new ModuleLogger(frameworkLogger, LogCategories.Rendering);
             
             FillActionsMap();
@@ -150,6 +153,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                     _logger.Error($"Graphics pipeline action {pipelineAction.Name} dispose error", e);
                 }
             }
+            
+            Resource?.Dispose();
             
             _logger.Dispose();
         }

@@ -1,6 +1,7 @@
 using System;
 using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Graphics.Basic;
+using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.Mvc;
@@ -45,6 +46,18 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             return builder.AddAction(new DrawComponentsAction(name));
         }
 
+        public static IGraphicsPipelineBuilder DrawComponents([NotNull] this IGraphicsPipelineBuilder builder,
+            ICamera2D camera2D, [NotNull] string name = View.DefaultViewPassName)
+        {
+            return builder.AddAction(new DrawComponentsInCameraAction(name, context => camera2D));
+        }
+        
+        public static IGraphicsPipelineBuilder DrawComponents([NotNull] this IGraphicsPipelineBuilder builder,
+            Func<IGraphicDeviceContext, ICamera2D> camera2DProvider, [NotNull] string name = View.DefaultViewPassName)
+        {
+            return builder.AddAction(new DrawComponentsInCameraAction(name, camera2DProvider));
+        }
+
         public static IGraphicsPipelineBuilder SetRenderTarget([NotNull] this IGraphicsPipelineBuilder builder,
             [NotNull] RenderTarget2D renderTarget)
         {
@@ -84,10 +97,10 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                 new SimpleRenderInstancedMeshes<TVertexType>(name, effect, vertexBuffer, indexBuffer));
         }
 
-        public static IGraphicsPipelineBuilder SetActiveCamera([NotNull] this IGraphicsPipelineBuilder builder, IEffectMatrices effect)
+        public static IGraphicsPipelineBuilder ApplyActiveCameraToShader([NotNull] this IGraphicsPipelineBuilder builder, IEffectMatrices effect)
         {
             return builder.AddAction(
-                new SetActiveCameraAction(GenerateActionName(nameof(SetActiveCameraAction)), effect));
+                new ApplyActiveCameraToShaderAction(GenerateActionName(nameof(ApplyActiveCameraToShaderAction)), effect));
         }
 
         public static IGraphicsPipelineBuilder SetBlendState([NotNull] this IGraphicsPipelineBuilder builder, BlendState blendState)

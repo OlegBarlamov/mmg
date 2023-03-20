@@ -1,5 +1,6 @@
 using System;
 using Atom.Client.Resources;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.SceneComponents;
 using JetBrains.Annotations;
@@ -31,6 +32,11 @@ namespace Atom.Client.Scenes
                 Position = new Vector2(10, 10),
                 Text = "Loading..."
             });
+        }
+
+        protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
+        {
+            return graphicsPipelineBuilder.Drawing2DPreset().Build();
         }
     }
 }

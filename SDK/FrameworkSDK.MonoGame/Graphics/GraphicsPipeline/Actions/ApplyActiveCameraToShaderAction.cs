@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
-    public class SetActiveCameraAction : GraphicsPipelineActionBase
+    public class ApplyActiveCameraToShaderAction : GraphicsPipelineActionBase
     {
         private IEffectMatrices Effect { get; }
 
-        public SetActiveCameraAction([NotNull] string name, [NotNull] IEffectMatrices effect)
+        public ApplyActiveCameraToShaderAction([NotNull] string name, [NotNull] IEffectMatrices effect)
             : base(name)
         {
             Effect = effect ?? throw new ArgumentNullException(nameof(effect));

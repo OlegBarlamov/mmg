@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics.Services
 {
+    [UsedImplicitly]
     internal class RenderTargetsFactoryService : IRenderTargetsFactoryService
     {
         private IRenderTargetsFactory RenderTargetsFactory { get; }

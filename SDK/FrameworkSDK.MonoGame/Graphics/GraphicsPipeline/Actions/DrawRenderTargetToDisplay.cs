@@ -24,7 +24,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         {
             graphicDeviceContext.BeginDraw(BeginDrawConfig);
             graphicDeviceContext.SetRenderTargetToDisplay();
-            graphicDeviceContext.Draw(RenderTarget2D, DrawParameters.StretchToFullScreen(graphicDeviceContext.DisplayService));
+            graphicDeviceContext.DrawContext.Draw(RenderTarget2D, DrawParameters.StretchToFullScreen(graphicDeviceContext.DisplayService));
             graphicDeviceContext.EndDraw();
         }
     }

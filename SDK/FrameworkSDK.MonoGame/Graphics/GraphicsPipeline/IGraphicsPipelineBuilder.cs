@@ -1,21 +1,17 @@
-
-using FrameworkSDK.MonoGame.Graphics.Camera3D;
+using System;
 using FrameworkSDK.MonoGame.Graphics.Services;
-using FrameworkSDK.MonoGame.Services;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
     public interface IGraphicsPipelineBuilder
     {
         IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
+        IVideoBuffersFactoryService VideoBuffersFactoryService { get; }
 
         IGraphicsPipelineBuilder AddAction(IGraphicsPipelineAction action);
+        IGraphicsPipelineBuilder InsertAction(string actionName, IGraphicsPipelineAction action);
+        IGraphicsPipelineBuilder RemoveAction(string actionName);
 
-        IGraphicsPipeline Build();
-
-        VertexBuffer CreateVertexBugger(VertexDeclaration vertexDeclaration, int vertexCount);
-
-        IndexBuffer CreateIndexBuffer(int indicesCount);
+        IGraphicsPipeline Build(IDisposable resources = null);
     }
 }

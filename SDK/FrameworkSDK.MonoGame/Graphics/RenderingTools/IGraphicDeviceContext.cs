@@ -1,6 +1,6 @@
 ﻿using System;
+using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
-using FrameworkSDK.MonoGame.Graphics.Services;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -11,8 +11,11 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     /// <summary>
     /// Graphics pipeline tool
     /// </summary>
-    public interface IGraphicDeviceContext : IDrawContext, IRenderContext, IDisposable
+    public interface IGraphicDeviceContext : IDisposable
     {
+        IDrawContext DrawContext { get; }
+        IRenderContext RenderContext { get; }
+        ICamera2DProvider Camera2DProvider { get; }
         ICamera3DProvider Camera3DProvider { get; }
         IDisplayService DisplayService { get; }
         IDebugInfoService DebugInfoService { get; }
@@ -33,5 +36,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         void SetDepthStencilState(DepthStencilState depthStencilState);
 
         void SetRasterizerState(RasterizerState rasterizerState);
+
+        void DrawInCamera(ICamera2D camera, Action<IDrawContext> drawAction);
     }
 }
