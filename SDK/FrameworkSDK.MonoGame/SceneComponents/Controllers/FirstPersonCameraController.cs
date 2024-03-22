@@ -2,6 +2,7 @@ using System;
 using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.InputManagement;
+using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -9,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
 {
-    public class FirstPersonCameraController : IUpdatable
+    public class FirstPersonCameraController : Controller
     {
         private DirectionalCamera3D TargetCamera { get; }
         private IDebugInfoService DebugInfoService { get; }
@@ -19,7 +20,9 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
         
         private IInputService InputService { get; }
         
-        public FirstPersonCameraController([NotNull] IInputService inputService, [NotNull] DirectionalCamera3D targetCamera,
+        public FirstPersonCameraController(
+            [NotNull] IInputService inputService,
+            [NotNull] DirectionalCamera3D targetCamera,
             [NotNull] IDebugInfoService debugInfoService)
         {
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
@@ -27,7 +30,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             var speed = Speed;
             if (InputService.Keyboard.Key(Keys.LeftShift))
@@ -101,6 +104,8 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
             InputService.Mouse.SetPosition(new Point());
             
             DebugInfoService.SetLabel("camera_pos", TargetCamera.Position.ToString());
+            
+            base.Update(gameTime);
         }
 
         private void RotateLeftRight(float factor)

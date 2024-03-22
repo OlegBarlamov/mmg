@@ -1,11 +1,11 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:../bin/$(Configuration)/Resources
-/intermediateDir:../obj/$(Configuration)/$(Platform)
-/platform:Windows
+/outputDir:../bin/Debug/Content
+/intermediateDir:../obj/Debug/$(Platform)/Content
+/platform:MacOSX
 /config:
-/profile:HiDef
+/profile:Reach
 /compress:False
 
 #-------------------------------- References --------------------------------#
@@ -13,10 +13,10 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Console/File.spritefont
+#begin File.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:Console/File.spritefont;Console/TextFont.spritefont
+/build:File.spritefont;TextFont.spritefont
 

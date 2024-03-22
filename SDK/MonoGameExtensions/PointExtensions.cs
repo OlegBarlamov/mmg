@@ -108,6 +108,11 @@ namespace MonoGameExtensions
 			yield return point.GetLeftBottom();
 			yield return point.GetLeft();
 			yield return point.GetLeftTop();
-		} 
+		}
+
+		public static bool InRange(this Point point, Point min, Point max)
+		{
+			return point.X >= min.X && point.X <= max.X && point.Y >= min.Y && point.Y <= max.Y;
+		}
 	}
 }

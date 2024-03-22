@@ -74,6 +74,16 @@ namespace X4World.Maps
                 .ToArray();
         }
 
+        public Vector3 GetLowerBound()
+        {
+            return _octree.BoundingBox.Min;
+        }
+
+        public Vector3 GetUpperBound()
+        {
+            return _octree.BoundingBox.Max;
+        }
+
         public bool ContainsPoint(Vector3 point)
         {
             return _octree.ContainsPoint(point);

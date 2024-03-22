@@ -7,6 +7,7 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions.Geometry;
 
 namespace FrameworkSDK.MonoGame.SceneComponents
 {
@@ -28,7 +29,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         
         public override void Draw(GameTime gameTime, IDrawContext context)
         {
-            context.Draw(DataModel.Texture, DisplayService.GraphicsDevice.Viewport.Bounds, Color.White);
+            context.Draw(DataModel.Texture, DisplayService.GraphicsDevice.Viewport.Bounds.ToRectangleF(), Color.White);
             
             base.Draw(gameTime, context);
         }

@@ -4,6 +4,7 @@ using FrameworkSDK.MonoGame.Graphics.DrawableComponents;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions.Geometry;
 
 namespace FrameworkSDK.MonoGame.SceneComponents
 {
@@ -43,7 +44,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
             }
         }
 
-        internal Rectangle MainLineRectangle;
+        internal RectangleF MainLineRectangle;
         internal float MainRectangleRotation;
         internal Rectangle LeftRectangle;
         internal float LeftRectangleRotation;
@@ -67,7 +68,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         {
             var length = _vector.Length();
             
-            MainLineRectangle = new Rectangle(_position.ToPoint(), new Point((int)length, (int)_thickness));
+            MainLineRectangle = new RectangleF(_position, new Vector2(length, _thickness));
             MainRectangleRotation = - (float) Math.Atan2(_vector.Y, _vector.X);
             
             // LeftRectangle = new Rectangle((_position + _vector).ToPoint(), new Point((int)(length * 0.5f), (int)_thickness));

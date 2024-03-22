@@ -3,13 +3,14 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions.Geometry;
 
 namespace FrameworkSDK.MonoGame.Graphics.Basic
 {
     public class DrawParameters
     {
         public Vector2? Position { get; set; } = null;
-        public Rectangle? DestinationRectangle { get; set; } = null;
+        public RectangleF? DestinationRectangle { get; set; } = null;
         public Rectangle? SourceRectangle { get; set; } = null;
         public Vector2? Origin { get; set; } = null;
         public float Rotation { get; set; } = 0.0f;
@@ -24,7 +25,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Basic
             
             return new DrawParameters
             {
-                DestinationRectangle = new Rectangle(0, 0, displayService.PreferredBackBufferWidth, displayService.PreferredBackBufferHeight)
+                DestinationRectangle = new RectangleF(0, 0, displayService.PreferredBackBufferWidth, displayService.PreferredBackBufferHeight)
             };
         }
     }

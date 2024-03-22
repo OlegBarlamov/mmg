@@ -12,6 +12,7 @@ namespace FrameworkSDK.MonoGame.Graphics.DrawableComponents
             {
                 data.GraphicsPassName
             };
+            SetDataModel(data);
         }
 
         public override IReadOnlyList<string> GraphicsPassNames { get; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
+using FrameworkSDK.MonoGame.Graphics.RenderingTools.Internal;
 using FrameworkSDK.MonoGame.Graphics.Services;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
@@ -12,7 +13,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     internal class PipelineGraphicDeviceContext : IGraphicDeviceContext
     {
         public IDrawContext DrawContext => _drawContext;
-        private readonly DrawContext _drawContext;
+        private readonly CameraBasedDrawContext _drawContext;
         public IRenderContext RenderContext { get; }
         public IGeometryRenderer GeometryRenderer { get; }
         public ICamera2DProvider Camera2DProvider { get; }
@@ -42,7 +43,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             IndicesBuffersFiller = indicesBuffersFiller ?? throw new ArgumentNullException(nameof(indicesBuffersFiller));
             Camera2DProvider = camera2DProvider ?? throw new ArgumentNullException(nameof(camera2DProvider));
 
-            _drawContext = new DrawContext(SpriteBatch, Camera2DProvider);
+            _drawContext = new CameraBasedDrawContext(new SpriteBatchDrawContext(SpriteBatch), Camera2DProvider);
             RenderContext = new RenderContext(GraphicsDevice, IndicesBuffersFiller);
             
             GeometryRenderer = new GeometryRenderer(RenderContext);

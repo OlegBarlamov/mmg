@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using MonoGameExtensions.Geometry;
 
 namespace FrameworkSDK.MonoGame.Graphics.Camera2D
 {
@@ -6,41 +7,25 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera2D
     {
         public static Rectangle Viewport(this ICamera2D camera)
         {
-            return new Rectangle((int)camera.GetPosition().X, (int)camera.GetPosition().Y, (int)camera.GetSize().X, (int)camera.GetSize().Y);
+            var position = camera.GetPosition();
+            var size = camera.GetSize();
+            return new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
         }
 
-        public static Vector2? ToDisplay(this ICamera2D camera, Vector2? point)
+        public static void SetViewport(this IMutableCamera2D camera, Rectangle viewport)
         {
-            if (!point.HasValue)
-            {
-                return null;
-            }
-
-            return camera.ToDisplay(point.Value);
+            camera.SetPosition(new Vector2(viewport.X, viewport.Y));
+            camera.SetSize(new Vector2(viewport.Width, viewport.Height));
         }
-        
-        public static Point ToDisplay(this ICamera2D camera, Point point)
+
+        public static Vector2? ToDisplay(this ICamera2D camera, Vector2? worldPoint)
         {
-            var displayPoint = camera.ToDisplay(new Vector2(point.X, point.Y));
-            return new Point((int) displayPoint.X, (int) displayPoint.Y);
+            return worldPoint.HasValue ? (Vector2?) camera.ToDisplay(worldPoint.Value) : null;
         }
         
-        public static Rectangle ToDisplay(this ICamera2D camera, Rectangle rectangle)
+        public static Rectangle? ToDisplay(this ICamera2D camera, RectangleF? worldRectangle)
         {
-            return new Rectangle(
-                camera.ToDisplay(new Point(rectangle.Left, rectangle.Top)),
-                camera.ToDisplay(new Point(rectangle.Width, rectangle.Height))
-                );
-        }
-
-        public static Rectangle? ToDisplay(this ICamera2D camera, Rectangle? rectangle)
-        {
-            if (!rectangle.HasValue)
-            {
-                return null;
-            }
-
-            return camera.ToDisplay(rectangle.Value);
+            return worldRectangle.HasValue ? (Rectangle?) camera.ToDisplay(worldRectangle.Value) : null;
         }
     }
 }

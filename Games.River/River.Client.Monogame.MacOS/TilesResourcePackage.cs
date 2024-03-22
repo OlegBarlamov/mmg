@@ -10,7 +10,7 @@ namespace River.Client.MacOS
         public Texture2D WaterTexture { get; private set; }
         
         public Texture2D ArrowsTexture { get; private set; }
-        
+
         protected override void Load(IContentLoaderApi content)
         {
             GroundTexture = content.DiffuseColor(Color.Brown);

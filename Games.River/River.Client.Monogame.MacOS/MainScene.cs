@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.SceneComponents;
+using FrameworkSDK.MonoGame.SceneComponents.Controllers;
+using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using NetExtensions.Geometry;
 
 namespace River.Client.MacOS
 {
@@ -13,24 +18,43 @@ namespace River.Client.MacOS
     {
         private RiverMap Map { get; }
         private IInputService InputService { get; }
+        public IDisplayService DisplayService { get; }
+        public ICamera2DService Camera2DService { get; }
+        public TilesResourcePackage TilesResourcePackage { get; }
 
         private readonly Dictionary<MapTile, WaterController> _waterControllers = new Dictionary<MapTile, WaterController>();
         private readonly List<Tuple<MapTile, MapTile>> _delayedMapCellTypeChangedEvents = new List<Tuple<MapTile, MapTile>>();
         private bool _isUpdateInProgress;
 
-        public MainScene([NotNull] RiverMap map, [NotNull] IInputService inputService)
+        private SimpleCamera2D _camera2D;
+        
+        public MainScene([NotNull] RiverMap map, [NotNull] IInputService inputService, [NotNull] IDisplayService displayService,
+            [NotNull] ICamera2DService camera2DService, [NotNull] TilesResourcePackage tilesResourcePackage)
         {
             Map = map ?? throw new ArgumentNullException(nameof(map));
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
+            DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
+            Camera2DService = camera2DService ?? throw new ArgumentNullException(nameof(camera2DService));
+            TilesResourcePackage = tilesResourcePackage ?? throw new ArgumentNullException(nameof(tilesResourcePackage));
 
-            AddView(map);
+
             
+            AddView(map);
+
             Map.MapCellTypeChanged += MapOnMapCellTypeChanged;
         }
 
         protected override void OnFirstOpening()
         {
             base.OnFirstOpening();
+            
+            _camera2D = new SimpleCamera2D(new SizeInt(DisplayService.PreferredBackBufferWidth, DisplayService.PreferredBackBufferHeight),
+                new Vector2(Map.Width, Map.Height));
+             _camera2D.SetPosition(-new Vector2(Map.Width, Map.Height));
+             Camera2DService.SetActiveCamera(_camera2D);
+             
+            AddController(new KeyboardCamera2DController(InputService, _camera2D,
+                new KeyboardCamera2DController.KeysMap()));
             
             Map.ReplaceMapTile(new WaterMapTile(new Point(0, 10), new Vector2(1, 0), 1));
             Map.ReplaceMapTile(new GroundMapTile(new Point(3, 10)));

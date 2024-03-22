@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Annotations;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets
@@ -18,7 +19,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets
 
         private readonly IRenderTargetWrapper _defaultGraphicsPipelineRenderTarget;
 
-        internal GraphicsPipeline2DDrawingPreset([NotNull] IGraphicsPipelineBuilder builder, [NotNull] BeginDrawConfig beginDrawConfig)
+        internal GraphicsPipeline2DDrawingPreset([NotNull] IGraphicsPipelineBuilder builder, [NotNull] BeginDrawConfig beginDrawConfig, Color clearColor)
             : base(builder)
         {
             BeginDrawConfig = beginDrawConfig ?? throw new ArgumentNullException(nameof(beginDrawConfig));
@@ -30,6 +31,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets
 
             Builder
                 .SetRenderTarget(_defaultGraphicsPipelineRenderTarget.RenderTarget)
+                .Clear(clearColor)
                 .BeginDraw(BeginDrawConfig)
                 .DrawComponents(PipelineActions.DrawComponents)
                 .DrawComponents(PipelineActions.DrawDebugComponents)

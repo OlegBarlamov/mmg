@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
-using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions.Geometry;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics
@@ -22,7 +22,7 @@ namespace FrameworkSDK.MonoGame.Graphics
 	    /// <param name="layerDepth">An optional depth of the layer of this sprite. 0 by default.</param>
 	    /// <exception cref="T:System.InvalidOperationException">Throwns if both <paramref name="position" /> and <paramref name="destinationRectangle" /> been used.</exception>
 	    /// <remarks>This overload uses optional parameters. This overload requires only one of <paramref name="position" /> and <paramref name="destinationRectangle" /> been used.</remarks>
-	    void Draw(Texture2D texture, Vector2? position = null, Rectangle? destinationRectangle = null,
+	    void Draw(Texture2D texture, Vector2? position = null, RectangleF? destinationRectangle = null,
 		    Rectangle? sourceRectangle = null, Vector2? origin = null, float rotation = 0.0f, Vector2? scale = null,
 		    Color? color = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0.0f);
 
@@ -62,7 +62,7 @@ namespace FrameworkSDK.MonoGame.Graphics
 	    /// <param name="origin">Center of the rotation. 0,0 by default.</param>
 	    /// <param name="effects">Modificators for drawing. Can be combined.</param>
 	    /// <param name="layerDepth">A depth of the layer of this sprite.</param>
-	    void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color,
+	    void Draw(Texture2D texture, RectangleF destinationRectangle, Rectangle? sourceRectangle, Color color,
 		    float rotation, Vector2 origin, SpriteEffects effects, float layerDepth);
 
 	    /// <summary>Submit a sprite for drawing in the current batch.</summary>
@@ -77,7 +77,7 @@ namespace FrameworkSDK.MonoGame.Graphics
 	    /// <param name="destinationRectangle">The drawing bounds on screen.</param>
 	    /// <param name="sourceRectangle">An optional region on the texture which will be rendered. If null - draws full texture.</param>
 	    /// <param name="color">A color mask.</param>
-	    void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color);
+	    void Draw(Texture2D texture, RectangleF destinationRectangle, Rectangle? sourceRectangle, Color color);
 
 	    /// <summary>Submit a sprite for drawing in the current batch.</summary>
 	    /// <param name="texture">A texture.</param>
@@ -89,7 +89,7 @@ namespace FrameworkSDK.MonoGame.Graphics
 	    /// <param name="texture">A texture.</param>
 	    /// <param name="destinationRectangle">The drawing bounds on screen.</param>
 	    /// <param name="color">A color mask.</param>
-	    void Draw(Texture2D texture, Rectangle destinationRectangle, Color color);
+	    void Draw(Texture2D texture, RectangleF destinationRectangle, Color color);
 
 	    /// <summary>
 	    /// Submit a text string of sprites for drawing in the current batch.

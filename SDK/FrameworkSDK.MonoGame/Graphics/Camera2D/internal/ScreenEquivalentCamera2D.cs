@@ -2,6 +2,7 @@ using System;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using MonoGameExtensions.Geometry;
 
 namespace FrameworkSDK.MonoGame.Graphics.Camera2D
 {
@@ -45,9 +46,19 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera2D
             return _size;
         }
 
+        public Rectangle ToDisplay(RectangleF worldRectangle)
+        {
+            return worldRectangle.ToRectangle();
+        }
+
         public Vector2 ToDisplay(Vector2 worldPoint)
         {
             return worldPoint;
+        }
+
+        public RectangleF FromDisplay(Rectangle displayRectangle)
+        {
+            return displayRectangle.ToRectangleF();
         }
 
         public Vector2 FromDisplay(Vector2 displayPoint)
