@@ -23,6 +23,7 @@ namespace Template.MacOs
                 .UseGameParameters(gameParameters)
                 .UseMvc()
                 .PreloadResourcePackage<ColorsTexturesPackage>()
+                .PreloadResourcePackage<GameResourcePackage>()
                 .UseGameComponents()
                 .UseInGameConsole()
                 .UseConsoleMessagesProvider(loggerConsoleMessageProvider)

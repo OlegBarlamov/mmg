@@ -7,6 +7,7 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
 {
     internal class TextureGeneratorServicePublic : ITextureGeneratorService
     {
+        public ITexturePrimitivesGenerator Primitives => TextureGeneratorApi.Primitives;
         private ITextureGeneratorApi TextureGeneratorApi { get; }
         private IResourceReferencesService ResourceReferencesService { get; }
 
@@ -44,7 +45,7 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
             CountTexture(texture);
             return texture;
         }
-        
+
         private void CountTexture(Texture2D texture)
         {
             ResourceReferencesService.AddPackageless(texture);

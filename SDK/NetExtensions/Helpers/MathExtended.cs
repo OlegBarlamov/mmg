@@ -207,5 +207,20 @@ namespace NetExtensions.Helpers
 		{
 			return (int)Math.Round(value);
 		}
+
+		public static int Sqr(int value)
+		{
+			return value * value;
+		}
+		
+		public static float Sqr(float value)
+		{
+			return value * value;
+		}
+		
+		public static double Sqr(double value)
+		{
+			return value * value;
+		}
 	}
 }

@@ -5,5 +5,7 @@ namespace FrameworkSDK.MonoGame.InputManagement
         IKeyboardProvider Keyboard { get; }
         
         IMouseProvider Mouse { get; }
+        
+        IGamepadProvider Gamepads { get; }
     }
 }

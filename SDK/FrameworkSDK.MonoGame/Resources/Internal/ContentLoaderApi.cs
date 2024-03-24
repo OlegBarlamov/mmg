@@ -10,6 +10,7 @@ namespace FrameworkSDK.MonoGame.Resources
 {
     internal class ContentLoaderApi : IContentLoaderApi
     {
+        public ITexturePrimitivesGenerator Primitives => TextureGeneratorApi.Primitives;
         private IContentContainer Container { get; }
         private ITextureGeneratorApi TextureGeneratorApi { get; }
         private IRenderTargetsFactory RenderTargetsFactory { get; }

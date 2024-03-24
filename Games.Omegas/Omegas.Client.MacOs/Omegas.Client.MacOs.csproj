@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameResourcePackage.cs" />
+    <Compile Include="MainScene.cs" />
+    <Compile Include="Models\CharacterData.cs" />
     <Compile Include="OmegasGameFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,6 +130,9 @@
     <None Include="__Content\Content.mgcb">
       <Link>Content\Content.mgcb</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets" Condition="Exists('..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets')" />

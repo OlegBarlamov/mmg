@@ -5,6 +5,6 @@ namespace Template.MacOs
 {
     public class OmegasGameApp : GameApp
     {
-        protected override SceneBase CurrentScene { get; } = new EmptyScene();
+        protected override SceneBase CurrentScene { get; } = new MainScene();
     }
 }

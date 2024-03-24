@@ -12,5 +12,7 @@ namespace FrameworkSDK.MonoGame.Resources
             float offset = 0);
 
         Texture2D HeightMap(int[,] heights, int minValue, int maxValue, Color minValueColor, Color maxValueColor);
+        
+        ITexturePrimitivesGenerator Primitives { get; }
     }
 }

@@ -10,11 +10,13 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
     [UsedImplicitly]
     internal class TextureGeneratorApi : ITextureGeneratorApi
     {
+        public ITexturePrimitivesGenerator Primitives { get; }
         private IGameHeartServices GameHeartServices { get; }
 
         public TextureGeneratorApi([NotNull] IGameHeartServices gameHeartServices)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
+            Primitives = new TexturePrimitivesGenerator(gameHeartServices);
         }
 
         public Texture2D EmptyTexture(int width, int height)

@@ -199,9 +199,9 @@ namespace FrameworkSDK.MonoGame
 		    
 		    Activated -= OnAppActivated;
 		    Deactivated -= OnAppDeactivated;
-		    
-		    ResourceLoading?.Invoke();
-		    ResourceUnloading?.Invoke();
+
+		    ResourceLoading = null;
+		    ResourceUnloading = null;
 		    
 		    Dispose(true);
 
