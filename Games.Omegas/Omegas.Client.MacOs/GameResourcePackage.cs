@@ -10,7 +10,7 @@ namespace Template.MacOs
         
         protected override void Load(IContentLoaderApi content)
         {
-            Circle = content.Primitives.Circle(100, Color.Red, Color.Black, 1);
+            Circle = content.Primitives.Circle(100, Color.White);
         }
     }
 }

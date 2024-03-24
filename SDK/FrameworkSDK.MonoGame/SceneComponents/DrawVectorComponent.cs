@@ -68,7 +68,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents
         {
             var length = _vector.Length();
             
-            MainLineRectangle = new RectangleF(_position, new Vector2(length, _thickness));
+            MainLineRectangle = RectangleF.FromTopLeftAndSize(_position, new Vector2(length, _thickness));
             MainRectangleRotation = - (float) Math.Atan2(_vector.Y, _vector.X);
             
             // LeftRectangle = new Rectangle((_position + _vector).ToPoint(), new Point((int)(length * 0.5f), (int)_thickness));

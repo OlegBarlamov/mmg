@@ -1,5 +1,6 @@
 using System;
 using FrameworkSDK.MonoGame.Graphics;
+using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -11,21 +12,88 @@ namespace Template.MacOs.Models
     public class CharacterData
     {
         public Vector2 Position { get; set; } = new Vector2(50, 50);
+        
+        public Vector2 HeartRelativePosition { get; set; } = Vector2.Zero;
+
+        public float HeartSize = 10;
+
+        public Color Color { get; } = Color.Red;
+
+        public Color HeartColor { get; } = Color.DarkRed;
 
         public float Size { get; set; } = 50;
+
+        public PlayerIndex PlayerIndex { get; } = PlayerIndex.One;
+    }
+
+    public class CharacterDrawData
+    {
+        public RectangleF BoundingBox { get; set; }
+        
+        public RectangleF HeartBoundingBox { get; set; }
     }
 
     public class CharacterController : Controller<CharacterData>
     {
+        public CharacterDrawData DrawData { get; private set; } = new CharacterDrawData();
+        
+        private IInputService InputService { get; }
+
+        private IPlayerGamepadProvider _gamepadProvider;
+
+        public CharacterController([NotNull] IInputService inputService)
+        {
+            InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
+        }
+        
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+            
+            if (_gamepadProvider.IsConnected)
+            {
+                var thumbSticksLeft = _gamepadProvider.ThumbSticks.Left;
+                if (thumbSticksLeft != Vector2.Zero)
+                {
+                    thumbSticksLeft.Normalize();
+
+                    DataModel.HeartRelativePosition = thumbSticksLeft * (DataModel.Size - DataModel.HeartSize / 2);
+                    UpdateHeartBoundingBox();
+                }
+                else
+                {
+                    if (DataModel.HeartRelativePosition != Vector2.Zero)
+                    {
+                        DataModel.HeartRelativePosition = Vector2.Zero;
+                        UpdateHeartBoundingBox();
+                    }
+                }
+            }
         }
 
         protected override void OnAttached(SceneBase scene)
         {
             base.OnAttached(scene);
+
+            _gamepadProvider = InputService.Gamepads.GetGamepad(DataModel.PlayerIndex);
+            
+            UpdateBoundingBox();
+            UpdateHeartBoundingBox();
         }
+
+        private void UpdateBoundingBox()
+        {
+            DrawData.BoundingBox = RectangleF.FromCenterAndSize(
+                DataModel.Position,
+                DataModel.Size);
+        } 
+        
+        private void UpdateHeartBoundingBox()
+        {
+            DrawData.HeartBoundingBox = RectangleF.FromCenterAndSize(
+                DataModel.Position + DataModel.HeartRelativePosition,
+                DataModel.HeartSize);
+        } 
     }
 
     public class CharacterView : View<CharacterData, CharacterController>
@@ -42,20 +110,23 @@ namespace Template.MacOs.Models
         protected override void OnAttached(SceneBase scene)
         {
             base.OnAttached(scene);
-
+            
             _texture = ResourcePackage.Circle;
         }
 
         public override void Draw(GameTime gameTime, IDrawContext context)
         {
             base.Draw(gameTime, context);
-            
+
             context.Draw(
                 _texture,
-                null,
-                new RectangleF(
-                    DataModel.Position - new Vector2(DataModel.Size),
-                    DataModel.Position + new Vector2(DataModel.Size))
+                Controller.DrawData.BoundingBox,
+                DataModel.Color
+            );
+
+            context.Draw(_texture,
+                Controller.DrawData.HeartBoundingBox,
+                DataModel.HeartColor
             );
         }
     }

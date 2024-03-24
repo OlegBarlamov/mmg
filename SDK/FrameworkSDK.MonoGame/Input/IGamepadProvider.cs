@@ -15,5 +15,10 @@ namespace FrameworkSDK.MonoGame.InputManagement
         IPlayerGamepadProvider GetGamepad(int index);
         
         GamePadDeadZone GamepadDeadZone { get; set; }
+
+        void ActivateEmulator(IGamepadEmulator emulator);
+
+        void DeactivateEmulator(IGamepadEmulator emulator);
+
     }
 }

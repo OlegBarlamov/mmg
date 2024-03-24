@@ -93,18 +93,30 @@ namespace MonoGameExtensions.Geometry
       Height = height;
     }
 
-    public RectangleF(Vector2 location, Vector2 size)
-    {
-      X = location.X;
-      Y = location.Y;
-
-      Width = size.X;
-      Height = size.Y;
-    }
-
     public bool Intersects(RectangleF value)
     {
       return value.Left < this.Right && this.Left < value.Right && value.Top < this.Bottom && this.Top < value.Bottom;
+    }
+
+    public static RectangleF FromTopLeftAndSize(Vector2 topLeft, Vector2 size)
+    {
+      return new RectangleF(topLeft.X, topLeft.Y, size.X, size.Y);
+    }
+
+    public static RectangleF FromCenterAndSize(Vector2 center, Vector2 size)
+    {
+      return FromTopLeftBottomDown(center - size, center + size);
+    }
+    
+    public static RectangleF FromCenterAndSize(Vector2 center, float size)
+    {
+      var vectorSize = new Vector2(size);
+      return FromTopLeftBottomDown(center - vectorSize, center + vectorSize);
+    }
+
+    public static RectangleF FromTopLeftBottomDown(Vector2 topLeft, Vector2 bottomDown)
+    {
+      return new RectangleF(topLeft.X, topLeft.Y, bottomDown.X - topLeft.X, bottomDown.Y - topLeft.Y);
     }
     
     public static RectangleF Intersect(RectangleF value1, RectangleF value2)

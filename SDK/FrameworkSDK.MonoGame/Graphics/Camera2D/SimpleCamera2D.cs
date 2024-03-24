@@ -43,7 +43,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Camera2D
 
         public RectangleF FromDisplay(Rectangle displayRectangle)
         {
-            return new RectangleF(FromDisplay(displayRectangle.Location.ToVector2()), displayRectangle.Size.ToVector2() / DisplaySize * Size);
+            return RectangleF.FromTopLeftAndSize(FromDisplay(displayRectangle.Location.ToVector2()), displayRectangle.Size.ToVector2() / DisplaySize * Size);
         }
 
         public Vector2 FromDisplay(Vector2 displayPoint)

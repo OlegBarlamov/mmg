@@ -1,2 +1,3 @@
 ﻿- Module Logger call dispose in all using
-- UpdateBoundingBox if Wold changed. Looks like it needs to have two BoundingBoxes: Vertices layer + Mesh layer (matrices applyed) 
+- UpdateBoundingBox if Wold changed. Looks like it needs to have two BoundingBoxes: Vertices layer + Mesh layer (matrices applyed)
+- Make possible to use all the SDK capabilities from the GameApp constructor. For doing this, just Gameheart class should create GameApp instance in LoadContent method 
