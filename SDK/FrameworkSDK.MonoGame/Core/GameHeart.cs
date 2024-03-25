@@ -28,7 +28,7 @@ namespace FrameworkSDK.MonoGame
         [NotNull] private IDebugInfoService DebugInfoService { get; }
 
         [NotNull] private AppStateService AppStateService { get; }
-        
+
         public GameHeart(
 	        [NotNull] GameApp gameApp,
 	        [NotNull] IFrameworkLogger logger,
@@ -39,7 +39,7 @@ namespace FrameworkSDK.MonoGame
 		{
 			if (gameApp == null) throw new ArgumentNullException(nameof(gameApp));
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
-
+			
 			Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 		    GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
 		    DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));

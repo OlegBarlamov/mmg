@@ -39,7 +39,7 @@ namespace Template.MacOs.Models
         
         private IInputService InputService { get; }
 
-        private IPlayerGamepadProvider _gamepadProvider;
+        private IPlayerGamePadProvider _gamePadProvider;
 
         public CharacterController([NotNull] IInputService inputService)
         {
@@ -50,14 +50,14 @@ namespace Template.MacOs.Models
         {
             base.Update(gameTime);
             
-            if (_gamepadProvider.IsConnected)
+            if (_gamePadProvider.IsConnected)
             {
-                var thumbSticksLeft = _gamepadProvider.ThumbSticks.Left;
+                var thumbSticksLeft = _gamePadProvider.ThumbSticks.Left;
                 if (thumbSticksLeft != Vector2.Zero)
                 {
                     thumbSticksLeft.Normalize();
 
-                    DataModel.HeartRelativePosition = thumbSticksLeft * (DataModel.Size - DataModel.HeartSize / 2);
+                    DataModel.HeartRelativePosition = thumbSticksLeft * new Vector2(1, -1) * (DataModel.Size - DataModel.HeartSize / 2);
                     UpdateHeartBoundingBox();
                 }
                 else
@@ -75,7 +75,7 @@ namespace Template.MacOs.Models
         {
             base.OnAttached(scene);
 
-            _gamepadProvider = InputService.Gamepads.GetGamepad(DataModel.PlayerIndex);
+            _gamePadProvider = InputService.GamePads.GetGamePad(DataModel.PlayerIndex);
             
             UpdateBoundingBox();
             UpdateHeartBoundingBox();

@@ -1,79 +1,45 @@
 using System;
+using FrameworkSDK.Common;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace FrameworkSDK.MonoGame.InputManagement.Emulators
 {
-    public class SimpleKeyboardGamepadEmulator : IGamepadEmulator
+    public class SimpleKeyboardGamepadEmulator : IGamePadDataSource
     {
-        public PlayerIndex PlayerIndex { get; }
         public IKeyboardProvider KeyboardProvider { get; }
-        public bool IsConnected { get; } = true;
         
-        public GamePadState Current { get; }
-        public GamePadState Previous { get; }
-        public GamePadThumbSticks ThumbSticks => _thumbSticks;
-        public GamePadTriggers Triggers { get; }
-        public bool IsLeftTriggerPressed { get; }
-        public bool IsRightTriggerPressed { get; }
-
-        private GamePadThumbSticks _thumbSticks = new GamePadThumbSticks();
-
-        public SimpleKeyboardGamepadEmulator(PlayerIndex playerIndex, [NotNull] IKeyboardProvider keyboardProvider)
+        private IGamePadDataSourceMeta _meta = new CustomGamePadDataSourceMeta
         {
-            PlayerIndex = playerIndex;
+            DisplayName = nameof(SimpleKeyboardGamepadEmulator),
+            GamePadType = GamePadType.Unknown,
+            Identifier = Hash.Generate(HashType.SmallGuid).ToString()
+        }; 
+
+        public SimpleKeyboardGamepadEmulator([NotNull] IKeyboardProvider keyboardProvider)
+        {
             KeyboardProvider = keyboardProvider ?? throw new ArgumentNullException(nameof(keyboardProvider));
         }
         
-        public bool IsButtonDown(Buttons button)
+        public void Dispose()
         {
-            throw new System.NotImplementedException();
+            
         }
 
-        public bool IsButtonUp(Buttons button)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsButtonPressedOnce(Buttons button)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsButtonReleasedOnce(Buttons button)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public GamePadCapabilities GetGamePadCapabilities()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public PlayerIndex GetIndex()
-        {
-            return PlayerIndex;
-        }
-
-        public bool SetVibration(float leftMotor, float rightMotor)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Update(GameTime gameTime)
+        public GamePadState GetState()
         {
             var leftStick = new Vector2();
             var rightStick = new Vector2();
             
             if (KeyboardProvider.Key(Keys.Down))
             {
-                leftStick += new Vector2(0, 1);
+                leftStick += new Vector2(0, -1);
             }
             
             if (KeyboardProvider.Key(Keys.Up))
             {
-                leftStick += new Vector2(0, -1);
+                leftStick += new Vector2(0, 1);
             }
             
             if (KeyboardProvider.Key(Keys.Right))
@@ -85,8 +51,27 @@ namespace FrameworkSDK.MonoGame.InputManagement.Emulators
             {
                 leftStick += new Vector2(-1, 0);
             }
+
+            var leftTrigger = 0f;
+            var rightTrigger = 0f;
+
+            var buttons = new Buttons();
+
+            var state = new GamePadState(leftStick, rightStick, leftTrigger, rightTrigger, buttons);
             
-            _thumbSticks = new GamePadThumbSticks(leftStick, rightStick);
+            
+
+            return state;
+        }
+
+        public IGamePadDataSourceMeta GetMeta()
+        {
+            return _meta;
+        }
+
+        public bool SetVibration(float leftMotor, float rightMotor)
+        {
+            return false;
         }
     }
 }

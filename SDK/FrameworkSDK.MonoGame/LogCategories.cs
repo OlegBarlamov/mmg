@@ -8,5 +8,6 @@ namespace FrameworkSDK.MonoGame
         public static string Rendering { get; } = "Rendering";
         public static string Cameras { get; } = "Cameras";
         public static string Operations { get; } = "Operations";
+        public static string Input { get; } = "Input";
     }
 }

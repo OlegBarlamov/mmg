@@ -23,9 +23,7 @@ namespace Template.MacOs
         protected override void OnOpened()
         {
             base.OnOpened();
-            
-            InputService.Gamepads.ActivateEmulator(new SimpleKeyboardGamepadEmulator(PlayerIndex.One, InputService.Keyboard));
-            
+
             AddController(CharacterData);
         }
 

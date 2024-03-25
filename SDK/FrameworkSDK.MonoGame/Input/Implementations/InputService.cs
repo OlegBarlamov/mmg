@@ -1,4 +1,7 @@
+using System;
+using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Basic;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.InputManagement.Implementations
@@ -7,17 +10,24 @@ namespace FrameworkSDK.MonoGame.InputManagement.Implementations
     {
         public IKeyboardProvider Keyboard => _keyboardProvider;
         public IMouseProvider Mouse => _mouseProvider;
-        public IGamepadProvider Gamepads => _gamepadProvider;
+        public IGamePadProvider GamePads => _gamePadProvider;
 
         private readonly KeyboardProvider _keyboardProvider = new KeyboardProvider();
         private readonly MouseProvider _mouseProvider = new MouseProvider();
-        private readonly GamepadProvider _gamepadProvider = new GamepadProvider();
+        private readonly GamePadProvider _gamePadProvider;
+
+        public InputService([NotNull] IFrameworkLogger logger)
+        {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            
+            _gamePadProvider = new GamePadProvider(logger);
+        }
         
         public void Update(GameTime gameTime)
         {
             _keyboardProvider.Update(gameTime);
             _mouseProvider.Update(gameTime);
-            _gamepadProvider.Update(gameTime);
+            _gamePadProvider.Update(gameTime);
         }
     }
 }

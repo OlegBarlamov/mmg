@@ -1,8 +1,10 @@
 using System;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.InputManagement;
+using FrameworkSDK.MonoGame.InputManagement.Emulators;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
+using Microsoft.Xna.Framework;
 
 namespace Template.MacOs
 {
@@ -16,5 +18,13 @@ namespace Template.MacOs
             CurrentScene = new MainScene(InputService);
         }
         protected override SceneBase CurrentScene { get; }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            
+            InputService.GamePads.ActivateEmulator(PlayerIndex.One, new SimpleKeyboardGamepadEmulator(InputService.Keyboard));
+            InputService.GamePads.EnableGamePads();
+        }
     }
 }

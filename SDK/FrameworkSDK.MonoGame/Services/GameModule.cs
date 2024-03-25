@@ -48,11 +48,10 @@ namespace FrameworkSDK.MonoGame.Services
             serviceRegistrator.RegisterType<IMvcStrategyService, EmptyMvcStrategyService>();
 
             //Input
-            var inputService = new InputService();
-            var inputManager = new InputManager(inputService);
-            serviceRegistrator.RegisterInstance<IInputService>(inputService);
-            serviceRegistrator.RegisterInstance<IInputManager>(inputManager);
-            
+            serviceRegistrator.RegisterType<InputService, InputService>();
+            serviceRegistrator.RegisterFactory(typeof(IInputService), (locator, type) => locator.Resolve(typeof(InputService)));
+            serviceRegistrator.RegisterType<IInputManager, InputManager>();
+
             //Camera
             serviceRegistrator.RegisterType<DefaultCamera3DService, DefaultCamera3DService>();
             serviceRegistrator.RegisterFactory(typeof(ICamera3DService), (locator, type) => locator.Resolve(typeof(DefaultCamera3DService)));

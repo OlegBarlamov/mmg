@@ -1,12 +1,16 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace FrameworkSDK.MonoGame.InputManagement
 {
-    public interface IPlayerGamepadProvider
+    public interface IPlayerGamePadProvider : IDisposable
     {
-        bool IsConnected { get; }
+        event Action<GamePadEventHandlerArgs> Connected;
+        event Action<GamePadEventHandlerArgs> Disconnected;
         
+        bool IsConnected { get; }
+
         GamePadState Current { get; }
         GamePadState Previous { get; }
         
@@ -25,9 +29,9 @@ namespace FrameworkSDK.MonoGame.InputManagement
 
         bool IsButtonReleasedOnce(Buttons button);
 
-        GamePadCapabilities GetGamePadCapabilities();
+        IGamePadDataSourceMeta GetGamePadMeta();
 
-        PlayerIndex GetIndex();
+        int GetIndex();
 
         bool SetVibration(float leftMotor, float rightMotor);
     }
