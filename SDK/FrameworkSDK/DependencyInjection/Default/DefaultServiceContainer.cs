@@ -100,6 +100,11 @@ namespace FrameworkSDK.DependencyInjection.Default
             };
 		}
 
+		public bool ContainsRegistrationForType(Type type)
+		{
+			return RegistrationsDomain.ContainsRegistrationForType(type);
+		}
+
 		public void Dispose()
 		{
 			CheckDisposed();

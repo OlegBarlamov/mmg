@@ -13,5 +13,7 @@ namespace FrameworkSDK.DependencyInjection
         /// Как и при уничтожении родительского, дочерние регистрации продолжают жить.
         /// </summary>
 	    [NotNull] IFrameworkServiceContainer CreateScoped(string name = null);
+
+        bool ContainsRegistrationForType(Type type);
     }
 }
