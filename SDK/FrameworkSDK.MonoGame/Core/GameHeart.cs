@@ -1,11 +1,14 @@
 ﻿using System;
+using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
+using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Exceptions;
 
 namespace FrameworkSDK.MonoGame
 {
@@ -17,7 +20,7 @@ namespace FrameworkSDK.MonoGame
 		
 	    [NotNull] private GraphicsDeviceManager GraphicsDeviceManager { get; }
 
-        [NotNull] private IGameHost GameApp { get; }
+        [NotNull] private IGameHost GameApp { get; set; }
 
         [NotNull] private ModuleLogger Logger { get; }
 
@@ -30,27 +33,22 @@ namespace FrameworkSDK.MonoGame
         [NotNull] private AppStateService AppStateService { get; }
 
         public GameHeart(
-	        [NotNull] GameApp gameApp,
 	        [NotNull] IFrameworkLogger logger,
 	        [NotNull] IGameParameters parameters,
 	        [NotNull] IGameHeartServices gameHeartServices,
-	        [NotNull] IAppStateService appStateService,
+	        [NotNull] AppStateService appStateService,
 	        [NotNull] IDebugInfoService debugInfoService)
 		{
-			if (gameApp == null) throw new ArgumentNullException(nameof(gameApp));
 			if (logger == null) throw new ArgumentNullException(nameof(logger));
 			
 			Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
 		    GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
 		    DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
-		    AppStateService = (AppStateService) appStateService;
+		    AppStateService = appStateService ?? throw new ArgumentNullException(nameof(appStateService));
 		    
 		    GraphicsDeviceManager = new GraphicsDeviceManager(this);
 		    GraphicsDeviceManager.PreparingDeviceSettings += GraphicsDeviceManagerOnPreparingDeviceSettings;
-		    GameApp = gameApp;
 
-		    GameApp.DisposedEvent += GameHostOnDisposed;
-		    
 		    Logger = new ModuleLogger(logger, LogCategories.GameCore);
 
 		    Activated += OnAppActivated;
@@ -60,12 +58,6 @@ namespace FrameworkSDK.MonoGame
 		    SetupParameters(Parameters);
 		}
 
-        private void GraphicsDeviceManagerOnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
-        {
-	        GraphicsDeviceManager.PreparingDeviceSettings -= GraphicsDeviceManagerOnPreparingDeviceSettings;
-	        e.GraphicsDeviceInformation.GraphicsProfile = Parameters.GraphicsProfile;
-        }
-
         protected override void Initialize()
 		{
 		    Logger.Info("Initialize...");
@@ -74,7 +66,11 @@ namespace FrameworkSDK.MonoGame
 		    try
 		    {
 			    ((GameHeartServicesHolder)GameHeartServices).Initialize(this, GraphicsDeviceManager, Content, Services);
-			    
+
+			    GameApp = CreateGameAppInstance();
+			    GameApp.DisposedEvent += GameHostOnDisposed;
+
+			    // Loading content
 			    base.Initialize();
 			    
 			    GameApp.OnInitialize();
@@ -98,7 +94,7 @@ namespace FrameworkSDK.MonoGame
 			    ResourceLoading?.Invoke();
 		    
 			    base.LoadContent();
-            
+			    
 			    GameApp.OnLoadContent();
 
 			    AppStateService.CoreResourceLoaded = true;
@@ -107,6 +103,9 @@ namespace FrameworkSDK.MonoGame
 		    {
 			    AppStateService.CoreResourceLoading = false;
 		    }
+
+		    Logger.Info("Initialize delayed components...");
+		    ProcessDelayedOperationOnGameReady();
 		}
 
 		protected override void UnloadContent()
@@ -172,6 +171,21 @@ namespace FrameworkSDK.MonoGame
 		    }
 	    }
 
+	    private IGameHost CreateGameAppInstance()
+	    {
+		    try
+		    {
+			    return AppContext.ServiceLocator.Resolve<GameApp>();
+		    }
+		    catch (Exception e)
+		    {
+			    if (e.FindInnerException<SceneNotInitializedException>() != null)
+				    throw new SceneNotInitializedException("Attempt adding scene components in a scene constructor. Use Initialize function instead", e);
+			    
+			    throw new FrameworkMonoGameException("Error while creating game host instance", e);
+		    }
+	    }
+
 	    private void SetupParameters([NotNull] IGameParameters parameters)
 	    {
 	        Logger.Info("Setup gameHeart parameters...");
@@ -209,6 +223,24 @@ namespace FrameworkSDK.MonoGame
 
 		    Logger.Dispose();
 	    }
+	    
+	    private void ProcessDelayedOperationOnGameReady()
+	    {
+		    while (!AppStateService.DelayedOnAppReadyActions.IsEmpty)
+		    {
+			    if (AppStateService.DelayedOnAppReadyActions.TryDequeue(out var action))
+			    {
+				    try
+				    {
+					    action();
+				    }
+				    catch (Exception e)
+				    {
+					    Logger.Error("Error while processing a delayed action on game ready", e);
+				    }
+			    }
+		    }
+	    }
 
 	    private void ProcessAppStateDelayedUpdateActions(GameTime gameTime)
 	    {
@@ -222,8 +254,7 @@ namespace FrameworkSDK.MonoGame
 				    }
 				    catch (Exception e)
 				    {
-					    //TODO
-					    throw;
+					    Logger.Error("Error while processing a delayed update action", e);
 				    }
 			    }
 		    }
@@ -241,13 +272,18 @@ namespace FrameworkSDK.MonoGame
 				    }
 				    catch (Exception e)
 				    {
-					    //TODO
-					    throw;
+					    Logger.Error("Error while processing a delayed draw action", e);
 				    }
 			    }
 		    }
 	    }
 
+	    private void GraphicsDeviceManagerOnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+	    {
+		    GraphicsDeviceManager.PreparingDeviceSettings -= GraphicsDeviceManagerOnPreparingDeviceSettings;
+		    e.GraphicsDeviceInformation.GraphicsProfile = Parameters.GraphicsProfile;
+	    }
+	    
 	    private void OnAppDeactivated(object sender, EventArgs e)
 	    {
 		    AppStateService.IsAppFocused = IsActive;

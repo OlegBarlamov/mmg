@@ -6,10 +6,11 @@ using Microsoft.Xna.Framework;
 namespace FrameworkSDK.MonoGame.Services.Implementations
 {
     [UsedImplicitly]
-    internal class AppStateService : IAppStateService
+    internal class AppStateService : IAppStateService, IDelayedOperationsQueues
     {
         public ConcurrentQueue<Action<GameTime>> DelayedUpdateActions { get; } = new ConcurrentQueue<Action<GameTime>>();
         public ConcurrentQueue<Action<GameTime>> DelayedDrawActions { get; } = new ConcurrentQueue<Action<GameTime>>();
+        public ConcurrentQueue<Action> DelayedOnAppReadyActions { get; } = new ConcurrentQueue<Action>();
         
         public bool IsRunning { get; set; }
         public bool IsTerminating { get; set; }
@@ -33,6 +34,12 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             DelayedDrawActions.Enqueue(action);
+        }
+
+        public void QueueOnAppReady([NotNull] Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            DelayedOnAppReadyActions.Enqueue(action);
         }
     }
 }

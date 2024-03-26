@@ -1,13 +1,12 @@
 using System;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.InputManagement;
-using FrameworkSDK.MonoGame.InputManagement.Emulators;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using Template.MacOs.Models;
+using Omegas.Client.MacOs.Models;
 
-namespace Template.MacOs
+namespace Omegas.Client.MacOs
 {
     public class MainScene : Scene
     {
@@ -20,10 +19,8 @@ namespace Template.MacOs
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
         }
 
-        protected override void OnOpened()
+        protected override void Initialize()
         {
-            base.OnOpened();
-
             AddController(CharacterData);
         }
 

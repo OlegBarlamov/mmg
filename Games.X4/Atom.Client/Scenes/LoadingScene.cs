@@ -13,13 +13,16 @@ namespace Atom.Client.Scenes
     {
         private LoadingSceneResources Resources { get; }
 
-        private readonly BackgroundTextureComponent _background;
-        private readonly DrawLabelComponent _loadingLabel;
+        private BackgroundTextureComponent _background;
+        private DrawLabelComponent _loadingLabel;
 
         public LoadingScene([NotNull] LoadingSceneResources resources) : base(nameof(LoadingScene), resources)
         {
             Resources = resources ?? throw new ArgumentNullException(nameof(resources));
+        }
 
+        protected override void Initialize()
+        {
             _background = (BackgroundTextureComponent) AddView(new BackgroundTextureComponentDataModel
             {
                 Texture = Resources.LoadingSceneBackgroundTexture

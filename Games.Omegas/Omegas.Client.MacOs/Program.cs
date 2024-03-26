@@ -11,7 +11,7 @@ using FrameworkSDK.MonoGame.Resources.Generation;
 using Logging.FrameworkAdapter;
 using NetExtensions.Geometry;
 
-namespace Template.MacOs
+namespace Omegas.Client.MacOs
 {
     internal class Program
     {

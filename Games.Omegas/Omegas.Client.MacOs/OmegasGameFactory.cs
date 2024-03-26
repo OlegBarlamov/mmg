@@ -9,7 +9,7 @@ using FrameworkSDK.MonoGame.Constructing;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using Logging.FrameworkAdapter;
 
-namespace Template.MacOs
+namespace Omegas.Client.MacOs
 {
     internal static class OmegasGameFactory
     {

@@ -1,7 +1,7 @@
 using System;
-using FrameworkSDK.MonoGame.Graphics.Services;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.Services;
+using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -17,7 +17,7 @@ namespace FrameworkSDK.MonoGame.Graphics
         
         private IRenderTargetsFactory RenderTargetsFactory { get; }
         private IDisplayService DisplayService { get; }
-        private IAppStateService AppStateService { get; }
+        private AppStateService AppStateService { get; }
 
         private RenderTarget2D _newRenderTarget;
         
@@ -27,7 +27,7 @@ namespace FrameworkSDK.MonoGame.Graphics
         public FullScreenRenderTargetWrapper(
             [NotNull] IRenderTargetsFactory renderTargetsFactory,
             [NotNull] IDisplayService displayService,
-            [NotNull] IAppStateService appStateService,
+            [NotNull] AppStateService appStateService,
             bool mipMap,
             SurfaceFormat preferredFormat,
             DepthFormat preferredDepthFormat,

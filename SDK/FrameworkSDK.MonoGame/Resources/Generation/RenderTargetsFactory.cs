@@ -2,6 +2,7 @@ using System;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics;
 using FrameworkSDK.MonoGame.Services;
+using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -13,7 +14,7 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
         private IGameHeartServices GameHeartServices { get; }
         private IResourceReferencesService ResourceReferencesService { get; }
         private IDisplayService DisplayService { get; }
-        private IAppStateService AppStateService { get; }
+        private AppStateService AppStateService { get; }
 
         private GraphicsDevice GraphicsDevice => GameHeartServices.GraphicsDeviceManager.GraphicsDevice;
 
@@ -21,7 +22,7 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
             [NotNull] IGameHeartServices gameHeartServices,
             [NotNull] IResourceReferencesService resourceReferencesService,
             [NotNull] IDisplayService displayService,
-            [NotNull] IAppStateService appStateService)
+            [NotNull] AppStateService appStateService)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             ResourceReferencesService = resourceReferencesService ?? throw new ArgumentNullException(nameof(resourceReferencesService));

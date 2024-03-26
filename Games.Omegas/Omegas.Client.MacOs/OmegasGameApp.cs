@@ -7,7 +7,7 @@ using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
-namespace Template.MacOs
+namespace Omegas.Client.MacOs
 {
     public class OmegasGameApp : GameApp
     {

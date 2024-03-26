@@ -62,7 +62,8 @@ namespace FrameworkSDK.MonoGame.Services
             
             serviceRegistrator.RegisterType<IDebugInfoService, DefaultDebugInfoService>();
             serviceRegistrator.RegisterType<IGameParameters, DefaultGameParameters>();
-            serviceRegistrator.RegisterType<IAppStateService, AppStateService>();
+            serviceRegistrator.RegisterType<AppStateService, AppStateService>();
+            serviceRegistrator.RegisterFactory(typeof(IAppStateService), (locator, type) => locator.Resolve(typeof(AppStateService)));
             serviceRegistrator.RegisterType<IGameHeartServices, GameHeartServicesHolder>();
             serviceRegistrator.RegisterType<IGameHeart, GameHeart>();
         }

@@ -133,10 +133,8 @@ namespace Atom.Client.Scenes
             _wrappedObjectsController.AddWrappedObject(cell);
         }
 
-        protected override void OnFirstOpening()
+        protected override void Initialize()
         {
-            base.OnFirstOpening();
-            
             AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
             {
                 GraphicsPassName = "Render_Grouped",

@@ -9,6 +9,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 			protected set { }
 		}
 
+		protected override bool IsInitialized { get; } = true;
+
 		public EmptyScene()
 	        :base("empty_scene")
 	    {

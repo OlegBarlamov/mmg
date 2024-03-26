@@ -25,6 +25,8 @@ namespace FrameworkSDK.MonoGame.Mvc
         protected object Model { get; private set; }
         
         [NotNull, ItemNotNull] protected ObservableList<IGraphicComponent> GraphicComponents { get; } = new ObservableList<IGraphicComponent>();
+        
+        protected abstract bool IsInitialized { get; } 
 
         [NotNull] private ModuleLogger Logger { get; }
 		[NotNull] private IMvcStrategyService MvcStrategy { get; }
@@ -33,7 +35,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		IGraphicsPipeline IScene.GraphicsPipeline => GetGraphicsPipeline();
 
-			object IScene.DataModel
+		object IScene.DataModel
 	    {
 	        get => Model;
 	        set => Model = value;
@@ -62,6 +64,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		public void AddController([NotNull] IController controller)
 		{
+			CheckInitialized();
 			if (controller == null) throw new ArgumentNullException(nameof(controller));
 
 			Logger.Info(Strings.Info.AddControllerToScene, controller.Name, Name);
@@ -91,6 +94,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 	    [NotNull] public IController AddController([NotNull] object model)
 	    {
+		    CheckInitialized();
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
 	        var validate = MvcStrategy.ValidateByModel(model);
@@ -127,6 +131,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         public void AddView([NotNull] IView view)
 		{
+			CheckInitialized();
 			if (view == null) throw new ArgumentNullException(nameof(view));
 
             if (Views.ContainsView(view))
@@ -144,6 +149,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 	    public IView AddView([NotNull] object model)
 	    {
+		    CheckInitialized();
 	        if (model == null) throw new ArgumentNullException(nameof(model));
 
 	        var validate = MvcStrategy.ValidateByModel(model);
@@ -251,11 +257,6 @@ namespace FrameworkSDK.MonoGame.Mvc
 		    return GraphicsPipeline.Empty;
 	    }
 
-	    protected virtual void OnFirstOpening()
-	    {
-		    
-	    }
-
 	    protected virtual void CloseRequest()
 		{
 			ReadyToBeClosed = true;
@@ -361,6 +362,11 @@ namespace FrameworkSDK.MonoGame.Mvc
 	    protected static string GenerateSceneName()
 	    {
 	        return NamesGenerator.Hash(HashType.SmallGuid, nameof(SceneBase).ToLowerInvariant());
+	    }
+
+	    private void CheckInitialized()
+	    {
+		    if (!IsInitialized) throw new SceneNotInitializedException($"Scene {Name} is not initialized. Initialize scene before adding mvc components");
 	    }
 	}
 }

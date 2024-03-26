@@ -7,7 +7,7 @@
     <ProjectGuid>{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Template.MacOs</RootNamespace>
+    <RootNamespace>Omegas.Client.MacOs</RootNamespace>
     <AssemblyName>Omegas.Client.MacOs</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

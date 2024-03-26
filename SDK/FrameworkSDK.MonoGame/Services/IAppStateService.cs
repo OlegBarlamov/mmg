@@ -1,6 +1,3 @@
-using System;
-using Microsoft.Xna.Framework;
-
 namespace FrameworkSDK.MonoGame.Services
 {
     public interface IAppStateService
@@ -15,8 +12,5 @@ namespace FrameworkSDK.MonoGame.Services
         bool IsUpdateStateActive { get; }
         bool IsDrawStateActive { get; }
         bool IsAppFocused { get; }
-
-        void QueueOnUpdate(Action<GameTime> action);
-        void QueueOnDraw(Action<GameTime> action);
     }
 }

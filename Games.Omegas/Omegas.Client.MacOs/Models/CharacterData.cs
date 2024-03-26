@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions.Geometry;
 
-namespace Template.MacOs.Models
+namespace Omegas.Client.MacOs.Models
 {
     public class CharacterData
     {

@@ -2,7 +2,7 @@ using FrameworkSDK.MonoGame.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Template.MacOs
+namespace Omegas.Client.MacOs
 {
     public class GameResourcePackage : ResourcePackage
     {
