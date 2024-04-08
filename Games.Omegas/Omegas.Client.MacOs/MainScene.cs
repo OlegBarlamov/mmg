@@ -1,5 +1,6 @@
 using System;
 using FrameworkSDK.Common;
+using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.DrawableComponents;
 using FrameworkSDK.MonoGame.Graphics.DrawableComponents.Stencils;
@@ -43,21 +44,17 @@ namespace Omegas.Client.MacOs
 
         protected override void Initialize()
         {
-            AddController(CharacterData);
-            
-            var mapData = new Tiled2DCell[100, 100];
-            for (int x = 0; x < 100; x++)
+            var mapData = new Tiled2DCell[10, 10];
+            for (int x = 0; x < 10; x++)
             {
-                for (int y = 0; y < 100; y++)
+                for (int y = 0; y < 10; y++)
                 {
-                    var characterX = x.ToString();
-                    var characterY = y.ToString();
-                    var text = characterX.ToString() + characterY.ToString();
-                    mapData[x, y] = new Tiled2DCell(new Point(x, y), new TextStencil(text, GameResourcePackage.Font, Color.Blue));
+                    var texture = GameResourcePackage.MapBackgroundTexturesList.PickRandom();
+                    mapData[x, y] = new Tiled2DCell(new Point(x, y), new TextureStencil(texture, Color.White));
                 }
             }
 
-            _map = new Tiled2DMap(mapData, new Vector2(32));
+            _map = new Tiled2DMap(mapData, new Vector2(256));
 
             _mapDrawableComponent = (TiledMapDrawableComponent) AddView(new ViewModel<Tiled2DMap>(_map));
 
@@ -66,6 +63,8 @@ namespace Omegas.Client.MacOs
             Camera2DService.SetActiveCamera(camera);
             
             AddController(new KeyboardCamera2DController(InputService, camera, new KeyboardCamera2DController.KeysMap()));
+            
+            AddController(CharacterData);
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)

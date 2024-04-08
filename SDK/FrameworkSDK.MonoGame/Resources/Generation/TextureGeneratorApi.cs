@@ -1,5 +1,7 @@
 using System;
+using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Core;
+using FrameworkSDK.Services.Randoms;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,10 +14,12 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
     {
         public ITexturePrimitivesGenerator Primitives { get; }
         private IGameHeartServices GameHeartServices { get; }
+        private IRandomService RandomService { get; }
 
-        public TextureGeneratorApi([NotNull] IGameHeartServices gameHeartServices)
+        public TextureGeneratorApi([NotNull] IGameHeartServices gameHeartServices, [NotNull] IRandomService randomService)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
+            RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
             Primitives = new TexturePrimitivesGenerator(gameHeartServices);
         }
 
@@ -53,6 +57,31 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
                                       minValueColorVector;
                     colors[x, y] = Color.FromNonPremultiplied(colorVector);
                 }
+            }
+            
+            var texture = GameHeartServices.GraphicsDeviceManager.GraphicsDevice.GetEmptyTexture(width, height);
+            texture.SetDataToTexture(colors);
+            
+            return texture;
+        }
+        
+        public Texture2D PointsNoise(int width, int height, int pointsCount, Color pointsColor, Color backgroundColor)
+        {
+            var colors = new Color[width, height];
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    colors[x, y] = backgroundColor;
+                }
+            }
+
+            var min = System.Drawing.Point.Empty;
+            var max = new System.Drawing.Point(width, height);
+            for (int i = 0; i < pointsCount; i++)
+            {
+                var point = RandomService.NextPoint(min, max);
+                colors[point.X, point.Y] = pointsColor;
             }
             
             var texture = GameHeartServices.GraphicsDeviceManager.GraphicsDevice.GetEmptyTexture(width, height);

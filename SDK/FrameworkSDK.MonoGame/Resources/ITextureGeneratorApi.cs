@@ -14,5 +14,7 @@ namespace FrameworkSDK.MonoGame.Resources
         Texture2D HeightMap(int[,] heights, int minValue, int maxValue, Color minValueColor, Color maxValueColor);
         
         ITexturePrimitivesGenerator Primitives { get; }
+
+        Texture2D PointsNoise(int width, int height, int pointsCount, Color pointsColor, Color backgroundColor);
     }
 }

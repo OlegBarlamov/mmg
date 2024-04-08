@@ -55,6 +55,11 @@ namespace FrameworkSDK.MonoGame.Resources
             return TextureGeneratorApi.HeightMap(heights, minValue, maxValue, minValueColor, maxValueColor);
         }
 
+        public Texture2D PointsNoise(int width, int height, int pointsCount, Color pointsColor, Color backgroundColor)
+        {
+            return TextureGeneratorApi.PointsNoise(width, height, pointsCount, pointsColor, backgroundColor);
+        }
+
         public RenderTarget2D CreateRenderTarget(int width, int height, bool mipMap, SurfaceFormat preferredFormat,
             DepthFormat preferredDepthFormat, int preferredMultiSampleCount, RenderTargetUsage usage, bool shared,
             int arraySize)

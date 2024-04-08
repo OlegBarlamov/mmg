@@ -8,6 +8,7 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
     internal class TextureGeneratorServicePublic : ITextureGeneratorService
     {
         public ITexturePrimitivesGenerator Primitives => TextureGeneratorApi.Primitives;
+
         private ITextureGeneratorApi TextureGeneratorApi { get; }
         private IResourceReferencesService ResourceReferencesService { get; }
 
@@ -42,6 +43,13 @@ namespace FrameworkSDK.MonoGame.Resources.Generation
         public Texture2D HeightMap(int[,] heights, int minValue, int maxValue, Color minValueColor, Color maxValueColor)
         {
             var texture = TextureGeneratorApi.HeightMap(heights, minValue, maxValue, minValueColor, maxValueColor);
+            CountTexture(texture);
+            return texture;
+        }
+        
+        public Texture2D PointsNoise(int width, int height, int pointsCount, Color pointsColor, Color backgroundColor)
+        {
+            var texture = TextureGeneratorApi.PointsNoise(width, height, pointsCount, pointsColor, backgroundColor);
             CountTexture(texture);
             return texture;
         }
