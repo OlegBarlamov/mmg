@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace MonoGameExtensions
@@ -113,6 +114,13 @@ namespace MonoGameExtensions
 		public static bool InRange(this Point point, Point min, Point max)
 		{
 			return point.X >= min.X && point.X <= max.X && point.Y >= min.Y && point.Y <= max.Y;
+		}
+
+		public static Point Floor(this Point point, Point min, Point max)
+		{
+			var x = Math.Min(max.X, Math.Max(point.X, min.X));
+			var y = Math.Min(max.Y, Math.Max(point.Y, min.Y));
+			return new Point(x, y);
 		}
 	}
 }

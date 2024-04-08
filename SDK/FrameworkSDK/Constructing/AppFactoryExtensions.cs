@@ -23,6 +23,11 @@ namespace FrameworkSDK.Constructing
         {
             return appFactory.AddServices(registrator => { registrator.RegisterInstance(instance); });
         }
+        
+        public static IAppFactory AddService<T>(this IAppFactory appFactory) where T: class
+        {
+            return appFactory.AddServices(registrator => { registrator.RegisterType<T, T>(); });
+        }
     }
 
 }

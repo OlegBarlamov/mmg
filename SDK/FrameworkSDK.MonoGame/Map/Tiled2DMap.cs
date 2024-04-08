@@ -1,33 +1,21 @@
-using System;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGameExtensions.DataStructures;
 
 namespace FrameworkSDK.MonoGame.Map
 {
-    public class Tiled2DCell : IGridCell<Point>
+    public class Tiled2DMap : Array2DBasedGrid<Tiled2DCell> 
     {
-        public Point MapPoint { get; }
+        public Vector2 CellsSize { get; }
         
-        public Texture2D Texture { get; }
+        public Tiled2DMap([NotNull] Tiled2DCell[,] data, Vector2 cellsSize) : base(data)
+        {
+            CellsSize = cellsSize;
+        }
 
-        public Tiled2DCell(Point mapPoint, [NotNull] Texture2D texture)
+        public Point GetMapPointFromWorld(Vector2 world)
         {
-            MapPoint = mapPoint;
-            Texture = texture ?? throw new ArgumentNullException(nameof(texture));
-        }
-        
-        public Point GetPointOnMap()
-        {
-            return MapPoint;
-        }
-    }
-    
-    public class Tiled2DMap<TCell> : Array2DBasedGrid<TCell> where TCell : Tiled2DCell
-    {
-        public Tiled2DMap([NotNull] TCell[,] data) : base(data)
-        {
+            return (world / CellsSize).ToPoint();
         }
     }
 }

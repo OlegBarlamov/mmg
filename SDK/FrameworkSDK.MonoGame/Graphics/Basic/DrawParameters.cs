@@ -1,5 +1,6 @@
 using System;
 using FrameworkSDK.MonoGame.Services;
+using FrameworkSDK.MonoGame.Services.Extensions;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,7 +26,7 @@ namespace FrameworkSDK.MonoGame.Graphics.Basic
             
             return new DrawParameters
             {
-                DestinationRectangle = new RectangleF(0, 0, displayService.PreferredBackBufferWidth, displayService.PreferredBackBufferHeight)
+                DestinationRectangle = displayService.GetDisplayFRectangle()
             };
         }
     }
