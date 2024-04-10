@@ -2,8 +2,8 @@ using Microsoft.Xna.Framework;
 
 namespace MonoGameExtensions
 {
-    public interface ILocatable3D
+    public interface ILocatable3D : IPositioned3D
     {
-        Vector3 Position { get; set; }
+        void SetPosition(Vector3 position);
     }
 }

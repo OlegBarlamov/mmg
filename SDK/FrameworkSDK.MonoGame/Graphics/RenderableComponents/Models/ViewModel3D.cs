@@ -49,5 +49,10 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models
         {
             PlacementChanged = null;
         }
+        
+        public virtual void SetPosition(Vector3 position)
+        {
+            Position = position;
+        }
     }
 }

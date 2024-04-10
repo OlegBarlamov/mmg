@@ -4,7 +4,7 @@ namespace FrameworkSDK.MonoGame.Basic
     {
         public static void CopyWorldParameters(this IPlaceable3D placeable, IPlaceable3D targetPlaceableObject)
         {
-            placeable.Position = targetPlaceableObject.Position;
+            placeable.SetPosition(targetPlaceableObject.Position);
             placeable.Scale = targetPlaceableObject.Scale;
             placeable.Rotation = targetPlaceableObject.Rotation;
         }

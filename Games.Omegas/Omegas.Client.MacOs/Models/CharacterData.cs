@@ -5,14 +5,15 @@ using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameExtensions;
 using MonoGameExtensions.Geometry;
 
 namespace Omegas.Client.MacOs.Models
 {
-    public class CharacterData
+    public class CharacterData : ILocatable2D
     {
         public Vector2 Position { get; set; } = new Vector2(50, 50);
-        
+
         public Vector2 HeartRelativePosition { get; set; } = Vector2.Zero;
 
         public float HeartSize = 10;
@@ -24,6 +25,11 @@ namespace Omegas.Client.MacOs.Models
         public float Size { get; set; } = 50;
 
         public PlayerIndex PlayerIndex { get; } = PlayerIndex.One;
+        
+        public void SetPosition(Vector2 position)
+        {
+            Position = position;
+        }
     }
 
     public class CharacterDrawData
@@ -69,6 +75,9 @@ namespace Omegas.Client.MacOs.Models
                     }
                 }
             }
+            
+            UpdateBoundingBox();
+            UpdateHeartBoundingBox();
         }
 
         protected override void OnAttached(SceneBase scene)

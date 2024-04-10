@@ -61,8 +61,11 @@ namespace Omegas.Client.MacOs
             var camera = new SimpleCamera2D(new SizeInt(DisplayService.PreferredBackBufferWidth,
                 DisplayService.PreferredBackBufferHeight));
             Camera2DService.SetActiveCamera(camera);
-            
-            AddController(new KeyboardCamera2DController(InputService, camera, new KeyboardCamera2DController.KeysMap()));
+
+            AddController(new CenteredCameraController(CharacterData, camera));
+            AddController(new KeyboardObject2DPositioningController(InputService, CharacterData,
+                new KeyboardPositioningController.KeysMap()));
+            //AddController(new KeyboardCamera2DController(InputService, camera, new KeyboardCamera2DController.KeysMap()));
             
             AddController(CharacterData);
         }
