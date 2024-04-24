@@ -3,26 +3,26 @@ using FrameworkSDK.Logging;
 
 namespace FrameworkSDK.MonoGame
 {
-    public class FrameworkMonoGameException : Exception
+    public class FrameworkMonoGameException : FrameworkException
     {
         protected static IFormatProvider DefaultFormatProvider { get; } = new NullFormatProvider();
 
-        internal FrameworkMonoGameException(string message)
+        protected internal FrameworkMonoGameException(string message)
             : base(message)
         {
         }
 
-        internal FrameworkMonoGameException(string message, Exception inner)
+        protected internal FrameworkMonoGameException(string message, Exception inner)
             : base(message, inner)
         {
         }
 
-        internal FrameworkMonoGameException(string message,  Exception inner, params object[] args)
+        protected internal FrameworkMonoGameException(string message,  Exception inner, params object[] args)
             : this(string.Format(DefaultFormatProvider, message, args), inner)
         {
         }
 
-        internal FrameworkMonoGameException(string message, params object[] args)
+        protected internal FrameworkMonoGameException(string message, params object[] args)
             : this(string.Format(DefaultFormatProvider, message, args))
         {
         }

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>SimplePhysics2D</AssemblyName>
+        <RootNamespace>SimplePhysics2D</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj" />
+      <ProjectReference Include="..\..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
+      <ProjectReference Include="..\..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />
+      <ProjectReference Include="..\..\..\SDK\NetExtensions\NetExtensions.csproj" />
+    </ItemGroup>
+
+</Project>

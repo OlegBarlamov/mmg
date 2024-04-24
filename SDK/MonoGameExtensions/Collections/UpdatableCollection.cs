@@ -6,17 +6,18 @@ using JetBrains.Annotations;
 
 namespace MonoGameExtensions
 {
-	public class UpdatableCollection<T> : ICollection<T>
+	public class UpdatableCollection<T> : ICollection<T>, IReadOnlyCollection<T>
 	{
 		public int Count => _clearAll ? 0 : ActiveItems.Count + _itemsToAdd.Count - _itemsToRemove.Count;
 
 		public bool IsReadOnly => false;
+		
+		[NotNull] protected List<T> ActiveItems { get; }
 
 		[NotNull]
 		private readonly List<T> _itemsToAdd = new List<T>();
 		[NotNull]
 		private readonly List<T> _itemsToRemove = new List<T>();
-		[NotNull] private List<T> ActiveItems { get; }
 
 		private bool _clearAll;
 
@@ -58,12 +59,12 @@ namespace MonoGameExtensions
 			return GetEnumerator();
 		}
 
-		public void Add(T item)
+		public virtual void Add(T item)
 		{
 			_itemsToAdd.Add(item);
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			_clearAll = true;
 		}
@@ -92,7 +93,7 @@ namespace MonoGameExtensions
 			throw new NotImplementedException();
 		}
 
-		public bool Remove(T item)
+		public virtual bool Remove(T item)
 		{
 			_itemsToRemove.Add(item);
 			return true;

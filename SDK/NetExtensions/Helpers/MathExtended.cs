@@ -222,5 +222,16 @@ namespace NetExtensions.Helpers
 		{
 			return value * value;
 		}
+
+		public static float DecreaseByModule(float value, float decreaseBy)
+		{
+			var newValue = value - decreaseBy;
+			if (Math.Sign(newValue) != Math.Sign(value))
+			{
+				newValue = 0;
+			}
+
+			return newValue;
+		}
 	}
 }

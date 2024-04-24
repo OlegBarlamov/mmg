@@ -19,9 +19,9 @@ namespace FrameworkSDK.MonoGame.Mvc
         private object _model;
         private IView _view;
 
-        SceneBase ISceneComponent.OwnedScene => _ownedScene;
+        SceneBase ISceneComponent.OwnedScene => OwnedScene;
 
-        private SceneBase _ownedScene;
+        protected SceneBase OwnedScene { get; private set; }
 
         private readonly List<IController> _children = new List<IController>();
 
@@ -72,7 +72,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -84,7 +84,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -99,7 +99,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -111,7 +111,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -140,9 +140,9 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         void ISceneComponent.OnAddedToScene(SceneBase scene)
         {
-            _ownedScene = scene ?? throw new ArgumentNullException(nameof(scene));
+            OwnedScene = scene ?? throw new ArgumentNullException(nameof(scene));
 
-            OnAttached(_ownedScene);
+            OnAttached(OwnedScene);
         }
 
         void ISceneComponent.OnRemovedFromScene(SceneBase scene)
@@ -150,7 +150,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             foreach (var child in _children)
                 RemoveChild(child);
 
-            _ownedScene = null;
+            OwnedScene = null;
             OnDetached(scene);
         }
     }

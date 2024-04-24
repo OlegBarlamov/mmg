@@ -37,7 +37,10 @@
   <ItemGroup>
     <Compile Include="GameResourcePackage.cs" />
     <Compile Include="MainScene.cs" />
+    <Compile Include="Models\CharacterController.cs" />
     <Compile Include="Models\CharacterData.cs" />
+    <Compile Include="Models\CharacterViewModel.cs" />
+    <Compile Include="Models\CharacterView.cs" />
     <Compile Include="OmegasGameFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -112,6 +115,10 @@
     <ProjectReference Include="..\..\Utils\Adapters\Logging.FrameworkAdapter\Logging.FrameworkAdapter.csproj">
       <Project>{9db5439e-e098-4627-9231-6b148b8751ff}</Project>
       <Name>Logging.FrameworkAdapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Adapters\SimplePhysics2D\SimplePhysics2D.csproj">
+      <Project>{5811015a-a1fb-4e60-9ae1-4c7f152663a3}</Project>
+      <Name>SimplePhysics2D</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\Console\Console.Core\Console.Core.csproj">
       <Project>{80c13f18-19c0-4506-927f-e7ec8f3c3b06}</Project>

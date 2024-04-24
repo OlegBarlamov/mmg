@@ -6,8 +6,10 @@ using FrameworkSDK;
 using FrameworkSDK.Constructing;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Constructing;
+using FrameworkSDK.MonoGame.Physics2D;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using Logging.FrameworkAdapter;
+using SimplePhysics2D.Module;
 
 namespace Omegas.Client.MacOs
 {
@@ -23,6 +25,7 @@ namespace Omegas.Client.MacOs
                 .UseGame<OmegasGameApp>()
                 .UseGameParameters(gameParameters)
                 .UseMvc()
+                .UsePhysics(new SimplePhysicsScene2DParameters())
                 .PreloadResourcePackage<ColorsTexturesPackage>()
                 .PreloadResourcePackage<GameResourcePackage>()
                 .UseGameComponents()

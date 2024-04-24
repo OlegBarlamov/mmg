@@ -1,20 +1,17 @@
-using System;
-using FrameworkSDK.MonoGame.Graphics;
-using FrameworkSDK.MonoGame.InputManagement;
-using FrameworkSDK.MonoGame.Mvc;
-using JetBrains.Annotations;
+using System.Collections.Generic;
+using FrameworkSDK.MonoGame.Physics._2D.BodyTypes;
+using FrameworkSDK.MonoGame.Physics2D;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGameExtensions;
 using MonoGameExtensions.Geometry;
+using SimplePhysics2D.Fixtures;
 
 namespace Omegas.Client.MacOs.Models
 {
-    public class CharacterData : ILocatable2D
+    public class CharacterData : IColliderBody2D
     {
-        public Vector2 Position { get; set; } = new Vector2(50, 50);
+        public Vector2 Position { get; private set; } = new Vector2(50, 50);
 
-        public Vector2 HeartRelativePosition { get; set; } = Vector2.Zero;
+        public Vector2 HeartRelativePosition { get; private set; } = Vector2.Zero;
 
         public float HeartSize = 10;
 
@@ -24,119 +21,65 @@ namespace Omegas.Client.MacOs.Models
 
         public float Size { get; set; } = 50;
 
-        public PlayerIndex PlayerIndex { get; } = PlayerIndex.One;
+        public PlayerIndex PlayerIndex { get; set; } = PlayerIndex.One;
         
         public void SetPosition(Vector2 position)
         {
             Position = position;
+            ViewModel.BoundingBox = GetBoundingBox();
+            ViewModel.HeartBoundingBox = GetHeartBoundingBox();
+            _fixture.Center = Position;
         }
-    }
 
-    public class CharacterDrawData
-    {
-        public RectangleF BoundingBox { get; set; }
-        
-        public RectangleF HeartBoundingBox { get; set; }
-    }
-
-    public class CharacterController : Controller<CharacterData>
-    {
-        public CharacterDrawData DrawData { get; private set; } = new CharacterDrawData();
-        
-        private IInputService InputService { get; }
-
-        private IPlayerGamePadProvider _gamePadProvider;
-
-        public CharacterController([NotNull] IInputService inputService)
+        public void SetHeartRelativePosition(Vector2 relativePosition)
         {
-            InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
+            HeartRelativePosition = relativePosition;
+            ViewModel.HeartBoundingBox = GetHeartBoundingBox();
         }
-        
-        public override void Update(GameTime gameTime)
+
+        public float Rotation { get; private set; }
+        public void SetRotation(float rotation)
         {
-            base.Update(gameTime);
-            
-            if (_gamePadProvider.IsConnected)
+            Rotation = rotation;
+        }
+
+        public IPhysicsBody2DParameters Parameters { get; } = new DynamicBody2DParameters();
+        public IScene2DPhysics Scene { get; set; }
+        public Vector2 Velocity { get; set; }
+        public float AngularVelocity { get; set; }
+        public ICollection<IForce2D> ActiveForces { get; } = new List<IForce2D>();
+        public bool NoClipMode { get; } = false;
+        public IFixture2D Fixture => _fixture;
+
+        private readonly CircleFixture _fixture;
+        
+        public CharacterViewModel ViewModel { get; }
+
+        public CharacterData(Color color)
+        {
+            Color = color;
+            _fixture = new CircleFixture(this, Position, Size);
+            ViewModel  = new CharacterViewModel
             {
-                var thumbSticksLeft = _gamePadProvider.ThumbSticks.Left;
-                if (thumbSticksLeft != Vector2.Zero)
-                {
-                    thumbSticksLeft.Normalize();
-
-                    DataModel.HeartRelativePosition = thumbSticksLeft * new Vector2(1, -1) * (DataModel.Size - DataModel.HeartSize / 2);
-                    UpdateHeartBoundingBox();
-                }
-                else
-                {
-                    if (DataModel.HeartRelativePosition != Vector2.Zero)
-                    {
-                        DataModel.HeartRelativePosition = Vector2.Zero;
-                        UpdateHeartBoundingBox();
-                    }
-                }
-            }
-            
-            UpdateBoundingBox();
-            UpdateHeartBoundingBox();
+                BoundingBox = GetBoundingBox(),
+                HeartBoundingBox = GetHeartBoundingBox(),
+                Color = Color,
+                HeartColor = HeartColor
+            };
         }
 
-        protected override void OnAttached(SceneBase scene)
+        private RectangleF GetBoundingBox()
         {
-            base.OnAttached(scene);
-
-            _gamePadProvider = InputService.GamePads.GetGamePad(DataModel.PlayerIndex);
-            
-            UpdateBoundingBox();
-            UpdateHeartBoundingBox();
+            return RectangleF.FromCenterAndSize(
+                Position,
+                Size);
         }
 
-        private void UpdateBoundingBox()
+        private RectangleF GetHeartBoundingBox()
         {
-            DrawData.BoundingBox = RectangleF.FromCenterAndSize(
-                DataModel.Position,
-                DataModel.Size);
-        } 
-        
-        private void UpdateHeartBoundingBox()
-        {
-            DrawData.HeartBoundingBox = RectangleF.FromCenterAndSize(
-                DataModel.Position + DataModel.HeartRelativePosition,
-                DataModel.HeartSize);
-        } 
-    }
-
-    public class CharacterView : View<CharacterData, CharacterController>
-    {
-        private GameResourcePackage ResourcePackage { get; }
-
-        private Texture2D _texture;
-
-        public CharacterView([NotNull] GameResourcePackage resourcePackage)
-        {
-            ResourcePackage = resourcePackage ?? throw new ArgumentNullException(nameof(resourcePackage));
-        }
-
-        protected override void OnAttached(SceneBase scene)
-        {
-            base.OnAttached(scene);
-            
-            _texture = ResourcePackage.Circle;
-        }
-
-        public override void Draw(GameTime gameTime, IDrawContext context)
-        {
-            base.Draw(gameTime, context);
-
-            context.Draw(
-                _texture,
-                Controller.DrawData.BoundingBox,
-                DataModel.Color
-            );
-
-            context.Draw(_texture,
-                Controller.DrawData.HeartBoundingBox,
-                DataModel.HeartColor
-            );
+            return RectangleF.FromCenterAndSize(
+                Position + HeartRelativePosition,
+                HeartSize);
         }
     }
 }

@@ -21,8 +21,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 		public string Name { get; }
 		
 		public virtual bool ReadyToBeClosed { get; protected set; }
-		
-        protected object Model { get; private set; }
+
+		protected object Model { get; private set; }
         
         [NotNull, ItemNotNull] protected ObservableList<IGraphicComponent> GraphicComponents { get; } = new ObservableList<IGraphicComponent>();
         
@@ -229,7 +229,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		    Controllers.Update(gameTime);
 
-            Update(gameTime);
+		    Update(gameTime);
 		}
 
 		void IClosable.OnClosed()
@@ -278,6 +278,16 @@ namespace FrameworkSDK.MonoGame.Mvc
 		}
 
 		protected virtual void Update([NotNull] GameTime gameTime)
+		{
+			
+		}
+
+		protected virtual void OnViewAttached([NotNull] IView view)
+		{
+			
+		}
+		
+		protected virtual void OnViewDetached([NotNull] IView view)
 		{
 			
 		}
@@ -340,6 +350,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 		    GraphicComponents.Remove(view);
 		    view.OnRemovedFromScene(this);
+		    
+		    OnViewDetached(view);
 
             view.Destroy();
 		}
@@ -357,6 +369,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 			GraphicComponents.Add(view);
 		    mapping.View.OnAddedToScene(this);
+		    
+		    OnViewAttached(view);
         }
 
 	    protected static string GenerateSceneName()

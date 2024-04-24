@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace NetExtensions.Collections
@@ -54,6 +55,31 @@ namespace NetExtensions.Collections
 			}
 
 			return result;
+		}
+
+		public static void Fill<T>([NotNull] this IList<T> list, [NotNull] Func<int, T> filler)
+		{
+			if (list == null) throw new ArgumentNullException(nameof(list));
+			if (filler == null) throw new ArgumentNullException(nameof(filler));
+
+			for (int i = 0; i < list.Count; i++)
+			{
+				list[i] = filler(i);
+			}
+		}
+		
+		public static void Fill<T>([NotNull] this T[,] list, [NotNull] Func<int, int, T> filler)
+		{
+			if (list == null) throw new ArgumentNullException(nameof(list));
+			if (filler == null) throw new ArgumentNullException(nameof(filler));
+
+			for (int x = 0; x < list.GetLength(0); x++)
+			{
+				for (int y = 0; y < list.GetLength(1); y++)
+				{
+					list[x, y] = filler(x, y);
+				}
+			}
 		}
 	}
 }

@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-    public abstract class Scene : SceneBase
+    public abstract class Scene : ScenePhysics
     {
         [NotNull] protected IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
         [NotNull] protected IGameHeartServices GameHeartServices { get; }
@@ -33,7 +33,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             GraphicsPipelineFactoryService = AppContext.ServiceLocator.Resolve<IGraphicsPipelineFactoryService>();
             RenderTargetsFactoryService = AppContext.ServiceLocator.Resolve<IRenderTargetsFactoryService>();
             GameHeartServices = AppContext.ServiceLocator.Resolve<IGameHeartServices>();
-            
+
             ProcessDelayedInitialization();
         }
 

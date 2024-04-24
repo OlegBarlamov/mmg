@@ -39,8 +39,8 @@ namespace Omegas.Client.MacOs
         {
             base.OnInitialized();
 
-            //InputService.GamePads.ActivateEmulator(PlayerIndex.One, new SimpleKeyboardGamepadEmulator(InputService.Keyboard));
-            //InputService.GamePads.EnableGamePads();
+            InputService.GamePads.ActivateEmulator(PlayerIndex.One, new SimpleKeyboardGamepadEmulator(InputService.Keyboard));
+            InputService.GamePads.EnableGamePads();
         }
     }
 }

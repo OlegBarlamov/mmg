@@ -7,22 +7,22 @@ namespace FrameworkSDK
     {
         protected static IFormatProvider DefaultFormatProvider { get; } = new NullFormatProvider();
 
-        internal FrameworkException(string message)
+        protected internal FrameworkException(string message)
             : base(message)
         {
         }
 
-        internal FrameworkException(string message, Exception inner)
+        protected internal FrameworkException(string message, Exception inner)
             : base(message, inner)
         {
         }
 
-        internal FrameworkException(string message,  Exception inner, params object[] args)
+        protected internal FrameworkException(string message,  Exception inner, params object[] args)
             : this(string.Format(DefaultFormatProvider, message, args), inner)
         {
         }
 
-        internal FrameworkException(string message, params object[] args)
+        protected internal FrameworkException(string message, params object[] args)
             : this(string.Format(DefaultFormatProvider, message, args))
         {
         }
