@@ -1,7 +1,6 @@
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.MonoGame.Physics2D;
 using SimplePhysics2D.Internal;
-using SimplePhysics2D.Resolvers;
 
 namespace SimplePhysics2D.Module
 {

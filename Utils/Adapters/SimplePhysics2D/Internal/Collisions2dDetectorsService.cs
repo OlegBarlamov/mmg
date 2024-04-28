@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Physics2D;
 using JetBrains.Annotations;
-using SimplePhysics2D.Detectors;
+using SimplePhysics2D.Collisions;
 using SimplePhysics2D.Fixtures;
 
 namespace SimplePhysics2D.Internal
@@ -13,7 +13,8 @@ namespace SimplePhysics2D.Internal
 
         public Collisions2dDetectorsService()
         {
-            this.Register<CircleFixture, CircleFixture>(new Circle2CircleCollisionDetector());
+            this.Register<CircleFixture, CircleFixture>(new CircleToCircleCollisionDetector());
+            this.Register<CircleFixture, Map2DBoundsFixture>(new CircleToMapBoundsDetector());
         }
 
         public ICollisionDetector2D GetCollisionDetector(Type fixtureTypeA, Type fixtureTypeB)

@@ -41,6 +41,7 @@
     <Compile Include="Models\CharacterData.cs" />
     <Compile Include="Models\CharacterViewModel.cs" />
     <Compile Include="Models\CharacterView.cs" />
+    <Compile Include="Models\OmegaTiledMap.cs" />
     <Compile Include="OmegasGameFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

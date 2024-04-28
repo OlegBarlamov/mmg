@@ -13,10 +13,12 @@ using FrameworkSDK.MonoGame.SceneComponents.Controllers;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using MonoGameExtensions.Geometry;
 using NetExtensions.Collections;
 using NetExtensions.Geometry;
 using Omegas.Client.MacOs.Models;
 using SimplePhysics2D;
+using SimplePhysics2D.Objects;
 using SimplePhysics2D.Spaces;
 
 namespace Omegas.Client.MacOs
@@ -51,15 +53,7 @@ namespace Omegas.Client.MacOs
 
         protected override void Initialize()
         {
-            var mapData = new Tiled2DCell[10, 10];
-            mapData.Fill((x, y) =>
-            {
-                var texture = GameResourcePackage.MapBackgroundTexturesList.PickRandom();
-                return new Tiled2DCell(new Point(x, y), new TextureStencil(texture, Color.White));
-            });
-
-            _map = new Tiled2DMap(mapData, new Vector2(256));
-
+            _map = new OmegaTiledMap(GameResourcePackage.MapBackgroundTexturesList);
             _mapDrawableComponent = (TiledMapDrawableComponent) AddView(new ViewModel<Tiled2DMap>(_map));
             
             CharacterData.SetPosition(new Vector2(200, 200));
@@ -77,6 +71,8 @@ namespace Omegas.Client.MacOs
             
             AddController(CharacterData);
             AddController(CharacterData2);
+            
+            Physics2D.AddBody(new PhysicsMapBounds2D(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
             
             Physics2D.ApplyImpulse(CharacterData2, new Vector2(-20f, 0));
         }

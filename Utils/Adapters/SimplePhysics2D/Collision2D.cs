@@ -10,7 +10,9 @@ namespace SimplePhysics2D
 
         public readonly bool IsEmpty;
         
-        public Vector2[] Points;
+        public Vector2 Point;
+
+        public Vector2 PenetrationVector;
 
         public IFixture2D FixtureA;
         
@@ -19,17 +21,19 @@ namespace SimplePhysics2D
         private Collision2D(bool isEmpty)
         {
             IsEmpty = isEmpty;
-            Points = Array.Empty<Vector2>();
             FixtureA = null;
             FixtureB = null;
+            PenetrationVector = Vector2.Zero;
+            Point = Vector2.Zero;
         }
 
-        internal Collision2D(IFixture2D fixtureA, IFixture2D fixtureB, Vector2[] points)
+        internal Collision2D(IFixture2D fixtureA, IFixture2D fixtureB, Vector2 point, Vector2 penetrationVector)
         {
             IsEmpty = false;
             FixtureA = fixtureA;
             FixtureB = fixtureB;
-            Points = points;
+            Point = point;
+            PenetrationVector = penetrationVector;
         }
     }
 }
