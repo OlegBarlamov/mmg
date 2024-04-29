@@ -55,10 +55,26 @@ namespace FrameworkSDK.MonoGame.InputManagement.Emulators
             var leftTrigger = 0f;
             var rightTrigger = 0f;
 
-            var buttons = new Buttons();
+            Buttons buttons = 0;
+
+            if (KeyboardProvider.Key(Keys.A))
+            {
+                buttons |= Buttons.A;
+            }
+            if (KeyboardProvider.Key(Keys.B))
+            {
+                buttons |= Buttons.B;
+            }
+            if (KeyboardProvider.Key(Keys.X))
+            {
+                buttons |= Buttons.X;
+            }
+            if (KeyboardProvider.Key(Keys.Y))
+            {
+                buttons |= Buttons.Y;
+            }
 
             var state = new GamePadState(leftStick, rightStick, leftTrigger, rightTrigger, buttons);
-            
             
 
             return state;

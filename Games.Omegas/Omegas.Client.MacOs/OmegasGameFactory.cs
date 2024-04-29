@@ -21,7 +21,7 @@ namespace Omegas.Client.MacOs
             return new DefaultAppFactory()
                 .SetupLogSystem(loggerConsoleMessageProvider, isDebug)
                 .AddServices<ConsoleCommandsExecutingServicesModule>()
-                .AddService<MainScene>()
+                .AddServices<OmegaServicesModule>()
                 .UseGame<OmegasGameApp>()
                 .UseGameParameters(gameParameters)
                 .UseMvc()

@@ -37,15 +37,20 @@
   <ItemGroup>
     <Compile Include="GameResourcePackage.cs" />
     <Compile Include="MainScene.cs" />
-    <Compile Include="Models\CharacterController.cs" />
-    <Compile Include="Models\CharacterData.cs" />
-    <Compile Include="Models\CharacterViewModel.cs" />
-    <Compile Include="Models\CharacterView.cs" />
+    <Compile Include="Models\Character\PlayerController.cs" />
+    <Compile Include="Models\Character\PlayerData.cs" />
+    <Compile Include="Models\Character\PlayerView.cs" />
+    <Compile Include="Models\Character\PlayerViewModel.cs" />
     <Compile Include="Models\OmegaTiledMap.cs" />
+    <Compile Include="Models\SphereObject\SphereObjectData.cs" />
+    <Compile Include="Models\SphereObject\SphereObjectView.cs" />
+    <Compile Include="Models\SphereObject\SphereObjectViewModel.cs" />
     <Compile Include="OmegasGameFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OmegasGameApp.cs" />
+    <Compile Include="Services\OmegaGameService.cs" />
+    <Compile Include="Services\OmegaServicesModule.cs" />
     <MonoGameContentReference Include="__Content\content.mgcb">
       <Link>Content/content.mgcb</Link>
     </MonoGameContentReference>

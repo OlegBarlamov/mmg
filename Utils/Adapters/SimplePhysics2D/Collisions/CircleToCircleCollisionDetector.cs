@@ -17,10 +17,12 @@ namespace SimplePhysics2D.Collisions
             Vector2 tangent = c1 + (c2 - c1) * bodyA.Radius / (bodyA.Radius + bodyB.Radius);
             Vector2 collisionNormal = c1 - c2;
             float penetrationDepth = bodyA.Radius + bodyB.Radius - collisionNormal.Length();
-            Vector2 penetrationVector = Vector2.Normalize(collisionNormal) * penetrationDepth;
-
-            return new Collision2D(bodyA, bodyB, tangent, penetrationVector);
-
+            if (penetrationDepth > 0)
+            {
+                Vector2 penetrationVector = Vector2.Normalize(collisionNormal) * penetrationDepth;
+                return new Collision2D(bodyA, bodyB, tangent, penetrationVector);
+            }
+            return Collision2D.Empty;
         }
     }
 }

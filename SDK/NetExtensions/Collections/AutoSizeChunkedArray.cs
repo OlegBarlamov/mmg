@@ -46,7 +46,7 @@ namespace NetExtensions.Collections
         public void Add(T item)
         {
             var chunkIndex = _count / _chunkSize;
-            if (chunkIndex > _chunks.Count)
+            if (chunkIndex >= _chunks.Count)
             {
                 chunkIndex = AddChunk();
             }
@@ -55,10 +55,10 @@ namespace NetExtensions.Collections
             _count++;
         }
 
-        private int AddChunk()
+        private int AddChunk() 
         {
             _chunks.Add(new T[_chunkSize]);
-            return _chunks.Count;
+            return _chunks.Count - 1;
         }
 
         private int GetCount()

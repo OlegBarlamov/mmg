@@ -1,20 +1,18 @@
 using System;
 using FrameworkSDK.Common;
-using FrameworkSDK.MonoGame.Basic;
 using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.DrawableComponents;
-using FrameworkSDK.MonoGame.Graphics.DrawableComponents.Stencils;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Map;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.SceneComponents;
 using FrameworkSDK.MonoGame.SceneComponents.Controllers;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.Geometry;
-using NetExtensions.Collections;
 using NetExtensions.Geometry;
 using Omegas.Client.MacOs.Models;
 using SimplePhysics2D;
@@ -30,8 +28,8 @@ namespace Omegas.Client.MacOs
         public GameResourcePackage GameResourcePackage { get; }
         public ICamera2DService Camera2DService { get; }
         public IDisplayService DisplayService { get; }
-        private CharacterData CharacterData { get; } = new CharacterData(Color.Red);
-        private CharacterData CharacterData2 { get; } = new CharacterData(Color.Blue);
+        private PlayerData Player1Data { get; } = new PlayerData(PlayerIndex.One, Color.Red, new Vector2(200, 200), 50f);
+        private PlayerData Player2Data { get; } = new PlayerData(PlayerIndex.Two, Color.Blue, new Vector2(800, 200), 50f);
         
         private Tiled2DMap _map;
         private TiledMapDrawableComponent _mapDrawableComponent;
@@ -53,28 +51,29 @@ namespace Omegas.Client.MacOs
 
         protected override void Initialize()
         {
+            // Map
             _map = new OmegaTiledMap(GameResourcePackage.MapBackgroundTexturesList);
             _mapDrawableComponent = (TiledMapDrawableComponent) AddView(new ViewModel<Tiled2DMap>(_map));
+            Physics2D.AddBody(new PhysicsMapBounds2D(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
             
-            CharacterData.SetPosition(new Vector2(200, 200));
-            CharacterData2.SetPosition(new Vector2(800, 200));
-            CharacterData2.PlayerIndex = PlayerIndex.Two;
+            // Players
+            AddView(Player1Data);
+            AddView(Player2Data);
 
+            // Camera
             var camera = new SimpleCamera2D(new SizeInt(DisplayService.PreferredBackBufferWidth,
                 DisplayService.PreferredBackBufferHeight));
             Camera2DService.SetActiveCamera(camera);
+            AddController(new CenteredCameraController(Player1Data, camera));
+            
+            // Debug
+            // AddView(new DebugInfoComponentData
+            // {
+            //     Font = GameResourcePackage.Font,
+            // });
 
-            AddController(new CenteredCameraController(CharacterData, camera));
-            // AddController(new KeyboardObject2DPositioningController(InputService, CharacterData,
-            //     new KeyboardPositioningController.KeysMap()));
-            //AddController(new KeyboardCamera2DController(InputService, camera, new KeyboardCamera2DController.KeysMap()));
-            
-            AddController(CharacterData);
-            AddController(CharacterData2);
-            
-            Physics2D.AddBody(new PhysicsMapBounds2D(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
-            
-            Physics2D.ApplyImpulse(CharacterData2, new Vector2(-20f, 0));
+            // Test
+            // Physics2D.ApplyImpulse(Player2Data, new Vector2(-20f, 0));
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)

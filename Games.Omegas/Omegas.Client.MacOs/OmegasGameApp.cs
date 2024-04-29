@@ -16,6 +16,8 @@ namespace Omegas.Client.MacOs
     {
         public IInputService InputService { get; }
         public DefaultConsoleManipulator ConsoleManipulator { get; }
+        
+        protected override SceneBase CurrentScene { get; }
 
         public OmegasGameApp(
             [NotNull] IInputService inputService,
@@ -26,7 +28,6 @@ namespace Omegas.Client.MacOs
             ConsoleManipulator = consoleManipulator ?? throw new ArgumentNullException(nameof(consoleManipulator));
             CurrentScene = mainScene;
         }
-        protected override SceneBase CurrentScene { get; }
 
         protected override void Update(GameTime gameTime)
         {
