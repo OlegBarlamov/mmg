@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Omegas.Client.MacOs.Models.SphereObject
 {
-    public class SphereObjectView: View<SphereObjectData>
+    public class SphereObjectView: View<SphereObjectData, SphereObjectController>
     {
         private GameResourcePackage ResourcePackage { get; }
 

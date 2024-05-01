@@ -155,7 +155,9 @@ namespace SimplePhysics2D.Internal
 
                 foreach (var collision in _collisionsArray)
                 {
-                    CollisionsResolver.Resolve(collision);
+                    var collisionResolved = collision.FixtureA.Parent.OnCollision(collision.FixtureB.Parent);
+                    if (!collisionResolved)
+                        CollisionsResolver.Resolve(collision);
                 }
             }
             finally

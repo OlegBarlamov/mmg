@@ -17,6 +17,7 @@ namespace SimplePhysics2D.Module
             serviceRegistrator.RegisterType<ICollisions2DResolver, Elastic2DCollisionsResolver>();
             serviceRegistrator.RegisterType<ICollisions2dDetectorsService, Collisions2dDetectorsService>();
             serviceRegistrator.RegisterFactory<ICollisions2dDetectorsProvider>((locator, type) => locator.Resolve<ICollisions2dDetectorsService>());
+            serviceRegistrator.RegisterFactory<ICollisionDetector2D>((locator, type) => locator.Resolve<ICollisions2dDetectorsService>());
             serviceRegistrator.RegisterInstance(Parameters);
             serviceRegistrator.RegisterType<IPhysics2DFactory, SimplePhysics2DFactory>();
         }

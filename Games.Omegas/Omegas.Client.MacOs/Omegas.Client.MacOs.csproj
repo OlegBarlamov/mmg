@@ -42,9 +42,11 @@
     <Compile Include="Models\Character\PlayerView.cs" />
     <Compile Include="Models\Character\PlayerViewModel.cs" />
     <Compile Include="Models\OmegaTiledMap.cs" />
+    <Compile Include="Models\SphereObject\SphereObjectController.cs" />
     <Compile Include="Models\SphereObject\SphereObjectData.cs" />
     <Compile Include="Models\SphereObject\SphereObjectView.cs" />
     <Compile Include="Models\SphereObject\SphereObjectViewModel.cs" />
+    <Compile Include="Models\Teams.cs" />
     <Compile Include="OmegasGameFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -146,6 +148,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets" Condition="Exists('..\..\packages\MonoGame.Framework.MacOS.3.7.1.189\build\MonoGame.Framework.MacOS.targets')" />

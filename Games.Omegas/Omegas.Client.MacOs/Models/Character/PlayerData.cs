@@ -2,7 +2,6 @@ using FrameworkSDK.MonoGame.Physics._2D.Forces;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.Geometry;
 using Omegas.Client.MacOs.Models.SphereObject;
-using SimplePhysics2D.Fixtures;
 
 namespace Omegas.Client.MacOs.Models
 {
@@ -12,7 +11,7 @@ namespace Omegas.Client.MacOs.Models
 
         public float HeartSize = 10;
 
-        public Color HeartColor { get; } = Color.DarkRed;
+        public Color HeartColor { get; }
 
         public SimpleForce ControllerForce { get; } = new SimpleForce(Vector2.Zero, 0f);
 
@@ -34,10 +33,11 @@ namespace Omegas.Client.MacOs.Models
         
         public PlayerViewModel PlayerViewModel { get; }
 
-        public PlayerData(PlayerIndex playerIndex, Color color, Vector2 position, float size)
-            : base(color, position, size)
+        public PlayerData(PlayerIndex playerIndex, Color color, Color heartColor, Vector2 position, float size)
+            : base(color, position, size, playerIndex.ToTeam())
         {
             PlayerIndex = playerIndex;
+            HeartColor = heartColor;
             PlayerViewModel  = new PlayerViewModel
             {
                 BoundingBox = GetBoundingBox(),

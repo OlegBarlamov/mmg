@@ -9,6 +9,8 @@ namespace Omegas.Client.MacOs
     public class GameResourcePackage : ResourcePackage
     {
         public Texture2D Circle { get; private set; }
+        
+        public SpriteFont Font { get; private set; }
 
         public IReadOnlyList<Texture2D> MapBackgroundTexturesList => _mapBackgroundTexturesList;
         
@@ -18,9 +20,15 @@ namespace Omegas.Client.MacOs
         {
             Circle = content.Primitives.Circle(100, Color.White);
 
-            _mapBackgroundTexturesList = Enumerable.Range(0, 3)
-                .Select(i => content.PointsNoise(128,128, 15, Color.White, Color.Black))
-                .ToList();
+            // _mapBackgroundTexturesList = Enumerable.Range(0, 3)
+            //     .Select(i => content.PointsNoise(128,128, 15, Color.White, Color.Black))
+            //     .ToList();
+            _mapBackgroundTexturesList = new List<Texture2D>
+            {
+                content.DiffuseColor(Color.Black)
+            };
+
+            Font = content.Load<SpriteFont>("Font");
         }
     }
 }

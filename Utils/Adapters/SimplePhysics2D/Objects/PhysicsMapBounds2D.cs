@@ -15,6 +15,11 @@ namespace SimplePhysics2D.Objects
         private RectangleF _rectangle;
 
         public IFixture2D Fixture => _fixture;
+        public bool OnCollision(IColliderBody2D body)
+        {
+            return false;
+        }
+
         private readonly Map2DBoundsFixture _fixture;
         
         public Vector2 Position => Rectangle.Location;

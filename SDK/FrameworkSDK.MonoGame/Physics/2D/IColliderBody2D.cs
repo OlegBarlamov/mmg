@@ -4,5 +4,7 @@ namespace FrameworkSDK.MonoGame.Physics2D
     {
         bool NoClipMode { get; }
         IFixture2D Fixture { get; }
+
+        bool OnCollision(IColliderBody2D body);
     }
 }

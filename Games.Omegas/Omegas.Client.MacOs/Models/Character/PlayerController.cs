@@ -4,18 +4,19 @@ using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Omegas.Client.MacOs.Models.SphereObject;
 using Omegas.Client.MacOs.Services;
 
 namespace Omegas.Client.MacOs.Models
 {
-    public class PlayerController : Controller<PlayerData>
+    public class PlayerController : SphereObjectGenericController<PlayerData>
     {
         private IInputService InputService { get; }
         public OmegaGameService OmegaGameService { get; }
 
         private IPlayerGamePadProvider _gamePadProvider;
 
-        public PlayerController([NotNull] IInputService inputService, [NotNull] OmegaGameService omegaGameService)
+        public PlayerController([NotNull] IInputService inputService, [NotNull] OmegaGameService omegaGameService) : base(omegaGameService)
         {
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
             OmegaGameService = omegaGameService ?? throw new ArgumentNullException(nameof(omegaGameService));
@@ -32,7 +33,7 @@ namespace Omegas.Client.MacOs.Models
                 if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _gamePadProvider.ThumbSticks.Left != Vector2.Zero)
                 {
                     var shift = Vector2.Normalize(_gamePadProvider.ThumbSticks.Left * new Vector2(1, -1));
-                    var bulletObject = OmegaGameService.CreateBulletWorkpiece(DataModel, shift, Color.DarkGreen);
+                    var bulletObject = OmegaGameService.CreateBulletWorkpiece(DataModel, shift, Math.Max(2, DataModel.Size / 50));
                     // TODO Giving the right velocity should be responsibility of the service
                     OmegaGameService.ReleaseBullet(DataModel, bulletObject, DataModel.Velocity + shift * 20f);
                 }

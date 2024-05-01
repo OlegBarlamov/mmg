@@ -23,8 +23,8 @@ namespace NetExtensions.Collections
 
         public void Add(T item)
         {
-            _list.Add(item);
             _map.Add(item, _list.Count);
+            _list.Add(item);
         }
 
         public void Clear()
@@ -47,8 +47,12 @@ namespace NetExtensions.Collections
         {
             if (_map.TryGetValue(item, out var index))
             {
-                _list[index] = _list[Count-1];
+                var lastItem = _list[Count - 1];
+                _list[index] = lastItem;
+                _map[lastItem] = index;
+                
                 _list.RemoveAt(Count-1);
+                _map.Remove(item);
                 return true;
             }
 
