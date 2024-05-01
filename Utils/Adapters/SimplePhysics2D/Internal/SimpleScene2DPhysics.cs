@@ -134,11 +134,14 @@ namespace SimplePhysics2D.Internal
                 foreach (var body in _colliders)
                 {
                     UpdateBody(body, gameTime, out var positionChanged);
-                    if (positionChanged)
+                    if (positionChanged && !body.NoClipMode)
                     {
                         var candidates = CollidersSpace.GetCollisionCandidates(body);
                         foreach (var candidate in candidates)
                         {
+                            if (candidate.NoClipMode)
+                                continue;
+                            
                             var collision = CollisionDetector.GetCollision(body.Fixture, candidate.Fixture);
                             if (!collision.IsEmpty)
                             {

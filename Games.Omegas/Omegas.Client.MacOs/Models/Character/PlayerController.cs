@@ -16,6 +16,11 @@ namespace Omegas.Client.MacOs.Models
 
         private IPlayerGamePadProvider _gamePadProvider;
 
+        private SphereObjectData _bullet;
+        private Vector2 _heartOrigin;
+        private Vector2 _heartOriginNormal;
+        private float _fillFactor = 1f;
+
         public PlayerController([NotNull] IInputService inputService, [NotNull] OmegaGameService omegaGameService) : base(omegaGameService)
         {
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
@@ -26,18 +31,52 @@ namespace Omegas.Client.MacOs.Models
         {
             base.Update(gameTime);
             
+            if (_bullet != null)
+            {
+                var bulletPosition = GetBulletPosition(_bullet.Size);
+                _bullet.SetPosition(bulletPosition);
+            }
+            
             if (_gamePadProvider.IsConnected)
             {
                 UpdateLeftThumbStick();
 
-                if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _gamePadProvider.ThumbSticks.Left != Vector2.Zero)
+                if (_gamePadProvider.IsButtonDown(Buttons.A) && _bullet != null)
                 {
-                    var shift = Vector2.Normalize(_gamePadProvider.ThumbSticks.Left * new Vector2(1, -1));
-                    var bulletObject = OmegaGameService.CreateBulletWorkpiece(DataModel, shift, Math.Max(2, DataModel.Size / 50));
-                    // TODO Giving the right velocity should be responsibility of the service
-                    OmegaGameService.ReleaseBullet(DataModel, bulletObject, DataModel.Velocity + shift * 20f);
+                    OmegaGameService.FillBullet(DataModel, _bullet, _fillFactor, gameTime);
+                    _fillFactor += gameTime.ElapsedGameTime.Milliseconds * 0.001f;
+                }
+                else
+                {
+                    _fillFactor = 1f;
+                }
+                
+                if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _heartOrigin != Vector2.Zero)
+                {
+                    _bullet = OmegaGameService.CreateBulletWorkpiece(DataModel, _heartOriginNormal);
+                }
+
+                if (_gamePadProvider.IsButtonReleasedOnce(Buttons.A) && _bullet != null)
+                {
+                    if (_heartOrigin == Vector2.Zero)
+                    {
+                        OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOriginNormal, _heartOriginNormal);
+                        _bullet = null;
+                        //OmegaGameService.CancelBullet(DataModel, _bullet);
+                        //_bullet = null;
+                    }
+                    else
+                    {
+                        OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOrigin, _heartOriginNormal);
+                        _bullet = null;
+                    }
                 }
             }
+        }
+
+        private Vector2 GetBulletPosition(float bulletSize)
+        {
+            return DataModel.Position + _heartOriginNormal * (DataModel.Size + bulletSize);
         }
 
         private void UpdateLeftThumbStick()
@@ -47,13 +86,13 @@ namespace Omegas.Client.MacOs.Models
             {
                 thumbSticksLeft.Normalize();
 
-                var shift = thumbSticksLeft * new Vector2(1, -1);
-                DataModel.SetHeartRelativePosition(shift * (DataModel.Size - DataModel.HeartSize / 2));
-                //DataModel.ControllerForce.Power = shift;
+                _heartOrigin = thumbSticksLeft * new Vector2(1, -1);
+                DataModel.SetHeartRelativePosition(_heartOrigin * (DataModel.Size - DataModel.HeartSize / 2));
+                _heartOriginNormal = Vector2.Normalize(_heartOrigin); ;
             }
             else
             {
-                DataModel.ControllerForce.Power = Vector2.Zero;
+                _heartOrigin = Vector2.Zero;
 
                 if (DataModel.HeartRelativePosition != Vector2.Zero)
                 {

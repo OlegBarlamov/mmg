@@ -67,7 +67,8 @@ namespace Omegas.Client.MacOs.Models.SphereObject
         {
             if (body is SphereObjectData sphereObjectData)
             {
-                CollidingSpheres.Add(sphereObjectData);
+                if (!CollidingSpheres.Contains(sphereObjectData))
+                    CollidingSpheres.Add(sphereObjectData);
             }
 
             return false;

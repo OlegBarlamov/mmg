@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Graphics;
 using FrameworkSDK.MonoGame.Graphics.DrawableComponents;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Services;
@@ -13,6 +14,9 @@ namespace FrameworkSDK.MonoGame.SceneComponents
 {
     public class DebugInfoComponentData : ViewModel
     {
+        public override string GraphicsPassName { get; set; } =
+            GraphicsPipeline2DDrawingPreset.PipelineActions.DrawDebugUI;
+        
         public SpriteFont Font;
 
         public Vector2 Position;

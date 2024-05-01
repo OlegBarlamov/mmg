@@ -13,8 +13,6 @@ namespace Omegas.Client.MacOs.Models
 
         public Color HeartColor { get; }
 
-        public SimpleForce ControllerForce { get; } = new SimpleForce(Vector2.Zero, 0f);
-
         public PlayerIndex PlayerIndex { get; }
         
         public override void SetPosition(Vector2 position)
@@ -45,7 +43,6 @@ namespace Omegas.Client.MacOs.Models
                 Color = Color,
                 HeartColor = HeartColor
             };
-            ActiveForces.Add(ControllerForce);
         }
 
         private RectangleF GetHeartBoundingBox()

@@ -7,6 +7,7 @@ using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Map;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.SceneComponents;
 using FrameworkSDK.MonoGame.SceneComponents.Controllers;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
@@ -30,7 +31,7 @@ namespace Omegas.Client.MacOs
         public IDisplayService DisplayService { get; }
         public ICollisionDetector2D CollisionDetector2D { get; }
         private PlayerData Player1Data { get; } = new PlayerData(PlayerIndex.One, Color.Red, Color.DarkRed, new Vector2(200, 200), 100f);
-        private PlayerData Player2Data { get; } = new PlayerData(PlayerIndex.Two, Color.Blue, Color.DarkRed, new Vector2(800, 200), 50f);
+        private PlayerData Player2Data { get; } = new PlayerData(PlayerIndex.Two, Color.Blue, Color.DarkRed, new Vector2(400, 200), 50f);
         
         private Tiled2DMap _map;
         private TiledMapDrawableComponent _mapDrawableComponent;
@@ -63,27 +64,23 @@ namespace Omegas.Client.MacOs
             _mapDrawableComponent = (TiledMapDrawableComponent) AddView(new ViewModel<Tiled2DMap>(_map));
             Physics2D.AddBody(new PhysicsMapBounds2D(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 70; i++)
             {
-                var size = RandomService.NextFloat(3, 50);
-                bool collide = true;
-                Vector2 position = Vector2.Zero;
-                SphereObjectData neutral = null;
-                while (collide)
-                {
-                    position = new Vector2(
-                        RandomService.NextFloat(size, _map.WorldSize.X - size),
-                        RandomService.NextFloat(size, _map.WorldSize.Y - size));
-                
-                    neutral = new SphereObjectData(Color.LightGray, position, size, Teams.Neutral);
-                    var collision1 = CollisionDetector2D.GetCollision(neutral.Fixture, Player1Data.Fixture);
-                    var collision2 = CollisionDetector2D.GetCollision(neutral.Fixture, Player2Data.Fixture);
-                    collide = !collision1.IsEmpty || !collision2.IsEmpty;
-                }
-                
-                AddView(neutral);
+                PlaceNeutral(3f, 10f);
             }
-            
+            for (int i = 0; i < 20; i++)
+            {
+                PlaceNeutral(10f, 30f);
+            }
+            for (int i = 0; i < 15; i++)
+            {
+                PlaceNeutral(30f, 60f);
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                PlaceNeutral(60f, 120f);
+            }
+
             // Players
             AddView(Player1Data);
             AddView(Player2Data);
@@ -94,14 +91,33 @@ namespace Omegas.Client.MacOs
             Camera2DService.SetActiveCamera(camera);
             AddController(new CenteredCameraController(Player1Data, camera));
             
-            // Debug
-            // AddView(new DebugInfoComponentData
-            // {
-            //     Font = GameResourcePackage.Font,
-            // });
+            //Debug
+            AddView(new DebugInfoComponentData
+            {
+                Font = GameResourcePackage.Font,
+                Tab = 15f,
+            });
+        }
 
-            // Test
-            // Physics2D.ApplyImpulse(Player2Data, new Vector2(-20f, 0));
+        private void PlaceNeutral(float sizeMin, float sizeMax)
+        {
+            var size = RandomService.NextFloat(sizeMin, sizeMax);
+            bool collide = true;
+            Vector2 position = Vector2.Zero;
+            SphereObjectData neutral = null;
+            while (collide)
+            {
+                position = new Vector2(
+                    RandomService.NextFloat(size, _map.WorldSize.X - size),
+                    RandomService.NextFloat(size, _map.WorldSize.Y - size));
+                
+                neutral = new SphereObjectData(Color.LightGray, position, size, Teams.Neutral);
+                var collision1 = CollisionDetector2D.GetCollision(neutral.Fixture, Player1Data.Fixture);
+                var collision2 = CollisionDetector2D.GetCollision(neutral.Fixture, Player2Data.Fixture);
+                collide = !collision1.IsEmpty || !collision2.IsEmpty;
+            }
+                
+            AddView(neutral);
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
