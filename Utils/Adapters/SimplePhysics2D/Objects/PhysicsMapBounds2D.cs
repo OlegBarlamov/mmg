@@ -14,19 +14,19 @@ namespace SimplePhysics2D.Objects
         public RectangleF Rectangle => _rectangle;
         private RectangleF _rectangle;
 
-        public IFixture2D Fixture => _fixture;
-        public bool OnCollision(IColliderBody2D body)
+        IFixture2D IColliderBody2D.Fixture => Fixture;
+        public virtual bool OnCollision(IColliderBody2D body)
         {
             return false;
         }
 
-        private readonly Map2DBoundsFixture _fixture;
+        public Map2DBoundsFixture Fixture { get; }
         
         public Vector2 Position => Rectangle.Location;
         public void SetPosition(Vector2 position)
         {
             _rectangle.Location = position;
-            _fixture.Rectangle = _rectangle;
+            Fixture.Rectangle = _rectangle;
         }
 
         public float Rotation { get; } = 0f;
@@ -50,7 +50,7 @@ namespace SimplePhysics2D.Objects
         public PhysicsMapBounds2D(RectangleF rectangle, [NotNull] IPhysicsBody2DParameters parameters)
         {
             _rectangle = rectangle;
-            _fixture = new Map2DBoundsFixture(this, rectangle);
+            Fixture = new Map2DBoundsFixture(this, rectangle);
             Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
         }
     }

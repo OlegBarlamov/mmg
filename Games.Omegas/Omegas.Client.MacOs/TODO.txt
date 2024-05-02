@@ -1,5 +1,3 @@
-- Y - button behaviour
-- Realistic consumption based on squares
-- Borders bounds
 - Split screen
+- Proper start
 -----

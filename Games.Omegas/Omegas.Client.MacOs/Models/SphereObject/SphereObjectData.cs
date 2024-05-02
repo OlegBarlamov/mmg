@@ -82,6 +82,11 @@ namespace Omegas.Client.MacOs.Models.SphereObject
                     CollidingSpheres.Add(sphereObjectData);
             }
 
+            if (body is MapBoundaries map)
+            {
+                return map.OnCollision(this);
+            }
+
             return false;
         }
 

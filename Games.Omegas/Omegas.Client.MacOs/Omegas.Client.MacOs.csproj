@@ -41,6 +41,7 @@
     <Compile Include="Models\Character\PlayerData.cs" />
     <Compile Include="Models\Character\PlayerView.cs" />
     <Compile Include="Models\Character\PlayerViewModel.cs" />
+    <Compile Include="Models\MapBoundaries.cs" />
     <Compile Include="Models\OmegaTiledMap.cs" />
     <Compile Include="Models\SphereObject\SphereObjectController.cs" />
     <Compile Include="Models\SphereObject\SphereObjectData.cs" />

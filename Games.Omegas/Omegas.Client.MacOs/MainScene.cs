@@ -62,7 +62,7 @@ namespace Omegas.Client.MacOs
             // Map
             _map = new OmegaTiledMap(GameResourcePackage.MapBackgroundTexturesList);
             _mapDrawableComponent = (TiledMapDrawableComponent) AddView(new ViewModel<Tiled2DMap>(_map));
-            Physics2D.AddBody(new PhysicsMapBounds2D(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
+            Physics2D.AddBody(new MapBoundaries(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
 
             for (int i = 0; i < 70; i++)
             {
