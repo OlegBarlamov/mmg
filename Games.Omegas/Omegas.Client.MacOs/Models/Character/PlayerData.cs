@@ -27,20 +27,16 @@ namespace Omegas.Client.MacOs.Models
             PlayerViewModel.HeartBoundingBox = GetHeartBoundingBox();
         }
 
-        public override SphereObjectViewModel ViewModel => PlayerViewModel;
-        
         public PlayerViewModel PlayerViewModel { get; }
 
-        public PlayerData(PlayerIndex playerIndex, Color color, Color heartColor, Vector2 position, float size)
-            : base(color, position, size, playerIndex.ToTeam())
+        public PlayerData(PlayerIndex playerIndex, Color color, Color heartColor, Vector2 position, float health)
+            : base(color, position, health, playerIndex.ToTeam())
         {
             PlayerIndex = playerIndex;
             HeartColor = heartColor;
-            PlayerViewModel  = new PlayerViewModel
+            PlayerViewModel  = new PlayerViewModel(ViewModel)
             {
-                BoundingBox = GetBoundingBox(),
                 HeartBoundingBox = GetHeartBoundingBox(),
-                Color = Color,
                 HeartColor = HeartColor
             };
         }

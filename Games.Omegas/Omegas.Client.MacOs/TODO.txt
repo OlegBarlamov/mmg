@@ -1,9 +1,5 @@
-- Collision + Consumption based on the Team enum:
-    - Neutral
-    - Player1
-    - Player2
-- The proper teams and colors + Map generation
-- Custom sized fire
 - Y - button behaviour
+- Realistic consumption based on squares
+- Borders bounds
 - Split screen
 -----

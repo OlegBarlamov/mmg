@@ -5,13 +5,15 @@ using FrameworkSDK.MonoGame.Physics2D;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.Geometry;
+using NetExtensions.Helpers;
 using Omegas.Client.MacOs.Services;
 using SimplePhysics2D.Fixtures;
 
 namespace Omegas.Client.MacOs.Models.SphereObject
 {
-    public class SphereObjectData : IColliderBody2D 
+    public class SphereObjectData : IColliderBody2D
     {
+        public const float MinHealth = MathHelper.Pi;
         public Teams Team { get; }
         
         public Color Color { get; }
@@ -38,20 +40,29 @@ namespace Omegas.Client.MacOs.Models.SphereObject
             Rotation = rotation;
         }
         
-        public float Size { get; private set; }
+        public float Health { get; private set; }
 
-        public void SetSize(float size)
+        public void SetHealth(float health)
+        {
+            Health = health;
+            var radius = GetRadiusFromHealth(health);
+            SetSize(radius);
+        }
+
+        public float Size { get; private set; } = 1f;
+
+        private void SetSize(float size)
         {
             Size = size;
             ViewModel.BoundingBox = GetBoundingBox();
             _fixture.Radius = size;
-            _parameters.Mass = Size / 10f;
+            _parameters.Mass = GetMassFromHealth(Health);
         }
 
         public IPhysicsBody2DParameters Parameters => _parameters;
         private readonly DynamicBody2DParameters _parameters  = new DynamicBody2DParameters
         {
-            FrictionFactor = 0.02f
+            FrictionFactor = 0.1f
         };
         
         public IScene2DPhysics Scene { get; set; }
@@ -76,23 +87,37 @@ namespace Omegas.Client.MacOs.Models.SphereObject
 
         private readonly CircleFixture _fixture;
         
-        public virtual SphereObjectViewModel ViewModel { get; }
+        public SphereObjectViewModel ViewModel { get; }
 
-        public SphereObjectData(Color color, Vector2 position, float size, Teams team)
+        public SphereObjectData(Color color, Vector2 position, float health, Teams team)
         {
-            Size = size;
             Position = position;
             Color = color;
             Team = team;
             
             _fixture = new CircleFixture(this, Position, Size);
-            _parameters.Mass = Size / 10f;
-
             ViewModel  = new SphereObjectViewModel
             {
                 BoundingBox = GetBoundingBox(),
                 Color = Color,
             };
+
+            SetHealth(health);
+        }
+
+        public static float GetRadiusFromHealth(float health)
+        {
+            return MathExtended.Sqrt(health / MathHelper.Pi);
+        }
+
+        public static float GetMassFromHealth(float health)
+        {
+            return health * 0.01f;
+        }
+
+        public static float GetHealthFromRadius(float radius)
+        {
+            return MathExtended.Sqr(radius) * MathHelper.Pi;
         }
 
         protected RectangleF GetBoundingBox()

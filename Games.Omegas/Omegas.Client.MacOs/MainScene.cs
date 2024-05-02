@@ -30,8 +30,8 @@ namespace Omegas.Client.MacOs
         public ICamera2DService Camera2DService { get; }
         public IDisplayService DisplayService { get; }
         public ICollisionDetector2D CollisionDetector2D { get; }
-        private PlayerData Player1Data { get; } = new PlayerData(PlayerIndex.One, Color.Red, Color.DarkRed, new Vector2(200, 200), 100f);
-        private PlayerData Player2Data { get; } = new PlayerData(PlayerIndex.Two, Color.Blue, Color.DarkRed, new Vector2(400, 200), 50f);
+        private PlayerData Player1Data { get; } = new PlayerData(PlayerIndex.One, Color.Red, Color.DarkRed, new Vector2(200, 200), SphereObjectData.GetHealthFromRadius(50f));
+        private PlayerData Player2Data { get; } = new PlayerData(PlayerIndex.Two, Color.Blue, Color.DarkRed, new Vector2(400, 200), SphereObjectData.GetHealthFromRadius(50f));
         
         private Tiled2DMap _map;
         private TiledMapDrawableComponent _mapDrawableComponent;
@@ -66,7 +66,7 @@ namespace Omegas.Client.MacOs
 
             for (int i = 0; i < 70; i++)
             {
-                PlaceNeutral(3f, 10f);
+                PlaceNeutral(4f, 10f);
             }
             for (int i = 0; i < 20; i++)
             {
@@ -102,6 +102,7 @@ namespace Omegas.Client.MacOs
         private void PlaceNeutral(float sizeMin, float sizeMax)
         {
             var size = RandomService.NextFloat(sizeMin, sizeMax);
+            var health = SphereObjectData.GetHealthFromRadius(size);
             bool collide = true;
             Vector2 position = Vector2.Zero;
             SphereObjectData neutral = null;
@@ -111,7 +112,7 @@ namespace Omegas.Client.MacOs
                     RandomService.NextFloat(size, _map.WorldSize.X - size),
                     RandomService.NextFloat(size, _map.WorldSize.Y - size));
                 
-                neutral = new SphereObjectData(Color.LightGray, position, size, Teams.Neutral);
+                neutral = new SphereObjectData(Color.LightGray, position, health, Teams.Neutral);
                 var collision1 = CollisionDetector2D.GetCollision(neutral.Fixture, Player1Data.Fixture);
                 var collision2 = CollisionDetector2D.GetCollision(neutral.Fixture, Player2Data.Fixture);
                 collide = !collision1.IsEmpty || !collision2.IsEmpty;

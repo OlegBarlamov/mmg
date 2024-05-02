@@ -223,6 +223,11 @@ namespace NetExtensions.Helpers
 			return value * value;
 		}
 
+		public static float Sqrt(float value)
+		{
+			return (float)Math.Sqrt(value);
+		}
+
 		public static float DecreaseByModule(float value, float decreaseBy)
 		{
 			var newValue = value - decreaseBy;

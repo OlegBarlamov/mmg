@@ -2,6 +2,7 @@ using System;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Helpers;
 using Omegas.Client.MacOs.Models;
 using Omegas.Client.MacOs.Models.SphereObject;
 
@@ -18,9 +19,9 @@ namespace Omegas.Client.MacOs.Services
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
         }
 
-        public SphereObjectData AddSphereObject(Color color, Vector2 position, float size, Teams team)
+        public SphereObjectData AddSphereObject(Color color, Vector2 position, float health, Teams team)
         {
-            var data = new SphereObjectData(color, position, size, team);
+            var data = new SphereObjectData(color, position, health, team);
 
             Scene.AddView(data);
 
@@ -29,40 +30,42 @@ namespace Omegas.Client.MacOs.Services
 
         public SphereObjectData CreateBulletWorkpiece(PlayerData player, Vector2 originNormal)
         {
-            var bulletSize = Math.Max(2, player.Size / 50);
+            var bulletHealth = Math.Max(SphereObjectData.MinHealth, player.Health * 0.005f);
+            var bulletSize = SphereObjectData.GetRadiusFromHealth(bulletHealth);
             var bulletPosition = player.Position + originNormal * (player.Size + bulletSize);
             
-            var data = AddSphereObject(player.Color, bulletPosition, bulletSize, player.Team);
+            var data = AddSphereObject(player.Color, bulletPosition, bulletHealth, player.Team);
             data.NoClipMode = true;
             
-            TakeDamage(player, bulletSize);
+            TakeDamage(player, bulletHealth);
 
             return data;
         }
 
         public void CancelBullet(PlayerData player, SphereObjectData bullet)
         {
-            IncreaseSize(player, bullet.Size);
+            IncreaseHealth(player, bullet.Health);
             Kill(bullet);
         }
 
         public void ReleaseBullet(PlayerData player, SphereObjectData bullet, Vector2 origin, Vector2 originNormal)
         {
-            var targetVelocity = player.Velocity + origin * 20f;
+            var impulseVelocity = origin * 30f;
+            var targetVelocity = player.Velocity + impulseVelocity;
             if (player.Velocity != Vector2.Zero && Vector2.Dot(Vector2.Normalize(player.Velocity), originNormal) > 0)
                 bullet.SetPosition(bullet.Position + player.Velocity);
             
             bullet.NoClipMode = false;
-            var impulse = targetVelocity * bullet.Parameters.Mass;
-            Scene.Physics2D.ApplyImpulse(bullet, impulse);
-            Scene.Physics2D.ApplyImpulse(player, -impulse);
+            
+            Scene.Physics2D.ApplyImpulse(bullet, targetVelocity * bullet.Parameters.Mass);
+            Scene.Physics2D.ApplyImpulse(player, -1 * impulseVelocity * bullet.Parameters.Mass);
         }
 
         public void FillBullet(PlayerData playerData, SphereObjectData bullet, float factor, GameTime gameTime)
         {
-            var fillingSpeed = factor * gameTime.ElapsedGameTime.Milliseconds * 0.005f;
+            var fillingSpeed = factor * gameTime.ElapsedGameTime.Milliseconds * 0.1f;
             TakeDamage(playerData, fillingSpeed);
-            IncreaseSize(bullet, fillingSpeed);
+            IncreaseHealth(bullet, fillingSpeed);
         }
 
         public void HandleConsumption(SphereObjectData sphereA, SphereObjectData sphereB, GameTime gameTime)
@@ -72,41 +75,66 @@ namespace Omegas.Client.MacOs.Services
             
             var biggerSphere = sphereA.Size > sphereB.Size ? sphereA : sphereB;
             var smallerSphere = sphereA.Size > sphereB.Size ? sphereB : sphereA;
-            var consumptionSpeed = 1 * gameTime.ElapsedGameTime.Milliseconds * 0.01f;
 
-            if (sphereA.Team.IsSelf(sphereB.Team))
-            {
-                IncreaseSize(biggerSphere, consumptionSpeed);
-                TakeDamage(smallerSphere, consumptionSpeed);
-            }
+            var oldGap = Vector2.Distance(biggerSphere.Position, smallerSphere.Position) - (biggerSphere.Size + smallerSphere.Size);
+            
             if (sphereA.Team.IsNeutralWith(sphereB.Team))
             {
-                IncreaseSize(biggerSphere, consumptionSpeed / 2);
-                TakeDamage(smallerSphere, consumptionSpeed);
-                var normal = Vector2.Normalize(biggerSphere.Position - smallerSphere.Position);
-                smallerSphere.SetPosition(smallerSphere.Position + normal * consumptionSpeed);
+                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.25f;
+                IncreaseHealth(biggerSphere, healthConsumption);
+                TakeDamage(smallerSphere, healthConsumption);
+            }
+            if (sphereA.Team.IsSelf(sphereB.Team))
+            {
+                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.25f;
+                IncreaseHealth(biggerSphere, healthConsumption);
+                TakeDamage(smallerSphere, healthConsumption);
             }
             if (sphereA.Team.IsEnemyWith(sphereB.Team))
             {
-                TakeDamage(biggerSphere, consumptionSpeed);
-                TakeDamage(smallerSphere, consumptionSpeed);
-                var normal = Vector2.Normalize(biggerSphere.Position - smallerSphere.Position);
-                smallerSphere.SetPosition(smallerSphere.Position + normal * consumptionSpeed * 3f);
+                var radiusConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.005f;
+                var biggerSphereHealthDamage = biggerSphere.Health - SphereObjectData.GetHealthFromRadius(biggerSphere.Size - radiusConsumption);
+                var smallerSphereHealthDamage = smallerSphere.Health - SphereObjectData.GetHealthFromRadius(smallerSphere.Size - radiusConsumption);
+                TakeDamage(biggerSphere, biggerSphereHealthDamage);
+                TakeDamage(smallerSphere, smallerSphereHealthDamage);
             }
+            
+            var newGap = Vector2.Distance(biggerSphere.Position, smallerSphere.Position) - (biggerSphere.Size + smallerSphere.Size);
+            var gapsDifference = newGap - oldGap;
+            if (gapsDifference > 0)
+            {
+                var normal = Vector2.Normalize(biggerSphere.Position - smallerSphere.Position);
+                smallerSphere.SetPosition(smallerSphere.Position + normal * gapsDifference * 1.25f);
+            }
+        }
+
+        public void JumpAction(PlayerData player, Vector2 originNormal)
+        {
+            var bulletHealth = Math.Max(player.Health * 0.70f, SphereObjectData.MinHealth);
+            var bulletSize = SphereObjectData.GetRadiusFromHealth(bulletHealth);
+            var bulletPosition = player.Position + originNormal * (player.Size + bulletSize);
+            
+            AddSphereObject(player.Color, bulletPosition, bulletHealth, player.Team);
+            
+            var playerOldMass = player.Parameters.Mass;
+
+            TakeDamage(player, bulletHealth);
+            
+            Scene.Physics2D.ApplyImpulse(player, -2 * originNormal * player.Velocity * player.Parameters.Mass -1 * originNormal * playerOldMass);
         }
 
         public void TakeDamage(SphereObjectData sphere, float damage)
         {
-            sphere.SetSize(Math.Max(0, sphere.Size - damage));
-            if (sphere.Size <= 0)
+            sphere.SetHealth(Math.Max(0, sphere.Health - damage));
+            if (sphere.Health < SphereObjectData.MinHealth)
             {
                 Kill(sphere);
             }
         }
 
-        public void IncreaseSize(SphereObjectData sphere, float size)
+        public void IncreaseHealth(SphereObjectData sphere, float health)
         {
-            sphere.SetSize(sphere.Size + size);
+            sphere.SetHealth(sphere.Health + health);
         }
 
         public void Kill(SphereObjectData sphere)

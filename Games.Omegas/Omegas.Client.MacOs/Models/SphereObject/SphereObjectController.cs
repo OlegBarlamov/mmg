@@ -38,13 +38,13 @@ namespace Omegas.Client.MacOs.Models.SphereObject
                 
                 if (!sphere.Dead)
                 {
-                    GameService.HandleConsumption(DataModel, sphere, gameTime);
-
                     if ((sphere.Position - DataModel.Position).LengthSquared() >
                         MathExtended.Sqr(sphere.Size + DataModel.Size))
                     {
                         _collidingSpheresToRemove.Add(sphere);
                     }
+                    
+                    GameService.HandleConsumption(DataModel, sphere, gameTime);
                 }
                 else
                 {

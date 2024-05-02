@@ -41,35 +41,11 @@ namespace Omegas.Client.MacOs.Models
             {
                 UpdateLeftThumbStick();
 
-                if (_gamePadProvider.IsButtonDown(Buttons.A) && _bullet != null)
-                {
-                    OmegaGameService.FillBullet(DataModel, _bullet, _fillFactor, gameTime);
-                    _fillFactor += gameTime.ElapsedGameTime.Milliseconds * 0.001f;
-                }
-                else
-                {
-                    _fillFactor = 1f;
-                }
-                
-                if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _heartOrigin != Vector2.Zero)
-                {
-                    _bullet = OmegaGameService.CreateBulletWorkpiece(DataModel, _heartOriginNormal);
-                }
+                UpdateButtonA(gameTime);
 
-                if (_gamePadProvider.IsButtonReleasedOnce(Buttons.A) && _bullet != null)
+                if (_gamePadProvider.IsButtonPressedOnce(Buttons.Y) && _heartOrigin != Vector2.Zero)
                 {
-                    if (_heartOrigin == Vector2.Zero)
-                    {
-                        OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOriginNormal, _heartOriginNormal);
-                        _bullet = null;
-                        //OmegaGameService.CancelBullet(DataModel, _bullet);
-                        //_bullet = null;
-                    }
-                    else
-                    {
-                        OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOrigin, _heartOriginNormal);
-                        _bullet = null;
-                    }
+                    OmegaGameService.JumpAction(DataModel, _heartOriginNormal);
                 }
             }
         }
@@ -77,6 +53,40 @@ namespace Omegas.Client.MacOs.Models
         private Vector2 GetBulletPosition(float bulletSize)
         {
             return DataModel.Position + _heartOriginNormal * (DataModel.Size + bulletSize);
+        }
+
+        private void UpdateButtonA(GameTime gameTime)
+        {
+            if (_gamePadProvider.IsButtonDown(Buttons.A) && _bullet != null)
+            {
+                OmegaGameService.FillBullet(DataModel, _bullet, _fillFactor, gameTime);
+                _fillFactor += gameTime.ElapsedGameTime.Milliseconds * 0.01f;
+            }
+            else
+            {
+                _fillFactor = 1f;
+            }
+                
+            if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _heartOrigin != Vector2.Zero)
+            {
+                _bullet = OmegaGameService.CreateBulletWorkpiece(DataModel, _heartOriginNormal);
+            }
+
+            if (_gamePadProvider.IsButtonReleasedOnce(Buttons.A) && _bullet != null)
+            {
+                if (_heartOrigin == Vector2.Zero)
+                {
+                    // OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOriginNormal, _heartOriginNormal);
+                    // _bullet = null;
+                    OmegaGameService.CancelBullet(DataModel, _bullet);
+                    _bullet = null;
+                }
+                else
+                {
+                    OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOrigin, _heartOriginNormal);
+                    _bullet = null;
+                }
+            }
         }
 
         private void UpdateLeftThumbStick()
