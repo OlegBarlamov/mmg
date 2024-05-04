@@ -18,7 +18,7 @@ namespace Omegas.Client.MacOs.Models
 
         private static Tiled2DCell[,] GetData(IReadOnlyList<Texture2D> texturesList)
         {
-            var mapData = new Tiled2DCell[10, 10];
+            var mapData = new Tiled2DCell[4, 4];
             mapData.Fill((x, y) =>
             {
                 var texture = texturesList.PickRandom();

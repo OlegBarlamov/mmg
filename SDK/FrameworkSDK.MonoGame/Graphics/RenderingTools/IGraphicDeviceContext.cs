@@ -15,8 +15,8 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
     {
         IDrawContext DrawContext { get; }
         IRenderContext RenderContext { get; }
-        ICamera2DProvider Camera2DProvider { get; }
-        ICamera3DProvider Camera3DProvider { get; }
+        ICamera2DService Camera2DService { get; }
+        ICamera3DService Camera3DService { get; }
         IDisplayService DisplayService { get; }
         IDebugInfoService DebugInfoService { get; }
 

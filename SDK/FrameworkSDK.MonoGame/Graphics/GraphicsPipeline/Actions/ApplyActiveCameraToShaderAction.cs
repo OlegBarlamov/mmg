@@ -20,8 +20,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
         {
-            Effect.View = graphicDeviceContext.Camera3DProvider.GetActiveCamera().GetView();
-            Effect.Projection = graphicDeviceContext.Camera3DProvider.GetActiveCamera().GetProjection();
+            Effect.View = graphicDeviceContext.Camera3DService.GetActiveCamera().GetView();
+            Effect.Projection = graphicDeviceContext.Camera3DService.GetActiveCamera().GetProjection();
         }
     }
 }

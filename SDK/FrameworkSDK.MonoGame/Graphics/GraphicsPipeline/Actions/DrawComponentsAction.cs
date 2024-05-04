@@ -12,7 +12,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         private static ICamera2D CameraProvider(IGraphicDeviceContext context)
         {
-            return context.Camera2DProvider.GetActiveCamera();
+            return context.Camera2DService.GetActiveCamera();
         }
     }
 }

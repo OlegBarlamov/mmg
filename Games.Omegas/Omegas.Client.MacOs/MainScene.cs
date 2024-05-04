@@ -3,6 +3,7 @@ using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame.Graphics.Camera2D;
 using FrameworkSDK.MonoGame.Graphics.DrawableComponents;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
+using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Map;
@@ -30,11 +31,14 @@ namespace Omegas.Client.MacOs
         public ICamera2DService Camera2DService { get; }
         public IDisplayService DisplayService { get; }
         public ICollisionDetector2D CollisionDetector2D { get; }
-        private PlayerData Player1Data { get; } = new PlayerData(PlayerIndex.One, Color.Red, Color.DarkRed, new Vector2(200, 200), SphereObjectData.GetHealthFromRadius(50f));
-        private PlayerData Player2Data { get; } = new PlayerData(PlayerIndex.Two, Color.Blue, Color.DarkRed, new Vector2(400, 200), SphereObjectData.GetHealthFromRadius(50f));
+        private PlayerData Player1Data { get; set; }
+        private PlayerData Player2Data { get; set; }
         
         private Tiled2DMap _map;
         private TiledMapDrawableComponent _mapDrawableComponent;
+
+        private SimpleCamera2D _player1Camera;
+        private SimpleCamera2D _player2Camera;
         
         public MainScene(
             [NotNull] IInputService inputService,
@@ -64,19 +68,22 @@ namespace Omegas.Client.MacOs
             _mapDrawableComponent = (TiledMapDrawableComponent) AddView(new ViewModel<Tiled2DMap>(_map));
             Physics2D.AddBody(new MapBoundaries(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
 
-            for (int i = 0; i < 70; i++)
+            Player1Data = new PlayerData(PlayerIndex.One, Color.Red, Color.DarkRed, new Vector2(200, 200), SphereObjectData.GetHealthFromRadius(50f));
+            Player2Data = new PlayerData(PlayerIndex.Two, Color.Blue, Color.DarkBlue, new Vector2(_map.WorldSize.X - 200, _map.WorldSize.Y - 200), SphereObjectData.GetHealthFromRadius(50f));
+            
+            for (int i = 0; i < 50; i++)
             {
                 PlaceNeutral(4f, 10f);
             }
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 10; i++)
             {
                 PlaceNeutral(10f, 30f);
             }
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 8; i++)
             {
                 PlaceNeutral(30f, 60f);
             }
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 PlaceNeutral(60f, 120f);
             }
@@ -86,17 +93,16 @@ namespace Omegas.Client.MacOs
             AddView(Player2Data);
 
             // Camera
-            var camera = new SimpleCamera2D(new SizeInt(DisplayService.PreferredBackBufferWidth,
-                DisplayService.PreferredBackBufferHeight));
-            Camera2DService.SetActiveCamera(camera);
-            AddController(new CenteredCameraController(Player1Data, camera));
-            
+            AddController(new CenteredCameraController(Player1Data, _player1Camera));
+            AddController(new CenteredCameraController(Player2Data, _player2Camera));
+            // AddController(new KeyboardObject2DPositioningController(InputService, Player1Data,
+            //     new KeyboardPositioningController.KeysMap()));
             //Debug
-            AddView(new DebugInfoComponentData
-            {
-                Font = GameResourcePackage.Font,
-                Tab = 15f,
-            });
+            // AddView(new DebugInfoComponentData
+            // {
+            //     Font = GameResourcePackage.Font,
+            //     Tab = 15f,
+            // });
         }
 
         private void PlaceNeutral(float sizeMin, float sizeMax)
@@ -121,9 +127,58 @@ namespace Omegas.Client.MacOs
             AddView(neutral);
         }
 
-        protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
+        protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder builder)
         {
-            return graphicsPipelineBuilder.Drawing2DPreset(Color.CornflowerBlue, new BeginDrawConfig()).Build();
+            var displaySize = new SizeInt(
+                DisplayService.PreferredBackBufferWidth,
+                DisplayService.PreferredBackBufferHeight);
+            
+            var clearColor = Color.DarkMagenta;
+            var player1RenderTarget = builder.RenderTargetsFactoryService.CreateRenderTarget(
+                displaySize.Width / 2,
+                displaySize.Height
+            );
+            var player2RenderTarget = builder.RenderTargetsFactoryService.CreateRenderTarget(
+                displaySize.Width / 2,
+                displaySize.Height
+            );
+            var player2RenderTargetOffset = new Vector2((float)displaySize.Width / 2, 0);
+            
+            _player1Camera = new SimpleCamera2D(new SizeInt(displaySize.Width / 2, displaySize.Height));
+            _player2Camera = new SimpleCamera2D(new SizeInt(displaySize.Width / 2, displaySize.Height));
+            
+            var separatorRec = new RectangleF((float)displaySize.Width / 2, 0, 1, displaySize.Height);
+            
+            return builder
+                .SetRenderTarget(player1RenderTarget)
+                .Clear(clearColor)
+                .SetActiveCamera2D(() => _player1Camera)
+                .BeginDraw(new BeginDrawConfig())
+                .DrawComponents(GraphicsPipeline2DDrawingPreset.PipelineActions.DrawComponents)
+                .DrawComponents(GraphicsPipeline2DDrawingPreset.PipelineActions.DrawDebugComponents)
+                .EndDraw()
+                .SetRenderTarget(player2RenderTarget)
+                .Clear(clearColor)
+                .SetActiveCamera2D(() => _player2Camera)
+                .BeginDraw(new BeginDrawConfig())
+                .DrawComponents(GraphicsPipeline2DDrawingPreset.PipelineActions.DrawComponents)
+                .DrawComponents(GraphicsPipeline2DDrawingPreset.PipelineActions.DrawDebugComponents)
+                .EndDraw()
+                .SetRenderTargetToDisplay()
+                .Clear(clearColor)
+                .BeginDraw(new BeginDrawConfig())
+                .DrawRenderTarget(player1RenderTarget)
+                .DrawRenderTarget(player2RenderTarget, () => player2RenderTargetOffset)
+                .Do(context =>
+                {
+                    context.DrawContext.Draw(GameResourcePackage.SolidColor, separatorRec, Color.WhiteSmoke);
+                })
+                .DrawComponents(context => context.Camera2DService.GetScreenCamera(), GraphicsPipeline2DDrawingPreset.PipelineActions.DrawUI)
+                .DrawComponents(context => context.Camera2DService.GetScreenCamera(), GraphicsPipeline2DDrawingPreset.PipelineActions.DrawDebugUI)
+                .EndDraw()
+                .Build();
+            // return graphicsPipelineBuilder.Drawing2DPreset(Color.DarkMagenta)
+            //     .Build();
         }
     }
 }

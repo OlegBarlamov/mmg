@@ -26,7 +26,7 @@ namespace Omegas.Client.MacOs
         {
             var gameParameters = new DefaultGameParameters
             {
-                BackBufferSize = new SizeInt(1280, 768),
+                BackBufferSize = new SizeInt(1920, 1080),
                 IsMouseVisible = false,
             };
             using (var gameFactory = OmegasGameFactory.GetFactory(IsDebug, gameParameters).Construct())

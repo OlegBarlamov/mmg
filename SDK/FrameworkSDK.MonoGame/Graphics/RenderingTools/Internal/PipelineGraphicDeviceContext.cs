@@ -16,8 +16,8 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         private readonly CameraBasedDrawContext _drawContext;
         public IRenderContext RenderContext { get; }
         public IGeometryRenderer GeometryRenderer { get; }
-        public ICamera2DProvider Camera2DProvider { get; }
-        public ICamera3DProvider Camera3DProvider { get; }
+        public ICamera2DService Camera2DService { get; }
+        public ICamera3DService Camera3DService { get; }
         public IDisplayService DisplayService { get; }
         public IDebugInfoService DebugInfoService { get; }
         private IIndicesBuffersFiller IndicesBuffersFiller { get; }
@@ -30,20 +30,24 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             RenderContext.Dispose();
         }
 
-        public PipelineGraphicDeviceContext([NotNull] SpriteBatch spriteBatch, [NotNull] GraphicsDevice graphicsDevice,
-            [NotNull] IDisplayService displayService, [NotNull] ICamera3DProvider camera3DProvider,
-            [NotNull] IDebugInfoService debugInfoService, [NotNull] IIndicesBuffersFiller indicesBuffersFiller,
-            [NotNull] ICamera2DProvider camera2DProvider) : base()
+        public PipelineGraphicDeviceContext(
+            [NotNull] SpriteBatch spriteBatch,
+            [NotNull] GraphicsDevice graphicsDevice,
+            [NotNull] IDisplayService displayService,
+            [NotNull] ICamera3DService camera3DService,
+            [NotNull] IDebugInfoService debugInfoService,
+            [NotNull] IIndicesBuffersFiller indicesBuffersFiller,
+            [NotNull] ICamera2DService camera2DService)
         {
             SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
             GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
-            Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
+            Camera3DService = camera3DService ?? throw new ArgumentNullException(nameof(camera3DService));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             IndicesBuffersFiller = indicesBuffersFiller ?? throw new ArgumentNullException(nameof(indicesBuffersFiller));
-            Camera2DProvider = camera2DProvider ?? throw new ArgumentNullException(nameof(camera2DProvider));
+            Camera2DService = camera2DService ?? throw new ArgumentNullException(nameof(camera2DService));
 
-            _drawContext = new CameraBasedDrawContext(new SpriteBatchDrawContext(SpriteBatch), Camera2DProvider);
+            _drawContext = new CameraBasedDrawContext(new SpriteBatchDrawContext(SpriteBatch), Camera2DService);
             RenderContext = new RenderContext(GraphicsDevice, IndicesBuffersFiller);
             
             GeometryRenderer = new GeometryRenderer(RenderContext);

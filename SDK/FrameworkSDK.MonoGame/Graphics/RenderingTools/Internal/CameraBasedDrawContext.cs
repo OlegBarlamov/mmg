@@ -28,6 +28,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
 	    
 	    private ICamera2D GetActiveCamera()
 	    {
+		    // Default is ScreenCamera
 		    return CameraOverride ?? Camera2DProvider.GetScreenCamera();
 	    }
 

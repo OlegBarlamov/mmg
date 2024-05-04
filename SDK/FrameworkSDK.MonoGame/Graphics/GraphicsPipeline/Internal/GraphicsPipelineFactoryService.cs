@@ -22,11 +22,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         [NotNull] private IDisplayService DisplayService { get; }
         [NotNull] private IGraphicsPipelinePassAssociateService GraphicsPipelinePassAssociateService { get; }
         [NotNull] private IFrameworkLogger FrameworkLogger { get; }
-        [NotNull] private ICamera3DProvider Camera3DProvider { get; }
+        [NotNull] private ICamera3DService Camera3DService { get; }
         [NotNull] private IDebugInfoService DebugInfoService { get; }
         [NotNull] private IIndicesBuffersFiller IndicesBuffersFiller { get; }
         [NotNull] private IVideoBuffersFactoryService VideoBuffersFactoryService { get; }
-        [NotNull] private ICamera2DProvider Camera2DProvider { get; }
+        [NotNull] private ICamera2DService Camera2DService { get; }
 
         public GraphicsPipelineFactoryService(
             [NotNull] IGameHeartServices gameHeartServices,
@@ -34,22 +34,22 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             [NotNull] IDisplayService displayService,
             [NotNull] IGraphicsPipelinePassAssociateService graphicsPipelinePassAssociateService,
             [NotNull] IFrameworkLogger frameworkLogger,
-            [NotNull] ICamera3DProvider camera3DProvider,
+            [NotNull] ICamera3DService camera3DService,
             [NotNull] IDebugInfoService debugInfoService,
             [NotNull] IIndicesBuffersFiller indicesBuffersFiller,
             [NotNull] IVideoBuffersFactoryService videoBuffersFactoryService,
-            [NotNull] ICamera2DProvider camera2DProvider)
+            [NotNull] ICamera2DService camera2DService)
         {
             GameHeartServices = gameHeartServices ?? throw new ArgumentNullException(nameof(gameHeartServices));
             RenderTargetsFactoryService = renderTargetsFactoryService ?? throw new ArgumentNullException(nameof(renderTargetsFactoryService));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
             GraphicsPipelinePassAssociateService = graphicsPipelinePassAssociateService ?? throw new ArgumentNullException(nameof(graphicsPipelinePassAssociateService));
             FrameworkLogger = frameworkLogger ?? throw new ArgumentNullException(nameof(frameworkLogger));
-            Camera3DProvider = camera3DProvider ?? throw new ArgumentNullException(nameof(camera3DProvider));
+            Camera3DService = camera3DService ?? throw new ArgumentNullException(nameof(camera3DService));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
             IndicesBuffersFiller = indicesBuffersFiller ?? throw new ArgumentNullException(nameof(indicesBuffersFiller));
             VideoBuffersFactoryService = videoBuffersFactoryService ?? throw new ArgumentNullException(nameof(videoBuffersFactoryService));
-            Camera2DProvider = camera2DProvider ?? throw new ArgumentNullException(nameof(camera2DProvider));
+            Camera2DService = camera2DService ?? throw new ArgumentNullException(nameof(camera2DService));
         }
 
         public IGraphicsPipelineBuilder Create(IReadOnlyObservableList<IGraphicComponent> graphicComponents)
@@ -70,10 +70,10 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
                 GameHeartServices.SpriteBatch,
                 GameHeartServices.GraphicsDeviceManager.GraphicsDevice,
                 DisplayService,
-                Camera3DProvider,
+                Camera3DService,
                 DebugInfoService,
                 IndicesBuffersFiller,
-                Camera2DProvider
+                Camera2DService
                 );
         }
     }

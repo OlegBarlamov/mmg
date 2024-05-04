@@ -137,7 +137,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             }, GenerateActionName(nameof(SetRenderingConfigs)));
         }
 
-        private static string GenerateActionName(string prefix = "")
+        internal static string GenerateActionName(string prefix = "")
         {
             return NamesGenerator.Hash(HashType.Number, prefix);
         }

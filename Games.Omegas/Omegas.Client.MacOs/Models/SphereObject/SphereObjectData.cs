@@ -117,7 +117,7 @@ namespace Omegas.Client.MacOs.Models.SphereObject
 
         public static float GetMassFromHealth(float health)
         {
-            return health * 0.01f;
+            return health * 0.002f;
         }
 
         public static float GetHealthFromRadius(float radius)

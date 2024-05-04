@@ -80,13 +80,13 @@ namespace Omegas.Client.MacOs.Services
             
             if (sphereA.Team.IsNeutralWith(sphereB.Team))
             {
-                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.25f;
+                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.75f;
                 IncreaseHealth(biggerSphere, healthConsumption);
                 TakeDamage(smallerSphere, healthConsumption);
             }
             if (sphereA.Team.IsSelf(sphereB.Team))
             {
-                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.25f;
+                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.5f;
                 IncreaseHealth(biggerSphere, healthConsumption);
                 TakeDamage(smallerSphere, healthConsumption);
             }

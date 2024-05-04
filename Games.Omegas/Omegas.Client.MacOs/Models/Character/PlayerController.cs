@@ -76,10 +76,10 @@ namespace Omegas.Client.MacOs.Models
             {
                 if (_heartOrigin == Vector2.Zero)
                 {
-                    // OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOriginNormal, _heartOriginNormal);
-                    // _bullet = null;
-                    OmegaGameService.CancelBullet(DataModel, _bullet);
+                    OmegaGameService.ReleaseBullet(DataModel, _bullet, _heartOriginNormal, _heartOriginNormal);
                     _bullet = null;
+                    // OmegaGameService.CancelBullet(DataModel, _bullet);
+                    // _bullet = null;
                 }
                 else
                 {

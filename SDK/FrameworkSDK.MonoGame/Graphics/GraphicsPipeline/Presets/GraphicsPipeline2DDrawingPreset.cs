@@ -35,10 +35,11 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets
                 .BeginDraw(BeginDrawConfig)
                 .DrawComponents(PipelineActions.DrawComponents)
                 .DrawComponents(PipelineActions.DrawDebugComponents)
-                .DrawComponents(context => context.Camera2DProvider.GetScreenCamera(), PipelineActions.DrawUI)
-                .DrawComponents(context => context.Camera2DProvider.GetScreenCamera(), PipelineActions.DrawDebugUI);
+                .DrawComponents(context => context.Camera2DService.GetScreenCamera(), PipelineActions.DrawUI)
+                .DrawComponents(context => context.Camera2DService.GetScreenCamera(), PipelineActions.DrawDebugUI);
         }
 
+        // TODO do I need it?
         public void AddActionBeforeFinalDraw(IGraphicsPipelineAction action)
         {
             Builder.AddAction(action);
