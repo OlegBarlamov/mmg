@@ -1,4 +1,5 @@
 using System;
+using FrameworkSDK.MonoGame.Resources.Generation;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,13 +25,14 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets
         {
             BeginDrawConfig = beginDrawConfig ?? throw new ArgumentNullException(nameof(beginDrawConfig));
             
-            _defaultGraphicsPipelineRenderTarget = Builder.RenderTargetsFactoryService.CreateFullScreenRenderTarget(
+            _defaultGraphicsPipelineRenderTarget = Builder.RenderTargetsFactoryService.CreateDisplaySizedRenderTarget(
+                size => size,
                 false,
                 SurfaceFormat.Color,
                 DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
             Builder
-                .SetRenderTarget(_defaultGraphicsPipelineRenderTarget.RenderTarget)
+                .SetRenderTarget(_defaultGraphicsPipelineRenderTarget)
                 .Clear(clearColor)
                 .BeginDraw(BeginDrawConfig)
                 .DrawComponents(PipelineActions.DrawComponents)
@@ -49,7 +51,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline.Presets
         {
             return Builder
                 .EndDraw()
-                .DrawRenderTargetToDisplay(_defaultGraphicsPipelineRenderTarget.RenderTarget)
+                .DrawRenderTargetToDisplay(_defaultGraphicsPipelineRenderTarget)
                 .Build(this);
         }
 

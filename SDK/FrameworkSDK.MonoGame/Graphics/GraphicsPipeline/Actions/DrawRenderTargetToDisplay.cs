@@ -11,20 +11,20 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
     public class DrawRenderTargetToDisplay : GraphicsPipelineActionBase
     {
         public BeginDrawConfig BeginDrawConfig { get; }
-        public RenderTarget2D RenderTarget2D { get; }
+        public IRenderTargetWrapper RenderTargetWrapper { get; }
 
         public DrawRenderTargetToDisplay([NotNull] string name, [NotNull] BeginDrawConfig beginDrawConfig,
-            [NotNull] RenderTarget2D renderTarget2D) : base(name)
+            [NotNull] IRenderTargetWrapper renderTargetWrapper) : base(name)
         {
             BeginDrawConfig = beginDrawConfig ?? throw new ArgumentNullException(nameof(beginDrawConfig));
-            RenderTarget2D = renderTarget2D ?? throw new ArgumentNullException(nameof(renderTarget2D));
+            RenderTargetWrapper = renderTargetWrapper ?? throw new ArgumentNullException(nameof(renderTargetWrapper));
         }
         
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
         {
             graphicDeviceContext.BeginDraw(BeginDrawConfig);
             graphicDeviceContext.SetRenderTargetToDisplay();
-            graphicDeviceContext.DrawContext.Draw(RenderTarget2D, DrawParameters.StretchToFullScreen(graphicDeviceContext.DisplayService));
+            graphicDeviceContext.DrawContext.Draw(RenderTargetWrapper.RenderTarget, DrawParameters.StretchToFullScreen(graphicDeviceContext.DisplayService));
             graphicDeviceContext.EndDraw();
         }
     }

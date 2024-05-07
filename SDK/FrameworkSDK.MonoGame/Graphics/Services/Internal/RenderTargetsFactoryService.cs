@@ -4,6 +4,7 @@ using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
+using NetExtensions.Geometry;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics.Services
@@ -30,30 +31,6 @@ namespace FrameworkSDK.MonoGame.Graphics.Services
             return renderTarget;
         }
 
-        public RenderTarget2D CreateRenderTarget(int width, int height, bool mipMap, SurfaceFormat preferredFormat,
-            DepthFormat preferredDepthFormat, int preferredMultiSampleCount, RenderTargetUsage usage, bool shared)
-        {
-            var renderTarget = RenderTargetsFactory.CreateRenderTarget(width, height, mipMap, preferredFormat, preferredDepthFormat, preferredMultiSampleCount, usage, shared);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
-        public RenderTarget2D CreateRenderTarget(int width, int height, bool mipMap, SurfaceFormat preferredFormat,
-            DepthFormat preferredDepthFormat, int preferredMultiSampleCount, RenderTargetUsage usage)
-        {
-            var renderTarget = RenderTargetsFactory.CreateRenderTarget(width, height, mipMap, preferredFormat, preferredDepthFormat, preferredMultiSampleCount, usage);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
-        public RenderTarget2D CreateRenderTarget(int width, int height, bool mipMap, SurfaceFormat preferredFormat,
-            DepthFormat preferredDepthFormat)
-        {
-            var renderTarget = RenderTargetsFactory.CreateRenderTarget(width, height, mipMap, preferredFormat, preferredDepthFormat);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
         public RenderTarget2D CreateRenderTarget(int width, int height)
         {
             var renderTarget = RenderTargetsFactory.CreateRenderTarget(width, height);
@@ -61,42 +38,11 @@ namespace FrameworkSDK.MonoGame.Graphics.Services
             return renderTarget;
         }
 
-        public IRenderTargetWrapper CreateFullScreenRenderTarget(bool mipMap, SurfaceFormat preferredFormat,
+        public IRenderTargetWrapper CreateDisplaySizedRenderTarget(Func<SizeInt, SizeInt> getSize, bool mipMap, SurfaceFormat preferredFormat,
             DepthFormat preferredDepthFormat, int preferredMultiSampleCount, RenderTargetUsage usage, bool shared,
             int arraySize)
         {
-            var renderTarget = RenderTargetsFactory.CreateFullScreenRenderTarget(mipMap, preferredFormat, preferredDepthFormat, preferredMultiSampleCount, usage, shared, arraySize);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
-        public IRenderTargetWrapper CreateFullScreenRenderTarget(bool mipMap, SurfaceFormat preferredFormat,
-            DepthFormat preferredDepthFormat, int preferredMultiSampleCount, RenderTargetUsage usage, bool shared)
-        {
-            var renderTarget = RenderTargetsFactory.CreateFullScreenRenderTarget(mipMap, preferredFormat, preferredDepthFormat, preferredMultiSampleCount, usage, shared);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
-        public IRenderTargetWrapper CreateFullScreenRenderTarget(bool mipMap, SurfaceFormat preferredFormat,
-            DepthFormat preferredDepthFormat, int preferredMultiSampleCount, RenderTargetUsage usage)
-        {
-            var renderTarget = RenderTargetsFactory.CreateFullScreenRenderTarget(mipMap, preferredFormat, preferredDepthFormat, preferredMultiSampleCount, usage);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
-        public IRenderTargetWrapper CreateFullScreenRenderTarget(bool mipMap, SurfaceFormat preferredFormat,
-            DepthFormat preferredDepthFormat)
-        {
-            var renderTarget = RenderTargetsFactory.CreateFullScreenRenderTarget(mipMap, preferredFormat, preferredDepthFormat);
-            SaveReference(renderTarget);
-            return renderTarget;
-        }
-
-        public IRenderTargetWrapper CreateFullScreenRenderTarget()
-        {
-            var renderTarget = RenderTargetsFactory.CreateFullScreenRenderTarget();
+            var renderTarget = RenderTargetsFactory.CreateDisplaySizedRenderTarget(getSize, mipMap, preferredFormat, preferredDepthFormat, preferredMultiSampleCount, usage, shared, arraySize);
             SaveReference(renderTarget);
             return renderTarget;
         }

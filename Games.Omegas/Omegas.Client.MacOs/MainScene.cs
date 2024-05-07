@@ -8,6 +8,7 @@ using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Map;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.SceneComponents;
 using FrameworkSDK.MonoGame.SceneComponents.Controllers;
 using FrameworkSDK.MonoGame.Services;
@@ -134,13 +135,15 @@ namespace Omegas.Client.MacOs
                 DisplayService.PreferredBackBufferHeight);
             
             var clearColor = Color.DarkMagenta;
-            var player1RenderTarget = builder.RenderTargetsFactoryService.CreateRenderTarget(
-                displaySize.Width / 2,
-                displaySize.Height
+            var player1RenderTarget = builder.RenderTargetsFactoryService.CreateDisplaySizedRenderTarget(
+                size => new SizeInt(
+                    size.Width / 2,
+                    size.Height)
             );
-            var player2RenderTarget = builder.RenderTargetsFactoryService.CreateRenderTarget(
-                displaySize.Width / 2,
-                displaySize.Height
+            var player2RenderTarget = builder.RenderTargetsFactoryService.CreateDisplaySizedRenderTarget(
+                size => new SizeInt(
+                    size.Width / 2,
+                    size.Height)
             );
             var player2RenderTargetOffset = new Vector2((float)displaySize.Width / 2, 0);
             

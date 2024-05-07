@@ -4,11 +4,12 @@ using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Graphics;
+using NetExtensions.Geometry;
 
 // ReSharper disable once CheckNamespace
 namespace FrameworkSDK.MonoGame.Graphics
 {
-    internal class FullScreenRenderTargetWrapper : IRenderTargetWrapper
+    internal class DisplaySizedRenderTargetWrapper : IRenderTargetWrapper
     {
         public event EventHandler DisposedEvent;
         public bool IsDisposed { get; private set; }
@@ -18,16 +19,18 @@ namespace FrameworkSDK.MonoGame.Graphics
         private IRenderTargetsFactory RenderTargetsFactory { get; }
         private IDisplayService DisplayService { get; }
         private AppStateService AppStateService { get; }
+        private Func<SizeInt, SizeInt> GetSizeFromDisplaySize { get; }
 
         private RenderTarget2D _newRenderTarget;
         
         private readonly object _deviceResetLocker = new object();
         private readonly RenderTargetParameters _renderTargetParameters;
 
-        public FullScreenRenderTargetWrapper(
+        public DisplaySizedRenderTargetWrapper(
             [NotNull] IRenderTargetsFactory renderTargetsFactory,
             [NotNull] IDisplayService displayService,
             [NotNull] AppStateService appStateService,
+            [NotNull] Func<SizeInt, SizeInt> getSizeFromDisplaySize,
             bool mipMap,
             SurfaceFormat preferredFormat,
             DepthFormat preferredDepthFormat,
@@ -39,7 +42,8 @@ namespace FrameworkSDK.MonoGame.Graphics
             RenderTargetsFactory = renderTargetsFactory ?? throw new ArgumentNullException(nameof(renderTargetsFactory));
             DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
             AppStateService = appStateService ?? throw new ArgumentNullException(nameof(appStateService));
-            
+            GetSizeFromDisplaySize = getSizeFromDisplaySize ?? throw new ArgumentNullException(nameof(getSizeFromDisplaySize));
+
             _renderTargetParameters = new RenderTargetParameters
             {
                 MipMap = mipMap,
@@ -81,11 +85,18 @@ namespace FrameworkSDK.MonoGame.Graphics
             }
         }
 
+        private SizeInt GetSize()
+        {
+            return GetSizeFromDisplaySize.Invoke(new SizeInt(DisplayService.PreferredBackBufferWidth,
+                DisplayService.PreferredBackBufferHeight));
+        }
+
         private RenderTarget2D CreateRenderTarget()
         {
+            var size = GetSize();
             return RenderTargetsFactory.CreateRenderTarget(
-                DisplayService.PreferredBackBufferWidth,
-                DisplayService.PreferredBackBufferHeight,
+                size.Width,
+                size.Height,
                 _renderTargetParameters.MipMap,
                 _renderTargetParameters.PreferredFormat,
                 _renderTargetParameters.PreferredDepthFormat,

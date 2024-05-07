@@ -58,7 +58,7 @@ namespace Omegas.Client.MacOs.Services
             bullet.NoClipMode = false;
             
             Scene.Physics2D.ApplyImpulse(bullet, targetVelocity * bullet.Parameters.Mass);
-            Scene.Physics2D.ApplyImpulse(player, -1 * impulseVelocity * bullet.Parameters.Mass);
+            Scene.Physics2D.ApplyImpulse(player, -1 * impulseVelocity * bullet.Parameters.Mass * 2);
         }
 
         public void FillBullet(PlayerData playerData, SphereObjectData bullet, float factor, GameTime gameTime)
@@ -80,7 +80,7 @@ namespace Omegas.Client.MacOs.Services
             
             if (sphereA.Team.IsNeutralWith(sphereB.Team))
             {
-                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.75f;
+                var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 1f;
                 IncreaseHealth(biggerSphere, healthConsumption);
                 TakeDamage(smallerSphere, healthConsumption);
             }

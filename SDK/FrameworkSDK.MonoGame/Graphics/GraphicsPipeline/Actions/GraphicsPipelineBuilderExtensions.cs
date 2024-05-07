@@ -59,9 +59,9 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         }
 
         public static IGraphicsPipelineBuilder SetRenderTarget([NotNull] this IGraphicsPipelineBuilder builder,
-            [NotNull] RenderTarget2D renderTarget)
+            [NotNull] IRenderTargetWrapper renderTargetWrapper)
         {
-            return builder.AddAction(new SetRenderTargetAction(GenerateActionName(nameof(SetRenderTarget)), renderTarget));
+            return builder.AddAction(new SetRenderTargetAction(GenerateActionName(nameof(SetRenderTarget)), renderTargetWrapper));
         }
         
         public static IGraphicsPipelineBuilder SetRenderTargetToDisplay([NotNull] this IGraphicsPipelineBuilder builder)
@@ -69,16 +69,16 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
             return builder.AddAction(new SetRenderTargetToDisplayAction(GenerateActionName(nameof(SetRenderTargetToDisplay))));
         }
 
-        public static IGraphicsPipelineBuilder DrawRenderTargetToDisplay([NotNull] this IGraphicsPipelineBuilder builder, RenderTarget2D renderTarget2D)
+        public static IGraphicsPipelineBuilder DrawRenderTargetToDisplay([NotNull] this IGraphicsPipelineBuilder builder, IRenderTargetWrapper renderTargetWrapper)
         {
             return builder.AddAction(new DrawRenderTargetToDisplay(
-                GenerateActionName(nameof(DrawRenderTargetToDisplay)), new BeginDrawConfig(), renderTarget2D));
+                GenerateActionName(nameof(DrawRenderTargetToDisplay)), new BeginDrawConfig(), renderTargetWrapper));
         }
         
-        public static IGraphicsPipelineBuilder DrawRenderTargetToDisplay([NotNull] this IGraphicsPipelineBuilder builder, BeginDrawConfig beginDrawConfig, RenderTarget2D renderTarget2D)
+        public static IGraphicsPipelineBuilder DrawRenderTargetToDisplay([NotNull] this IGraphicsPipelineBuilder builder, BeginDrawConfig beginDrawConfig, IRenderTargetWrapper renderTargetWrapper)
         {
             return builder.AddAction(new DrawRenderTargetToDisplay(
-                GenerateActionName(nameof(DrawRenderTargetToDisplay)), beginDrawConfig, renderTarget2D));
+                GenerateActionName(nameof(DrawRenderTargetToDisplay)), beginDrawConfig, renderTargetWrapper));
         }
 
         public static IGraphicsPipelineBuilder SimpleRender<TVertexType>([NotNull] this IGraphicsPipelineBuilder builder,

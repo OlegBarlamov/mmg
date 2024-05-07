@@ -10,16 +10,16 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 {
     public class SetRenderTargetAction : GraphicsPipelineActionBase
     {
-        public RenderTarget2D RenderTarget { get; }
+        public IRenderTargetWrapper Wrapper { get; }
 
-        public SetRenderTargetAction([NotNull] string name, [NotNull] RenderTarget2D renderTarget) : base(name)
+        public SetRenderTargetAction([NotNull] string name, [NotNull] IRenderTargetWrapper renderTargetWrapper) : base(name)
         {
-            RenderTarget = renderTarget ?? throw new ArgumentNullException(nameof(renderTarget));
+            Wrapper = renderTargetWrapper ?? throw new ArgumentNullException(nameof(renderTargetWrapper));
         }
         
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext, IReadOnlyList<IGraphicComponent> associatedComponents)
         {
-            graphicDeviceContext.SetRenderTarget(RenderTarget);
+            graphicDeviceContext.SetRenderTarget(Wrapper.RenderTarget);
         }
     }
 }
