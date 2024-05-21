@@ -10,8 +10,8 @@ namespace Omegas.Client.MacOs.Models
 {
     public class OmegaTiledMap : Tiled2DMap
     {
-        public OmegaTiledMap(IReadOnlyList<Texture2D> texturesList) 
-            : base(GetData(texturesList), new Vector2(256))
+        public OmegaTiledMap(GameResourcePackage gameResourcePackage) 
+            : base(GetData(gameResourcePackage.MapBackgroundTexturesList), new Vector2(256))
         {
             
         }

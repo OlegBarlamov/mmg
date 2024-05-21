@@ -1,8 +1,8 @@
 using System;
+using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using NetExtensions.Helpers;
 using Omegas.Client.MacOs.Models;
 using Omegas.Client.MacOs.Models.SphereObject;
 
@@ -10,13 +10,38 @@ namespace Omegas.Client.MacOs.Services
 {
     public class OmegaGameService
     {
-        private MainScene Scene { get; }
-        public IDebugInfoService DebugInfoService { get; }
+        private Scene Scene { get; set; }
+        private IDebugInfoService DebugInfoService { get; }
+        private SpheresColorsService SpheresColorsService { get; }
 
-        public OmegaGameService([NotNull] MainScene scene, [NotNull] IDebugInfoService debugInfoService)
+        public OmegaGameService([NotNull] IDebugInfoService debugInfoService, [NotNull] SpheresColorsService spheresColorsService)
+        {
+            DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
+            SpheresColorsService = spheresColorsService ?? throw new ArgumentNullException(nameof(spheresColorsService));
+        }
+
+        public void Initialize([NotNull] Scene scene)
         {
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
-            DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
+        }
+
+        public PlayerData AddPlayer(Vector2 position, float health, PlayerIndex playerIndex)
+        {
+            var data = new PlayerData(
+                playerIndex,
+                SpheresColorsService.GetPlayerColor(playerIndex),
+                SpheresColorsService.GetPlayerHeartColor(playerIndex),
+                position,
+                health);
+
+            Scene.AddView(data);
+
+            return data;
+        }
+
+        public SphereObjectData AddNeutral(Vector2 position, float health)
+        {
+            return AddSphereObject(SpheresColorsService.GetNeutralColor(), position, health, Teams.Neutral);
         }
 
         public SphereObjectData AddSphereObject(Color color, Vector2 position, float health, Teams team)
