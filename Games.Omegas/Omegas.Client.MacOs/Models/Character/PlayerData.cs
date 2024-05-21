@@ -15,6 +15,8 @@ namespace Omegas.Client.MacOs.Models
         public Color HeartColor { get; }
 
         public PlayerIndex PlayerIndex { get; }
+        
+        public Vector2 CameraOffsetDirection { get; set; }
 
         public override void SetPosition(Vector2 position)
         {

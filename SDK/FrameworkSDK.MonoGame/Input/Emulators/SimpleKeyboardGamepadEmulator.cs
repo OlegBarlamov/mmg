@@ -36,20 +36,34 @@ namespace FrameworkSDK.MonoGame.InputManagement.Emulators
             {
                 leftStick += new Vector2(0, -1);
             }
-            
             if (KeyboardProvider.Key(Keys.Up))
             {
                 leftStick += new Vector2(0, 1);
             }
-            
             if (KeyboardProvider.Key(Keys.Right))
             {
                 leftStick += new Vector2(1, 0);
             }
-            
             if (KeyboardProvider.Key(Keys.Left))
             {
                 leftStick += new Vector2(-1, 0);
+            }
+
+            if (KeyboardProvider.Key(Keys.E))
+            {
+                rightStick += new Vector2(0, 1);
+            }
+            if (KeyboardProvider.Key(Keys.D))
+            {
+                rightStick += new Vector2(0, -1);
+            }
+            if (KeyboardProvider.Key(Keys.S))
+            {
+                rightStick += new Vector2(-1, 0);
+            }
+            if (KeyboardProvider.Key(Keys.F))
+            {
+                rightStick += new Vector2(1, 0);
             }
 
             var leftTrigger = 0f;

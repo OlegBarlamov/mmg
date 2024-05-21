@@ -43,6 +43,10 @@ namespace Omegas.Client.MacOs.Models
             if (_gamePadProvider.IsConnected)
             {
                 UpdateLeftThumbStick();
+                
+                var thumbSticksRight = _gamePadProvider.ThumbSticks.Right;
+                thumbSticksRight.Y = -thumbSticksRight.Y;
+                DataModel.CameraOffsetDirection = thumbSticksRight;
 
                 UpdateButtonA(gameTime);
 

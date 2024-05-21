@@ -16,6 +16,7 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.Geometry;
 using NetExtensions.Geometry;
+using Omegas.Client.MacOs.Controllers;
 using Omegas.Client.MacOs.Models;
 using Omegas.Client.MacOs.Models.SphereObject;
 using SimplePhysics2D;
@@ -94,8 +95,8 @@ namespace Omegas.Client.MacOs
             AddView(Player2Data);
 
             // Camera
-            AddController(new CenteredCameraController(Player1Data, _player1Camera));
-            AddController(new CenteredCameraController(Player2Data, _player2Camera));
+            AddController(new OmegaCameraController(Player1Data, _player1Camera));
+            AddController(new OmegaCameraController(Player2Data, _player2Camera));
             // AddController(new KeyboardObject2DPositioningController(InputService, Player1Data,
             //     new KeyboardPositioningController.KeysMap()));
             //Debug
