@@ -1,6 +1,8 @@
 using System;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Physics._2D.Forces;
+using FrameworkSDK.MonoGame.Physics2D;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -14,6 +16,7 @@ namespace Omegas.Client.MacOs.Models
         private IInputService InputService { get; }
         public OmegaGameService OmegaGameService { get; }
 
+        private readonly SimpleForce _forceMovement = new SimpleForce(Vector2.Zero, 0f);
         private IPlayerGamePadProvider _gamePadProvider;
 
         private SphereObjectData _bullet;
@@ -43,10 +46,16 @@ namespace Omegas.Client.MacOs.Models
 
                 UpdateButtonA(gameTime);
 
-                if (_gamePadProvider.IsButtonPressedOnce(Buttons.Y) && _heartOrigin != Vector2.Zero)
-                {
-                    OmegaGameService.JumpAction(DataModel, _heartOriginNormal);
-                }
+                UpdateButtonY();
+            }
+        }
+
+        private void UpdateButtonY()
+        {
+            if (_gamePadProvider.IsButtonPressedOnce(Buttons.Y) && _heartOrigin != Vector2.Zero &&
+                OmegaGameService.CanProduceBullets(DataModel))
+            {
+                OmegaGameService.JumpAction(DataModel, _heartOriginNormal);
             }
         }
 
@@ -67,7 +76,7 @@ namespace Omegas.Client.MacOs.Models
                 _fillFactor = 1f;
             }
                 
-            if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _heartOrigin != Vector2.Zero)
+            if (_gamePadProvider.IsButtonPressedOnce(Buttons.A) && _heartOrigin != Vector2.Zero && OmegaGameService.CanProduceBullets(DataModel))
             {
                 _bullet = OmegaGameService.CreateBulletWorkpiece(DataModel, _heartOriginNormal);
             }
@@ -98,10 +107,16 @@ namespace Omegas.Client.MacOs.Models
 
                 _heartOrigin = thumbSticksLeft * new Vector2(1, -1);
                 DataModel.SetHeartRelativePosition(_heartOrigin * (DataModel.Size - DataModel.HeartSize / 2));
-                _heartOriginNormal = Vector2.Normalize(_heartOrigin); ;
+                _heartOriginNormal = Vector2.Normalize(_heartOrigin);
+
+                if (!OmegaGameService.CanProduceBullets(DataModel))
+                {
+                    _forceMovement.Power = _heartOrigin * 1f;
+                }
             }
             else
             {
+                _forceMovement.Power = Vector2.Zero;
                 _heartOrigin = Vector2.Zero;
 
                 if (DataModel.HeartRelativePosition != Vector2.Zero)
@@ -116,6 +131,15 @@ namespace Omegas.Client.MacOs.Models
             base.OnAttached(scene);
 
             _gamePadProvider = InputService.GamePads.GetGamePad(DataModel.PlayerIndex);
+            
+            DataModel.Scene.ApplyForce(DataModel, _forceMovement);
+        }
+
+        protected override void OnDetached(SceneBase scene)
+        {
+            base.OnDetached(scene);
+            
+            DataModel.Scene.RemoveForce(DataModel, _forceMovement);
         }
     }
 }

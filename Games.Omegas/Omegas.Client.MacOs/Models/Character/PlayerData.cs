@@ -1,4 +1,5 @@
 using FrameworkSDK.MonoGame.Physics._2D.Forces;
+using FrameworkSDK.MonoGame.Physics2D;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.Geometry;
 using Omegas.Client.MacOs.Models.SphereObject;
@@ -14,7 +15,7 @@ namespace Omegas.Client.MacOs.Models
         public Color HeartColor { get; }
 
         public PlayerIndex PlayerIndex { get; }
-        
+
         public override void SetPosition(Vector2 position)
         {
             base.SetPosition(position);

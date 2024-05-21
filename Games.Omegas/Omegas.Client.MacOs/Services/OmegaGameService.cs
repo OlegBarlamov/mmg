@@ -42,6 +42,11 @@ namespace Omegas.Client.MacOs.Services
             return data;
         }
 
+        public bool CanProduceBullets(PlayerData playerData)
+        {
+            return playerData.Health > SphereObjectData.MinHealth * 100;
+        }
+
         public void CancelBullet(PlayerData player, SphereObjectData bullet)
         {
             IncreaseHealth(player, bullet.Health);
@@ -87,8 +92,21 @@ namespace Omegas.Client.MacOs.Services
             if (sphereA.Team.IsSelf(sphereB.Team))
             {
                 var healthConsumption = 1f * gameTime.ElapsedGameTime.Milliseconds * 0.5f;
-                IncreaseHealth(biggerSphere, healthConsumption);
-                TakeDamage(smallerSphere, healthConsumption);
+                if (sphereA is PlayerData)
+                {
+                    IncreaseHealth(sphereA, healthConsumption);
+                    TakeDamage(sphereB, healthConsumption);
+                }
+                else if (sphereB is PlayerData)
+                {
+                    IncreaseHealth(sphereB, healthConsumption);
+                    TakeDamage(sphereA, healthConsumption);
+                }
+                else
+                {
+                    IncreaseHealth(biggerSphere, healthConsumption);
+                    TakeDamage(smallerSphere, healthConsumption);   
+                }
             }
             if (sphereA.Team.IsEnemyWith(sphereB.Team))
             {
@@ -110,7 +128,7 @@ namespace Omegas.Client.MacOs.Services
 
         public void JumpAction(PlayerData player, Vector2 originNormal)
         {
-            var bulletHealth = Math.Max(player.Health * 0.70f, SphereObjectData.MinHealth);
+            var bulletHealth = Math.Max(player.Health * 0.10f, SphereObjectData.MinHealth);
             var bulletSize = SphereObjectData.GetRadiusFromHealth(bulletHealth);
             var bulletPosition = player.Position + originNormal * (player.Size + bulletSize);
             
@@ -120,7 +138,7 @@ namespace Omegas.Client.MacOs.Services
 
             TakeDamage(player, bulletHealth);
             
-            Scene.Physics2D.ApplyImpulse(player, -2 * originNormal * player.Velocity * player.Parameters.Mass -1 * originNormal * playerOldMass);
+            Scene.Physics2D.ApplyImpulse(player, -1 * player.Velocity * player.Parameters.Mass -1 * originNormal * playerOldMass * player.Parameters.Mass);
         }
 
         public void TakeDamage(SphereObjectData sphere, float damage)
