@@ -1,16 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp5.0</TargetFramework>
+        <TargetFramework>netcoreapp6.0</TargetFramework>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
       <ProjectReference Include="..\..\Utils\Adapters\AspNetCore.FrameworkAdapter\AspNetCore.FrameworkAdapter.csproj" />
+      <ProjectReference Include="..\..\Utils\Adapters\Console.FrameworkAdapter\Console.FrameworkAdapter.csproj" />
     </ItemGroup>
 
 </Project>

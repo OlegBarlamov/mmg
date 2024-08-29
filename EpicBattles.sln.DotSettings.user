@@ -4,4 +4,5 @@
   &lt;Assembly Path="/usr/local/share/dotnet/shared/Microsoft.NETCore.App/5.0.13/System.ComponentModel.dll" /&gt;
   &lt;Assembly Path="/usr/local/share/dotnet/packs/Microsoft.AspNetCore.App.Ref/3.1.10/ref/netcoreapp3.1/Microsoft.AspNetCore.dll" /&gt;
   &lt;Assembly Path="/Users/oleg/.nuget/packages/autofac.extensions.dependencyinjection/7.2.0/lib/netstandard2.1/Autofac.Extensions.DependencyInjection.dll" /&gt;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	</wpf:ResourceDictionary>

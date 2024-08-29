@@ -29,6 +29,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.FrameworkAdapter", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epic.Server", "Games.Epic\Epic.Server\Epic.Server.csproj", "{27E509BC-3A73-4968-BEEA-3EDF18AF23B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epic.Client.MacOS", "Games.Epic\Epic.Client.MacOS\Epic.Client.MacOS.csproj", "{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.FrameworkAdapter", "Utils\Adapters\Console.FrameworkAdapter\Console.FrameworkAdapter.csproj", "{AA1830D3-7CF0-4665-8D47-D3E69744F8B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.Core", "Utils\Console\Console.Core\Console.Core.csproj", "{74BF5687-2068-4619-98EA-E7746803D19B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epic.Webclient", "Games.Epic\Epic.Webclient\Epic.Webclient.csproj", "{8910BF49-45DE-41B7-A425-05B6D4566A2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +83,22 @@ Global
 		{27E509BC-3A73-4968-BEEA-3EDF18AF23B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27E509BC-3A73-4968-BEEA-3EDF18AF23B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27E509BC-3A73-4968-BEEA-3EDF18AF23B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AE9B21A-DD77-45BB-BBC3-B6F607C3FB55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA1830D3-7CF0-4665-8D47-D3E69744F8B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA1830D3-7CF0-4665-8D47-D3E69744F8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA1830D3-7CF0-4665-8D47-D3E69744F8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA1830D3-7CF0-4665-8D47-D3E69744F8B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74BF5687-2068-4619-98EA-E7746803D19B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74BF5687-2068-4619-98EA-E7746803D19B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74BF5687-2068-4619-98EA-E7746803D19B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74BF5687-2068-4619-98EA-E7746803D19B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8910BF49-45DE-41B7-A425-05B6D4566A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8910BF49-45DE-41B7-A425-05B6D4566A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8910BF49-45DE-41B7-A425-05B6D4566A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8910BF49-45DE-41B7-A425-05B6D4566A2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +110,8 @@ Global
 		{3FA53468-2750-459F-82F7-A607298376DC} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
 		{70D9AEC8-07CE-4BD7-B360-9AC247323E8B} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
 		{07CB8859-40D5-4D5A-8CD2-A684089F4C1E} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
+		{AA1830D3-7CF0-4665-8D47-D3E69744F8B4} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
+		{74BF5687-2068-4619-98EA-E7746803D19B} = {84D8E22E-CEA6-4AFF-89B8-4CA0BB55A11D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {297416CF-E620-4DD9-B1E3-A59673237A6A}
