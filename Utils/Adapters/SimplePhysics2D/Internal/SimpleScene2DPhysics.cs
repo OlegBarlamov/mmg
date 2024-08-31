@@ -10,7 +10,7 @@ using NetExtensions.Helpers;
 
 namespace SimplePhysics2D.Internal
 {
-    internal class SimpleScene2DPhysics : IScene2DPhysicsInternal
+    internal class SimpleScene2DPhysics : IScene2DPhysicsSystem
     {
         public IReadOnlyCollection<IForce2D> GlobalForces => _globalForces;
         public SimplePhysicsScene2DParameters Parameters { get; }

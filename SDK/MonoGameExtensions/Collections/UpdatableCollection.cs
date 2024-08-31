@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 
 namespace MonoGameExtensions
 {
+	// TODO DelayedOperationsCollection?!
 	public class UpdatableCollection<T> : ICollection<T>, IReadOnlyCollection<T>
 	{
 		public int Count => _clearAll ? 0 : ActiveItems.Count + _itemsToAdd.Count - _itemsToRemove.Count;
@@ -69,6 +70,7 @@ namespace MonoGameExtensions
 			_clearAll = true;
 		}
 
+		// TODO shouldn't be needed?
 	    public IReadOnlyCollection<T> GetAllWithToAddItems()
 	    {
             if (_clearAll)
@@ -99,10 +101,10 @@ namespace MonoGameExtensions
 			return true;
 		}
 
+		// TODO remove the function?
 		public T Find([NotNull] Func<T, bool> predicate)
 		{
 			return GetAllWithToAddItems().FirstOrDefault(predicate);
 		}
-		
 	}
 }

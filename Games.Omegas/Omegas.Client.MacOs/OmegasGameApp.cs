@@ -2,13 +2,9 @@ using System;
 using Console.GameFrameworkAdapter;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.InputManagement;
-using FrameworkSDK.MonoGame.InputManagement.Emulators;
-using FrameworkSDK.MonoGame.Map;
 using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using NetExtensions.Collections;
-using NetExtensions.Helpers;
 
 namespace Omegas.Client.MacOs
 {
@@ -22,11 +18,12 @@ namespace Omegas.Client.MacOs
         public OmegasGameApp(
             [NotNull] IInputService inputService,
             [NotNull] DefaultConsoleManipulator consoleManipulator,
-            MainScene mainScene)
+            MainScene mainScene,
+            MenuScene menuScene)
         {
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
             ConsoleManipulator = consoleManipulator ?? throw new ArgumentNullException(nameof(consoleManipulator));
-            CurrentScene = mainScene;
+            CurrentScene = menuScene;
         }
 
         protected override void Update(GameTime gameTime)
@@ -40,7 +37,7 @@ namespace Omegas.Client.MacOs
         {
             base.OnInitialized();
 
-            InputService.GamePads.ActivateEmulator(PlayerIndex.One, new SimpleKeyboardGamepadEmulator(InputService.Keyboard));
+            //InputService.GamePads.ActivateEmulator(PlayerIndex.One, new SimpleKeyboardGamepadEmulator(InputService.Keyboard));
             InputService.GamePads.EnableGamePads();
         }
     }

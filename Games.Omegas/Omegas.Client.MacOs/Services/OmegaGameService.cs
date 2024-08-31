@@ -1,5 +1,6 @@
 using System;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Physics;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -13,6 +14,7 @@ namespace Omegas.Client.MacOs.Services
         private Scene Scene { get; set; }
         private IDebugInfoService DebugInfoService { get; }
         private SpheresColorsService SpheresColorsService { get; }
+        private IScene2DPhysicsSystem Physics { get; set; }
 
         public OmegaGameService([NotNull] IDebugInfoService debugInfoService, [NotNull] SpheresColorsService spheresColorsService)
         {
@@ -20,9 +22,10 @@ namespace Omegas.Client.MacOs.Services
             SpheresColorsService = spheresColorsService ?? throw new ArgumentNullException(nameof(spheresColorsService));
         }
 
-        public void Initialize([NotNull] Scene scene)
+        public void Initialize([NotNull] Scene scene, [NotNull] IScene2DPhysicsSystem physicsSystem)
         {
             Scene = scene ?? throw new ArgumentNullException(nameof(scene));
+            Physics = physicsSystem ?? throw new ArgumentNullException(nameof(physicsSystem));
         }
 
         public PlayerData AddPlayer(Vector2 position, float health, PlayerIndex playerIndex)
@@ -87,8 +90,8 @@ namespace Omegas.Client.MacOs.Services
             
             bullet.NoClipMode = false;
             
-            Scene.Physics2D.ApplyImpulse(bullet, targetVelocity * bullet.Parameters.Mass);
-            Scene.Physics2D.ApplyImpulse(player, -1 * impulseVelocity * bullet.Parameters.Mass * 2);
+            Physics.ApplyImpulse(bullet, targetVelocity * bullet.Parameters.Mass);
+            Physics.ApplyImpulse(player, -1 * impulseVelocity * bullet.Parameters.Mass * 2);
         }
 
         public void FillBullet(PlayerData playerData, SphereObjectData bullet, float factor, GameTime gameTime)
@@ -163,7 +166,7 @@ namespace Omegas.Client.MacOs.Services
 
             TakeDamage(player, bulletHealth);
             
-            Scene.Physics2D.ApplyImpulse(player, -1 * player.Velocity * player.Parameters.Mass -1 * originNormal * playerOldMass * player.Parameters.Mass);
+            Physics.ApplyImpulse(player, -1 * player.Velocity * player.Parameters.Mass -1 * originNormal * playerOldMass * player.Parameters.Mass);
         }
 
         public void TakeDamage(SphereObjectData sphere, float damage)

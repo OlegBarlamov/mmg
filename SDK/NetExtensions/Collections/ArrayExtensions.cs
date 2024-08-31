@@ -6,6 +6,16 @@ namespace NetExtensions.Collections
 {
 	public static class ArrayExtensions
 	{
+		public static void ForEach<T>([NotNull] this ICollection<T> array, [NotNull] Action<T> action)
+		{
+			if (array == null) throw new ArgumentNullException(nameof(array));
+			if (action == null) throw new ArgumentNullException(nameof(action));
+			foreach (var item in array)
+			{
+				action(item);
+			}
+		}
+		
 		public static void For<T>(this T[] array, [NotNull] Func<T, int, bool> action)
 		{
 			if (action == null) throw new ArgumentNullException(nameof(action));

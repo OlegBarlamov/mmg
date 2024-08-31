@@ -22,7 +22,7 @@ namespace SimplePhysics2D
             Collisions2dDetectorsService = collisions2dDetectorsService ?? throw new ArgumentNullException(nameof(collisions2dDetectorsService));
         }
         
-        public IScene2DPhysicsInternal Create(ICollidersSpace2D collidersSpace2D)
+        public IScene2DPhysicsSystem Create(ICollidersSpace2D collidersSpace2D)
         {
             if (collidersSpace2D == null) throw new ArgumentNullException(nameof(collidersSpace2D));
             return new SimpleScene2DPhysics(Parameters, collidersSpace2D, Collisions2DResolver, Collisions2dDetectorsService);

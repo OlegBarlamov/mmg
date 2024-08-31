@@ -9,6 +9,7 @@ namespace Omegas.Client.MacOs
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
             serviceRegistrator.RegisterType<MainScene, MainScene>();
+            serviceRegistrator.RegisterType<MenuScene, MenuScene>();
             serviceRegistrator.RegisterType<OmegaGameService, OmegaGameService>();
             serviceRegistrator.RegisterType<MapObjectsGenerator, MapObjectsGenerator>();
             serviceRegistrator.RegisterType<SpheresColorsService, SpheresColorsService>();

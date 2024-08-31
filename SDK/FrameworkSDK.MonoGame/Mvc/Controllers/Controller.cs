@@ -115,7 +115,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
-            var targetController = scene.FindControllerByActiveModel(model);
+            var targetController = scene.FindControllerByModel(model);
             if (targetController == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, scene);
 

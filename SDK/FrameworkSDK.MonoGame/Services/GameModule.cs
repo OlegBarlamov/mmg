@@ -12,6 +12,7 @@ using FrameworkSDK.MonoGame.InputManagement.Implementations;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Resources.Generation;
+using FrameworkSDK.MonoGame.SceneComponents.Layout;
 using FrameworkSDK.MonoGame.Services.Implementations;
 
 namespace FrameworkSDK.MonoGame.Services

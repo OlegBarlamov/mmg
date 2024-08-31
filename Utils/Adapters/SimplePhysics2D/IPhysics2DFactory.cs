@@ -5,6 +5,6 @@ namespace SimplePhysics2D
 {
     public interface IPhysics2DFactory
     {
-        IScene2DPhysicsInternal Create([NotNull] ICollidersSpace2D collidersSpace2D);
+        IScene2DPhysicsSystem Create([NotNull] ICollidersSpace2D collidersSpace2D);
     }
 }

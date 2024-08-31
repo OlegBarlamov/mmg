@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,6 +60,11 @@ namespace AspNetCore.FrameworkAdapter
         public IFrameworkServiceContainer CreateScoped(string name = null)
         {
             throw new NotImplementedException();
+        }
+
+        public bool ContainsRegistrationForType(Type type)
+        {
+            return ServiceCollection.Any(descriptor => descriptor.ServiceType == type);
         }
     }
 }

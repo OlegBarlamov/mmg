@@ -16,8 +16,10 @@ namespace FrameworkSDK.MonoGame.Mvc
         private static readonly IReadOnlyList<string> DefaultViewPassNames = new[] {DefaultViewPassName};  
 
         public string Name { get; protected set; }
+        
+        protected SceneBase OwnedScene { get; private set; }
 
-        SceneBase ISceneComponent.OwnedScene => _ownedScene;
+        SceneBase ISceneComponent.OwnedScene => OwnedScene;
 
         object IView.DataModel => _dataModel;
 
@@ -25,7 +27,6 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         private object _dataModel;
         private IController _controller;
-        private SceneBase _ownedScene;
 
         private readonly List<IView> _children = new List<IView>();
 
@@ -84,7 +85,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (childView == null) throw new ArgumentNullException(nameof(childView));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -97,7 +98,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -110,7 +111,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         {
             if (childView == null) throw new ArgumentNullException(nameof(childView));
 
-            var scene = _ownedScene;
+            var scene = OwnedScene;
             if (scene == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
 
@@ -122,15 +123,15 @@ namespace FrameworkSDK.MonoGame.Mvc
 
         private void RemoveChildInternal(IView childView)
         {
-            _ownedScene.RemoveView(childView);
+            OwnedScene.RemoveView(childView);
             _children.Remove(childView);
         }
 
         void ISceneComponent.OnAddedToScene(SceneBase scene)
         {
-            _ownedScene = scene ?? throw new ArgumentNullException(nameof(scene));
+            OwnedScene = scene ?? throw new ArgumentNullException(nameof(scene));
 
-            OnAttached(_ownedScene);
+            OnAttached(OwnedScene);
         }
 
         void ISceneComponent.OnRemovedFromScene(SceneBase scene)
@@ -140,7 +141,7 @@ namespace FrameworkSDK.MonoGame.Mvc
                 RemoveChildInternal(_children[0]);
             }
 
-            _ownedScene = null;
+            OwnedScene = null;
             OnDetached(scene);
         }
 

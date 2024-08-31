@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using FrameworkSDK.Common;
 using FrameworkSDK.DependencyInjection;
@@ -22,6 +23,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 		
 		public virtual bool ReadyToBeClosed { get; protected set; }
 
+		[NotNull, ItemNotNull] public IReadOnlyCollection<ISceneExtension> Extensions => _extensions;
+
 		protected object Model { get; private set; }
         
         [NotNull, ItemNotNull] protected ObservableList<IGraphicComponent> GraphicComponents { get; } = new ObservableList<IGraphicComponent>();
@@ -40,6 +43,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 	        get => Model;
 	        set => Model = value;
 	    }
+		
+		private readonly Collection<ISceneExtension> _extensions = new Collection<ISceneExtension>();
 
 	    protected SceneBase([NotNull] string name, object model = null)
 	    {
@@ -60,6 +65,31 @@ namespace FrameworkSDK.MonoGame.Mvc
 		public override string ToString()
 		{
 			return Name;
+		}
+
+		public void AddExtension([NotNull] ISceneExtension extension)
+		{
+			if (extension == null) throw new ArgumentNullException(nameof(extension));
+			if (_extensions.FirstOrDefault(x => x.Name == extension.Name) != null) 
+				throw new ScenesException($"Scene {Name} already contains the extension {extension.Name}.");
+			
+			_extensions.Add(extension);
+			
+			Logger.Info($"Extension {extension.Name} added to Scene {Name}");
+		}
+		
+		public void RemoveExtension([NotNull] string name)
+		{
+			if (name == null) throw new ArgumentNullException(nameof(name));
+			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+
+			var target = _extensions.FirstOrDefault(x => x.Name == Name);
+			if (target == null)
+				throw new ScenesException($"Scene {Name} doesn't contain the extension {name} to remove.");
+			
+			_extensions.Remove(target);
+			
+			Logger.Info($"Extension {name} removed from Scene {Name}");
 		}
 
 		public void AddController([NotNull] IController controller)
@@ -90,6 +120,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 			Controllers.Remove(controller);
 			OnControllerDetachedInternal(controller);
 			OnControllerDetached(controller);
+			
+			_extensions.ForEach(x => x.OnControllerDetached(controller));
 		}
 
 	    [NotNull] public IController AddController([NotNull] object model)
@@ -123,18 +155,12 @@ namespace FrameworkSDK.MonoGame.Mvc
             throw new ScenesException(Strings.Exceptions.Scenes.ControllerForModelNotExists, model, this);
 	    }
 
-	    [CanBeNull]
-	    public IController FindControllerByActiveModel(object model)
-	    {
-	        return Controllers.Find(controller => controller.IsOwnedDataModel(model));
-	    }
-
         public void AddView([NotNull] IView view)
 		{
 			CheckInitialized();
 			if (view == null) throw new ArgumentNullException(nameof(view));
-
-            if (Views.ContainsView(view))
+			
+            if (Views.Find(mapping => mapping.View == view) == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewAlreadyExists, view, this);
 
             var scheme = MvcStrategy.ResolveByView(view);
@@ -172,7 +198,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		{
 			if (view == null) throw new ArgumentNullException(nameof(view));
 
-            if (!Views.ContainsView(view))
+			if (Views.Find(x => x.View == view) == null)
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewNotExists, view, this);
 
             //TODO can be optimized by using hashtable
@@ -214,6 +240,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			{
 				OnControllerDetachedInternal(controller);
 				OnControllerDetached(controller);
+				_extensions.ForEach(x => x.OnControllerDetached(controller));
 				count++;
 				names.Add(controller.Name);
 			}
@@ -221,30 +248,44 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 			Logger.Info(Strings.Info.RemovedMultipleControllersFromScene, names.ToArray().ArrayToString(), count, Name);
 		}
+		
+		[CanBeNull]
+		internal IController FindControllerByModel(object model)
+		{
+			return Controllers.Find(controller => controller.IsOwnedDataModel(model));
+		}
 
 		void IUpdatable.Update(GameTime gameTime)
 		{
 			Controllers.Update();
 			Views.Update();
-
-		    Controllers.Update(gameTime);
+			
+		    Controllers.ForEach(x => x.Update(gameTime));
 
 		    Update(gameTime);
+
+		    _extensions.ForEach(x => x.Update(gameTime));
 		}
 
 		void IClosable.OnClosed()
 		{
 			OnClosed();
+			
+			_extensions.ForEach(x => x.OnClosed());
 		}
 
 	    void IScene.OnOpened()
 		{
 			OnOpened();
+			
+			_extensions.ForEach(x => x.OnOpened());
 		}
 
 	    void IScene.OnOpening()
 	    {
 		    OnOpening();
+		    
+		    _extensions.ForEach(x => x.OnOpening());
 	    }
 
 	    void IClosable.CloseRequest()
@@ -311,6 +352,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 			OnControllerAttachedInternal(controller);
 			OnControllerAttached(controller);
+			
+			_extensions.ForEach(x => x.OnControllerAttached(controller));
 		}
 
 		private void CheckOwner([NotNull] ISceneComponent sceneComponent)
@@ -352,6 +395,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 		    view.OnRemovedFromScene(this);
 		    
 		    OnViewDetached(view);
+		    
+		    _extensions.ForEach(x => x.OnViewDetached(view));
 
             view.Destroy();
 		}
@@ -360,7 +405,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		{
 			CheckOwner(view);
 			var mapping = new ViewMapping(view, controller, model);
-            if (Views.ContainsView(view))
+            if (Views.Find(x => x.View == view) != null)
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewAlreadyExists, view, this);
 
 			Views.Add(mapping);
@@ -371,6 +416,8 @@ namespace FrameworkSDK.MonoGame.Mvc
 		    mapping.View.OnAddedToScene(this);
 		    
 		    OnViewAttached(view);
+		    
+		    _extensions.ForEach(x => x.OnViewAttached(view));
         }
 
 	    protected static string GenerateSceneName()

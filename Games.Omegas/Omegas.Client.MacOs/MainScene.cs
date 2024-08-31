@@ -7,6 +7,7 @@ using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Map;
 using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Physics;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
@@ -35,6 +36,8 @@ namespace Omegas.Client.MacOs
         private OmegaTiledMap _map;
         private SimpleCamera2D _player1Camera;
         private SimpleCamera2D _player2Camera;
+
+        private readonly IScene2DPhysicsSystem _physics;
         
         public MainScene(
             [NotNull] IRandomService randomService,
@@ -52,17 +55,18 @@ namespace Omegas.Client.MacOs
             OmegaGameService = omegaGameService ?? throw new ArgumentNullException(nameof(omegaGameService));
             MapObjectsGenerator = mapObjectsGenerator ?? throw new ArgumentNullException(nameof(mapObjectsGenerator));
 
-            UsePhysics2D(physics2DFactory.Create(new HeapCollidersSpace2D()));
+            _physics = physics2DFactory.Create(new HeapCollidersSpace2D());
+            this.UsePhysics2D(_physics);
         }
 
         protected override void Initialize()
         {
-            OmegaGameService.Initialize(this);
+            OmegaGameService.Initialize(this, _physics);
             
             // Map
             _map = new OmegaTiledMap(GameResourcePackage);
             AddView(new ViewModel<Tiled2DMap>(_map));
-            Physics2D.AddBody(new MapBoundaries(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
+            _physics.AddBody(new MapBoundaries(new RectangleF(0, 0, _map.WorldSize.X, _map.WorldSize.Y)));
 
             // Players
             Player1Data = MapObjectsGenerator.PlacePlayer1(_map.WorldSize.X, _map.WorldSize.Y);

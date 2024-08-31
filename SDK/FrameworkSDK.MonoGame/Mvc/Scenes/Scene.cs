@@ -4,14 +4,19 @@ using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
 using FrameworkSDK.MonoGame.Graphics.Services;
+using FrameworkSDK.MonoGame.SceneComponents.Layout;
+using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using MonoGameExtensions.DataStructures;
 
 namespace FrameworkSDK.MonoGame.Mvc
 {
-    public abstract class Scene : ScenePhysics
+    public abstract class Scene : SceneBase
     {
+        public ILayoutUiContainer UI => _layoutSystem.LayoutUiRoot;
+        
         [NotNull] protected IRenderTargetsFactoryService RenderTargetsFactoryService { get; }
         [NotNull] protected IGameHeartServices GameHeartServices { get; }
 
@@ -26,6 +31,8 @@ namespace FrameworkSDK.MonoGame.Mvc
         [CanBeNull] private IGraphicsPipeline _usedGraphicsPipeline;
 
         private bool _isInitialized;
+        
+        private readonly SceneLayout _layoutSystem;
 
         protected Scene([NotNull] string name, object model = null)
             : base(name, model)
@@ -34,6 +41,9 @@ namespace FrameworkSDK.MonoGame.Mvc
             RenderTargetsFactoryService = AppContext.ServiceLocator.Resolve<IRenderTargetsFactoryService>();
             GameHeartServices = AppContext.ServiceLocator.Resolve<IGameHeartServices>();
 
+            _layoutSystem = new SceneLayout(AppContext.ServiceLocator.Resolve<IDisplayService>(), this);
+            AddExtension(_layoutSystem);
+            
             ProcessDelayedInitialization();
         }
 
@@ -87,6 +97,7 @@ namespace FrameworkSDK.MonoGame.Mvc
             
             base.Dispose();
             
+            _layoutSystem.Dispose();
             _usedGraphicsPipeline?.Dispose();
         }
 

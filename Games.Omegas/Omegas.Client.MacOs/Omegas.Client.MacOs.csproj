@@ -38,6 +38,8 @@
     <Compile Include="Controllers\OmegaCameraController.cs" />
     <Compile Include="GameResourcePackage.cs" />
     <Compile Include="MainScene.cs" />
+    <Compile Include="MenuResourcePackage.cs" />
+    <Compile Include="MenuScene.cs" />
     <Compile Include="Models\Character\PlayerController.cs" />
     <Compile Include="Models\Character\PlayerData.cs" />
     <Compile Include="Models\Character\PlayerView.cs" />

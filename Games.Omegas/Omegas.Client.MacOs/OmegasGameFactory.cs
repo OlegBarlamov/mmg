@@ -28,6 +28,7 @@ namespace Omegas.Client.MacOs
                 .UsePhysics(new SimplePhysicsScene2DParameters())
                 .PreloadResourcePackage<ColorsTexturesPackage>()
                 .PreloadResourcePackage<GameResourcePackage>()
+                .PreloadResourcePackage<MenuResourcePackage>()
                 .UseGameComponents()
                 .UseInGameConsole()
                 .UseConsoleMessagesProvider(loggerConsoleMessageProvider)
