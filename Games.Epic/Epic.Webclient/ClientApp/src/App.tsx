@@ -15,10 +15,9 @@ export class App extends PureComponent<IAppProps> {
         const canvasService = this.props.serviceLocator.canvasService()
         await canvasService.init(container)
         
-        debugger
         const battleService = this.props.serviceLocator.battleMapService()
         const map = battleService.generateMap(11, 7)
-        await battleService.load(map)
+        const mapController = await battleService.load(map)
     }
 
     render() {
