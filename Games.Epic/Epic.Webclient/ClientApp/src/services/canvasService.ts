@@ -26,7 +26,7 @@ export class CanvasService implements ICanvasService {
     async init(container: HTMLElement): Promise<void> {
         this.app = new PIXI.Application()
         await this.app.init({ background: '#1099bb', resizeTo: container})
-        container.appendChild(this.app.canvas)  
+        container.appendChild(this.app.canvas)
     }
     
     async createUnit(props: IUnitTileProps): Promise<IUnitTile> {
@@ -123,7 +123,7 @@ export class CanvasService implements ICanvasService {
     
     private setHexagonGraphic(hex: PIXI.Graphics, props: IHexagonProps) {
         // Set the line style for the hexagon border
-        hex.lineStyle(2, props.strokeColor)
+        hex.lineStyle(props.strokeLine, props.strokeColor)
         // Set the fill style for the hexagon
         hex.beginFill(props.fillColor, props.fillAlpha)
 

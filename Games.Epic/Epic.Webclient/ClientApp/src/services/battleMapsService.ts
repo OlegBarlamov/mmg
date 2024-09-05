@@ -10,7 +10,7 @@ export interface IBattleMapsService {
 }
 
 export class BattleMapsService implements IBattleMapsService {
-    private canvasService: ICanvasService
+    private readonly canvasService: ICanvasService
     constructor(canvasService: ICanvasService) {
         this.canvasService = canvasService
     }

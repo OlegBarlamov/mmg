@@ -4,6 +4,7 @@ import {ICanvasService} from "../services/canvasService";
 import {Point} from "../common/Point";
 import {IUnitTile} from "../canvas/unitTile";
 import {getPlayerColor} from "../player/getPlayerColor";
+import {Size} from "../common/Size";
 
 const sqrt3 = Math.sqrt(3)
 
@@ -22,6 +23,7 @@ export class BattleMapController implements IBattleMapController{
     
     private readonly model: BattleMap
     private readonly cellRadius: number = 75
+    
     private readonly defaultStrokeColor = 0xFFFFFF
     private readonly defaultFillColor = 0x66CCFF
     private readonly unitStrokeColor = 0x111111
@@ -32,6 +34,12 @@ export class BattleMapController implements IBattleMapController{
     constructor(model: BattleMap, canvasService: ICanvasService) {
         this.model = model
         this.canvasService = canvasService;
+        
+        // TODO center the field?
+        // const leftCell = this.model.cells[0][0]
+        // const topCell = model.width > 0 ? this.model.cells[0][1] : leftCell 
+        // const rightCell = this.model.cells[this.model.height - 1][this.model.width - 1]
+        // const bottomCell = model.width > 0 ? this.model.cells[this.model.height - 1][this.model.width - 2] : rightCell
     }
 
     getCell(row: number, col: number): IHexagon {

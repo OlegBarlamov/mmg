@@ -1,31 +1,51 @@
 import './App.css';
 import React, {PureComponent} from 'react';
 import {IServiceLocator} from "./services/serviceLocator";
-import {BattleMap, BattleMapCell} from "./battleMap/battleMap";
-
-const CanvasContainerId = 'CanvasContainer'
+import {IBattleDefinition} from "./battle/battleDefinition";
+import {MenuComponent} from "./components/menuComponent";
+import {BattleComponent} from "./components/battleComponent";
 
 export interface IAppProps {
     serviceLocator: IServiceLocator;
 }
 
-export class App extends PureComponent<IAppProps> {
-    async componentDidMount() {
-        const container = document.getElementById(CanvasContainerId)!
-        const canvasService = this.props.serviceLocator.canvasService()
-        await canvasService.init(container)
+export interface IAppState {
+    selectedBattle: IBattleDefinition | null
+}
+
+export class App extends PureComponent<IAppProps, IAppState> {
+    constructor(props: IAppProps) {
+        super(props)
         
-        const battleService = this.props.serviceLocator.battleMapService()
-        const map = battleService.generateMap(11, 7)
-        const mapController = await battleService.load(map)
+        this.state = {selectedBattle: null}
+        
+        this.onBattleSelected = this.onBattleSelected.bind(this)
+    }
+    
+    private onBattleSelected(definition: IBattleDefinition) {
+        this.setState({selectedBattle: definition})
     }
 
     render() {
         return (
             <div className="App">
-                <div id={CanvasContainerId}></div>
+                {this.state.selectedBattle
+                    ? (
+                        <div className="BattleComponent">
+                            <BattleComponent serviceLocator={this.props.serviceLocator}
+                                             battleDefinition={this.state.selectedBattle!}/>
+                        </div>
+                    )
+                    : (
+                        <div className="MenuComponent">
+                            <MenuComponent serviceLocator={this.props.serviceLocator}
+                                           onBattleSelected={this.onBattleSelected}/>
+                        </div>
+                    )
+                }
             </div>
         )
     }
 }
+
 export default App;

@@ -28,6 +28,7 @@ export class PixiHexagon implements IHexagon {
     }
     
     dispose(): void {
+        debugger
         this.onMouseEnters = undefined!
         this.onMouseLeaves = undefined!
         this.onMouseDown = undefined!

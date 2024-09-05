@@ -7,7 +7,6 @@ export async function getTexture(imgSrc: string) : Promise<PIXI.Texture> {
     }
     
     const texture = await PIXI.Assets.load(imgSrc);
-    debugger
     if (texture)
         texturesCache.set(imgSrc, texture)
     
