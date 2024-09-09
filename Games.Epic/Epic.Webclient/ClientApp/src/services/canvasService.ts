@@ -14,6 +14,8 @@ export interface ICanvasService {
     destroyHexagon(hex: IHexagon): void
 
     createUnit(props: IUnitTileProps): Promise<IUnitTile>
+    changeUnit(unit: IUnitTile, newProps: IUnitTileProps): Promise<IUnitTile>
+    destroyUnit(unit: IUnitTile): void
 }
 
 export class CanvasService implements ICanvasService {
@@ -27,6 +29,31 @@ export class CanvasService implements ICanvasService {
         this.app = new PIXI.Application()
         await this.app.init({ background: '#1099bb', resizeTo: container})
         container.appendChild(this.app.canvas)
+    }
+
+    changeUnit(unit: IUnitTile, newProps: IUnitTileProps): Promise<IUnitTile> {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+        
+        if (pixiUnit.text != newProps.text) {
+            pixiUnit.textGraphics.text = newProps.text
+        }
+        
+        debugger
+        this.changeHexagon(pixiUnit.hexagonPixi, {
+            ...newProps.hexagon,
+            x: 0,
+            y: 0,
+        })
+        
+        pixiUnit.update(newProps)
+        return Promise.resolve(pixiUnit)
+    }
+    destroyUnit(unit: IUnitTile): void {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+
+        pixiUnit.dispose()
     }
     
     async createUnit(props: IUnitTileProps): Promise<IUnitTile> {
@@ -117,8 +144,6 @@ export class CanvasService implements ICanvasService {
         if (!pixiHex) throw new Error("The input hexagon is not PIXI based")
 
         pixiHex.dispose()
-        pixiHex.graphics.parent.removeChild(pixiHex.graphics)
-        pixiHex.graphics.destroy()
     }
     
     private setHexagonGraphic(hex: PIXI.Graphics, props: IHexagonProps) {

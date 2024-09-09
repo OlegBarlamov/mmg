@@ -3,6 +3,7 @@ import React, {PureComponent} from "react";
 import {IBattleDefinition} from "../battle/battleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
 import {IBattleMapController} from "../battleMap/battleMapController";
+import {IBattleController} from "../battle/battleController";
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -16,7 +17,7 @@ interface IBattleComponentState {
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
-    private mapController: IBattleMapController | null = null
+    private battleController: IBattleController | null = null
     
     constructor(props: IBattleComponentProps) {
         super(props)
@@ -30,10 +31,16 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
         const battleLoader = this.props.serviceLocator.battleLoader()
         const map = await battleLoader.loadBattle(this.props.battleDefinition)
-        const battleService = this.props.serviceLocator.battleMapService()
-        this.mapController = await battleService.load(map)
+        const battlesService = this.props.serviceLocator.battlesService()
+        this.battleController = await battlesService.createBattle(map)
+        this.onBattleFinished = this.onBattleFinished.bind(this)
+        this.battleController.startBattle().then(() => this.onBattleFinished())
         
         this.setState({...this.state, battleLoaded: true})
+    }
+
+    private onBattleFinished() {
+        
     }
 
     render() {

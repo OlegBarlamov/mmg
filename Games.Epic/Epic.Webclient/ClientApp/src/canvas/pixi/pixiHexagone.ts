@@ -28,10 +28,11 @@ export class PixiHexagon implements IHexagon {
     }
     
     dispose(): void {
-        debugger
         this.onMouseEnters = undefined!
         this.onMouseLeaves = undefined!
         this.onMouseDown = undefined!
+        this.graphics.parent.removeChild(this.graphics)
+        this.graphics.destroy()
     }
     
     update(props: IHexagonProps): void {
