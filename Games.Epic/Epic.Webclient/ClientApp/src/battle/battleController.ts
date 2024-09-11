@@ -1,6 +1,8 @@
 import {IBattleMapController} from "../battleMap/battleMapController";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
+import {BattleUserAction} from "./battleUserAction";
+import {wait} from "../common/wait";
 
 export interface IBattleController {
     startBattle(): Promise<void>
@@ -39,18 +41,67 @@ export class BattleController implements IBattleController {
             await this.processStep(currentUnit)
         }
     }
-    
+
     private async processStep(unit: BattleMapUnit): Promise<void> {
         await this.mapController.activateUnit(unit)
         
         const cellsForMove = this.getCellsForUnitMove(unit)
-        cellsForMove.forEach(cell => this.mapController.highlightCell(cell.r, cell.c))
+        const movableCellsColor = 0x6dbfac
+        cellsForMove.forEach(cell => this.mapController.setCellDefaultColor(cell.r, cell.c, movableCellsColor))
+
+        this.mapController.onCellMouseEnter = (cell) => {
+            if (cellsForMove.indexOf(cell) >= 0) {
+                this.mapController.setCellCustomColor(cell.r, cell.c, 0x32a852)
+            }
+        }
+        this.mapController.onCellMouseLeave = (cell) => {
+            if (cellsForMove.indexOf(cell) >= 0) {
+                this.mapController.setCellCustomColor(cell.r, cell.c, undefined)
+            }
+        }
         
-        // allow user input
-        // wait user input
-        // process the action
+        let action: BattleUserAction
+        try {
+            action = await this.getUserInputAction(unit, cellsForMove)
+        } finally {
+            this.mapController.onCellMouseEnter = null
+            this.mapController.onCellMouseLeave = null
+            
+            cellsForMove.forEach(cell => {
+                this.mapController.restoreCellDefaultColor(cell.r, cell.c)
+                this.mapController.setCellCustomColor(cell.r, cell.c)
+            })
+
+            await this.mapController.deactivateUnit()
+        }
         
-        return new Promise((resolve) => {})
+        await this.processInputAction(action)
+        
+        await wait(500)
+        
+        debugger
+    }
+    
+    private processInputAction(action: BattleUserAction): Promise<void> {
+        if (action.targetCell) {
+            return this.mapController.moveUnit(action.unit, action.targetCell.r, action.targetCell.c)
+        }
+        
+        throw new Error("Unknown type of user action")
+    }
+    
+    private getUserInputAction(originalUnit: BattleMapUnit, cellsToMove: BattleMapCell[]): Promise<BattleUserAction> {
+        return new Promise((resolve) => {
+            this.mapController.onCellMouseUp = (cell) => {
+                if (cellsToMove.indexOf(cell) >= 0) {
+                    this.mapController.onCellMouseUp = null
+                    resolve({
+                        unit: originalUnit,
+                        targetCell: cell,
+                    })
+                }
+            }
+        })
     }
     
     private getCellsForUnitMove(unit: BattleMapUnit): BattleMapCell[] {
@@ -75,8 +126,6 @@ export class BattleController implements IBattleController {
         while (queue.length > 0) {
             const [currentCell, distance] = queue.shift()!
             const key = cellToString(currentCell)
-
-            debugger
             
             // Skip if we've already visited this cell, or it exceeds movement range
             if (visited.has(key) || distance > moveRange) continue

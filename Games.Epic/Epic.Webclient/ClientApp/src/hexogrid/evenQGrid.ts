@@ -1,7 +1,9 @@
 import {Point} from "../common/Point";
+import { Size } from "../common/Size";
 import {HexoGrid, IHexoGrid, IHexoPoint} from "./hexoGrid";
 
 const sqrt3 = Math.sqrt(3)
+
 export class EvenQGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexoGrid<T> {
     constructor(cells: T[][]) {
         super(cells)
@@ -90,5 +92,18 @@ export class EvenQGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHex
         const col = q
         const row = r + (q - (q & 1)) / 2
         return {row, col}
+    }
+
+    getSize(cellRadius: number): Size {
+        const hexWidth = 2 * cellRadius; // Width of a single hexagon (flat-topped)
+        const hexHeight = sqrt3 * cellRadius; // Height of a single hexagon (flat-topped)
+
+        // Total grid width for even-q grid:
+        const gridWidth = hexWidth * this.width; // Each column contributes fully to the width
+
+        // Total grid height for even-q grid:
+        const gridHeight = hexHeight * (0.75 * (this.height - 1) + 1); // Accounts for staggered rows
+
+        return { width: gridWidth, height: gridHeight };
     }
 }

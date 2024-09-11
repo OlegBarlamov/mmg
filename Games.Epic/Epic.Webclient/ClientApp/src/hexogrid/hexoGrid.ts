@@ -1,4 +1,5 @@
 import {Point} from "../common/Point";
+import {Size} from "../common/Size";
 
 export interface IHexoPoint {
     readonly c: number
@@ -10,6 +11,8 @@ export interface IHexoGrid<T extends IHexoPoint> {
     readonly width: number
     readonly height: number
 
+    getSize(cellRadius: number): Size
+    
     getCellCenterPoint(row: number, col: number, cellRadius: number): Point
     isValidCell(row: number, col: number): boolean
     getCell(row: number, col: number): T
@@ -30,6 +33,8 @@ export abstract class HexoGrid<T extends IHexoPoint> implements IHexoGrid<T> {
     protected constructor(cells: T[][]) {
         this.cells = cells
     }
+
+    abstract getSize(cellRadius: number): Size
     
     isValidCell(row: number, col: number): boolean {
         return row >= 0 && row < this.height && col >= 0 && col < this.width;

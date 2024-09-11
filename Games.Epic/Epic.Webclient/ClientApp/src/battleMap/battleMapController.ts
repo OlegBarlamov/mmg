@@ -1,19 +1,27 @@
 import {IHexagon} from "../canvas/hexagon";
 import {BattleMap, BattleMapCell} from "./battleMap";
 import {ICanvasService} from "../services/canvasService";
-import {Point} from "../common/Point";
 import {IUnitTile} from "../canvas/unitTile";
 import {getPlayerColor} from "../player/getPlayerColor";
 import {BattleMapUnit} from "./battleMapUnit";
+import {Point} from "../common/Point";
 
 export interface IBattleMapController {
     readonly map: BattleMap
     
     getUnit(row: number, col: number): BattleMapUnit | null
+    moveUnit(unit: BattleMapUnit, row: number, col: number): Promise<void>
     
-    highlightCell(row: number, col: number): void
+    setCellCustomColor(row: number, col: number, color?: number): void
+    setCellDefaultColor(row: number, col: number, color: number): void
+    restoreCellDefaultColor(row: number, col: number): void
+    
     activateUnit(unit: BattleMapUnit): Promise<void>
     deactivateUnit(): Promise<void>
+    
+    onCellMouseEnter: ((cell: BattleMapCell) => void) | null
+    onCellMouseLeave: ((cell: BattleMapCell) => void) | null
+    onCellMouseUp: ((cell: BattleMapCell) => void) | null
     
     destroy(): void 
 }
@@ -24,17 +32,22 @@ export class BattleMapController implements IBattleMapController{
     units: IUnitTile[] = []
 
     activeUnit: IUnitTile | null = null
+
+    onCellMouseEnter: ((cell: BattleMapCell) => void) | null = null
+    onCellMouseLeave: ((cell: BattleMapCell) => void) | null = null
+    onCellMouseUp: ((cell: BattleMapCell) => void) | null = null
     
-    private readonly cellRadius: number = 75
+    private readonly cellRadius: number = 60
     
-    private readonly defaultStrokeColor = 0xFFFFFF
-    private readonly defaultFillColor = 0x66CCFF
+    private readonly defaultCellsStrokeColor = 0xFFFFFF
+    private readonly defaultCellsFillColor = 0x66CCFF
     private readonly unitStrokeColor = 0x111111
     private readonly unitsNumberBackgroundImgSrc = "https://static.vecteezy.com/system/resources/thumbnails/012/981/790/small/old-parchment-paper-scroll-sheet-vintage-aged-or-texture-background-png.png"
     private readonly highlightIntervalMs = 500
-    private readonly highlightFillColor = 0xffea5e
+    private readonly unitHighlightColor = 0xffea5e
     
-    private readonly canvasService: ICanvasService;
+    private readonly canvasService: ICanvasService
+    private readonly visualOffset: Point 
     
     private isHighlighted: boolean = false
     private readonly unitHighlightTimer: NodeJS.Timeout
@@ -46,11 +59,38 @@ export class BattleMapController implements IBattleMapController{
         this.highlightActiveUnit = this.highlightActiveUnit.bind(this)
         this.unitHighlightTimer = setInterval(this.highlightActiveUnit, this.highlightIntervalMs)
         
-        // TODO center the field?
-        // const leftCell = this.model.cells[0][0]
-        // const topCell = model.width > 0 ? this.model.cells[0][1] : leftCell 
-        // const rightCell = this.model.cells[this.model.height - 1][this.model.width - 1]
-        // const bottomCell = model.width > 0 ? this.model.cells[this.model.height - 1][this.model.width - 2] : rightCell
+        this.visualOffset = this.getCanvasOffset()
+    }
+    
+    private getCanvasOffset(): Point {
+        const offset = {x: 0, y: 0}
+        const containerSize = this.canvasService.size()
+        const gridDesiredSize = this.map.grid.getSize(this.cellRadius)
+        
+        debugger
+        if (gridDesiredSize.width < containerSize.width) {
+            offset.x = (containerSize.width - gridDesiredSize.width) / 2
+        }
+        if (gridDesiredSize.height < containerSize.height) {
+            offset.y = (containerSize.height - gridDesiredSize.height) / 2
+        }
+        
+        return offset
+    }
+
+    async moveUnit(unit: BattleMapUnit, r: number, c: number): Promise<void> {
+        const unitTile = this.getUnitTile(unit)
+
+        const newPoint = this.map.grid.getCellCenterPoint(r, c, this.cellRadius)
+        await this.canvasService.changeUnit(unitTile, {
+            ...unitTile,
+            hexagon: {
+                ...unitTile.hexagon,
+                x: newPoint.x + this.visualOffset.x,
+                y: newPoint.y + this.visualOffset.y,
+            }
+        })
+        unit.position = {r, c}
     }
 
     destroy(): void {
@@ -116,7 +156,7 @@ export class BattleMapController implements IBattleMapController{
             ...unit,
             hexagon: {
                 ...unit.hexagon,
-                fillColor: this.highlightFillColor
+                fillColor: this.unitHighlightColor
             }
         })
     }
@@ -133,11 +173,21 @@ export class BattleMapController implements IBattleMapController{
         })
     }
 
-    highlightCell(row: number, col: number): void {
+    setCellCustomColor(row: number, col: number, color?: number): void {
         const cell = this.getHexagon(row, col)
-        const color = 0x6dbfac
+        this.setFillColor(cell, color ?? cell.customFillColor ?? this.defaultCellsFillColor)
+    }
+
+    setCellDefaultColor(row: number, col: number, color: number): void {
+        const cell = this.getHexagon(row, col)
         cell.customFillColor = color
         this.setFillColor(cell, color)
+    }
+
+    restoreCellDefaultColor(row: number, col: number) {
+        const cell = this.getHexagon(row, col)
+        cell.customFillColor = undefined
+        this.setFillColor(cell, this.defaultCellsFillColor)
     }
 
     loadMap(): Promise<void> {
@@ -146,19 +196,21 @@ export class BattleMapController implements IBattleMapController{
         for (let r = 0; r < this.map.grid.height; r++) {
             const row: IHexagon[] = [];
             for (let c = 0; c < this.map.grid.width; c++) {
+                const cell = this.map.grid.getCell(r, c)
                 const center = this.map.grid.getCellCenterPoint(r, c, this.cellRadius)
                 const hexagonView = this.canvasService.createHexagon({
-                    x: center.x,
-                    y: center.y,
+                    x: center.x + this.visualOffset.x,
+                    y: center.y + this.visualOffset.y,
                     radius: this.cellRadius,
-                    strokeColor: this.defaultStrokeColor,
-                    fillColor: this.defaultFillColor,
+                    strokeColor: this.defaultCellsStrokeColor,
+                    fillColor: this.defaultCellsFillColor,
                     strokeLine: 2,
                     fillAlpha: 1.0,
                 })
                 
-                hexagonView.onMouseEnters = this.onCellMouseEnters.bind(this)
-                hexagonView.onMouseLeaves = this.onCellMouseLeaves.bind(this)
+                hexagonView.onMouseEnters = () => this.onCellMouseEnter?.(cell)
+                hexagonView.onMouseLeaves = () => this.onCellMouseLeave?.(cell)
+                hexagonView.onMouseUp = () => this.onCellMouseUp?.(cell)
                 
                 row.push(hexagonView);
             }
@@ -176,8 +228,8 @@ export class BattleMapController implements IBattleMapController{
             const unitTile = await this.canvasService.createUnit({
                 model: unit,
                 hexagon: {
-                    x: center.x,
-                    y: center.y,
+                    x: center.x + this.visualOffset.x,
+                    y: center.y + this.visualOffset.y,
                     radius: this.cellRadius,
                     strokeColor: this.unitStrokeColor,
                     fillColor: getPlayerColor(unit.player),
@@ -190,14 +242,6 @@ export class BattleMapController implements IBattleMapController{
             })
             this.units.push(unitTile)
         }
-    }
-    
-    private onCellMouseEnters(cell: IHexagon) {
-        this.setFillColor(cell, 0x32a852)
-    }
-
-    private onCellMouseLeaves(cell: IHexagon) {
-        this.setFillColor(cell, cell.customFillColor || this.defaultFillColor)
     }
     
     private setFillColor(cell: IHexagon, color: number) {

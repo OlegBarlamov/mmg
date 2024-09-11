@@ -12,7 +12,7 @@ export enum HexagonStyle {
 }
 
 export interface ICanvasService {
-    dimensions(): Size
+    size(): Size
     init(container: HTMLElement, hexagonStyle: HexagonStyle): Promise<void>
     createHexagon(props: IHexagonProps): IHexagon
     changeHexagon(hex: IHexagon, newProps: IHexagonProps): IHexagon
@@ -27,7 +27,7 @@ export class CanvasService implements ICanvasService {
     private app: PIXI.Application = new PIXI.Application()
     private hexagonStyle: HexagonStyle = HexagonStyle.QStyle
 
-    dimensions(): Size {
+    size(): Size {
         return {width: this.app.canvas.width, height: this.app.canvas.height}
     }
     
@@ -51,8 +51,11 @@ export class CanvasService implements ICanvasService {
             x: 0,
             y: 0,
         })
+        pixiUnit.container.x = newProps.hexagon.x
+        pixiUnit.container.y = newProps.hexagon.y
         
         pixiUnit.update(newProps)
+        
         return Promise.resolve(pixiUnit)
     }
     destroyUnit(unit: IUnitTile): void {
@@ -94,7 +97,7 @@ export class CanvasService implements ICanvasService {
         })
         sprite.mask = mask
         
-        const textStyle = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 22, fill : 0x000000, align : 'center'})
+        const textStyle = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: props.hexagon.radius * 0.3, fill : 0x000000, align : 'center'})
         const text = new PIXI.Text({
             text: props.text,
             style: textStyle

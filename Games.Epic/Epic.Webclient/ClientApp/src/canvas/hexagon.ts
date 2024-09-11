@@ -14,4 +14,5 @@ export interface IHexagon extends IHexagonProps {
     onMouseEnters: (sender: IHexagon) => void
     onMouseLeaves: (sender: IHexagon) => void
     onMouseDown: (sender: IHexagon) => void
+    onMouseUp: (sender: IHexagon) => void
 }

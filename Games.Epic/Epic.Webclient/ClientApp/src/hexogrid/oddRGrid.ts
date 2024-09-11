@@ -1,7 +1,9 @@
 import { Point } from "../common/Point";
+import { Size } from "../common/Size";
 import {HexoGrid, IHexoGrid, IHexoPoint} from "./hexoGrid";
 
 const sqrt3 = Math.sqrt(3)
+
 export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexoGrid<T> {
     constructor(cells: T[][]) {
         super(cells)
@@ -14,8 +16,8 @@ export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexo
         const hexWidth = sqrt3 * cellRadius
         const hexHeight = 2 * cellRadius
 
-        const x = col * hexWidth + (row % 2 !== 0 ? hexWidth / 2 : 0)  + cellRadius
-        const y = row * (3 / 4) * hexHeight  + cellRadius
+        const x = col * hexWidth + (row % 2 !== 0 ? hexWidth / 2 : 0) + cellRadius
+        const y = row * (3 / 4) * hexHeight + cellRadius
 
         return { x, y };
     }
@@ -57,5 +59,18 @@ export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexo
         }
 
         return neighbors
+    }
+
+    getSize(cellRadius: number): Size {
+        const hexWidth = sqrt3 * cellRadius; // Width of a single hexagon (pointy-topped)
+        const hexHeight = 2 * cellRadius; // Height of a single hexagon (pointy-topped)
+
+        // Total grid width for odd-r grid:
+        const gridWidth = hexWidth * (this.width - 1) + hexWidth; // Accounts for staggered odd columns
+
+        // Total grid height
+        const gridHeight = (this.height - 1) * (3 / 4) * hexHeight + hexHeight;
+
+        return { width: gridWidth, height: gridHeight };
     }
 }

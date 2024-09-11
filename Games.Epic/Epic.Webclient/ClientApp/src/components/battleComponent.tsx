@@ -29,11 +29,12 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
     
     async componentDidMount() {
+        const canvasContainer = document.getElementById(CanvasContainerId)!
         const battleLoader = this.props.serviceLocator.battleLoader()
         const map = await battleLoader.loadBattle(this.props.battleDefinition)
 
         const canvasService = this.props.serviceLocator.canvasService()
-        await canvasService.init(document.getElementById(CanvasContainerId)!, this.getMapHexagonStyle(map))
+        await canvasService.init(canvasContainer, this.getMapHexagonStyle(map))
         
         const battlesService = this.props.serviceLocator.battlesService()
         this.battleController = await battlesService.createBattle(map)
