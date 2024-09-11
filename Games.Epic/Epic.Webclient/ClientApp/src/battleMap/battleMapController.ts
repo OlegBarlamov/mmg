@@ -6,15 +6,9 @@ import {IUnitTile} from "../canvas/unitTile";
 import {getPlayerColor} from "../player/getPlayerColor";
 import {BattleMapUnit} from "./battleMapUnit";
 
-const sqrt3 = Math.sqrt(3)
-
 export interface IBattleMapController {
     readonly map: BattleMap
     
-    isValidCell(row: number, col: number): boolean
-    getCell(row: number, col: number): BattleMapCell 
-    getCellCenterPoint(row: number, col: number): Point
-    getCellsInRange(row: number, col: number, range: number): BattleMapCell[]
     getUnit(row: number, col: number): BattleMapUnit | null
     
     highlightCell(row: number, col: number): void
@@ -88,42 +82,6 @@ export class BattleMapController implements IBattleMapController{
     getUnit(row: number, col: number): BattleMapUnit | null {
         return this.map.units.find(x => x.position.r === row && x.position.c === col) ?? null
     }
-
-    isValidCell(row: number, col: number): boolean {
-        return row >= 0 && row < this.map.height && col >= 0 && col < this.map.width;
-    }
-
-    getCellsInRange(row: number, col: number, range: number): BattleMapCell[] {
-        const centerCube = this.offsetToCube(row, col);
-        const cellsInRadius: BattleMapCell[] = [];
-
-        // Loop over the cube coordinates in the radius range
-        for (let dq = -range; dq <= range; dq++) {
-            for (let dr = Math.max(-range, -dq - range); dr <= Math.min(range, -dq + range); dr++) {
-                const ds = -dq - dr;
-
-                const cube = {
-                    q: centerCube.q + dq,
-                    r: centerCube.r + dr,
-                    s: centerCube.s + ds,
-                };
-
-                // Convert the cube coordinate back to offset coordinates
-                const offset = this.cubeToOffset(cube.q, cube.r);
-
-                // Check if the cell exists in the grid (bounds checking)
-                if (this.isValidCell(offset.row, offset.col)) {
-                    cellsInRadius.push(this.getCell(offset.row, offset.col));
-                }
-            }
-        }
-
-        return cellsInRadius;
-    }
-
-    getCell(row: number, col: number): BattleMapCell {
-        return this.map.cells[row][col]
-    }
     
     private getHexagon(row: number, col: number): IHexagon {
         return this.hexagons[row][col]
@@ -154,7 +112,6 @@ export class BattleMapController implements IBattleMapController{
     private highlightUnitTile(unit: IUnitTile): Promise<IUnitTile> {
         this.isHighlighted = true
         
-        debugger
         return this.canvasService.changeUnit(unit, {
             ...unit,
             hexagon: {
@@ -183,21 +140,13 @@ export class BattleMapController implements IBattleMapController{
         this.setFillColor(cell, color)
     }
 
-    getCellCenterPoint(row: number, col: number): Point {
-        const hexWidth = 2 * this.cellRadius
-        const hexHeight = sqrt3 * this.cellRadius
-        const x = col * hexWidth * 0.75 + this.cellRadius
-        const y = row * hexHeight + (col % 2 === 0 ? hexHeight / 2 : 0) + this.cellRadius
-        return { x, y }
-    }
-
     loadMap(): Promise<void> {
         if (this.hexagons.length !== 0) throw new Error("Cannot regenerate the visuals of already loaded map")
         
-        for (let r = 0; r < this.map.height; r++) {
+        for (let r = 0; r < this.map.grid.height; r++) {
             const row: IHexagon[] = [];
-            for (let c = 0; c < this.map.width; c++) {
-                const center = this.getCellCenterPoint(r, c)
+            for (let c = 0; c < this.map.grid.width; c++) {
+                const center = this.map.grid.getCellCenterPoint(r, c, this.cellRadius)
                 const hexagonView = this.canvasService.createHexagon({
                     x: center.x,
                     y: center.y,
@@ -223,7 +172,7 @@ export class BattleMapController implements IBattleMapController{
         if (this.units.length !== 0) throw new Error("Cannot regenerate the units tiles of already loaded map")
         
         for (const unit of this.map.units) {
-            const center = this.getCellCenterPoint(unit.position.r, unit.position.c)
+            const center = this.map.grid.getCellCenterPoint(unit.position.r, unit.position.c, this.cellRadius)
             const unitTile = await this.canvasService.createUnit({
                 model: unit,
                 hexagon: {
@@ -241,19 +190,6 @@ export class BattleMapController implements IBattleMapController{
             })
             this.units.push(unitTile)
         }
-    }
-    
-    private offsetToCube(row: number, col: number): { q: number, r: number, s: number } {
-        const q = col;
-        const r = row - (col - (col & 1)) / 2;
-        const s = -q - r;
-        return { q, r, s };
-    }
-    
-    private cubeToOffset(q: number, r: number): { row: number, col: number } {
-        const col = q;
-        const row = r + (q - (q & 1)) / 2;
-        return { row, col };
     }
     
     private onCellMouseEnters(cell: IHexagon) {

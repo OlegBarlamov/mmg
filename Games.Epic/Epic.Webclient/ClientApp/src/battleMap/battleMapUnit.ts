@@ -1,9 +1,9 @@
 import {PlayerNumber} from "../player/playerNumber";
 import {UnitProperties} from "../units/unitProperties";
-import {HexoPoint} from "../common/Point";
+import {IHexoPoint} from "../hexogrid/hexoGrid";
 
 export type BattleMapUnit = {
-    position: HexoPoint
+    position: IHexoPoint
     
     player: PlayerNumber
     

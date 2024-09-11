@@ -2,8 +2,11 @@ import './battleComponent.css'
 import React, {PureComponent} from "react";
 import {IBattleDefinition} from "../battle/battleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
-import {IBattleMapController} from "../battleMap/battleMapController";
 import {IBattleController} from "../battle/battleController";
+import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
+import {HexagonStyle} from "../services/canvasService";
+import {EvenQGrid} from "../hexogrid/evenQGrid";
+import {OddRGrid} from "../hexogrid/oddRGrid";
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -26,17 +29,28 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
     
     async componentDidMount() {
-        const canvasService = this.props.serviceLocator.canvasService()
-        await canvasService.init(document.getElementById(CanvasContainerId)!)
-
         const battleLoader = this.props.serviceLocator.battleLoader()
         const map = await battleLoader.loadBattle(this.props.battleDefinition)
+
+        const canvasService = this.props.serviceLocator.canvasService()
+        await canvasService.init(document.getElementById(CanvasContainerId)!, this.getMapHexagonStyle(map))
+        
         const battlesService = this.props.serviceLocator.battlesService()
         this.battleController = await battlesService.createBattle(map)
         this.onBattleFinished = this.onBattleFinished.bind(this)
         this.battleController.startBattle().then(() => this.onBattleFinished())
         
         this.setState({...this.state, battleLoaded: true})
+    }
+    
+    private getMapHexagonStyle(map: BattleMap): HexagonStyle {
+        if (map.grid instanceof EvenQGrid) {
+            return HexagonStyle.QStyle
+        } else if (map.grid instanceof OddRGrid) {
+            return HexagonStyle.RStyle
+        }
+        
+        throw new Error("Unknown type of the battle map hexo grid")
     }
 
     private onBattleFinished() {

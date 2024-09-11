@@ -6,9 +6,14 @@ import {IUnitTile, IUnitTileProps} from "../canvas/unitTile";
 import {getTexture} from "../canvas/pixi/pixiTextures";
 import {PixiUnitTile} from "../canvas/pixi/pixiUnitTile";
 
+export enum HexagonStyle {
+    QStyle,
+    RStyle,
+}
+
 export interface ICanvasService {
     dimensions(): Size
-    init(container: HTMLElement): Promise<void>
+    init(container: HTMLElement, hexagonStyle: HexagonStyle): Promise<void>
     createHexagon(props: IHexagonProps): IHexagon
     changeHexagon(hex: IHexagon, newProps: IHexagonProps): IHexagon
     destroyHexagon(hex: IHexagon): void
@@ -19,13 +24,15 @@ export interface ICanvasService {
 }
 
 export class CanvasService implements ICanvasService {
-    private app: PIXI.Application = new PIXI.Application();
+    private app: PIXI.Application = new PIXI.Application()
+    private hexagonStyle: HexagonStyle = HexagonStyle.QStyle
 
     dimensions(): Size {
         return {width: this.app.canvas.width, height: this.app.canvas.height}
     }
     
-    async init(container: HTMLElement): Promise<void> {
+    async init(container: HTMLElement, hexagonStyle: HexagonStyle): Promise<void> {
+        this.hexagonStyle = hexagonStyle;
         this.app = new PIXI.Application()
         await this.app.init({ background: '#1099bb', resizeTo: container})
         container.appendChild(this.app.canvas)
@@ -39,7 +46,6 @@ export class CanvasService implements ICanvasService {
             pixiUnit.textGraphics.text = newProps.text
         }
         
-        debugger
         this.changeHexagon(pixiUnit.hexagonPixi, {
             ...newProps.hexagon,
             x: 0,
@@ -81,18 +87,11 @@ export class CanvasService implements ICanvasService {
         sprite.x = -props.hexagon.radius
         sprite.y = -props.hexagon.radius
         
-        const maskRadius = props.hexagon.radius * 0.9
         const mask = new PIXI.Graphics()
-        mask.beginFill(0xffffff); // Use white to fill the mask
-        mask.drawPolygon([
-            maskRadius * Math.cos(0), maskRadius * Math.sin(0),
-            maskRadius * Math.cos(Math.PI / 3), maskRadius * Math.sin(Math.PI / 3),
-            maskRadius * Math.cos((2 * Math.PI) / 3), maskRadius * Math.sin((2 * Math.PI) / 3),
-            maskRadius * Math.cos(Math.PI), maskRadius * Math.sin(Math.PI),
-            maskRadius * Math.cos((4 * Math.PI) / 3), maskRadius * Math.sin((4 * Math.PI) / 3),
-            maskRadius * Math.cos((5 * Math.PI) / 3), maskRadius * Math.sin((5 * Math.PI) / 3)
-        ]);
-        mask.endFill();
+        this.setHexagonGraphic(mask, {
+            ...hexProps,
+            radius: props.hexagon.radius * 0.9,
+        })
         sprite.mask = mask
         
         const textStyle = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 22, fill : 0x000000, align : 'center'})
@@ -146,15 +145,23 @@ export class CanvasService implements ICanvasService {
         pixiHex.dispose()
     }
     
-    private setHexagonGraphic(hex: PIXI.Graphics, props: IHexagonProps) {
-        // Set the line style for the hexagon border
+    private setHexagonGraphic(hex: PIXI.Graphics, props: IHexagonProps): void {
         hex.lineStyle(props.strokeLine, props.strokeColor)
-        // Set the fill style for the hexagon
         hex.beginFill(props.fillColor, props.fillAlpha)
 
-        // Initialize an array to hold the vertices for the hitArea
         const vertices: number[] = []
-
+        if (this.hexagonStyle === HexagonStyle.QStyle) {
+            this.setHexagonQStyleGeometry(hex, vertices, props)
+        } else {
+            this.setHexagonRStyleGeometry(hex, vertices, props)
+        }
+        
+        hex.endFill()
+        
+        hex.hitArea = new PIXI.Polygon(vertices)
+    }
+    
+    private setHexagonQStyleGeometry(hex: PIXI.Graphics, verticesArray: number[], props: IHexagonProps): void {
         // Calculate and store the vertices
         for (let side = 0; side < 6; side++) {
             const vx = props.x + props.radius * Math.cos(side * 2 * Math.PI / 6)
@@ -168,14 +175,33 @@ export class CanvasService implements ICanvasService {
             }
 
             // Add the vertex to the vertices array
-            vertices.push(vx, vy)
+            verticesArray.push(vx, vy)
         }
 
         // Close the hexagon path and apply the fill
-        hex.lineTo(vertices[0], vertices[1])
-        // End the fill
-        hex.endFill()
-        
-        hex.hitArea = new PIXI.Polygon(vertices)
+        hex.lineTo(verticesArray[0], verticesArray[1])
+    }
+    
+    private setHexagonRStyleGeometry(hex: PIXI.Graphics, verticesArray: number[], props: IHexagonProps): void {
+        // Calculate and store the vertices of a flat-topped hexagon
+        for (let side = 0; side < 6; side++) {
+            // Flat-topped hexagon vertices: angle starts at π/6 and increments by π/3 (60 degrees)
+            const angle = (Math.PI / 6) + (side * Math.PI / 3);  // Start at 30 degrees (π/6) for flat-topped hexagons
+            const vx = props.x + props.radius * Math.cos(angle); // x-coordinate of vertex
+            const vy = props.y + props.radius * Math.sin(angle); // y-coordinate of vertex
+
+            // Move to the first vertex, then draw lines to the remaining vertices
+            if (side === 0) {
+                hex.moveTo(vx, vy);
+            } else {
+                hex.lineTo(vx, vy);
+            }
+
+            // Add the vertex to the vertices array (for hit area or future use)
+            verticesArray.push(vx, vy);
+        }
+
+        // Close the hexagon path and apply the fill
+        hex.lineTo(verticesArray[0], verticesArray[1]);  // Connect last vertex back to the first
     }
 }

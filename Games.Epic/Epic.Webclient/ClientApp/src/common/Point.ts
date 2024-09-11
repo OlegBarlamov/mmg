@@ -3,8 +3,3 @@ export type Point = {
     y: number
 }
 
-export type HexoPoint = {
-    c: number
-    r: number
-}
-

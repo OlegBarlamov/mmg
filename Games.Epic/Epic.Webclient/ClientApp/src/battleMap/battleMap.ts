@@ -1,4 +1,5 @@
 import {BattleMapUnit} from "./battleMapUnit";
+import {IHexoGrid} from "../hexogrid/hexoGrid";
 
 export type BattleMapCell = {
     r: number
@@ -6,9 +7,7 @@ export type BattleMapCell = {
 }
 
 export type BattleMap = {
-    width: number
-    height: number
+    grid: IHexoGrid<BattleMapCell>
     
-    cells: BattleMapCell[][]
     units: BattleMapUnit[]
 }

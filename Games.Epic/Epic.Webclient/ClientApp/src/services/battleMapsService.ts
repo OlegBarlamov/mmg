@@ -2,6 +2,8 @@ import {ICanvasService} from "./canvasService";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {BattleMapController, IBattleMapController} from "../battleMap/battleMapController";
 import {PlayerNumber} from "../player/playerNumber";
+import {OddRGrid} from "../hexogrid/oddRGrid";
+import {EvenQGrid} from "../hexogrid/evenQGrid";
 
 export interface IBattleMapsService {
     load(map: BattleMap): Promise<IBattleMapController>
@@ -33,9 +35,7 @@ export class BattleMapsService implements IBattleMapsService {
             cells.push(row)
         }
         return {
-            width,
-            height,
-            cells,
+            grid: new OddRGrid(cells),
             units: [{
                 position: {
                     c: 0,
