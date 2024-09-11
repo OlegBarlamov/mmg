@@ -20,27 +20,27 @@ export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexo
         return { x, y };
     }
     getNeighborCells(row: number, col: number): T[] {
-        // Define neighbor directions for even-r layout
-        const evenRDirections = [
-            {dr: -1, dc: 0}, // top
-            {dr: -1, dc: 1}, // top-right
-            {dr: 0, dc: -1}, // left
-            {dr: 0, dc: 1},  // right
-            {dr: 1, dc: 0},  // bottom
-            {dr: 1, dc: 1}   // bottom-right
-        ];
-
+        // Neighbor directions for odd-r layout
         const oddRDirections = [
-            {dr: -1, dc: -1}, // top-left
             {dr: -1, dc: 0},  // top
+            {dr: -1, dc: -1}, // top-left
             {dr: 0, dc: -1},  // left
             {dr: 0, dc: 1},   // right
-            {dr: 1, dc: -1},  // bottom-left
-            {dr: 1, dc: 0}    // bottom
-        ];
+            {dr: 1, dc: 0},   // bottom
+            {dr: 1, dc: -1}   // bottom-left
+        ]
+
+        const evenRDirections = [
+            {dr: -1, dc: 0},  // top
+            {dr: -1, dc: 1}, // top-right
+            {dr: 0, dc: -1},  // left
+            {dr: 0, dc: 1},   // right
+            {dr: 1, dc: 0},   // bottom
+            {dr: 1, dc: 1}   // bottom-right
+        ]
 
         // Use different direction sets based on whether the row is even or odd
-        const directions = row % 2 === 0 ? evenRDirections : oddRDirections
+        const directions = row % 2 === 0 ? oddRDirections : evenRDirections
 
         const neighbors: T[] = []
 
@@ -48,10 +48,10 @@ export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexo
             const neighbor = {
                 r: row + dir.dr,
                 c: col + dir.dc
-            };
+            }
 
             // Check if the neighbor is within bounds
-            if (neighbor.r >= 0 && neighbor.r < this.height && neighbor.c >= 0 && neighbor.c < this.width) {
+            if (this.isValidCell(neighbor.r, neighbor.c)) {
                 neighbors.push(this.getCell(neighbor.r, neighbor.c))
             }
         }

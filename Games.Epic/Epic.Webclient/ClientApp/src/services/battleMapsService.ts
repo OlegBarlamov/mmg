@@ -35,7 +35,7 @@ export class BattleMapsService implements IBattleMapsService {
             cells.push(row)
         }
         return {
-            grid: new OddRGrid(cells),
+            grid: new EvenQGrid(cells),
             units: [{
                 position: {
                     c: 0,

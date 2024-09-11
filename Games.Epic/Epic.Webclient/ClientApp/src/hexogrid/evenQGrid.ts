@@ -7,12 +7,27 @@ export class EvenQGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHex
         super(cells)
     }
     getNeighborCells(row: number, col: number): T[] {
-        // Define hexagonal neighbor directions in terms of (r, c) changes
-        const directions = [
-            {dr: -1, dc: 0}, {dr: 1, dc: 0}, // vertical neighbors
-            {dr: 0, dc: -1}, {dr: 0, dc: 1}, // horizontal neighbors
-            {dr: -1, dc: 1}, {dr: 1, dc: -1} // diagonal neighbors
-        ];
+        // Define neighbor directions for even-q layout
+        const evenDirections = [
+            { dr: -1, dc: 0 },  // top
+            { dr: 0, dc: -1 },  // left
+            { dr: 0, dc: 1 },   // right
+            { dr: 1, dc: -1 },  // bottom-left
+            { dr: 1, dc: 0 },   // bottom
+            { dr: 1, dc: 1 }    // bottom-right
+        ]
+
+        const oddDirections = [
+            { dr: -1, dc: -1 }, // top-left
+            { dr: -1, dc: 0 },  // top
+            { dr: -1, dc: 1 },  // top-right
+            { dr: 0, dc: 1 },   // right
+            { dr: 1, dc: 0 },   // bottom
+            { dr: 0, dc: -1 }   // left
+        ]
+
+        // Choose directions based on whether the row is even or odd
+        const directions = col % 2 === 0 ? evenDirections : oddDirections;
 
         const neighbors: T[] = []
 
@@ -20,7 +35,7 @@ export class EvenQGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHex
             const neighbor = {
                 r: row + dir.dr,
                 c: col + dir.dc
-            };
+            }
             if (this.isValidCell(neighbor.r, neighbor.c)) {
                 neighbors.push(this.getCell(neighbor.r, neighbor.c))
             }

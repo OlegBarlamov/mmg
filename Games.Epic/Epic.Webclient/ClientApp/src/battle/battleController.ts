@@ -76,6 +76,8 @@ export class BattleController implements IBattleController {
             const [currentCell, distance] = queue.shift()!
             const key = cellToString(currentCell)
 
+            debugger
+            
             // Skip if we've already visited this cell, or it exceeds movement range
             if (visited.has(key) || distance > moveRange) continue
 
