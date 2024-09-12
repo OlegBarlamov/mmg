@@ -106,4 +106,10 @@ export class EvenQGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHex
 
         return { width: gridWidth, height: gridHeight };
     }
+
+    protected toAxial(row: number, col: number): { q: number, r: number } {
+        const q = col;
+        const r = row - Math.floor(col / 2);
+        return { q, r };
+    }
 }

@@ -1,8 +1,25 @@
-import {BattleMapUnit} from "../battleMap/battleMapUnit";
+import {PlayerNumber} from "../player/playerNumber";
 import {BattleMapCell} from "../battleMap/battleMap";
+import {BattleMapUnit} from "../battleMap/battleMapUnit";
 
-export type BattleUserAction = {
-    unit: BattleMapUnit,
-    targetCell?: BattleMapCell
-    targetUnit?: BattleMapUnit
+interface BaseUserAction {
+    command: string
+    player: PlayerNumber
 }
+
+interface UnitAction extends BaseUserAction {
+    actor: BattleMapUnit
+}
+
+interface UnitMoveAction extends UnitAction {
+    command: 'UNIT_MOVE'
+    moveToCell: BattleMapCell
+}
+
+interface UnitAttackAction extends UnitAction {
+    command: 'UNIT_ATTACK'
+    moveToCell: BattleMapCell
+    attackTarget: BattleMapUnit
+}
+
+export type BattleUserAction = UnitMoveAction | UnitAttackAction

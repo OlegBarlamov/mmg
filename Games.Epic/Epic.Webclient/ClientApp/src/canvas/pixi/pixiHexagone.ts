@@ -14,19 +14,21 @@ export class PixiHexagon implements IHexagon {
 
     customFillColor: number | undefined
 
-    onMouseEnters: (sender: IHexagon) => void = () => {}
-    onMouseLeaves: (sender: IHexagon) => void = () => {}
-    onMouseDown: (sender: IHexagon) => void = () => {}
-    onMouseUp: (sender: IHexagon) => void = () => {}
+    onMouseEnters: (sender: IHexagon, event: PointerEvent) => void = () => {}
+    onMouseLeaves: (sender: IHexagon, event: PointerEvent) => void = () => {}
+    onMouseDown: (sender: IHexagon, event: PointerEvent) => void = () => {}
+    onMouseUp: (sender: IHexagon, event: PointerEvent) => void = () => {}
+    onMouseMove: (sender: IHexagon, event: PointerEvent) => void = () => {}
     
     constructor(props: IHexagonProps, graphics: PIXI.Graphics) {
         this.graphics = graphics
         this.update(props)
         
-        graphics.onmouseenter = () => this.onMouseEnters(this)
-        graphics.onmouseleave = () => this.onMouseLeaves(this)
-        graphics.onmousedown = () => this.onMouseDown(this)
-        graphics.onmouseup = () => this.onMouseUp(this)
+        graphics.onmouseenter = (event) => this.onMouseEnters(this, event)
+        graphics.onmouseleave = (event) => this.onMouseLeaves(this, event)
+        graphics.onmousedown = (event) => this.onMouseDown(this, event)
+        graphics.onmouseup = (event) => this.onMouseUp(this, event)
+        graphics.onmousemove = (event) => this.onMouseMove(this, event)
     }
     
     dispose(): void {
@@ -34,10 +36,12 @@ export class PixiHexagon implements IHexagon {
         this.graphics.onmouseleave = null
         this.graphics.onmousedown = null
         this.graphics.onmouseup = null
+        this.graphics.onmousemove = null
         this.onMouseEnters = undefined!
         this.onMouseLeaves = undefined!
         this.onMouseDown = undefined!
         this.onMouseUp = undefined!
+        this.onMouseMove = undefined!
         this.graphics.parent.removeChild(this.graphics)
         this.graphics.destroy()
     }

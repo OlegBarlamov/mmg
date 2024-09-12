@@ -21,12 +21,28 @@ export interface ICanvasService {
     createUnit(props: IUnitTileProps): Promise<IUnitTile>
     changeUnit(unit: IUnitTile, newProps: IUnitTileProps): Promise<IUnitTile>
     destroyUnit(unit: IUnitTile): void
+    
+    setCursorForHexagon(hex: IHexagon, cursor?: string): void
+    setCursorForUnit(unit: IUnitTile, cursor?: string): void
 }
 
 export class CanvasService implements ICanvasService {
     private app: PIXI.Application = new PIXI.Application()
     private hexagonStyle: HexagonStyle = HexagonStyle.QStyle
 
+    setCursorForHexagon(hex: IHexagon, cursor?: string): void {
+        const pixiHex = hex as PixiHexagon
+        if (!pixiHex) throw new Error("The input hexagon is not PIXI based")
+        
+        pixiHex.graphics.cursor = cursor ?? 'auto'
+    }
+    setCursorForUnit(unit: IUnitTile, cursor?: string): void {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+        
+        pixiUnit.hexagonPixi.graphics.cursor = cursor ?? 'auto'
+    }
+    
     size(): Size {
         return {width: this.app.canvas.width, height: this.app.canvas.height}
     }
@@ -81,6 +97,7 @@ export class CanvasService implements ICanvasService {
         }
         const hexGraphics = new PIXI.Graphics()
         this.setHexagonGraphic(hexGraphics, hexProps)
+        hexGraphics.interactive = true
         const hex = new PixiHexagon(hexProps, hexGraphics)
         
         const texture = await getTexture(props.imgSrc)

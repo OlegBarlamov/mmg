@@ -18,6 +18,8 @@ export interface IHexoGrid<T extends IHexoPoint> {
     getCell(row: number, col: number): T
     getCellsInRange(row: number, col: number, range: number): T[]
     getNeighborCells(row: number, col: number): T[]
+    
+    getDistance(point1: T, point2: T): number
 }
 
 export abstract class HexoGrid<T extends IHexoPoint> implements IHexoGrid<T> {
@@ -42,10 +44,23 @@ export abstract class HexoGrid<T extends IHexoPoint> implements IHexoGrid<T> {
     getCell(row: number, col: number): T {
         return this.cells[row][col]
     }
+
+    protected distanceAxial(q1: number, r1: number, q2: number, r2: number): number {
+        return (Math.abs(q1 - q2) + Math.abs(r1 - r2) + Math.abs((q1 + r1) - (q2 + r2))) / 2;
+    }
     
     abstract getCellsInRange(row: number, col: number, range: number): T[]
     
     abstract getNeighborCells(row: number, col: number): T[]
 
     abstract getCellCenterPoint(row: number, col: number, cellRadius: number): Point
+
+    protected abstract toAxial(row: number, col: number): { q: number, r: number }
+    
+    getDistance(point1: T, point2: T): number {
+        const { q: q1, r: r1 } = this.toAxial(point1.r, point1.c);
+        const { q: q2, r: r2 } = this.toAxial(point2.r, point2.c);
+
+        return this.distanceAxial(q1, r1, q2, r2);
+    }
 }

@@ -11,8 +11,8 @@ export interface IHexagonProps {
 export interface IHexagon extends IHexagonProps {
     customFillColor: number | undefined
     
-    onMouseEnters: (sender: IHexagon) => void
-    onMouseLeaves: (sender: IHexagon) => void
-    onMouseDown: (sender: IHexagon) => void
-    onMouseUp: (sender: IHexagon) => void
+    onMouseEnters: (sender: IHexagon, event: PointerEvent) => void
+    onMouseLeaves: (sender: IHexagon, event: PointerEvent) => void
+    onMouseDown: (sender: IHexagon, event: PointerEvent) => void
+    onMouseUp: (sender: IHexagon, event: PointerEvent) => void
 }

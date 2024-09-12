@@ -73,4 +73,10 @@ export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexo
 
         return { width: gridWidth, height: gridHeight };
     }
+    
+    protected toAxial(row: number, col: number): { q: number, r: number } {
+        const q = col - Math.floor((row - (row & 1)) / 2);
+        const r = row;
+        return { q, r };
+    }
 }

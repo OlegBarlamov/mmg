@@ -10,5 +10,9 @@ export interface IUnitTileProps {
 }
 
 export interface IUnitTile extends IUnitTileProps {
-    
+    onMouseMove: (sender: IUnitTile, event: PointerEvent) => void
+    onMouseEnters: (sender: IUnitTile, event: PointerEvent) => void
+    onMouseLeaves: (sender: IUnitTile, event: PointerEvent) => void
+    onMouseDown: (sender: IUnitTile, event: PointerEvent) => void
+    onMouseUp: (sender: IUnitTile, event: PointerEvent) => void
 }
