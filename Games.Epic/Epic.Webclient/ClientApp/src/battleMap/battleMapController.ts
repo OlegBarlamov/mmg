@@ -11,8 +11,7 @@ import {BattleMapHighlighter, IBattleMapHighlighter} from "./battleMapHighlighte
 export interface IBattleMapController {
     readonly map: BattleMap
     readonly battleMapHighlighter: IBattleMapHighlighter
-
-    getUnit(row: number, col: number): BattleMapUnit | null
+    
     moveUnit(unit: BattleMapUnit, row: number, col: number): Promise<void>
     removeUnit(unit: BattleMapUnit): Promise<void>
 
@@ -151,10 +150,6 @@ export class BattleMapController implements IBattleMapController {
             }
         })
         unit.position = {r, c}
-    }
-
-    getUnit(row: number, col: number): BattleMapUnit | null {
-        return this.map.units.find(x => x.position.r === row && x.position.c === col) ?? null
     }
 
     getHexagon(row: number, col: number): IHexagon {
