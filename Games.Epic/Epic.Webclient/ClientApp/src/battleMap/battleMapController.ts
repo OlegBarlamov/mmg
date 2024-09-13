@@ -102,9 +102,11 @@ export class BattleMapController implements IBattleMapController {
     }
 
     removeUnit(unit: BattleMapUnit): Promise<void> {
+        debugger
         const unitTile = this.getUnitTile(unit)
         this.canvasService.destroyUnit(unitTile)
         this.map.units.splice(this.map.units.indexOf(unit), 1)
+        this.units.splice(this.units.indexOf(unitTile), 1)
         return Promise.resolve()
     }
 

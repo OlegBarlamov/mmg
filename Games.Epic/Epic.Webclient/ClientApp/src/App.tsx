@@ -20,11 +20,16 @@ export class App extends PureComponent<IAppProps, IAppState> {
         this.state = {selectedBattle: null}
         
         this.onBattleSelected = this.onBattleSelected.bind(this)
+        this.onBattleFinished = this.onBattleFinished.bind(this)
     }
     
     private onBattleSelected(definition: IBattleDefinition) {
         this.setState({selectedBattle: definition})
     }
+    
+    private onBattleFinished() {
+        this.setState({selectedBattle: null})
+    } 
 
     render() {
         return (
@@ -33,7 +38,8 @@ export class App extends PureComponent<IAppProps, IAppState> {
                     ? (
                         <div className="BattleComponent">
                             <BattleComponent serviceLocator={this.props.serviceLocator}
-                                             battleDefinition={this.state.selectedBattle!}/>
+                                             onBattleFinished={this.onBattleFinished}
+                                             battleDefinition={this.state.selectedBattle!} />
                         </div>
                     )
                     : (

@@ -13,6 +13,8 @@ const CanvasContainerId = 'CanvasContainer'
 export interface IBattleComponentProps {
     serviceLocator: IServiceLocator
     battleDefinition: IBattleDefinition
+    
+    onBattleFinished(): void
 }
 
 interface IBattleComponentState {
@@ -38,10 +40,13 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         
         const battlesService = this.props.serviceLocator.battlesService()
         this.battleController = await battlesService.createBattle(map)
-        this.onBattleFinished = this.onBattleFinished.bind(this)
-        this.battleController.startBattle().then(() => this.onBattleFinished())
+        this.battleController.startBattle().then(this.props.onBattleFinished)
         
         this.setState({...this.state, battleLoaded: true})
+    }
+    
+    async componentWillUnmount() {
+        this.battleController?.dispose()
     }
     
     private getMapHexagonStyle(map: BattleMap): HexagonStyle {
@@ -52,10 +57,6 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
         
         throw new Error("Unknown type of the battle map hexo grid")
-    }
-
-    private onBattleFinished() {
-        
     }
 
     render() {

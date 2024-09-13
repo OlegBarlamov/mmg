@@ -6,9 +6,11 @@ import {wait} from "../common/wait";
 import {IAttackTarget} from "./attackTarget";
 import {distance} from "../common/math";
 import {Point} from "../common/Point";
+import {PlayerNumber} from "../player/playerNumber";
 
 export interface IBattleController {
-    startBattle(): Promise<void>
+    startBattle(): Promise<PlayerNumber>
+    dispose(): void
 }
 
 export class BattleController implements IBattleController {
@@ -20,6 +22,7 @@ export class BattleController implements IBattleController {
     private battleStarted: boolean = false
     private battleFinished: boolean = false
     private currentStepUnitIndex: number = -1
+    private winnerPlayer: PlayerNumber | null = null
     
     constructor(mapController: IBattleMapController) {
         this.mapController = mapController
@@ -29,7 +32,12 @@ export class BattleController implements IBattleController {
         this.map = mapController.map
     }
 
-    async startBattle(): Promise<void> {
+    dispose(): void {
+        this.orderedUnits.splice(0)
+        this.mapController.destroy()
+    }
+
+    async startBattle(): Promise<PlayerNumber> {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
         this.currentStepUnitIndex = -1
@@ -42,7 +50,32 @@ export class BattleController implements IBattleController {
             
             const currentUnit = this.orderedUnits[this.currentStepUnitIndex]
             await this.processStep(currentUnit)
+            
+            this.winnerPlayer = this.getWinner()
+            this.battleFinished = this.winnerPlayer != null
         }
+        
+        await wait(1000 * 3)
+        
+        return this.winnerPlayer!
+    }
+    
+    private getWinner(): PlayerNumber | null {
+        const unitsCounts = new Map<PlayerNumber, number>()
+        this.orderedUnits.forEach((unit) => {
+            const count = unitsCounts.get(unit.player) ?? 0
+            unitsCounts.set(unit.player, count + 1)
+        })
+        const playersWithUnits: PlayerNumber[] = []
+        for (const playerKey of unitsCounts.keys()) {
+            if (unitsCounts.get(playerKey) ?? 0 > 0) {
+                playersWithUnits.push(playerKey)
+            }
+        }
+        if (playersWithUnits.length === 1) {
+            return playersWithUnits[0]
+        }
+        return null
     }
 
     private async processStep(unit: BattleMapUnit): Promise<void> {
@@ -120,8 +153,6 @@ export class BattleController implements IBattleController {
         await this.processInputAction(action)
         
         await wait(500)
-        
-        debugger
     }
     
     private async processInputAction(action: BattleUserAction): Promise<void> {
