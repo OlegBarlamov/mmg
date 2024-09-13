@@ -4,8 +4,6 @@ import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {BattleUserAction} from "./battleUserAction";
 import {wait} from "../common/wait";
 import {IAttackTarget} from "./attackTarget";
-import {distance} from "../common/math";
-import {Point} from "../common/Point";
 import {PlayerNumber} from "../player/playerNumber";
 
 export interface IBattleController {
@@ -40,19 +38,23 @@ export class BattleController implements IBattleController {
     async startBattle(): Promise<PlayerNumber> {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
-        this.currentStepUnitIndex = -1
+        this.currentStepUnitIndex = 0
         
         while (!this.battleFinished) {
-            this.currentStepUnitIndex++
             if (this.currentStepUnitIndex >= this.orderedUnits.length) {
                 this.currentStepUnitIndex = 0
             }
-            
-            const currentUnit = this.orderedUnits[this.currentStepUnitIndex]
-            await this.processStep(currentUnit)
-            
-            this.winnerPlayer = this.getWinner()
-            this.battleFinished = this.winnerPlayer != null
+
+            try {
+                const currentUnit = this.orderedUnits[this.currentStepUnitIndex]
+                await this.processStep(currentUnit)
+                this.winnerPlayer = this.getWinner()
+                this.battleFinished = this.winnerPlayer != null
+
+                this.currentStepUnitIndex++
+            } catch (e) {
+                console.log(e)
+            }
         }
         
         await wait(1000 * 3)
@@ -79,75 +81,22 @@ export class BattleController implements IBattleController {
     }
 
     private async processStep(unit: BattleMapUnit): Promise<void> {
-        await this.mapController.activateUnit(unit)
+        await this.mapController.battleMapHighlighter.setActiveUnit(unit)
         
         const cellsForMove = this.getCellsForUnitMove(unit)
         const reachableCells = [this.map.grid.getCell(unit.position.r, unit.position.c), ...cellsForMove]
-        const movableCellsColor = 0x6dbfac
-        cellsForMove.forEach(cell => this.mapController.setCellDefaultColor(cell.r, cell.c, movableCellsColor))
-
         const attackTargets = this.getAttackTargets(unit, reachableCells)
         
-        this.mapController.onCellMouseEnter = (cell) => {
-            if (cellsForMove.indexOf(cell) >= 0) {
-                this.mapController.setCellCustomColor(cell.r, cell.c, 0x32a852)
-                this.mapController.setCursorForCell(cell.r, cell.c, 'pointer')
-            }
-        }
-        this.mapController.onCellMouseLeave = (cell) => {
-            if (cellsForMove.indexOf(cell) >= 0) {
-                this.mapController.setCellCustomColor(cell.r, cell.c, undefined)
-                this.mapController.setCursorForCell(cell.r, cell.c, undefined)
-            }
-        }
-        this.mapController.onUnitMouseEnter = (unit) => {
-            const target = attackTargets.find(x => x.target === unit)
-            if (target) {
-                target.cells.forEach(x => this.mapController.setCellDefaultColor(x.r, x.c, 0xffa08f))
-                this.mapController.setCursorForUnit(unit, 'pointer')
-                
-                this.mapController.onUnitMouseLeave = (unitMouseLeft) => {
-                    if (unitMouseLeft === unit) {
-                        this.mapController.setCursorForUnit(unit, undefined)
-                        this.mapController.onUnitMouseLeave = null
-                        this.mapController.onUnitMouseMove = null
-                        target.cells.forEach(x => this.mapController.setCellDefaultColor(x.r, x.c, movableCellsColor))
-                    }
-                }
-                let superHighlightedCell: BattleMapCell | null = null
-                this.mapController.onUnitMouseMove = (unitMouseMove, event) => {
-                    if (unitMouseMove === unit) {
-                        const mouseCoordinates = {x: event.x - this.mapController.visualOffset.x, y: event.y - this.mapController.visualOffset.y}
-
-                        const closestHexagon = this.getClosestCellToPoint(target.cells, mouseCoordinates)
-                        if (closestHexagon !== superHighlightedCell) {
-                            if (superHighlightedCell != null) {
-                                this.mapController.setCellCustomColor(superHighlightedCell.r, superHighlightedCell.c) 
-                            }
-                            superHighlightedCell = closestHexagon
-                            this.mapController.setCellCustomColor(superHighlightedCell.r, superHighlightedCell.c, 0xfa3b19)
-                        }
-                    }
-                }
-            }
-        }
+        this.mapController.battleMapHighlighter.highlightCellsForMove(cellsForMove)
+        this.mapController.battleMapHighlighter.highlightAttackTargets(attackTargets)
         
         let action: BattleUserAction
         try {
             action = await this.getUserInputAction(unit, cellsForMove, attackTargets)
         } finally {
-            this.mapController.onCellMouseEnter = null
-            this.mapController.onCellMouseLeave = null
-            this.mapController.onUnitMouseEnter = null
-            this.mapController.onUnitMouseMove = null
-            this.mapController.onUnitMouseMove = null
-
-            cellsForMove.forEach(cell => {
-                this.mapController.restoreCellDefaultColor(cell.r, cell.c)
-                this.mapController.setCellCustomColor(cell.r, cell.c)
-            })
-
-            await this.mapController.deactivateUnit()
+            this.mapController.battleMapHighlighter.restoreHighlightingForCells(cellsForMove)
+            this.mapController.battleMapHighlighter.restoreHighlightingForAttackTargets(attackTargets)
+            await this.mapController.battleMapHighlighter.setActiveUnit(null)
         }
         
         await this.processInputAction(action)
@@ -178,9 +127,9 @@ export class BattleController implements IBattleController {
     
     private getUserInputAction(originalUnit: BattleMapUnit, cellsToMove: BattleMapCell[], attackTargets: IAttackTarget[]): Promise<BattleUserAction> {
         return new Promise((resolve) => {
-            this.mapController.onCellMouseUp = (cell) => {
+            this.mapController.onCellMouseClick = (cell) => {
                 if (cellsToMove.indexOf(cell) >= 0) {
-                    this.mapController.onCellMouseUp = null
+                    this.mapController.onCellMouseClick = null
                     resolve({
                         command: 'UNIT_MOVE',
                         player: originalUnit.player,
@@ -189,12 +138,12 @@ export class BattleController implements IBattleController {
                     })
                 }
             }
-            this.mapController.onUnitMouseUp = (unit, event) => {
+            this.mapController.onUnitMouseClick = (unit, event) => {
                 const target = attackTargets.find(x => x.target === unit)
                 if (target) {
-                    this.mapController.onUnitMouseUp = null
-                    const mouseCoordinates = {x: event.x - this.mapController.visualOffset.x, y: event.y - this.mapController.visualOffset.y}
-                    const closestCell = this.getClosestCellToPoint(target.cells, mouseCoordinates)
+                    this.mapController.onUnitMouseClick = null
+                    const mouseCoordinates = {x: event.x, y: event.y}
+                    const closestCell = this.mapController.getClosestCellToPoint(target.cells, mouseCoordinates)
                     resolve({
                         command: 'UNIT_ATTACK',
                         player: originalUnit.player,
@@ -205,27 +154,6 @@ export class BattleController implements IBattleController {
                 }
             }
         })
-    }
-    
-    private getClosestCellToPoint(cells: BattleMapCell[], point: Point): BattleMapCell {
-        const hexagonCenters = cells.map(cell => {
-            return {
-                cell,
-                centerPoint: this.map.grid.getCellCenterPoint(cell.r, cell.c, this.mapController.cellRadius)
-            }
-        })
-
-        let closestHexagon = hexagonCenters[0]
-        let closestHexagonDistanceSqr = Number.MAX_SAFE_INTEGER
-        for (const hexagonPair of hexagonCenters) {
-            const distanceSqr = distance(point, hexagonPair.centerPoint)
-            if (distanceSqr < closestHexagonDistanceSqr) {
-                closestHexagon = hexagonPair
-                closestHexagonDistanceSqr = distanceSqr
-            }
-        }
-        
-        return closestHexagon.cell
     }
     
     private getAttackTargets(unit: BattleMapUnit, reachableCells: BattleMapCell[]): IAttackTarget[] {

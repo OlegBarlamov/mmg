@@ -5,85 +5,98 @@ import {IUnitTile} from "../canvas/unitTile";
 import {getPlayerColor} from "../player/getPlayerColor";
 import {BattleMapUnit} from "./battleMapUnit";
 import {Point} from "../common/Point";
+import {distance} from "../common/math";
+import {BattleMapHighlighter, IBattleMapHighlighter} from "./battleMapHighlighter";
 
 export interface IBattleMapController {
     readonly map: BattleMap
-    readonly cellRadius: number
-    readonly visualOffset: Point
+    readonly battleMapHighlighter: IBattleMapHighlighter
 
     getUnit(row: number, col: number): BattleMapUnit | null
     moveUnit(unit: BattleMapUnit, row: number, col: number): Promise<void>
     removeUnit(unit: BattleMapUnit): Promise<void>
 
-    setCellCustomColor(row: number, col: number, color?: number): void
-    setCellDefaultColor(row: number, col: number, color: number): void
-    restoreCellDefaultColor(row: number, col: number): void
-
-    activateUnit(unit: BattleMapUnit): Promise<void>
-    deactivateUnit(): Promise<void>
+    getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell
     
     unitTakeDamage(unit: BattleMapUnit, damage: number): Promise<boolean>
-
-    setCursorForCell(row: number, col: number, cursor?: string): void
-    setCursorForUnit(unit: BattleMapUnit, cursor?: string): void
-
-    onCellMouseEnter: ((cell: BattleMapCell, event: PointerEvent) => void) | null
-    onCellMouseLeave: ((cell: BattleMapCell, event: PointerEvent) => void) | null
-    onCellMouseUp: ((cell: BattleMapCell, event: PointerEvent) => void) | null
-
-    onUnitMouseMove: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
-    onUnitMouseEnter: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
-    onUnitMouseLeave: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
-    onUnitMouseUp: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
+    
+    onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null
+    onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
 
     destroy(): void
 }
 
 export class BattleMapController implements IBattleMapController {
-    map: BattleMap
-    hexagons: IHexagon[][] = []
-    units: IUnitTile[] = []
-
-    activeUnit: IUnitTile | null = null
+    readonly map: BattleMap
+    readonly battleMapHighlighter: IBattleMapHighlighter
+    
+    onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
+    onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
 
     onCellMouseEnter: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
     onCellMouseLeave: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
-    onCellMouseUp: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
 
     onUnitMouseMove: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
     onUnitMouseEnter: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
     onUnitMouseLeave: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
-    onUnitMouseUp: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
+    
+    private hexagons: IHexagon[][] = []
+    private units: IUnitTile[] = []
 
-    readonly cellRadius: number = 60
-    readonly visualOffset: Point
-
+    private readonly cellRadius: number = 60
+    private readonly visualOffset: Point
     private readonly defaultCellsStrokeColor = 0xFFFFFF
     private readonly defaultCellsFillColor = 0x66CCFF
     private readonly unitStrokeColor = 0x111111
     private readonly unitsNumberBackgroundImgSrc = "https://static.vecteezy.com/system/resources/thumbnails/012/981/790/small/old-parchment-paper-scroll-sheet-vintage-aged-or-texture-background-png.png"
-    private readonly highlightIntervalMs = 500
-    private readonly unitHighlightColor = 0xffea5e
 
     private readonly canvasService: ICanvasService
-
-    private isHighlighted: boolean = false
-    private readonly unitHighlightTimer: NodeJS.Timeout
+    private readonly battleMapHighlighterImpl: BattleMapHighlighter
 
     constructor(model: BattleMap, canvasService: ICanvasService) {
         this.map = model
-        this.canvasService = canvasService;
-
-        this.highlightActiveUnit = this.highlightActiveUnit.bind(this)
-        this.unitHighlightTimer = setInterval(this.highlightActiveUnit, this.highlightIntervalMs)
-
+        this.canvasService = canvasService
+        this.battleMapHighlighterImpl = new BattleMapHighlighter(canvasService, this, this.defaultCellsFillColor)
+        this.battleMapHighlighter = this.battleMapHighlighterImpl
+        
         this.visualOffset = this.getCanvasOffset()
+    }
+
+    destroy(): void {
+        this.battleMapHighlighterImpl.destroy()
+        
+        this.units.forEach(x => this.canvasService.destroyUnit(x))
+        this.units = []
+        
+        this.hexagons.forEach(rows => rows.forEach(x => this.canvasService.destroyHexagon(x)))
+        this.hexagons = []
+    }
+
+    getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell {
+        const hexagonCenters = cells.map(cell => {
+            return {
+                cell,
+                centerPoint: this.map.grid.getCellCenterPoint(cell.r, cell.c, this.cellRadius)
+            }
+        })
+
+        let closestHexagon = hexagonCenters[0]
+        let closestHexagonDistanceSqr = Number.MAX_SAFE_INTEGER
+        for (const hexagonPair of hexagonCenters) {
+            const distanceSqr = distance(canvasPoint, hexagonPair.centerPoint)
+            if (distanceSqr < closestHexagonDistanceSqr) {
+                closestHexagon = hexagonPair
+                closestHexagonDistanceSqr = distanceSqr
+            }
+        }
+
+        return closestHexagon.cell
     }
 
     async unitTakeDamage(target: BattleMapUnit, damage: number): Promise<boolean> {
         target.currentHealth = target.currentHealth - damage
         if (target.currentHealth < 0) {
-            const killedUnits = (target.currentHealth * (-1)) / target.props.health + 1
+            const killedUnits = Math.trunc(target.currentHealth * (-1) / target.props.health) + 1
             target.currentHealth = target.currentHealth + killedUnits * target.props.health
             target.unitsCount = target.unitsCount - killedUnits
             
@@ -108,16 +121,6 @@ export class BattleMapController implements IBattleMapController {
         this.map.units.splice(this.map.units.indexOf(unit), 1)
         this.units.splice(this.units.indexOf(unitTile), 1)
         return Promise.resolve()
-    }
-
-    setCursorForCell(row: number, col: number, cursor?: string): void {
-        const hexagon = this.getHexagon(row, col)
-        this.canvasService.setCursorForHexagon(hexagon, cursor)
-    }
-    
-    setCursorForUnit(unit: BattleMapUnit, cursor?: string): void {
-        const unitTile = this.getUnitTile(unit)
-        this.canvasService.setCursorForUnit(unitTile, cursor)
     }
 
     private getCanvasOffset(): Point {
@@ -150,102 +153,20 @@ export class BattleMapController implements IBattleMapController {
         unit.position = {r, c}
     }
 
-    destroy(): void {
-        clearInterval(this.unitHighlightTimer)
-        this.activeUnit = null
-
-        this.units.forEach(x => this.canvasService.destroyUnit(x))
-        this.units = []
-        this.hexagons.forEach(rows => rows.forEach(x => this.canvasService.destroyHexagon(x)))
-        this.hexagons = []
-    }
-
-    async activateUnit(unit: BattleMapUnit): Promise<void> {
-        if (this.activeUnit != null) {
-            await this.deactivateUnit()
-        }
-
-        this.activeUnit = this.getUnitTile(unit)
-    }
-
-    async deactivateUnit(): Promise<void> {
-        if (this.activeUnit == null) throw new Error("There is no unit to deactivate")
-        if (this.isHighlighted) {
-            await this.restoreHighlightUnitTile(this.activeUnit)
-        }
-        this.activeUnit = null
-    }
-
     getUnit(row: number, col: number): BattleMapUnit | null {
         return this.map.units.find(x => x.position.r === row && x.position.c === col) ?? null
     }
 
-    private getHexagon(row: number, col: number): IHexagon {
+    getHexagon(row: number, col: number): IHexagon {
         return this.hexagons[row][col]
     }
 
-    private getUnitTile(unit: BattleMapUnit): IUnitTile {
+    getUnitTile(unit: BattleMapUnit): IUnitTile {
         const tileUnit = this.units.find(x => x.model === unit)
         if (!tileUnit) throw new Error("Unit not found on the map")
         return tileUnit
     }
-
-    private async highlightActiveUnit(): Promise<void> {
-        if (this.activeUnit === null) {
-            return
-        }
-
-        try {
-            if (this.isHighlighted) {
-                await this.restoreHighlightUnitTile(this.activeUnit)
-            } else {
-                await this.highlightUnitTile(this.activeUnit)
-            }
-        } catch (e) {
-            console.error("Error while highlighting the active unit: " + e)
-        }
-    }
-
-    private highlightUnitTile(unit: IUnitTile): Promise<IUnitTile> {
-        this.isHighlighted = true
-
-        return this.canvasService.changeUnit(unit, {
-            ...unit,
-            hexagon: {
-                ...unit.hexagon,
-                fillColor: this.unitHighlightColor
-            }
-        })
-    }
-
-    private restoreHighlightUnitTile(unit: IUnitTile): Promise<IUnitTile> {
-        this.isHighlighted = false
-
-        return this.canvasService.changeUnit(unit, {
-            ...unit,
-            hexagon: {
-                ...unit.hexagon,
-                fillColor: getPlayerColor(unit.model.player)
-            }
-        })
-    }
-
-    setCellCustomColor(row: number, col: number, color?: number): void {
-        const cell = this.getHexagon(row, col)
-        this.setFillColor(cell, color ?? cell.customFillColor ?? this.defaultCellsFillColor)
-    }
-
-    setCellDefaultColor(row: number, col: number, color: number): void {
-        const cell = this.getHexagon(row, col)
-        cell.customFillColor = color
-        this.setFillColor(cell, color)
-    }
-
-    restoreCellDefaultColor(row: number, col: number) {
-        const cell = this.getHexagon(row, col)
-        cell.customFillColor = undefined
-        this.setFillColor(cell, this.defaultCellsFillColor)
-    }
+    
 
     loadMap(): Promise<void> {
         if (this.hexagons.length !== 0) throw new Error("Cannot regenerate the visuals of already loaded map")
@@ -265,9 +186,9 @@ export class BattleMapController implements IBattleMapController {
                     fillAlpha: 1.0,
                 })
 
-                hexagonView.onMouseEnters = (sender, event) => this.onCellMouseEnter?.(cell, event)
-                hexagonView.onMouseLeaves = (sender, event) => this.onCellMouseLeave?.(cell, event)
-                hexagonView.onMouseUp = (sender, event) => this.onCellMouseUp?.(cell, event)
+                hexagonView.onMouseEnters = (sender, event) => this.onCellMouseEnter?.(cell, this.translatePointerEvent(event))
+                hexagonView.onMouseLeaves = (sender, event) => this.onCellMouseLeave?.(cell, this.translatePointerEvent(event))
+                hexagonView.onMouseUp = (sender, event) => this.onCellMouseClick?.(cell, this.translatePointerEvent(event))
 
                 row.push(hexagonView);
             }
@@ -298,16 +219,20 @@ export class BattleMapController implements IBattleMapController {
                 imgSrc: unit.props.battleMapIcon
             })
 
-            unitTile.onMouseMove = (sender, event) => this.onUnitMouseMove?.(unit, event)
-            unitTile.onMouseEnters = (sender, event) => this.onUnitMouseEnter?.(unit, event)
-            unitTile.onMouseLeaves = (sender, event) => this.onUnitMouseLeave?.(unit, event)
-            unitTile.onMouseUp = (sender, event) => this.onUnitMouseUp?.(unit, event)
+            unitTile.onMouseMove = (sender, event) => this.onUnitMouseMove?.(unit, this.translatePointerEvent(event))
+            unitTile.onMouseEnters = (sender, event) => this.onUnitMouseEnter?.(unit, this.translatePointerEvent(event))
+            unitTile.onMouseLeaves = (sender, event) => this.onUnitMouseLeave?.(unit, this.translatePointerEvent(event))
+            unitTile.onMouseUp = (sender, event) => this.onUnitMouseClick?.(unit, this.translatePointerEvent(event))
 
             this.units.push(unitTile)
         }
     }
 
-    private setFillColor(cell: IHexagon, color: number) {
-        this.canvasService.changeHexagon(cell, {...cell, fillColor: color})
+    private translatePointerEvent(event: PointerEvent): PointerEvent {
+        return {
+            ...event,
+            x: event.x - this.visualOffset.x,
+            y: event.y - this.visualOffset.y,
+        }
     }
 }
