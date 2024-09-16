@@ -1,8 +1,10 @@
 import {CanvasService, ICanvasService} from "./canvasService";
 import {BattleMapsService, IBattleMapsService} from "./battleMapsService";
-import {FakeBattlesProvider, IBattlesProvider} from "./battlesProvider";
-import {FakeBattleLoader, IBattleLoader} from "./battleLoader";
+import {FakeBattlesProvider, IBattlesProvider, ServerBattlesProvider} from "./battlesProvider";
+import {FakeBattleLoader, IBattleLoader, ServerBattleLoader} from "./battleLoader";
 import {BattlesService, IBattlesService} from "./battlesService";
+import {IServerAPI} from "./serverAPI";
+import {FakeServerAPI} from "../server/FakeServerAPI";
 
 export interface IServiceLocator {
     canvasService() : ICanvasService
@@ -10,6 +12,7 @@ export interface IServiceLocator {
     battlesProvider() : IBattlesProvider
     battleLoader(): IBattleLoader
     battlesService(): IBattlesService
+    serverAPI(): IServerAPI
 }
 
 export class ExplicitServiceLocator implements IServiceLocator {
@@ -35,12 +38,14 @@ export class ExplicitServiceLocator implements IServiceLocator {
     }
 
     battlesProvider(): IBattlesProvider {
-        return this.getSingletoneService("BattlesProvider", () => new FakeBattlesProvider())
+        return this.getSingletoneService("BattlesProvider", () => new ServerBattlesProvider(
+            this.serverAPI()
+        ))
     }
     
     battleLoader(): IBattleLoader {
-        return this.getSingletoneService("BattleLoader", () => new FakeBattleLoader(
-            this.battleMapService()
+        return this.getSingletoneService("BattleLoader", () => new ServerBattleLoader(
+            this.serverAPI()
         ))
     }
 
@@ -48,5 +53,9 @@ export class ExplicitServiceLocator implements IServiceLocator {
         return this.getSingletoneService("BattlesService", () => new BattlesService(
             this.battleMapService()
         ))
+    }
+
+    serverAPI(): IServerAPI {
+        return this.getSingletoneService("ServerAPI", () => new FakeServerAPI())
     }
 }
