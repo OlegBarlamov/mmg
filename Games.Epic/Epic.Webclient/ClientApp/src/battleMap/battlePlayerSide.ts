@@ -1,4 +1,4 @@
 export enum BattlePlayerSide {
-    Left,
-    Right,
+    Left = "Left",
+    Right = "Right",
 }

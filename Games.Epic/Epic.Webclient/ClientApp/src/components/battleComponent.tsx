@@ -55,7 +55,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         } else if (map.grid instanceof OddRGrid) {
             return HexagonStyle.RStyle
         }
-        
+
         throw new Error("Unknown type of the battle map hexo grid")
     }
 

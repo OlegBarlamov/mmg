@@ -40,7 +40,11 @@ export class BattleMapsService implements IBattleMapsService {
                 getTestUnit(0, 0, 15, PlayerNumber.Player1),
                 getTestUnit(0, 1, 199, PlayerNumber.Player1),
                 getTestUnit(1, 1, 80, PlayerNumber.Player2),
-            ]
+            ],
+            turn: {
+                player: PlayerNumber.Player1,
+                index: 0,
+            }
         }
     }
 }

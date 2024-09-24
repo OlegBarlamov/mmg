@@ -1,36 +1,50 @@
 import {BattleUserAction} from "./battleUserAction";
 import {IBattleMapController} from "../battleMap/battleMapController";
-import {BattleMapUnit} from "../battleMap/battleMapUnit";
+import {
+    BattleServerMessageResponseStatus,
+    IBattleCommandToServerResponse,
+    IBattleServerConnection
+} from "../server/battleServerConnection";
+import {getRandomStringKey} from "../units/getRandomString";
 
 export interface IBattleActionsProcessor {
-    processAction(action: BattleUserAction): Promise<BattleMapUnit | null>
+    processAction(action: BattleUserAction): Promise<void>
 }
 
 export class BattleActionsProcessor implements IBattleActionsProcessor {
-    constructor(private mapController: IBattleMapController) {
+    constructor(private readonly mapController: IBattleMapController,
+                private readonly battleServerConnection: IBattleServerConnection) {
     }
     
-    async processAction(action: BattleUserAction): Promise<BattleMapUnit | null> {
+    async processAction(action: BattleUserAction): Promise<void> {
+        let response: IBattleCommandToServerResponse
         if (action.command === 'UNIT_MOVE') {
-            const cell = action.moveToCell
-            await this.mapController.moveUnit(action.actor, cell.r, cell.c)
+            response = await this.battleServerConnection.sendMessage(
+                {
+                    command: 'UNIT_MOVE',
+                    actorId: action.actor.id,
+                    moveToCell: action.moveToCell,
+                    commandId: getRandomStringKey(10),
+                    player: action.player,
+                })
         } else if (action.command === 'UNIT_ATTACK') {
-            const cell = action.moveToCell
-            await this.mapController.moveUnit(action.actor, cell.r, cell.c)
-            return await this.processAttack(action.actor, action.attackTarget)
+            response = await this.battleServerConnection.sendMessage(
+                {
+                    command: 'UNIT_ATTACK',
+                    actorId: action.actor.id,
+                    targetId: action.attackTarget.id,
+                    commandId: getRandomStringKey(10),
+                    player: action.player,
+                    moveToCell: action.moveToCell,
+                })
         } else {
             throw new Error("Unknown type of user action")
         }
         
-        return null
-    }
-
-    private async processAttack(actor: BattleMapUnit, target: BattleMapUnit): Promise<BattleMapUnit | null> {
-        const damage = actor.props.damage * actor.unitsCount
-        const eliminated = await this.mapController.unitTakeDamage(target, damage)
-        if (eliminated) {
-            return target
+        if (response.status === BattleServerMessageResponseStatus.Rejected) {
+            throw new Error("Command rejected. Reason: " + response.rejectedReason + response.rejectedReasonDetails 
+                ? (". Details: " + response.rejectedReasonDetails) : ""
+            )
         }
-        return null
     }
 }

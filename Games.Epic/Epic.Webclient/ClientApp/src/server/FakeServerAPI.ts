@@ -1,6 +1,6 @@
-import { IBattleDefinition } from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/battleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IUserInfo, IUsersUnit, IServerAPI} from "../services/serverAPI";
+import {IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -8,15 +8,24 @@ import {PlayerNumber} from "../player/playerNumber";
 import {UnitProperties} from "../units/unitProperties";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 import {getRandomStringKey} from "../units/getRandomString";
+import {
+    BattleServerMessageRejectionReason,
+    BattleServerMessageResponseStatus,
+    IBattleCommandToServerResponse,
+    IBattleConnectionMessagesHandler,
+    IBattleServerConnection
+} from "./battleServerConnection";
+import {BattleCommandToServer} from "./battleCommandToServer";
+import {getUnitById} from "../battle/battleLogic";
 
 class ServerSideBattle implements IBattleDefinition {
-    readonly battleId: string  
+    readonly battleId: string
     readonly mapWidth: number
     readonly mapHeight: number
-    
-    readonly enemyUnits: IUsersUnit[]
-    
-    constructor(battleId: string, mapWidth: number, mapHeight: number, enemyUnits: IUsersUnit[]) {
+
+    readonly enemyUnits: IUserUnit[]
+
+    constructor(battleId: string, mapWidth: number, mapHeight: number, enemyUnits: IUserUnit[]) {
         this.battleId = battleId
         this.mapWidth = mapWidth
         this.mapHeight = mapHeight
@@ -26,10 +35,10 @@ class ServerSideBattle implements IBattleDefinition {
 
 const FakeUserToken = 'FakeToken123'
 
-export class FakeServerAPI implements IServerAPI {
+export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     private readonly users = new Map<string, IUserInfo>()
     
-    private readonly units = new Map<string, IUsersUnit[]>()
+    private readonly units = new Map<string, IUserUnit[]>()
     private readonly battles = new Map<string, ServerSideBattle[]>()
     private readonly activeBattles = new Map<string, BattleMap>()
     private readonly unitTypes = new Map<string, UnitProperties>([
@@ -42,6 +51,7 @@ export class FakeServerAPI implements IServerAPI {
             health: 10,
         }]
     ])
+    private messagesHandler: IBattleConnectionMessagesHandler | undefined = undefined
     
     signup(userName: string): Promise<IUserInfo> {
         const token = FakeUserToken //getRandomStringKey(10)
@@ -61,6 +71,26 @@ export class FakeServerAPI implements IServerAPI {
             },
         ])
         this.battles.set(userId, [
+            new ServerSideBattle('0', 6, 6, [
+                {
+                    id: getRandomStringKey(7),
+                    typeId: '1',
+                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    count: 3,
+                },
+                {
+                    id: getRandomStringKey(7),
+                    typeId: '1',
+                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    count: 10,
+                },
+                {
+                    id: getRandomStringKey(7),
+                    typeId: '1',
+                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    count: 3,
+                },
+            ]),
             new ServerSideBattle('1', 10, 8, [
                 {
                     id: getRandomStringKey(7),
@@ -157,7 +187,6 @@ export class FakeServerAPI implements IServerAPI {
             ]),
         ])
         
-        
         setSessionCookie(token)
         return Promise.resolve(userInfo)
     }
@@ -174,13 +203,13 @@ export class FakeServerAPI implements IServerAPI {
         }
     }
     
-    async getUnits(): Promise<IUsersUnit[]> {
+    async getUnits(): Promise<IUserUnit[]> {
         const id = await this.getUserId()
-        return this.units.get(id) ?? []
+        return structuredClone(this.units.get(id)) ?? []
     }
     async getBattles(): Promise<IBattleDefinition[]> {
         const id = await this.getUserId()
-        return this.battles.get(id) ?? []
+        return structuredClone(this.battles.get(id)) ?? []
     }
     async beginBattle(battleId: string): Promise<BattleMap> {
         const id = await this.getUserId()
@@ -196,12 +225,17 @@ export class FakeServerAPI implements IServerAPI {
         const userUnits = this.units.get(id) ?? []
         const activeBattle = await this.beginBattleInternal(targetBattle, userUnits)
         this.activeBattles.set(id, activeBattle)
-        return activeBattle
+        return structuredClone(activeBattle)
     }
     
     async getActiveBattle(): Promise<BattleMap | null> {
         const id = await this.getUserId()
-        return this.activeBattles.get(id) ?? null
+        return structuredClone(this.activeBattles.get(id)) ?? null
+    }
+
+    establishBattleConnection(handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
+        this.messagesHandler = handler
+        return Promise.resolve(this)
     }
 
     private getSessionToken(): Promise<string> {
@@ -220,7 +254,7 @@ export class FakeServerAPI implements IServerAPI {
         return info.userId;
     }
 
-    private beginBattleInternal(battleDefinition: ServerSideBattle, userUnits: IUsersUnit[]): Promise<BattleMap> {
+    private beginBattleInternal(battleDefinition: ServerSideBattle, userUnits: IUserUnit[]): Promise<BattleMap> {
         const cells: BattleMapCell[][] = []
         for (let i = 0; i < battleDefinition.mapHeight; i++) {
             const row: BattleMapCell[] = []
@@ -235,19 +269,24 @@ export class FakeServerAPI implements IServerAPI {
             units: [
                 ...this.loadUnits(battleDefinition.enemyUnits, PlayerNumber.Player2, battleDefinition.mapWidth, battleDefinition.mapHeight),
                 ...this.loadUnits(userUnits, PlayerNumber.Player1, battleDefinition.mapWidth, battleDefinition.mapHeight),
-            ]
+            ],
+            turn: {
+                player: PlayerNumber.Player1,
+                index: 0,
+            }
         })
     }
     
-    private loadUnits(userUnits: IUsersUnit[], playerNumber: PlayerNumber, mapWidth: number, mapHeight: number): BattleMapUnit[] {
+    private loadUnits(userUnits: IUserUnit[], playerNumber: PlayerNumber, mapWidth: number, mapHeight: number): BattleMapUnit[] {
         return userUnits.map((unit, index) => {
             const unitPosition = this.getUnitPosition(index, playerNumber, mapWidth, mapHeight)  
             const unitType = this.unitTypes.get(unit.typeId)
             return {
+                id: unit.id,
                 player: playerNumber,
-                props: unitType!,
-                unitsCount: unit.count,
-                currentHealth: unitType!.health,
+                props: {...unitType!},
+                currentProps: {...unitType!},
+                count: unit.count,
                 position: unitPosition,
             }
         })
@@ -271,5 +310,182 @@ export class FakeServerAPI implements IServerAPI {
         }
 
         return { c: column, r: row }
+    }
+
+    async sendMessage(message: BattleCommandToServer): Promise<IBattleCommandToServerResponse> {
+        const id = await this.getUserId()
+        const activeBattle = this.activeBattles.get(id)
+        if (!activeBattle) {
+            return {
+                rejectedReason: BattleServerMessageRejectionReason.BattleNotFound,
+                rejectedReasonDetails: undefined,
+                requestedCommand: message,
+                status: BattleServerMessageResponseStatus.Rejected
+            }
+        }
+        
+        if (message.command === 'UNIT_MOVE') {
+            const actorUnit = getUnitById(activeBattle, message.actorId)
+            if (!actorUnit) {
+                return {
+                    rejectedReason: BattleServerMessageRejectionReason.InvalidCommand,
+                    rejectedReasonDetails: "Unit not found",
+                    requestedCommand: message,
+                    status: BattleServerMessageResponseStatus.Rejected
+                }
+            }
+            
+            this.messagesHandler?.onMessage({
+                player: message.player,
+                command: 'UNIT_MOVE',
+                actorId: message.actorId,
+                moveToCell: message.moveToCell,
+                commandId: getRandomStringKey(10),
+            })
+            
+            this.onNextTurn(activeBattle)
+            
+            return {
+                rejectedReason: undefined,
+                rejectedReasonDetails: undefined,
+                requestedCommand: message,
+                status: BattleServerMessageResponseStatus.Approved,
+            }
+            
+        } else if (message.command === 'UNIT_ATTACK') {
+            const actorUnit = getUnitById(activeBattle, message.actorId)
+            if (!actorUnit) {
+                return {
+                    rejectedReason: BattleServerMessageRejectionReason.InvalidCommand,
+                    rejectedReasonDetails: "Unit not found",
+                    requestedCommand: message,
+                    status: BattleServerMessageResponseStatus.Rejected
+                }
+            }
+            const targetUnit = getUnitById(activeBattle, message.targetId)
+            if (!targetUnit) {
+                return {
+                    rejectedReason: BattleServerMessageRejectionReason.InvalidCommand,
+                    rejectedReasonDetails: "Target unit not found",
+                    requestedCommand: message,
+                    status: BattleServerMessageResponseStatus.Rejected
+                }
+            }
+
+            this.messagesHandler?.onMessage({
+                player: message.player,
+                command: 'UNIT_MOVE',
+                actorId: message.actorId,
+                moveToCell: message.moveToCell,
+                commandId: getRandomStringKey(10),
+            })
+
+            this.messagesHandler?.onMessage({
+                player: message.player,
+                command: 'UNIT_ATTACK',
+                actorId: message.actorId,
+                targetId: message.targetId,
+                commandId: getRandomStringKey(10),
+            })
+            
+            const globalUnits = this.units.get(id)!
+            const targetUnitGlobal = globalUnits.find(x => x.id === targetUnit.id)
+            const damageParams = this.processAttack(actorUnit, targetUnit)
+            if (damageParams.unitSurvived) {
+                targetUnit.count = targetUnit.count - damageParams.killedCount
+                targetUnit.currentProps.health = damageParams.healthLeft
+                if (targetUnitGlobal) {
+                    targetUnitGlobal.count = targetUnit.count
+                }
+            } else {
+                activeBattle.units.splice(activeBattle.units.indexOf(targetUnit), 1)
+                if (targetUnitGlobal) {
+                    globalUnits.splice(globalUnits.indexOf(targetUnitGlobal), 1)
+                }
+            }
+            this.messagesHandler?.onMessage({
+                player: message.player,
+                command: 'TAKE_DAMAGE',
+                actorId: message.targetId,
+                commandId: getRandomStringKey(10),
+                ...damageParams
+            })
+
+            this.onNextTurn(activeBattle)
+
+            return {
+                rejectedReason: undefined,
+                rejectedReasonDetails: undefined,
+                requestedCommand: message,
+                status: BattleServerMessageResponseStatus.Approved,
+            }
+        } else {
+            return {
+                rejectedReason: BattleServerMessageRejectionReason.UnknownCommand,
+                rejectedReasonDetails: undefined,
+                requestedCommand: message,
+                status: BattleServerMessageResponseStatus.Rejected
+            }
+        }
+    }
+
+    private processAttack(actor: BattleMapUnit, target: BattleMapUnit): {
+        damageTaken: number
+        killedCount: number
+        unitSurvived: boolean
+        healthLeft: number
+    } {
+        const damage = actor.props.damage * actor.count
+        return this.unitTakeDamage(target, damage)
+    }
+
+    private unitTakeDamage(target: BattleMapUnit, damage: number): {
+        damageTaken: number
+        killedCount: number
+        unitSurvived: boolean
+        healthLeft: number
+    }  {
+        let finalHealth = target.currentProps.health - damage
+        let newCount = target.count
+        if (finalHealth < 0) {
+            const killedUnits = Math.trunc(finalHealth * (-1) / target.props.health) + 1
+            finalHealth = finalHealth + killedUnits * target.props.health
+            newCount = target.count - killedUnits
+
+            if (newCount < 1) {
+                return {
+                    damageTaken: target.count * target.props.health + target.currentProps.health,
+                    killedCount: target.count,
+                    unitSurvived: false,
+                    healthLeft: finalHealth,
+                }
+            }
+        }
+        return {
+            damageTaken: damage,
+            killedCount: target.count - newCount,
+            unitSurvived: true,
+            healthLeft: finalHealth,
+        }
+    }
+    
+    private onNextTurn(map: BattleMap) {
+        map.turn.index = map.turn.index + 1
+        const orderedUnits = [...map.units]
+            .sort((a, b) => b.props.speed - a.props.speed)
+        const targetIndex = map.turn.index % orderedUnits.length
+        const targetUnit = orderedUnits[targetIndex]
+        
+        this.messagesHandler?.onMessage({
+            command: 'NEXT_TURN',
+            player: targetUnit.player,
+            commandId: getRandomStringKey(10),
+            turnIndex: map.turn.index,
+        })
+    }
+    
+    close(): Promise<void> {
+        this.messagesHandler = undefined
+        return Promise.resolve()
     }
 }

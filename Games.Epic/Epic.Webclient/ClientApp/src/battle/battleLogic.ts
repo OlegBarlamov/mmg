@@ -7,6 +7,10 @@ export function getUnit(map: BattleMap, row: number, col: number): BattleMapUnit
     return map.units.find(x => x.position.r === row && x.position.c === col) ?? null
 }
 
+export function getUnitById(map: BattleMap, id: string): BattleMapUnit | null {
+    return map.units.find(x => x.id === id) ?? null
+}
+
 export function getWinner(map: BattleMap): PlayerNumber | null {
     const unitsCounts = new Map<PlayerNumber, number>()
     map.units.forEach((unit) => {

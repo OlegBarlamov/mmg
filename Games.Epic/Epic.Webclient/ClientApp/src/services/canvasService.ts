@@ -77,8 +77,6 @@ export class CanvasService implements ICanvasService {
     destroyUnit(unit: IUnitTile): void {
         const pixiUnit = unit as PixiUnitTile
         if (!pixiUnit) throw new Error("The input unit is not PIXI based")
-
-        debugger
         pixiUnit.dispose()
     }
     

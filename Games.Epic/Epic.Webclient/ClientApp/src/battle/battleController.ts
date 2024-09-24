@@ -6,7 +6,8 @@ import {wait} from "../common/wait";
 import {PlayerNumber} from "../player/playerNumber";
 import {BattleUserInputController} from "./battleUserInputController";
 import {getAttackTargets, getCellsForUnitMove, getWinner} from "./battleLogic";
-import {BattleActionsProcessor, IBattleActionsProcessor} from "./battleActionsProcessor";
+import {IBattleActionsProcessor} from "./battleActionsProcessor";
+import {ITurnAwaiter} from "./battleServerMessagesHandler";
 
 export interface IBattleController {
     startBattle(): Promise<PlayerNumber>
@@ -18,48 +19,58 @@ export class BattleController implements IBattleController {
 
     private battleStarted: boolean = false
     private battleFinished: boolean = false
-    private currentStepUnitIndex: number = -1
+    private currentTurnIndex: number = -1
     private winnerPlayer: PlayerNumber | null = null
+    private orderedUnits: BattleMapUnit[]
     
     private readonly map: BattleMap
-    private readonly orderedUnits: BattleMapUnit[]
     
     private readonly battleUserInputController: BattleUserInputController
     private readonly battleActionProcessor: IBattleActionsProcessor
+    private readonly turnAwaiter: ITurnAwaiter
     
-    constructor(mapController: IBattleMapController) {
+    constructor(mapController: IBattleMapController, battleActionProcessor: IBattleActionsProcessor, turnAwaiter: ITurnAwaiter) {
         this.mapController = mapController
-
+        this.battleActionProcessor = battleActionProcessor
+        this.turnAwaiter = turnAwaiter
+        
         this.orderedUnits = [...this.mapController.map.units]
             .sort((a, b) => b.props.speed - a.props.speed)
         this.map = mapController.map
         
         this.battleUserInputController = new BattleUserInputController(mapController)
-        this.battleActionProcessor = new BattleActionsProcessor(mapController)
     }
 
     dispose(): void {
         this.orderedUnits.splice(0)
         this.mapController.destroy()
+        this.turnAwaiter.dispose()
     }
 
     async startBattle(): Promise<PlayerNumber> {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
-        this.currentStepUnitIndex = 0
+        this.currentTurnIndex = this.turnAwaiter.currentTurnIndex
+        let currentStepUnitIndex = this.currentTurnIndex
         
         while (!this.battleFinished) {
-            if (this.currentStepUnitIndex >= this.orderedUnits.length) {
-                this.currentStepUnitIndex = 0
-            }
+            currentStepUnitIndex = this.currentTurnIndex % this.orderedUnits.length
 
             try {
-                const currentUnit = this.orderedUnits[this.currentStepUnitIndex]
+                const currentUnit = this.orderedUnits[currentStepUnitIndex]
+                
                 await this.processStep(currentUnit)
+
+                const turnInfo = await this.turnAwaiter.waitForTurn(this.currentTurnIndex + 1)
+
+                this.orderedUnits = [...this.mapController.map.units]
+                    .sort((a, b) => b.props.speed - a.props.speed)
+                
                 this.winnerPlayer = getWinner(this.map)
                 this.battleFinished = this.winnerPlayer != null
-
-                this.currentStepUnitIndex++
+                
+                this.currentTurnIndex = turnInfo.index
+                
             } catch (e) {
                 console.error('Error while processing the battle action: ' + e)
             }
@@ -89,11 +100,7 @@ export class BattleController implements IBattleController {
             await this.mapController.battleMapHighlighter.setActiveUnit(null)
         }
         
-        const eliminatedUnit = await this.battleActionProcessor.processAction(action)
-        if (eliminatedUnit) {
-            // TODO temporary
-            this.orderedUnits.splice(this.orderedUnits.indexOf(eliminatedUnit), 1)
-        }
+        await this.battleActionProcessor.processAction(action)
         
         await wait(500)
     }

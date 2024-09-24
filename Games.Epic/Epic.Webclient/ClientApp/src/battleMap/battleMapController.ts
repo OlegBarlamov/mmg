@@ -17,7 +17,7 @@ export interface IBattleMapController {
 
     getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell
     
-    unitTakeDamage(unit: BattleMapUnit, damage: number): Promise<boolean>
+    unitTakeDamage(unit: BattleMapUnit, damage: number): Promise<void>
     
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
@@ -92,32 +92,33 @@ export class BattleMapController implements IBattleMapController {
         return closestHexagon.cell
     }
 
-    async unitTakeDamage(target: BattleMapUnit, damage: number): Promise<boolean> {
-        target.currentHealth = target.currentHealth - damage
-        if (target.currentHealth < 0) {
-            const killedUnits = Math.trunc(target.currentHealth * (-1) / target.props.health) + 1
-            target.currentHealth = target.currentHealth + killedUnits * target.props.health
-            target.unitsCount = target.unitsCount - killedUnits
-            
-            if (target.unitsCount < 1) {
+    async unitTakeDamage(target: BattleMapUnit, damage: number): Promise<void> {
+        // TODO copy-past
+        target.currentProps.health = target.currentProps.health - damage
+        if (target.currentProps.health < 0) {
+            const killedUnits = Math.trunc(target.currentProps.health * (-1) / target.props.health) + 1
+            target.currentProps.health = target.currentProps.health + killedUnits * target.props.health
+            target.count = target.count - killedUnits
+
+            if (target.count < 1) {
                 await this.removeUnit(target)
-                return true
             } else {
                 const unitTile = this.getUnitTile(target)
                 await this.canvasService.changeUnit(unitTile, {
                     ...unitTile,
-                    text: target.unitsCount.toString()
+                    text: target.count.toString()
                 })
             }
         }
-        return false
     }
 
     removeUnit(unit: BattleMapUnit): Promise<void> {
-        debugger
         const unitTile = this.getUnitTile(unit)
         this.canvasService.destroyUnit(unitTile)
-        this.map.units.splice(this.map.units.indexOf(unit), 1)
+        const unitIndex = this.map.units.indexOf(unit)
+        if (unitIndex >= 0) {
+            this.map.units.splice(this.map.units.indexOf(unit), 1)   
+        }
         this.units.splice(this.units.indexOf(unitTile), 1)
         return Promise.resolve()
     }
@@ -209,7 +210,7 @@ export class BattleMapController implements IBattleMapController {
                     strokeLine: 2,
                     fillAlpha: 1,
                 },
-                text: unit.unitsCount.toString(),
+                text: unit.count.toString(),
                 textBackgroundImgSrc: this.unitsNumberBackgroundImgSrc,
                 imgSrc: unit.props.battleMapIcon
             })

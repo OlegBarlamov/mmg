@@ -2,6 +2,8 @@ import {BattleMap} from "../battleMap/battleMap";
 import {IBattleDefinition} from "../battle/battleDefinition";
 import {IBattleMapsService} from "./battleMapsService";
 import {IServerAPI} from "./serverAPI";
+import {OddRGrid} from "../hexogrid/oddRGrid";
+import {PlayerNumber} from "../player/playerNumber";
 
 export interface IBattleLoader {
     loadBattle(battleDefinition: IBattleDefinition): Promise<BattleMap>
@@ -11,8 +13,13 @@ export class ServerBattleLoader implements IBattleLoader {
     constructor(private readonly serverAPI: IServerAPI) {
     }
     
-    loadBattle(battleDefinition: IBattleDefinition): Promise<BattleMap> {
-        return this.serverAPI.beginBattle(battleDefinition.battleId)
+    async loadBattle(battleDefinition: IBattleDefinition): Promise<BattleMap> {
+        const battle = await this.serverAPI.beginBattle(battleDefinition.battleId)
+        return {
+            grid: new OddRGrid(battle.grid.cells),
+            units: battle.units,
+            turn: battle.turn,
+        }
     }
     
 }
