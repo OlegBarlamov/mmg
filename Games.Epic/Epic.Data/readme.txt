@@ -1,1 +1,1 @@
-﻿Dto of game objects without behaviour
+﻿Dto of Data Layer

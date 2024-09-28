@@ -1,6 +1,7 @@
 using AspNetCore.FrameworkAdapter;
 using Console.FrameworkAdapter.Constructing;
- using FrameworkSDK.Constructing;
+using Epic.Server.Middleware;
+using FrameworkSDK.Constructing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,10 +21,12 @@ namespace Epic.Server
                  .AddComponent<DebugStartupScript>()
                  .Construct()
                  .Asp();
- 
+
              app.MapControllers();
-             app.UseWebSockets()
-                 .UseHttpsRedirection();
+             app.UseHttpsRedirection();
+             app.UseRouting();
+             app.UseMiddleware<AuthMiddleware>();
+             app.UseWebSockets();
  
              app.Run();
          }
