@@ -16,6 +16,12 @@ namespace Epic.Core
             UsersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
         }
 
+        public async Task<IUserObject> GetUserById(Guid userId)
+        {
+            var userEntity = await UsersRepository.GetUserByIdAsync(userId);
+            return ToUserObject(userEntity);
+        }
+
         public async Task<IUserObject> GetUserByHashAsync(string hash)
         {
             var userEntity = await UsersRepository.GetUserByHashAsync(hash);

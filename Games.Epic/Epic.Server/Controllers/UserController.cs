@@ -1,3 +1,10 @@
+using System;
+using System.Threading.Tasks;
+using Epic.Core;
+using Epic.Data.Exceptions;
+using Epic.Server.Authentication;
+using Epic.Server.Resourses;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Epic.Server.Controllers
@@ -6,11 +13,25 @@ namespace Epic.Server.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
+        public IUsersService UsersService { get; }
+
+        public UserController([NotNull] IUsersService usersService)
+        {
+            UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
+        }
 
         [HttpGet]
-        public string Index()
+        public async Task<IActionResult> GetCurrentUser()
         {
-            return "Test.";
+            try
+            {
+                var user = await UsersService.GetUserById(Guid.Parse(HttpContext.User.GetId()));
+                return Ok(new UserResource(user));
+            }
+            catch (EntityNotFoundException e)
+            {
+                return NotFound(new { message = e.Message });
+            }
         }
     }
 }
