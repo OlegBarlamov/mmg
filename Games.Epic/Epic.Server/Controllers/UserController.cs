@@ -2,18 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Epic.Server.Controllers
 {
+    [ApiController]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
-        [ApiController]
-        [Route("api/user")]
-        public class AppController : ControllerBase
+
+        [HttpGet]
+        public string Index()
         {
-     
-            [HttpGet]
-            public string Index()
-            {
-                return "Test.";
-            }
+            return "Test.";
         }
     }
 }
