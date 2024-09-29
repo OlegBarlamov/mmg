@@ -5,6 +5,7 @@ using AspNetCore.FrameworkAdapter.Internal;
 using FrameworkSDK;
 using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.Localization;
+using FrameworkSDK.Logging;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,12 +27,17 @@ namespace AspNetCore.FrameworkAdapter
 
         public IApp Construct()
         {
-            DefaultAppFactory.UseServiceContainer(new FrameworkServiceContainerAdapter(WebApplicationBuilder.Services));
-            DefaultAppFactory.UseLogger(new FrameworkLoggerAdapter(WebApplicationBuilder.Services.BuildServiceProvider().GetService<ILoggerFactory>()));
+            var adapter = new FrameworkServiceContainerAdapter(WebApplicationBuilder);
+            DefaultAppFactory.UseServiceContainer(adapter);
+            var deferrerLogger = new ManualDeferredLogger();
+            DefaultAppFactory.UseLogger(deferrerLogger);
             
             var app = DefaultAppFactory.Construct();
-            var webApplication = WebApplicationBuilder.Build();
-            return new AspWebApp(webApplication, app);
+            var finalLogger = new FrameworkLoggerAdapter(adapter.WebApplication.Services.GetRequiredService<ILoggerFactory>());
+            deferrerLogger.LogTo(finalLogger);
+            deferrerLogger.Dispose();
+            DefaultAppFactory.UseLogger(finalLogger);
+            return new AspWebApp(adapter.WebApplication, app);
         }
 
         public IAppFactory AddServices(IServicesModule module)

@@ -2,19 +2,24 @@ using System;
 using System.Linq;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCore.FrameworkAdapter
 {
     internal class FrameworkServiceContainerAdapter : IFrameworkServiceContainer
     {
+        public WebApplicationBuilder ApplicationBuilder { get; }
         public IServiceCollection ServiceCollection { get; }
+        
+        public WebApplication WebApplication { get; private set; }
 
         private IServiceProvider _serviceProvider;
 
-        public FrameworkServiceContainerAdapter([NotNull] IServiceCollection serviceCollection)
+        public FrameworkServiceContainerAdapter([NotNull] WebApplicationBuilder applicationBuilder)
         {
-            ServiceCollection = serviceCollection ?? throw new ArgumentNullException(nameof(serviceCollection));
+            ApplicationBuilder = applicationBuilder ?? throw new ArgumentNullException(nameof(applicationBuilder));
+            ServiceCollection = ApplicationBuilder.Services;
         }
         
         public void RegisterInstance(Type serviceType, object instance)
@@ -53,7 +58,11 @@ namespace AspNetCore.FrameworkAdapter
 
         public IServiceLocator BuildContainer()
         {
-            _serviceProvider ??= ServiceCollection.BuildServiceProvider();
+            if (WebApplication == null)
+            {
+                WebApplication = ApplicationBuilder.Build();
+                _serviceProvider = WebApplication.Services;
+            }
             return new FrameworkServiceLocatorAdapter(_serviceProvider, ServiceCollection);
         }
 

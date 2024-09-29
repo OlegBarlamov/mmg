@@ -14,18 +14,6 @@ namespace Epic.Data
         public string EntityName => "User";
         
         private readonly Dictionary<Guid, IUserEntity> _users = new Dictionary<Guid, IUserEntity>();
-
-        public InMemoryUsersRepository()
-        {
-            _users.Add(Guid.Empty, new UserEntity
-            {
-                Id = Guid.NewGuid(),
-                IsBlocked = false,
-                Name = "admin",
-                Type = UserEntityType.Player,
-                Hash = "Basic YWRtaW46",
-            });
-        }
         
         public Task<IUserEntity> GetUserByIdAsync(Guid id)
         {
