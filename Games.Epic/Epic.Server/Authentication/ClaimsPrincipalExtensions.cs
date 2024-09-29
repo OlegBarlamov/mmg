@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Epic.Server.Objects;
@@ -30,9 +31,9 @@ namespace Epic.Server.Authentication
             return principal.FindFirst("Token")?.Value;
         }
         
-        public static string GetId(this ClaimsPrincipal principal)
+        public static Guid GetId(this ClaimsPrincipal principal)
         {
-            return principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.Parse((ReadOnlySpan<char>)principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         }
     }
 }
