@@ -41,7 +41,8 @@ namespace Epic.Core
                     .ToArray();
                 Logger.LogError($"Missing User Units with ids: {string.Join(',', missingIds)}");
             }
-            return units.Select(ToUserUnitObject).ToArray();
+            var unitObjects = units.Select(ToUserUnitObject).ToArray();
+            return await FillUserObjects(unitObjects);
         }
 
         private async Task<IReadOnlyCollection<MutableUserUnitObject>> FillUserObjects(IReadOnlyCollection<MutableUserUnitObject> userUnits)
@@ -58,6 +59,8 @@ namespace Epic.Core
 
                 if (IsValidObject(unit))
                     validAliveUserObjects.Add(unit);
+                else
+                    Logger.LogError($"Invalid Unit Type: {unit.UnitTypeId}");
             }
 
             return validAliveUserObjects;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Epic.Data.BattleUnits
 {
-    public interface IBattleUnitsRepository
+    public interface IBattleUnitsRepository : IRepository
     {
         Task<IBattleUnitEntity[]> GetByBattleId(Guid battleId);
     }

@@ -3,6 +3,8 @@ using Console.FrameworkAdapter;
 using Epic.Core;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
+using Epic.Data.Battles;
+using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes;
 using Epic.Data.UserUnits;
 using Epic.Server.Services;
@@ -22,12 +24,16 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IUserUnitsService, DefaultUserUnitsService>();
             serviceRegistrator.RegisterType<IUnitTypesService, DefaultUnitTypesService>();
             serviceRegistrator.RegisterType<IBattleDefinitionsService, DefaultBattleDefinitionsService>();
+            serviceRegistrator.RegisterType<IBattleUnitsService, DefaultBattleUnitsService>();
+            serviceRegistrator.RegisterType<IBattlesService, DefaultBattlesService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();
             serviceRegistrator.RegisterType<IUserUnitsRepository, InMemoryUserUnitsRepository>();
             serviceRegistrator.RegisterType<IUnitTypesRepository, InMemoryUnitTypesRepository>();
             serviceRegistrator.RegisterType<IBattleDefinitionsRepository, InMemoryBattleDefinitionsRepository>();
+            serviceRegistrator.RegisterType<IBattlesRepository, InMemoryBattlesRepository>();
+            serviceRegistrator.RegisterType<IBattleUnitsRepository, InMemoryBattleUnitsRepository>();
         }
     }
 }
