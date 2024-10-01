@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Epic.Data.Exceptions;
 using Epic.Server.Authentication;
+using Epic.Server.Exceptions;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -39,16 +40,26 @@ namespace Epic.Server.Controllers
                 try
                 {
                     var sessionMetadata = SessionMetadataHelper.ExtractFromContext(HttpContext);
-                    var sessionObject = await AuthorizationService.BasicLoginAsync(credentials[0], credentials[1], sessionMetadata);
+                    var sessionObject =
+                        await AuthorizationService.BasicLoginAsync(credentials[0], credentials[1], sessionMetadata);
                     Response.Cookies.Append("token", sessionObject.Token, new CookieOptions
                     {
                         HttpOnly = true,
                         Secure = true,
                         SameSite = SameSiteMode.Strict,
-                        Expires = DateTimeOffset.UtcNow.AddHours(AuthenticationConstants.AuthenticationTokenExpirationHours),
+                        Expires = DateTimeOffset.UtcNow.AddHours(AuthenticationConstants
+                            .AuthenticationTokenExpirationHours),
                     });
 
                     return Ok("Authorized successfully.");
+                }
+                catch (InvalidUserTypeException)
+                {
+                    Forbid("User is invalid to access.");
+                }
+                catch (UserBlockedException)
+                {
+                    Forbid("User is blocked.");
                 }
                 catch (EntityNotFoundException)
                 {

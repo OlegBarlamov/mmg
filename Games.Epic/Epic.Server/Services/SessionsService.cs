@@ -68,6 +68,8 @@ namespace Epic.Server.Services
         {
             if (user.IsBlocked)
                 throw new UserBlockedException(user);
+            if (user.Type != UserObjectType.Player)
+                throw new InvalidUserTypeException(user);
 
             var token = GenerateSecureToken(16);
             var sessionEntity = await SessionsRepository.CreateSessionAsync(token, user.Id, new MutableSessionData

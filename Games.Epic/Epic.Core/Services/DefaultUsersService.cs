@@ -29,6 +29,14 @@ namespace Epic.Core
             return userObject;
         }
 
+        public async Task<IUserObject> CreateComputerUser()
+        {
+            var id = Guid.NewGuid();
+            var name = "$computer:" + id;
+            var userEntity = await UsersRepository.CreateUserAsync(name, name, UserEntityType.Computer);
+            return ToUserObject(userEntity);
+        }
+
         private static IUserObject ToUserObject(IUserEntity userEntity)
         {
             UserObjectType userType = userEntity.Type switch

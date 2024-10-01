@@ -8,5 +8,7 @@ namespace Epic.Core
     {
         Task<IUserObject> GetUserById(Guid userId);
         Task<IUserObject> GetUserByHashAsync(string hash);
+
+        Task<IUserObject> CreateComputerUser();
     }
 }

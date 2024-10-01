@@ -18,8 +18,4 @@
     <ProjectReference Include="..\..\SDK\NetExtensions\NetExtensions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UnitTypes\InMemory\" />
-  </ItemGroup>
-
 </Project>

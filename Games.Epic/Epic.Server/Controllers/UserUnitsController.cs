@@ -1,15 +1,17 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core;
 using Epic.Data.Exceptions;
 using Epic.Server.Authentication;
+using Epic.Server.Resourses;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Epic.Server.Controllers
 {
     [ApiController]
-    [Route("api/user/units")]
+    [Route("api/units")]
     public class UserUnitsController : ControllerBase
     {
         [NotNull] public IUserUnitsService UserUnitsService { get; }
@@ -25,7 +27,7 @@ namespace Epic.Server.Controllers
             try
             {
                 var units = await UserUnitsService.GetAliveUnitsByUserAsync(User.GetId());
-                return Ok(units);
+                return Ok(units.Select(x => new UserUnitInDashboardResource(x)));
             }
             catch (EntityNotFoundException e)
             {

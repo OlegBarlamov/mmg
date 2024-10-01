@@ -2,16 +2,16 @@ using Epic.Core.Objects;
 
 namespace Epic.Server.Resourses
 {
-    public class UserUnitResource
+    public class UserUnitInDashboardResource
     {
         public string Id { get; }
-        public string TypeId { get; }
+        public string ImageUrl { get; }
         public int Count { get; }
         
-        public UserUnitResource(IUserUnitObject userUnit)
+        public UserUnitInDashboardResource(IUserUnitObject userUnit)
         {
             Id = userUnit.Id.ToString();
-            TypeId = userUnit.TypeId.ToString();
+            ImageUrl = userUnit.UnitType.DashboardImgUrl;
             Count = userUnit.Count;
         }
     }

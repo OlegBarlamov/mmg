@@ -10,4 +10,12 @@ namespace Epic.Data.BattleDefinitions
         
         Guid[] UnitsIds { get; }
     }
+
+    internal class BattleDefinitionEntity : IBattleDefinitionEntity
+    {
+        public Guid Id { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public Guid[] UnitsIds { get; set; }
+    }
 }
