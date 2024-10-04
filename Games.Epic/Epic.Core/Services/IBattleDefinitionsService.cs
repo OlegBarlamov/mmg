@@ -7,5 +7,7 @@ namespace Epic.Core
     public interface IBattleDefinitionsService
     {
         Task<IReadOnlyCollection<IBattleDefinitionObject>> GetBattleDefinitionsByUserAsync(Guid userId);
+        
+        Task<IBattleDefinitionObject> GetBattleDefinitionByUserAndId(Guid userId, Guid battleDefinitionId);
     }
 }

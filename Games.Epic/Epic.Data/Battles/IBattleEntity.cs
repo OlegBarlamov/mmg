@@ -10,4 +10,13 @@ namespace Epic.Data.Battles
         int Height { get; }
         bool IsActive { get; }
     }
+
+    public class MutableBattleEntity : IBattleEntity
+    {
+        public Guid Id { get; set; }
+        public int TurnIndex { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public bool IsActive { get; set; }
+    }
 }

@@ -24,13 +24,24 @@ namespace Epic.Core
         {
             var entities = await BattleDefinitionsRepository.GetBattleDefinitionsByUserAsync(userId);
             var battleDefinitions = entities.Select(ToBattleDefinitionObject).ToArray();
-            var fetchingUnitsTasks = battleDefinitions.Select(battleDefinition => UserUnitsService
-                .GetUnitsByIds(battleDefinition.UnitsIds)
-                .ContinueWith(task => battleDefinition.Units = task.Result)
-            );
-            await Task.WhenAll(fetchingUnitsTasks);
-
+            await Task.WhenAll(battleDefinitions.Select(FillBattleDefinitionObject));
             return battleDefinitions;
+        }
+
+        public async Task<IBattleDefinitionObject> GetBattleDefinitionByUserAndId(Guid userId, Guid battleDefinitionId)
+        {
+            var battleDefinition =
+                await BattleDefinitionsRepository.GetBattleDefinitionByUserAndId(userId, battleDefinitionId);
+            var battleDefinitionObject = ToBattleDefinitionObject(battleDefinition);
+            await FillBattleDefinitionObject(battleDefinitionObject);
+            return battleDefinitionObject;
+        }
+
+        private Task FillBattleDefinitionObject(MutableBattleDefinitionObject battleDefinitionObject)
+        {
+            return UserUnitsService
+                .GetUnitsByIds(battleDefinitionObject.UnitsIds)
+                .ContinueWith(task => battleDefinitionObject.Units = task.Result);
         }
 
         private MutableBattleDefinitionObject ToBattleDefinitionObject(IBattleDefinitionEntity entity)

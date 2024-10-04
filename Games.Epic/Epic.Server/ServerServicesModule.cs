@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
 using Epic.Core;
@@ -26,6 +27,10 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleDefinitionsService, DefaultBattleDefinitionsService>();
             serviceRegistrator.RegisterType<IBattleUnitsService, DefaultBattleUnitsService>();
             serviceRegistrator.RegisterType<IBattlesService, DefaultBattlesService>();
+            serviceRegistrator.RegisterType<IClientConnectionsService<WebSocket>, WebSocketClientConnectionsService>();
+            serviceRegistrator.RegisterType<IBattleGameManagersService, DefaultBattleGameManagersService>();
+            serviceRegistrator.RegisterType<IClientMessagesParserService, ClientMessagesParserService>();
+            serviceRegistrator.RegisterType<IBattleConnectionsService, BattleConnectionsService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

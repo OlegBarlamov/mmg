@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core;
 using Epic.Server.Authentication;
-using Epic.Server.Resourses;
+using Epic.Server.Resources;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 

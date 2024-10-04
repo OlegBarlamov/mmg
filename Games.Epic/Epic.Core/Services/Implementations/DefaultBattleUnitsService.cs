@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Objects;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Data.BattleUnits;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NetExtensions.Collections;
 
 namespace Epic.Core
 {
@@ -32,6 +34,38 @@ namespace Epic.Core
             var unitEntities = await BattleUnitsRepository.GetByBattleId(battleId);
             var unitObjects = unitEntities.Select(ToBattleUnitObject).ToArray();
             return await FillBattleUnitObjects(unitObjects);
+        }
+
+        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
+        {
+            var userUnits = battleDefinition.Units;
+            var userUnitsById = userUnits.ToDictionary(u => u.Id, u => u);
+            var entitiesToCreate = battleDefinition.Units.Select(u => new BattleUnitEntityFields
+            {
+                BattleId = battleId,
+                UserUnitId = u.Id,
+                Column = 0,
+                Row = 0,
+                PlayerIndex = 0,
+            }).ToArray<IBattleUnitEntityFields>();
+
+            var battleUnitsEntities = await BattleUnitsRepository.CreateBatch(entitiesToCreate);
+            var battleUnitsObjects = battleUnitsEntities.Select(ToBattleUnitObject).ToArray();
+            battleUnitsObjects.ForEach(u =>
+            {
+                u.UserUnit = userUnitsById[u.UserUnitId];
+            });
+            return battleUnitsObjects;
+        }
+
+        public Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromUserUnits(IReadOnlyCollection<IUserUnitObject> userUnits, int playerIndex, Guid battleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyCollection<IBattleUnitObject>> UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnit)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task<IReadOnlyCollection<MutableBattleUnitObject>> FillBattleUnitObjects(
@@ -74,5 +108,14 @@ namespace Epic.Core
                 PlayerIndex = entity.PlayerIndex,
             };
         }
+
+        private class BattleUnitEntityFields : IBattleUnitEntityFields
+        {
+            public Guid BattleId { get; set; }
+            public Guid UserUnitId { get; set; }
+            public int Column { get; set; }
+            public int Row { get; set; }
+            public int PlayerIndex { get; set; }
+        } 
     }
 }

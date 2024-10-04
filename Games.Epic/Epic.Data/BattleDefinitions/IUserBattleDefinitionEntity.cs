@@ -2,7 +2,7 @@ using System;
 
 namespace Epic.Data.BattleDefinitions
 {
-    public interface IUserBattleDefinitionEntity
+    internal interface IUserBattleDefinitionEntity
     {
         Guid Id { get; }
         Guid BattleDefinitionId { get; }

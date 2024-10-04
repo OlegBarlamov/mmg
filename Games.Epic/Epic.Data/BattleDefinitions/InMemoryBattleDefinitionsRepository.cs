@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Data.Exceptions;
 
 namespace Epic.Data.BattleDefinitions
 {
@@ -49,6 +50,16 @@ namespace Epic.Data.BattleDefinitions
             _userBattleDefinitions.Add(userBattleDefinition);
 
             return Task.FromResult((IBattleDefinitionEntity)battleDefinition);
+        }
+
+        public Task<IBattleDefinitionEntity> GetBattleDefinitionByUserAndId(Guid userId, Guid battleDefinitionId)
+        {
+            var userBattleDefinition = _userBattleDefinitions.FirstOrDefault(x =>
+                x.UserId == userId && x.BattleDefinitionId == battleDefinitionId);
+            if (userBattleDefinition == null)
+                throw new EntityNotFoundException(this, $"UserId: {userId}; BattleDefinitionId: {battleDefinitionId}");
+
+            return Task.FromResult(_battleDefinitions.First(x => x.Id == battleDefinitionId));
         }
     }
 }

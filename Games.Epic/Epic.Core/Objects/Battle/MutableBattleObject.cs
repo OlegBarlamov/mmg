@@ -11,6 +11,9 @@ namespace Epic.Core.Objects.Battle
         public int Width { get; set; }
         public int Height { get; set; }
         public bool IsActive { get; set; }
-        public IReadOnlyCollection<IBattleUnitObject> Units { get; set; }
+        public int TurnPlayerIndex { get; set; }
+        public List<IBattleUnitObject> Units { get; set; }
+        
+        IReadOnlyCollection<IBattleUnitObject> IBattleObject.Units => Units;
     }
 }

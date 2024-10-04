@@ -1,6 +1,6 @@
 using Epic.Core.Objects;
 
-namespace Epic.Server.Resourses
+namespace Epic.Server.Resources
 {
     public class UserResource
     {

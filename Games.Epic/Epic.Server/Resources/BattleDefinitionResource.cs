@@ -1,6 +1,6 @@
 using Epic.Core;
 
-namespace Epic.Server.Resourses
+namespace Epic.Server.Resources
 {
     public class BattleDefinitionResource
     {
