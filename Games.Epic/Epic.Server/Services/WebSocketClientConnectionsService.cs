@@ -67,6 +67,7 @@ namespace Epic.Server.Services
 
         public async Task ListenMessagesAsync()
         {
+            IsActive = true;
             var buffer = new byte[1024 * 4];
             var result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationTokenSource.Token);
             while (!result.CloseStatus.HasValue)

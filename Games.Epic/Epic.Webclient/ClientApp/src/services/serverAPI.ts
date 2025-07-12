@@ -1,28 +1,28 @@
-import {IBattleDefinition} from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap} from "../battleMap/battleMap";
 import {IBattleConnectionMessagesHandler, IBattleServerConnection} from "../server/battleServerConnection";
 
 export interface IUserInfo {
-    userId: string
-    userName: string
+    readonly userId: string
+    readonly userName: string
 }
 
 export interface IUserUnit {
-    id: string
-    typeId: string
-    count: number
-    thumbnailUrl: string
+    readonly id: string
+    readonly typeId: string
+    readonly count: number
+    readonly thumbnailUrl: string
 }
 
 export interface IServerAPI {
-    signup(userName: string): Promise<IUserInfo>
+    login(userName: string): Promise<IUserInfo>
     getUserInfo(): Promise<IUserInfo>
     
     getUnits(): Promise<IUserUnit[]>
     
     getBattles(): Promise<IBattleDefinition[]>
-    beginBattle(battleId: string): Promise<BattleMap>
+    beginBattle(battleDefinitionId: string): Promise<BattleMap>
     getActiveBattle(): Promise<BattleMap | null>
     
-    establishBattleConnection(handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
+    establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
 }

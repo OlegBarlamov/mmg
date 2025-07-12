@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {IBattleDefinition} from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
 
 export interface IMenuComponentProps {
@@ -34,7 +34,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                     this.state.availableBattles ? (
                     this.state.availableBattles.map((battle, index) => (
                             <button key={index} onClick={() => this.props.onBattleSelected(battle)}>
-                                Size: {battle.mapWidth}x{battle.mapHeight}
+                                Size: {battle.width}x{battle.height}
                             </button>
                         ))
                     ) : (<div>Loading...</div>)

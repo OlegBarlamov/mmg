@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Objects.Battle;
@@ -6,6 +7,7 @@ namespace Epic.Server.Resources
 {
     public class BattleResource
     {
+        public Guid Id { get; }
         public int Width { get; }
         public int Height { get; }
         public IReadOnlyCollection<BattleUnitResource> Units { get; }
@@ -13,6 +15,7 @@ namespace Epic.Server.Resources
         
         public BattleResource(IBattleObject battleObject)
         {
+            Id = battleObject.Id;
             Width = battleObject.Width;
             Height = battleObject.Height;
             Units = battleObject.Units.Select(x => new BattleUnitResource(x)).ToList();

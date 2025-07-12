@@ -5,6 +5,7 @@ import {IBattleLoader, ServerBattleLoader} from "./battleLoader";
 import {BattlesService, IBattlesService} from "./battlesService";
 import {IServerAPI} from "./serverAPI";
 import {FakeServerAPI} from "../server/FakeServerAPI";
+import {SERVER_BASE_URL, ServerImplementation} from "../server/serverImplementation";
 
 export interface IServiceLocator {
     canvasService() : ICanvasService
@@ -57,6 +58,7 @@ export class ExplicitServiceLocator implements IServiceLocator {
     }
 
     serverAPI(): IServerAPI {
-        return this.getSingletoneService("ServerAPI", () => new FakeServerAPI())
+        //return this.getSingletoneService("ServerAPI", () => new FakeServerAPI())
+        return this.getSingletoneService("ServerAPI", () => new ServerImplementation(SERVER_BASE_URL))
     }
 }

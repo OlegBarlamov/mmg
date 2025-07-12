@@ -8,10 +8,11 @@ namespace Epic.Core.Objects.BattleGameManager
     public interface IBattleGameManager : IDisposable
     {
         bool IsDisposed { get; }
-        IBattleObject BattleObject { get; }
+        Guid BattleId { get; }
         int GetClientsCount(); 
-        Task PlayBattle();
-        Task SuspendBattle();
+        bool IsBattlePlaying();
+        void PlayBattle();
+        void SuspendBattle();
     
         Task AddClient(IBattleClientConnection connection);
         Task RemoveClient(IBattleClientConnection connection);

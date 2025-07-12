@@ -8,5 +8,7 @@ namespace Epic.Data.BattleUnits
         Task<IBattleUnitEntity[]> GetByBattleId(Guid battleId);
         
         Task<IBattleUnitEntity[]> CreateBatch(IBattleUnitEntityFields[] data);
+
+        Task Update(IBattleUnitEntity[] entities);
     }
 }

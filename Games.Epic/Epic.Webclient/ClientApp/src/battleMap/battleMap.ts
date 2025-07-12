@@ -14,9 +14,14 @@ export type BattleTurnInfo = {
 }
 
 export type BattleMap = {
+    id: string
+    
+    width: number
+    height: number
+    
     grid: IHexoGrid<BattleMapCell>
     
     units: BattleMapUnit[]
     
-    turn: BattleTurnInfo
+    turnInfo: BattleTurnInfo
 }

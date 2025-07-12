@@ -85,6 +85,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     async onMessage(message: BattleCommandFromServer): Promise<void> {
         if (this.disposed) return
         
+        debugger
         if (message.command === 'UNIT_MOVE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
@@ -95,12 +96,13 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             }
         } else if (message.command === 'NEXT_TURN') {
             const turnInfo: BattleTurnInfo = {
-                index: message.turnIndex,
+                index: message.turnNumber,
                 player: message.player,
             }
-            this.currentTurnIndex = message.turnIndex
-            this.previousTurnInfos.set(message.turnIndex, turnInfo)
-            this.triggerAwaitingPromiseForTurn(message.turnIndex, turnInfo)
+            this.currentTurnIndex = message.turnNumber
+            this.mapController.map.turnInfo = turnInfo
+            this.previousTurnInfos.set(message.turnNumber, turnInfo)
+            this.triggerAwaitingPromiseForTurn(message.turnNumber, turnInfo)
             return
         } else if (message.command === 'UNIT_ATTACK') {
             // Nothing

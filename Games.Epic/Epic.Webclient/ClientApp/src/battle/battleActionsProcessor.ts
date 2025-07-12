@@ -2,10 +2,10 @@ import {BattleUserAction} from "./battleUserAction";
 import {IBattleMapController} from "../battleMap/battleMapController";
 import {
     BattleServerMessageResponseStatus,
-    IBattleCommandToServerResponse,
     IBattleServerConnection
 } from "../server/battleServerConnection";
 import {getRandomStringKey} from "../units/getRandomString";
+import {IBattleCommandToServerResponse} from "../server/IBattleCommandToServerResponse";
 
 export interface IBattleActionsProcessor {
     processAction(action: BattleUserAction): Promise<void>
@@ -26,6 +26,7 @@ export class BattleActionsProcessor implements IBattleActionsProcessor {
                     moveToCell: action.moveToCell,
                     commandId: getRandomStringKey(10),
                     player: action.player,
+                    turnIndex: this.mapController.map.turnInfo.index,
                 })
         } else if (action.command === 'UNIT_ATTACK') {
             response = await this.battleServerConnection.sendMessage(
@@ -36,6 +37,7 @@ export class BattleActionsProcessor implements IBattleActionsProcessor {
                     commandId: getRandomStringKey(10),
                     player: action.player,
                     moveToCell: action.moveToCell,
+                    turnIndex: this.mapController.map.turnInfo.index,
                 })
         } else {
             throw new Error("Unknown type of user action")

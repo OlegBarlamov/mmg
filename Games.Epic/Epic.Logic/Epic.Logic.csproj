@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Epic.Core\Epic.Core.csproj" />
     <ProjectReference Include="..\Epic.Data\Epic.Data.csproj" />
   </ItemGroup>
 

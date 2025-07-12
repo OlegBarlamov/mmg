@@ -5,6 +5,7 @@ using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Objects.BattleGameManager;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Epic.Core
 {
@@ -12,17 +13,27 @@ namespace Epic.Core
     public class DefaultBattleGameManagersService : IBattleGameManagersService
     {
         public IBattlesCacheService BattlesCacheService { get; }
-        
+        public ILoggerFactory LoggerFactory { get; }
+        public IBattleUnitsService BattleUnitsService { get; }
+        public IBattlesService BattlesService { get; }
+
         private readonly ConcurrentDictionary<Guid, BattleGameManager> _battleGameManagers = new ConcurrentDictionary<Guid, BattleGameManager>();
 
-        public DefaultBattleGameManagersService([NotNull] IBattlesCacheService battlesCacheService)
+        public DefaultBattleGameManagersService(
+            [NotNull] IBattlesCacheService battlesCacheService,
+            [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] IBattleUnitsService battleUnitsService,
+            [NotNull] IBattlesService battlesService)
         {
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
+            BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
         }
         
         public Task<IBattleGameManager> GetBattleGameManager(IBattleClientConnection clientConnection)
         {
-            var battleObject = clientConnection.BattleObject;
+            var battleObject = (MutableBattleObject)clientConnection.BattleObject;
             if (BattlesCacheService.FindBattleById(battleObject.Id) == null)
             {
                 BattlesCacheService.AddBattle(battleObject);
@@ -30,6 +41,8 @@ namespace Epic.Core
             
             var manager = CreateBattleGameManager(battleObject);
             manager.AddClient(clientConnection);
+            if (!manager.IsBattlePlaying())
+                manager.PlayBattle();
             
             return Task.FromResult((IBattleGameManager)manager);
         }
@@ -42,17 +55,22 @@ namespace Epic.Core
             manager.RemoveClient(clientConnection);
             if (manager.GetClientsCount() == 0)
             {
-                BattlesCacheService.ReleaseBattle(clientConnection.BattleObject);
+                BattlesCacheService.ReleaseBattle(clientConnection.BattleObject.Id);
                 _battleGameManagers.TryRemove(manager.BattleObject.Id, out _);
+                manager.SuspendBattle();
                 manager.Dispose();
             }
             
             return Task.FromResult((IBattleGameManager)manager);
         }
 
-        private BattleGameManager CreateBattleGameManager(IBattleObject battleObject)
+        private BattleGameManager CreateBattleGameManager(MutableBattleObject battleObject)
         {
-            return _battleGameManagers.GetOrAdd(battleObject.Id, id => new BattleGameManager(battleObject));
+            return _battleGameManagers.GetOrAdd(battleObject.Id, id => new BattleGameManager(
+                battleObject,
+                LoggerFactory,
+                BattleUnitsService,
+                BattlesService));
         }
     }
 }

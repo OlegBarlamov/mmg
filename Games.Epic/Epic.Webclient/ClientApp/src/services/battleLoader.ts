@@ -1,5 +1,5 @@
 import {BattleMap} from "../battleMap/battleMap";
-import {IBattleDefinition} from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IBattleMapsService} from "./battleMapsService";
 import {IServerAPI} from "./serverAPI";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -14,12 +14,7 @@ export class ServerBattleLoader implements IBattleLoader {
     }
     
     async loadBattle(battleDefinition: IBattleDefinition): Promise<BattleMap> {
-        const battle = await this.serverAPI.beginBattle(battleDefinition.battleId)
-        return {
-            grid: new OddRGrid(battle.grid.cells),
-            units: battle.units,
-            turn: battle.turn,
-        }
+        return await this.serverAPI.beginBattle(battleDefinition.id)
     }
     
 }
@@ -30,6 +25,6 @@ export class FakeBattleLoader implements IBattleLoader {
         this.battleMapsService = battleMapsService;
     }
     loadBattle(battleDefinition: IBattleDefinition): Promise<BattleMap> {
-        return Promise.resolve(this.battleMapsService.generateMap(battleDefinition.mapWidth, battleDefinition.mapHeight))
+        return Promise.resolve(this.battleMapsService.generateMap(battleDefinition.width, battleDefinition.height))
     }
 }

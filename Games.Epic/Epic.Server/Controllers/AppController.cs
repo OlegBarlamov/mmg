@@ -23,12 +23,6 @@ namespace Epic.Server.Controllers
         {
             AuthorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
         }
-     
-        [HttpGet]
-        public string Index()
-        {
-            return "Server has been started.";
-        }
 
         [HttpGet]
         [Route("login")]
@@ -55,15 +49,15 @@ namespace Epic.Server.Controllers
                 }
                 catch (InvalidUserTypeException)
                 {
-                    Forbid("User is invalid to access.");
+                    return Forbid("User is invalid to access.");
                 }
                 catch (UserBlockedException)
                 {
-                    Forbid("User is blocked.");
+                    return Forbid("User is blocked.");
                 }
                 catch (EntityNotFoundException)
                 {
-                    Unauthorized("Credentials are invalid.");
+                    return Unauthorized("Credentials are invalid.");
                 }
             } 
             

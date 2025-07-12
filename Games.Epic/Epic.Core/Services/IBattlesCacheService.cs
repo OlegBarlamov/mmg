@@ -5,8 +5,8 @@ namespace Epic.Core
 {
     public interface IBattlesCacheService
     {
-        IBattleObject FindBattleById(Guid battleId);
-        void AddBattle(IBattleObject battleObject);
-        void ReleaseBattle(IBattleObject battleObject);
+        MutableBattleObject FindBattleById(Guid battleId);
+        void AddBattle(MutableBattleObject battleObject);
+        void ReleaseBattle(Guid battleId);
     }
 }

@@ -5,6 +5,11 @@ interface BaseCommandToServer {
     commandId: string
     command: string
     player: PlayerNumber
+    turnIndex: number
+}
+
+interface ClientConnectedCommandToServer extends BaseCommandToServer {
+    command: 'CLIENT_CONNECTED'
 }
 
 interface UnitCommandToServer extends BaseCommandToServer {

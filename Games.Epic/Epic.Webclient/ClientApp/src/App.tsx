@@ -1,7 +1,7 @@
 import './App.css';
 import React, {PureComponent} from 'react';
 import {IServiceLocator} from "./services/serviceLocator";
-import {IBattleDefinition} from "./battle/battleDefinition";
+import {IBattleDefinition} from "./battle/IBattleDefinition";
 import {MenuComponent} from "./components/menuComponent";
 import {BattleComponent} from "./components/battleComponent";
 import {IUserInfo} from "./services/serverAPI";
@@ -30,7 +30,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
         try {
             userInfo = await serverAPI.getUserInfo()
         } catch (error) {
-            userInfo = await serverAPI.signup("FakeName")
+            userInfo = await serverAPI.login("FakeName")
         }
         this.setState({
             ...this.state,

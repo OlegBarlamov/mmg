@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Objects;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Data.Battles;
@@ -75,7 +77,7 @@ namespace Epic.Core
             var battleObject = ToBattleObject(battleEntity);
             
             var battleInitialUnits = await BattleUnitsService.CreateUnitsFromBattleDefinition(battleDefinition, battleObject.Id);
-            battleObject.Units = new List<IBattleUnitObject>(battleInitialUnits);
+            battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
             
             return battleObject;
         }
@@ -88,7 +90,7 @@ namespace Epic.Core
             
             var userUnits = await UserUnitsService.GetAliveUnitsByUserAsync(userId);
             var userBattleUnits = await BattleUnitsService.CreateUnitsFromUserUnits(userUnits, 1, battleObject.Id);
-            mutableBattleObject.Units.AddRange(userBattleUnits);
+            mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
             PlaceBattleUnits(mutableBattleObject);
 
@@ -97,14 +99,40 @@ namespace Epic.Core
             return mutableBattleObject;
         }
 
+        public Task UpdateBattle(IBattleObject battleObject)
+        {
+            return BattlesRepository.UpdateBattle(ToBattleEntity(battleObject));
+        }
+
         private void PlaceBattleUnits(MutableBattleObject battleObject)
         {
-            throw new NotImplementedException();
+            var unitsPlayer1Index = 0;
+            var unitsPlayer2Index = 0;
+            battleObject.Units.ForEach(u =>
+            {
+                if (u.PlayerIndex == (int)PlayerNumber.Player1)
+                {
+                    u.Column = 0;
+                    u.Row = unitsPlayer1Index++;
+                }
+                else if (u.PlayerIndex == (int)PlayerNumber.Player2)
+                {
+                    u.Column = battleObject.Width - 1;
+                    u.Row = unitsPlayer2Index++;
+                }
+                else
+                {
+                    u.Column = -1;
+                    u.Row = -1;
+                }
+            });
         }
 
         private async Task FillUnits(MutableBattleObject battleObject)
         {
-            battleObject.Units = new List<IBattleUnitObject>(await BattleUnitsService.GetBattleUnits(battleObject.Id));
+            var battleUnits = await BattleUnitsService.GetBattleUnits(battleObject.Id);
+            var mutableBattleUnits = battleUnits.Select(MutableBattleUnitObject.CopyFrom);
+            battleObject.Units = new List<MutableBattleUnitObject>(mutableBattleUnits);
         }
 
         private IBattleEntity ToBattleEntity(IBattleObject battleObject)

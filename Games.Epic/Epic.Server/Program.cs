@@ -13,6 +13,16 @@ namespace Epic.Server
          {
              var appBuilder = WebApplication.CreateBuilder(args);
              appBuilder.Services.AddControllers();
+             // appBuilder.Services.AddCors(options =>
+             // {
+             //     options.AddPolicy("AllowLocalhost3000",
+             //         policy =>
+             //         {
+             //             policy.WithOrigins("http://localhost:3000")
+             //                 .AllowAnyHeader()
+             //                 .AllowAnyMethod();
+             //         });
+             // });
  
              var app = appBuilder.UseFramework()
                  .AddServices<ConsoleCommandsExecutingServicesModule>()
@@ -22,11 +32,23 @@ namespace Epic.Server
                  .Construct()
                  .Asp();
 
-             app.MapControllers();
-             app.UseHttpsRedirection();
+             
+             //app.UseCors("AllowLocalhost3000");
              app.UseRouting();
-             app.UseMiddleware<AuthMiddleware>();
+             // app.UseHttpsRedirection();
+             app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/api"), a =>
+             {
+                 a.UseMiddleware<AuthMiddleware>();
+             });
              app.UseWebSockets();
+             app.UseEndpoints(endpoints =>
+             {
+                 endpoints.MapControllers();
+             });
+             app.UseSpa(spa =>
+             {
+                 spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+             });
  
              app.Run();
          }

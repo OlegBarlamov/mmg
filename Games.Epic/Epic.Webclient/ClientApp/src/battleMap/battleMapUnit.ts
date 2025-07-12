@@ -17,7 +17,7 @@ export type BattleMapUnit = {
 
 export function getTestUnit(r: number, c: number, count: number, player: PlayerNumber): BattleMapUnit {
     const props = {
-        battleMapIcon: "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
+        battleImgUrl: "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
         speed: 5,
         attackMinRange: 1,
         attackMaxRange: 1,

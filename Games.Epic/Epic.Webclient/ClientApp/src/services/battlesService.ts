@@ -15,8 +15,8 @@ export class BattlesService implements IBattlesService {
     }
     async createBattle(map: BattleMap): Promise<IBattleController> {
         const mapController = await this.battleMapService.load(map)
-        const serverMessagesHandler = new BattleServerMessagesHandler(mapController, map.turn)
-        const serverConnection = await this.serverAPI.establishBattleConnection(serverMessagesHandler)
+        const serverMessagesHandler = new BattleServerMessagesHandler(mapController, map.turnInfo)
+        const serverConnection = await this.serverAPI.establishBattleConnection(map.id, serverMessagesHandler)
         const battleActionsProcessor = new BattleActionsProcessor(mapController, serverConnection)
         
         return new BattleController(mapController, battleActionsProcessor, serverMessagesHandler)

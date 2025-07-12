@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using NetExtensions.Collections;
 
 namespace Epic.Data.BattleUnits
 {
@@ -12,11 +13,11 @@ namespace Epic.Data.BattleUnits
         public string Name => nameof(InMemoryBattleUnitsRepository);
         public string EntityName => "BattleUnit";
         
-        private readonly List<IBattleUnitEntity> _battleUnits = new List<IBattleUnitEntity>();
+        private readonly List<BattleUnitEntity> _battleUnits = new List<BattleUnitEntity>();
 
         public Task<IBattleUnitEntity[]> GetByBattleId(Guid battleId)
         {
-            var battleUnits = _battleUnits.Where(bu => bu.BattleId == battleId).ToArray();
+            var battleUnits = _battleUnits.Where(bu => bu.BattleId == battleId).ToArray<IBattleUnitEntity>();
             return Task.FromResult(battleUnits);
         }
 
@@ -30,10 +31,24 @@ namespace Epic.Data.BattleUnits
                 Row = x.Row,
                 PlayerIndex = x.PlayerIndex,
                 UserUnitId = x.UserUnitId,
-            }).ToArray<IBattleUnitEntity>();
+            }).ToArray();
             
             _battleUnits.AddRange(entities);
-            return Task.FromResult(entities.ToArray());
+            return Task.FromResult(entities.ToArray<IBattleUnitEntity>());
+        }
+
+        public Task Update(IBattleUnitEntity[] entities)
+        {
+            entities.ForEach(entity =>
+            {
+                var targetUnit = _battleUnits.First(x => x.Id == entity.Id);
+                targetUnit.UserUnitId = entity.UserUnitId;
+                targetUnit.PlayerIndex = entity.PlayerIndex;
+                targetUnit.BattleId = entity.BattleId;
+                targetUnit.Column = entity.Column;
+                targetUnit.Row = entity.Row;
+            });
+            return Task.CompletedTask;
         }
     }
 }

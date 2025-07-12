@@ -47,7 +47,7 @@ namespace Epic.Core
 
         private async Task<IReadOnlyCollection<MutableUserUnitObject>> FillUserObjects(IReadOnlyCollection<MutableUserUnitObject> userUnits)
         {
-            var userTypesIds = userUnits.Select(user => user.UnitTypeId).ToArray();
+            var userTypesIds = userUnits.Select(user => user.UnitTypeId).Distinct().ToArray();
             var unitTypes = await UnitTypesService.GetUnitTypesByIdsAsync(userTypesIds);
             
             var unitTypesByIds = unitTypes.ToDictionary(x => x.Id, x => x);

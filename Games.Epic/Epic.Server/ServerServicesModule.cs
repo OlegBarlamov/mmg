@@ -31,6 +31,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleGameManagersService, DefaultBattleGameManagersService>();
             serviceRegistrator.RegisterType<IClientMessagesParserService, ClientMessagesParserService>();
             serviceRegistrator.RegisterType<IBattleConnectionsService, BattleConnectionsService>();
+            serviceRegistrator.RegisterType<IBattlesCacheService, DefaultBattlesCacheService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

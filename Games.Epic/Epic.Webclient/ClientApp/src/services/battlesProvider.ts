@@ -1,4 +1,4 @@
-import {IBattleDefinition} from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IServerAPI} from "./serverAPI";
 
 export interface IBattlesProvider {
@@ -19,14 +19,14 @@ export class FakeBattlesProvider implements IBattlesProvider {
         return Promise.resolve(
             [
                 {
-                    mapWidth: 11,
-                    mapHeight: 9,
-                    battleId: "1",
+                    width: 11,
+                    height: 9,
+                    id: "1",
                 },
                 {
-                    mapWidth: 6,
-                    mapHeight: 5,
-                    battleId: "2",
+                    width: 6,
+                    height: 5,
+                    id: "2",
                 },
             ])
     }

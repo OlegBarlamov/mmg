@@ -1,4 +1,4 @@
-import {IBattleDefinition} from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
@@ -11,24 +11,24 @@ import {getRandomStringKey} from "../units/getRandomString";
 import {
     BattleServerMessageRejectionReason,
     BattleServerMessageResponseStatus,
-    IBattleCommandToServerResponse,
     IBattleConnectionMessagesHandler,
     IBattleServerConnection
 } from "./battleServerConnection";
 import {BattleCommandToServer} from "./battleCommandToServer";
 import {getUnitById} from "../battle/battleLogic";
+import {IBattleCommandToServerResponse} from "./IBattleCommandToServerResponse";
 
 class ServerSideBattle implements IBattleDefinition {
-    readonly battleId: string
-    readonly mapWidth: number
-    readonly mapHeight: number
+    readonly id: string
+    readonly width: number
+    readonly height: number
 
     readonly enemyUnits: IUserUnit[]
 
     constructor(battleId: string, mapWidth: number, mapHeight: number, enemyUnits: IUserUnit[]) {
-        this.battleId = battleId
-        this.mapWidth = mapWidth
-        this.mapHeight = mapHeight
+        this.id = battleId
+        this.width = mapWidth
+        this.height = mapHeight
         this.enemyUnits = enemyUnits
     }
 }
@@ -43,7 +43,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     private readonly activeBattles = new Map<string, BattleMap>()
     private readonly unitTypes = new Map<string, UnitProperties>([
         ['1', {
-            battleMapIcon: "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
+            battleImgUrl: "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
             speed: 5,
             attackMinRange: 1,
             attackMaxRange: 1,
@@ -53,7 +53,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     ])
     private messagesHandler: IBattleConnectionMessagesHandler | undefined = undefined
     
-    signup(userName: string): Promise<IUserInfo> {
+    login(userName: string): Promise<IUserInfo> {
         const token = FakeUserToken //getRandomStringKey(10)
         const userId = getRandomStringKey(7)
         const userInfo = {
@@ -66,7 +66,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             {
                 id: getRandomStringKey(7),
                 typeId: '1',
-                thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                 count: 30,
             },
         ])
@@ -75,19 +75,19 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 10,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
             ]),
@@ -95,49 +95,49 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 10,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 9,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
             ]),
@@ -145,43 +145,43 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 1,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 2,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 4,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 5,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 6,
                 },
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
-                    thumbnailUrl: this.unitTypes.get('1')!.battleMapIcon,
+                    thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 7,
                 },
             ]),
@@ -214,7 +214,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     async beginBattle(battleId: string): Promise<BattleMap> {
         const id = await this.getUserId()
         const battles = this.battles.get(id) ?? []
-        const targetBattle = battles.find(battle => battle.battleId === battleId)
+        const targetBattle = battles.find(battle => battle.id === battleId)
         if (!targetBattle) {
             throw {
                 status: 404,
@@ -233,7 +233,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         return structuredClone(this.activeBattles.get(id)) ?? null
     }
 
-    establishBattleConnection(handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
+    establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
         this.messagesHandler = handler
         return Promise.resolve(this)
     }
@@ -256,21 +256,24 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
 
     private beginBattleInternal(battleDefinition: ServerSideBattle, userUnits: IUserUnit[]): Promise<BattleMap> {
         const cells: BattleMapCell[][] = []
-        for (let i = 0; i < battleDefinition.mapHeight; i++) {
+        for (let i = 0; i < battleDefinition.height; i++) {
             const row: BattleMapCell[] = []
-            for (let j = 0; j < battleDefinition.mapWidth; j++) {
+            for (let j = 0; j < battleDefinition.width; j++) {
                 const cell: BattleMapCell = { c: j, r: i }
                 row.push(cell);
             }
             cells.push(row)
         }
         return Promise.resolve({
+            id: battleDefinition.id,
+            width: battleDefinition.width,
+            height: battleDefinition.height,
             grid: new OddRGrid(cells),
             units: [
-                ...this.loadUnits(battleDefinition.enemyUnits, PlayerNumber.Player2, battleDefinition.mapWidth, battleDefinition.mapHeight),
-                ...this.loadUnits(userUnits, PlayerNumber.Player1, battleDefinition.mapWidth, battleDefinition.mapHeight),
+                ...this.loadUnits(battleDefinition.enemyUnits, PlayerNumber.Player2, battleDefinition.width, battleDefinition.height),
+                ...this.loadUnits(userUnits, PlayerNumber.Player1, battleDefinition.width, battleDefinition.height),
             ],
-            turn: {
+            turnInfo: {
                 player: PlayerNumber.Player1,
                 index: 0,
             }
@@ -336,6 +339,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             }
             
             this.messagesHandler?.onMessage({
+                turnNumber: activeBattle.turnInfo.index,
                 player: message.player,
                 command: 'UNIT_MOVE',
                 actorId: message.actorId,
@@ -373,6 +377,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             }
 
             this.messagesHandler?.onMessage({
+                turnNumber: activeBattle.turnInfo.index,
                 player: message.player,
                 command: 'UNIT_MOVE',
                 actorId: message.actorId,
@@ -381,6 +386,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             })
 
             this.messagesHandler?.onMessage({
+                turnNumber: activeBattle.turnInfo.index,
                 player: message.player,
                 command: 'UNIT_ATTACK',
                 actorId: message.actorId,
@@ -395,7 +401,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 targetUnit.count = targetUnit.count - damageParams.killedCount
                 targetUnit.currentProps.health = damageParams.healthLeft
                 if (targetUnitGlobal) {
-                    targetUnitGlobal.count = targetUnit.count
+                    // targetUnitGlobal.count = targetUnit.count
                 }
             } else {
                 activeBattle.units.splice(activeBattle.units.indexOf(targetUnit), 1)
@@ -404,6 +410,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 }
             }
             this.messagesHandler?.onMessage({
+                turnNumber: activeBattle.turnInfo.index,
                 player: message.player,
                 command: 'TAKE_DAMAGE',
                 actorId: message.targetId,
@@ -470,17 +477,17 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     }
     
     private onNextTurn(map: BattleMap) {
-        map.turn.index = map.turn.index + 1
+        map.turnInfo.index = map.turnInfo.index + 1
         const orderedUnits = [...map.units]
             .sort((a, b) => b.props.speed - a.props.speed)
-        const targetIndex = map.turn.index % orderedUnits.length
+        const targetIndex = map.turnInfo.index % orderedUnits.length
         const targetUnit = orderedUnits[targetIndex]
         
         this.messagesHandler?.onMessage({
             command: 'NEXT_TURN',
             player: targetUnit.player,
             commandId: getRandomStringKey(10),
-            turnIndex: map.turn.index,
+            turnNumber: map.turnInfo.index,
         })
     }
     

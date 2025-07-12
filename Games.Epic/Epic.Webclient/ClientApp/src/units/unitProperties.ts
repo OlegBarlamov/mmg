@@ -1,5 +1,5 @@
 export type UnitProperties = {
-    battleMapIcon: string
+    battleImgUrl: string
     speed: number
     attackMaxRange: number
     attackMinRange: number

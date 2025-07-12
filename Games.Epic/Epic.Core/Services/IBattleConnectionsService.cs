@@ -3,6 +3,7 @@ using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Objects.ClientConnection;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Epic.Core
 {
@@ -11,18 +12,21 @@ namespace Epic.Core
         IBattleClientConnection CreateConnection(IClientConnection clientConnection, IBattleObject battleObject);
     }
 
+    [UsedImplicitly]
     public class BattleConnectionsService : IBattleConnectionsService
     {
         public IClientMessagesParserService ClientMessagesParserService { get; }
+        [NotNull] public ILoggerFactory LoggerFactory { get; }
 
-        public BattleConnectionsService([NotNull] IClientMessagesParserService clientMessagesParserService)
+        public BattleConnectionsService([NotNull] IClientMessagesParserService clientMessagesParserService, [NotNull] ILoggerFactory loggerFactory)
         {
             ClientMessagesParserService = clientMessagesParserService ?? throw new ArgumentNullException(nameof(clientMessagesParserService));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
         
         public IBattleClientConnection CreateConnection(IClientConnection clientConnection, IBattleObject battleObject)
         {
-            return new BattleClientConnection(clientConnection, battleObject, ClientMessagesParserService);
+            return new BattleClientConnection(clientConnection, battleObject, ClientMessagesParserService, LoggerFactory);
         }
     }
 }

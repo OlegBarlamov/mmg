@@ -46,16 +46,15 @@ namespace Epic.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> StartBattle(StartBattleRequestBody battleRequestBody)
         {
+            var userId = User.GetId();
             Guid battleDefinitionId;
-            Guid userId;
             try
             {
                 battleDefinitionId = Guid.Parse(battleRequestBody.BattleDefinitionId);
-                userId = Guid.Parse(battleRequestBody.UserId);
             }
             catch (FormatException)
             {
-                return BadRequest($"Invalid ID format for {battleRequestBody.BattleDefinitionId} or {battleRequestBody.UserId} UserId.");
+                return BadRequest($"Invalid ID format for {battleRequestBody.BattleDefinitionId}.");
             }
 
             try

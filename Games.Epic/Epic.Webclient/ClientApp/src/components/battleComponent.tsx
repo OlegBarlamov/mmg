@@ -1,6 +1,6 @@
 import './battleComponent.css'
 import React, {PureComponent} from "react";
-import {IBattleDefinition} from "../battle/battleDefinition";
+import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
 import {IBattleController} from "../battle/battleController";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";

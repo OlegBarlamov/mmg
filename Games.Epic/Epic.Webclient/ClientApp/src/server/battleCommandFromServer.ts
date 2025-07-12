@@ -4,6 +4,7 @@ import {IHexoPoint} from "../hexogrid/hexoGrid";
 interface BaseCommandFromServer {
     commandId: string
     command: string
+    turnNumber: number
 }
 
 interface PlayerCommandFromServer extends BaseCommandFromServer {
@@ -33,7 +34,6 @@ export interface UnitTakeDamageCommandFromServer extends UnitCommandFromServer {
 
 export interface NextTurnCommandFromServer extends PlayerCommandFromServer {
     command: 'NEXT_TURN'
-    turnIndex: number
 }
 
 export interface PlayerWonCommandFromServer extends PlayerCommandFromServer {

@@ -12,5 +12,6 @@ namespace Epic.Core
         Task<IBattleObject> CreateBattleFromDefinition(Guid userId, Guid battleDefinitionId);
         
         Task<IBattleObject> BeginBattle(Guid userId, IBattleObject battleObject);
+        Task UpdateBattle(IBattleObject battleObject);
     }
 }
