@@ -1,4 +1,5 @@
 using System;
+using Epic.Data.UnitTypes;
 
 namespace Epic.Core
 {
@@ -12,5 +13,25 @@ namespace Epic.Core
         public int Health { get; set; }
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
+
+        private MutualUnitTypeObject()
+        {
+            
+        }
+        
+        public static MutualUnitTypeObject FromEntity(IUnitTypeEntity entity)
+        {
+            return new MutualUnitTypeObject
+            {
+                Id = entity.Id,
+                AttackMinRange = entity.AttackMinRange,
+                AttackMaxRange = entity.AttackMaxRange,
+                BattleImgUrl = entity.BattleImgUrl,
+                DashboardImgUrl = entity.DashboardImgUrl,
+                Damage = entity.Damage,
+                Speed = entity.Speed,
+                Health = entity.Health,
+            };
+        }
     }
 }

@@ -25,13 +25,13 @@ namespace Epic.Core
         public async Task<IUnitTypeObject> GetUnitTypeByIdAsync(Guid id)
         {
             var unitTypeEntity = await Repository.GetById(id);
-            return ToUnitTypeObject(unitTypeEntity);
+            return MutualUnitTypeObject.FromEntity(unitTypeEntity);
         }
 
         public async Task<IReadOnlyCollection<IUnitTypeObject>> GetUnitTypesByIdsAsync(IReadOnlyCollection<Guid> ids)
         {
             var entities = await Repository.FetchByIds(ids);
-            var unitTypeObjects = entities.Select(ToUnitTypeObject).ToArray();
+            var unitTypeObjects = entities.Select(MutualUnitTypeObject.FromEntity).ToArray();
             if (unitTypeObjects.Length != ids.Count)
             {
                 var missingIds = new List<String>();
@@ -45,21 +45,6 @@ namespace Epic.Core
                 Logger.LogError($"Missing UnitTypes with ids: {string.Join(',', missingIds)}");
             }
             return unitTypeObjects;
-        }
-
-        private static IUnitTypeObject ToUnitTypeObject(IUnitTypeEntity entity)
-        {
-            return new MutualUnitTypeObject
-            {
-                Id = entity.Id,
-                AttackMinRange = entity.AttackMinRange,
-                AttackMaxRange = entity.AttackMaxRange,
-                BattleImgUrl = entity.BattleImgUrl,
-                DashboardImgUrl = entity.DashboardImgUrl,
-                Damage = entity.Damage,
-                Speed = entity.Speed,
-                Health = entity.Health,
-            };
         }
     }
 }

@@ -10,5 +10,7 @@ namespace Epic.Core
         Task<IReadOnlyCollection<IUserUnitObject>> GetAliveUnitsByUserAsync(Guid userId);
         
         Task<IReadOnlyCollection<IUserUnitObject>> GetUnitsByIds(IReadOnlyCollection<Guid> ids);
+        
+        Task UpdateUnits(IReadOnlyCollection<IUserUnitObject> userUnits, bool updateCache = false);
     }
 }

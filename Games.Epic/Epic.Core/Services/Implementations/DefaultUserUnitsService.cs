@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
-using Epic.Core.Utils;
 using Epic.Data.UserUnits;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,7 @@ namespace Epic.Core
         public async Task<IReadOnlyCollection<IUserUnitObject>> GetAliveUnitsByUserAsync(Guid userId)
         {
             var aliveUsersEntities = await UserUnitsRepository.GetAliveUnitsByUserAsync(userId);
-            var aliveUsersObjects = aliveUsersEntities.Select(ToUserUnitObject).ToArray();
+            var aliveUsersObjects = aliveUsersEntities.Select(MutableUserUnitObject.FromEntity).ToArray();
             return await FillUserObjects(aliveUsersObjects);
         }
 
@@ -41,8 +40,17 @@ namespace Epic.Core
                     .ToArray();
                 Logger.LogError($"Missing User Units with ids: {string.Join(',', missingIds)}");
             }
-            var unitObjects = units.Select(ToUserUnitObject).ToArray();
+            var unitObjects = units.Select(MutableUserUnitObject.FromEntity).ToArray();
             return await FillUserObjects(unitObjects);
+        }
+
+        public Task UpdateUnits(IReadOnlyCollection<IUserUnitObject> userUnits, bool updateCache = false)
+        {
+            if (updateCache)
+                throw new NotImplementedException();
+            
+            var entities = userUnits.Select(UserUnitEntity.FromUserUnitObject).ToArray<IUserUnitEntity>();
+            return UserUnitsRepository.Update(entities);
         }
 
         private async Task<IReadOnlyCollection<MutableUserUnitObject>> FillUserObjects(IReadOnlyCollection<MutableUserUnitObject> userUnits)
@@ -70,17 +78,31 @@ namespace Epic.Core
         {
             return unitObject.UnitType != null;
         }
-        
-        private static MutableUserUnitObject ToUserUnitObject(IUserUnitEntity entity)
+
+        private class UserUnitEntity : IUserUnitEntity
         {
-            return new MutableUserUnitObject
+            public Guid Id { get; set; }
+            public Guid TypeId { get; set; }
+            public int Count { get; set; }
+            public Guid UserId { get; set; }
+            public bool IsAlive { get; set; }
+
+            private UserUnitEntity()
             {
-                Id = entity.Id,
-                Count = entity.Count,
-                IsAlive = entity.IsAlive,
-                UserId = entity.UserId,
-                UnitTypeId = entity.TypeId,
-            };
+                
+            }
+
+            public static UserUnitEntity FromUserUnitObject(IUserUnitObject userUnitObject)
+            {
+                return new UserUnitEntity
+                {
+                    Id = userUnitObject.Id,
+                    TypeId = userUnitObject.UnitType.Id,
+                    Count = userUnitObject.Count,
+                    UserId = userUnitObject.UserId,
+                    IsAlive = userUnitObject.IsAlive,
+                };
+            }
         }
     }
 }

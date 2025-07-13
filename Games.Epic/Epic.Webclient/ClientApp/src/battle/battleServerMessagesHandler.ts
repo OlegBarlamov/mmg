@@ -85,7 +85,6 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     async onMessage(message: BattleCommandFromServer): Promise<void> {
         if (this.disposed) return
         
-        debugger
         if (message.command === 'UNIT_MOVE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {

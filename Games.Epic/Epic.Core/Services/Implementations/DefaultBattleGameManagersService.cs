@@ -12,10 +12,11 @@ namespace Epic.Core
     [UsedImplicitly]
     public class DefaultBattleGameManagersService : IBattleGameManagersService
     {
-        public IBattlesCacheService BattlesCacheService { get; }
-        public ILoggerFactory LoggerFactory { get; }
-        public IBattleUnitsService BattleUnitsService { get; }
-        public IBattlesService BattlesService { get; }
+        private IBattlesCacheService BattlesCacheService { get; }
+        private ILoggerFactory LoggerFactory { get; }
+        private IBattleUnitsService BattleUnitsService { get; }
+        private IUserUnitsService UserUnitsService { get; }
+        private IBattlesService BattlesService { get; }
 
         private readonly ConcurrentDictionary<Guid, BattleGameManager> _battleGameManagers = new ConcurrentDictionary<Guid, BattleGameManager>();
 
@@ -23,11 +24,13 @@ namespace Epic.Core
             [NotNull] IBattlesCacheService battlesCacheService,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IBattleUnitsService battleUnitsService,
+            [NotNull] IUserUnitsService userUnitsService,
             [NotNull] IBattlesService battlesService)
         {
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
+            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
         }
         
@@ -70,6 +73,7 @@ namespace Epic.Core
                 battleObject,
                 LoggerFactory,
                 BattleUnitsService,
+                UserUnitsService,
                 BattlesService));
         }
     }

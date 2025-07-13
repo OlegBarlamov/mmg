@@ -12,7 +12,7 @@ using NetExtensions.Collections;
 namespace Epic.Core
 {
     [UsedImplicitly]
-    public class DefaultBattleUnitsService : IBattleUnitsService
+    public partial class DefaultBattleUnitsService : IBattleUnitsService
     {
         public IBattleUnitsRepository BattleUnitsRepository { get; }
         public IUserUnitsService UserUnitsService { get; }
@@ -32,46 +32,22 @@ namespace Epic.Core
         public async Task<IReadOnlyCollection<IBattleUnitObject>> GetBattleUnits(Guid battleId)
         {
             var unitEntities = await BattleUnitsRepository.GetByBattleId(battleId);
-            var unitObjects = unitEntities.Select(ToBattleUnitObject).ToArray();
+            var unitObjects = unitEntities.Select(MutableBattleUnitObject.FromEntity).ToArray();
             return await FillBattleUnitObjects(unitObjects);
         }
 
-        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
+        public Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
         {
-            var userUnits = battleDefinition.Units;
-            var userUnitsById = userUnits.ToDictionary(u => u.Id, u => u);
-            var entitiesToCreate = battleDefinition.Units.Select(u => new BattleUnitEntityFields
-            {
-                BattleId = battleId,
-                UserUnitId = u.Id,
-                Column = 0,
-                Row = 0,
-                PlayerIndex = (int)PlayerNumber.Player2,
-            }).ToArray<IBattleUnitEntityFields>();
-
-            var battleUnitsEntities = await BattleUnitsRepository.CreateBatch(entitiesToCreate);
-            var battleUnitsObjects = battleUnitsEntities.Select(ToBattleUnitObject).ToArray();
-            battleUnitsObjects.ForEach(u =>
-            {
-                u.UserUnit = MutableUserUnitObject.CopyFrom(userUnitsById[u.UserUnitId]);
-            });
-            return battleUnitsObjects;
+            return CreateUnitsFromUserUnits(battleDefinition.Units, InBattlePlayerNumber.Player2, battleId);
         }
 
-        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromUserUnits(IReadOnlyCollection<IUserUnitObject> userUnits, int playerIndex, Guid battleId)
+        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromUserUnits(IReadOnlyCollection<IUserUnitObject> userUnits, InBattlePlayerNumber playerNumber, Guid battleId)
         {
             var userUnitsById = userUnits.ToDictionary(u => u.Id, u => u);
-            var entities = userUnits.Select(x => new BattleUnitEntityFields
-            {
-                BattleId = battleId,
-                UserUnitId = x.Id,
-                Column = 0,
-                Row = 0,
-                PlayerIndex = playerIndex,
-            }).ToArray<IBattleUnitEntityFields>();
+            var entities = userUnits.Select(u => BattleUnitEntity.FromUserUnit(u, battleId, playerNumber)).ToArray<IBattleUnitEntityFields>();
 
             var createdInstances = await BattleUnitsRepository.CreateBatch(entities);
-            var createdBattleUnits = createdInstances.Select(ToBattleUnitObject).ToArray();
+            var createdBattleUnits = createdInstances.Select(MutableBattleUnitObject.FromEntity).ToArray();
             createdBattleUnits.ForEach(u =>
             {
                 u.UserUnit = MutableUserUnitObject.CopyFrom(userUnitsById[u.UserUnitId]);
@@ -85,15 +61,7 @@ namespace Epic.Core
             if (updateCache)
                 throw new NotImplementedException();
             
-            var entities = battleUnits.Select(x => new BattleUnitEntity(x.Id)
-            {
-                BattleId = x.BattleId,
-                UserUnitId = x.UserUnit.Id,
-                Column = x.Column,
-                Row = x.Row,
-                PlayerIndex = x.PlayerIndex,
-            }).ToArray<IBattleUnitEntity>();
-            
+            var entities = battleUnits.Select(BattleUnitEntity.FromBattleUnitObject).ToArray<IBattleUnitEntity>();
             return BattleUnitsRepository.Update(entities);
         }
 
@@ -123,38 +91,5 @@ namespace Epic.Core
         {
             return battleUnitObject.UserUnit != null;
         }
-
-        private MutableBattleUnitObject ToBattleUnitObject(IBattleUnitEntity entity)
-        {
-            return new MutableBattleUnitObject
-            {
-                Id = entity.Id,
-                BattleId = entity.BattleId,
-                UserUnitId = entity.UserUnitId,
-                UserUnit = null,
-                Column = entity.Column,
-                Row = entity.Row,
-                PlayerIndex = entity.PlayerIndex,
-            };
-        }
-
-        private class BattleUnitEntity : BattleUnitEntityFields, IBattleUnitEntity
-        {
-            public Guid Id { get; }
-
-            public BattleUnitEntity(Guid id)
-            {
-                Id = id;
-            }
-        } 
-        
-        private class BattleUnitEntityFields : IBattleUnitEntityFields
-        {
-            public Guid BattleId { get; set; }
-            public Guid UserUnitId { get; set; }
-            public int Column { get; set; }
-            public int Row { get; set; }
-            public int PlayerIndex { get; set; }
-        } 
     }
 }

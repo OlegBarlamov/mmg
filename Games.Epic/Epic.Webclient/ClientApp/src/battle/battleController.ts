@@ -35,7 +35,7 @@ export class BattleController implements IBattleController {
         this.turnAwaiter = turnAwaiter
         
         this.orderedUnits = [...this.mapController.map.units]
-            .sort((a, b) => b.props.speed - a.props.speed)
+            .sort((a, b) => b.currentProps.speed - a.currentProps.speed)
         this.map = mapController.map
         
         this.battleUserInputController = new BattleUserInputController(mapController)
@@ -64,7 +64,7 @@ export class BattleController implements IBattleController {
                 const turnInfo = await this.turnAwaiter.waitForTurn(this.currentTurnIndex + 1)
 
                 this.orderedUnits = [...this.mapController.map.units]
-                    .sort((a, b) => b.props.speed - a.props.speed)
+                    .sort((a, b) => b.currentProps.speed - a.currentProps.speed)
                 
                 this.winnerPlayer = getWinner(this.map)
                 this.battleFinished = this.winnerPlayer != null

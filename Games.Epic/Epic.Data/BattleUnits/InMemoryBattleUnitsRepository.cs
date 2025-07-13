@@ -23,14 +23,9 @@ namespace Epic.Data.BattleUnits
 
         public Task<IBattleUnitEntity[]> CreateBatch(IBattleUnitEntityFields[] data)
         {
-            var entities = data.Select(x => new BattleUnitEntity
+            var entities = data.Select(x => new BattleUnitEntity(x)
             {
                 Id = Guid.NewGuid(),
-                BattleId = x.BattleId,
-                Column = x.Column,
-                Row = x.Row,
-                PlayerIndex = x.PlayerIndex,
-                UserUnitId = x.UserUnitId,
             }).ToArray();
             
             _battleUnits.AddRange(entities);
@@ -42,11 +37,7 @@ namespace Epic.Data.BattleUnits
             entities.ForEach(entity =>
             {
                 var targetUnit = _battleUnits.First(x => x.Id == entity.Id);
-                targetUnit.UserUnitId = entity.UserUnitId;
-                targetUnit.PlayerIndex = entity.PlayerIndex;
-                targetUnit.BattleId = entity.BattleId;
-                targetUnit.Column = entity.Column;
-                targetUnit.Row = entity.Row;
+                targetUnit.UpdateFrom(entity);
             });
             return Task.CompletedTask;
         }

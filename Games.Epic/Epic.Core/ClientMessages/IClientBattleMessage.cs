@@ -4,7 +4,7 @@ namespace Epic.Core.ClientMessages
     {
         string CommandId { get; }
         string Command { get; }
-        PlayerNumber Player { get; }
+        InBattlePlayerNumber Player { get; }
         int TurnIndex { get; }
     }
 

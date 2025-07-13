@@ -404,6 +404,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     // targetUnitGlobal.count = targetUnit.count
                 }
             } else {
+                targetUnit.count = 0
                 activeBattle.units.splice(activeBattle.units.indexOf(targetUnit), 1)
                 if (targetUnitGlobal) {
                     globalUnits.splice(globalUnits.indexOf(targetUnitGlobal), 1)
@@ -415,7 +416,10 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 command: 'TAKE_DAMAGE',
                 actorId: message.targetId,
                 commandId: getRandomStringKey(10),
-                ...damageParams
+                damageTaken: damageParams.damageTaken,
+                killedCount: damageParams.killedCount,
+                remainingCount: targetUnit.count,
+                remainingHealth: damageParams.healthLeft,
             })
 
             this.onNextTurn(activeBattle)

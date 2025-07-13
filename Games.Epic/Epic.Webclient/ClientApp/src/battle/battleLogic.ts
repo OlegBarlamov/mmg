@@ -39,7 +39,7 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
         for (const cell of reachableCells) {
             const targetPosition = map.grid.getCell(target.position.r, target.position.c)
             const distance = map.grid.getDistance(targetPosition, cell)
-            if (distance <= unit.props.attackMaxRange && distance >= unit.props.attackMinRange) {
+            if (distance <= unit.currentProps.attackMaxRange && distance >= unit.currentProps.attackMinRange) {
                 cellsToAttachFrom.push(cell)
             }
         }
@@ -58,7 +58,7 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
 
 export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit): BattleMapCell[] {
     const start = unit.position
-    const moveRange = unit.props.speed
+    const moveRange = unit.currentProps.speed
     const availableCells: BattleMapCell[] = []
 
     // Use a set to track visited cells

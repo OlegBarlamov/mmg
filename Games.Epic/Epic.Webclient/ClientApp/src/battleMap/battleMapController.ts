@@ -212,7 +212,7 @@ export class BattleMapController implements IBattleMapController {
                 },
                 text: unit.count.toString(),
                 textBackgroundImgSrc: this.unitsNumberBackgroundImgSrc,
-                imgSrc: unit.props.battleImgUrl
+                imgSrc: unit.currentProps.battleImgUrl
             })
 
             unitTile.onMouseMove = (sender, event) => this.onUnitMouseMove?.(unit, this.translatePointerEvent(event))

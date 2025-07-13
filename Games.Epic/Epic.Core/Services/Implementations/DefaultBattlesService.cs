@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Epic.Core.Objects;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Data.Battles;
@@ -89,7 +88,7 @@ namespace Epic.Core
             await BattlesRepository.UpdateBattle(ToBattleEntity(mutableBattleObject));
             
             var userUnits = await UserUnitsService.GetAliveUnitsByUserAsync(userId);
-            var userBattleUnits = await BattleUnitsService.CreateUnitsFromUserUnits(userUnits, 1, battleObject.Id);
+            var userBattleUnits = await BattleUnitsService.CreateUnitsFromUserUnits(userUnits, InBattlePlayerNumber.Player1, battleObject.Id);
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
             PlaceBattleUnits(mutableBattleObject);
@@ -110,12 +109,12 @@ namespace Epic.Core
             var unitsPlayer2Index = 0;
             battleObject.Units.ForEach(u =>
             {
-                if (u.PlayerIndex == (int)PlayerNumber.Player1)
+                if (u.PlayerIndex == (int)InBattlePlayerNumber.Player1)
                 {
                     u.Column = 0;
                     u.Row = unitsPlayer1Index++;
                 }
-                else if (u.PlayerIndex == (int)PlayerNumber.Player2)
+                else if (u.PlayerIndex == (int)InBattlePlayerNumber.Player2)
                 {
                     u.Column = battleObject.Width - 1;
                     u.Row = unitsPlayer2Index++;

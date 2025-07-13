@@ -29,7 +29,8 @@ export interface UnitTakeDamageCommandFromServer extends UnitCommandFromServer {
     command: 'TAKE_DAMAGE'
     damageTaken: number
     killedCount: number
-    unitSurvived: boolean
+    remainingCount: number
+    remainingHealth: number
 }
 
 export interface NextTurnCommandFromServer extends PlayerCommandFromServer {

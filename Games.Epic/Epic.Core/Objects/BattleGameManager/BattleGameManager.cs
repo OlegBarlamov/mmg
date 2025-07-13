@@ -20,6 +20,7 @@ namespace Epic.Core.Objects.BattleGameManager
         public Guid BattleId => BattleObject.Id;
         public MutableBattleObject BattleObject { get; set; }
         private IBattleUnitsService BattleUnitsService { get; }
+        private IUserUnitsService UserUnitsService { get; }
         private IBattlesService BattlesService { get; }
 
         private ILogger Logger { get; }
@@ -36,11 +37,13 @@ namespace Epic.Core.Objects.BattleGameManager
             [NotNull] MutableBattleObject battleObject,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IBattleUnitsService battleUnitsService,
+            [NotNull] IUserUnitsService userUnitsService,
             [NotNull] IBattlesService battlesService)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
+            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             Logger = loggerFactory.CreateLogger<BattleGameManager>();
         }
@@ -73,7 +76,7 @@ namespace Epic.Core.Objects.BattleGameManager
             _isPlaying = true;
             lock (_battleLogicLock)
             {
-                _battleLogic ??= new BattleLogic(BattleObject, BattleUnitsService, BattlesService);
+                _battleLogic ??= new BattleLogic(BattleObject, BattleUnitsService, UserUnitsService, BattlesService);
                 _battleLogic.BroadcastMessage += BattleLogicOnBroadcastMessage;
                 // TODO How to dispose BattleLogic?
                 _battleLogicCancellationTokenSource?.Dispose();

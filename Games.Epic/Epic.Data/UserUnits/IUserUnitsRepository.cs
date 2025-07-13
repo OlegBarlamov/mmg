@@ -13,5 +13,7 @@ namespace Epic.Data.UserUnits
         Task<IUserUnitEntity[]> FetchUnitsByIds(IReadOnlyCollection<Guid> ids);
         
         Task<IUserUnitEntity> CreateUserUnit(Guid typeId, int count, Guid userId, bool isAlive);
+        
+        Task Update(IUserUnitEntity[] entities);
     }
 }

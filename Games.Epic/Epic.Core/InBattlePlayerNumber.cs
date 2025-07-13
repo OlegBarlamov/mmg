@@ -1,6 +1,6 @@
 namespace Epic.Core
 {
-    public enum PlayerNumber
+    public enum InBattlePlayerNumber
     {
         Unknown = 0,
         Player1 = 1,

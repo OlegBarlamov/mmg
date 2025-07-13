@@ -10,7 +10,7 @@ namespace Epic.Server.Resources
         public TurnInfoResource(int index, int playerIndex)
         {
             Index = index;
-            Player = ((PlayerNumber)playerIndex).ToString();
+            Player = ((InBattlePlayerNumber)playerIndex).ToString();
         }
     }
 }

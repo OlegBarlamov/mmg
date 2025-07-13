@@ -1,4 +1,5 @@
 using System;
+using Epic.Data.UserUnits;
 
 namespace Epic.Core.Objects
 {
@@ -11,6 +12,11 @@ namespace Epic.Core.Objects
         public Guid UserId { get; set; }
         public bool IsAlive { get; set; }
 
+        private MutableUserUnitObject()
+        {
+            
+        }
+        
         public static MutableUserUnitObject CopyFrom(IUserUnitObject x)
         {
             return new MutableUserUnitObject
@@ -21,6 +27,18 @@ namespace Epic.Core.Objects
                 Count = x.Count,
                 UserId = x.UserId,
                 IsAlive = x.IsAlive,
+            };
+        }
+
+        public static MutableUserUnitObject FromEntity(IUserUnitEntity entity)
+        {
+            return new MutableUserUnitObject
+            {
+                Id = entity.Id,
+                Count = entity.Count,
+                IsAlive = entity.IsAlive,
+                UserId = entity.UserId,
+                UnitTypeId = entity.TypeId,
             };
         }
     }

@@ -19,7 +19,8 @@ namespace Epic.Core.Logic
         public event Action<IServerBattleMessage> BroadcastMessage;
         private MutableBattleObject BattleObject { get; }
         private IBattleUnitsService BattleUnitsService { get; }
-        public IBattlesService BattlesService { get; }
+        private IUserUnitsService UserUnitsService { get; }
+        private IBattlesService BattlesService { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
@@ -31,10 +32,12 @@ namespace Epic.Core.Logic
         public BattleLogic(
             [NotNull] MutableBattleObject battleObject, 
             [NotNull] IBattleUnitsService battleUnitsService,
+            [NotNull] IUserUnitsService userUnitsService,
             [NotNull] IBattlesService battlesService)
         {
             BattleObject = battleObject;
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
+            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
@@ -74,7 +77,7 @@ namespace Epic.Core.Logic
                     {
                         CommandId = Guid.NewGuid().ToString(),
                         TurnNumber = BattleObject.TurnIndex,
-                        Player = ((PlayerNumber)activeUnit.PlayerIndex).ToString(),
+                        Player = ((InBattlePlayerNumber)activeUnit.PlayerIndex).ToString(),
                     };
                     BroadcastMessageToClientAndSave(serverCommand);
                 }
@@ -92,7 +95,7 @@ namespace Epic.Core.Logic
             BroadcastMessage?.Invoke(message);
         }
 
-        private PlayerNumber? GetWinner()
+        private InBattlePlayerNumber? GetWinner()
         {
             return null;
         }
@@ -118,9 +121,79 @@ namespace Epic.Core.Logic
                     return OnClientConnected(connection, (ClientConnectedBattleMessage)clientBattleMessage);
                 case ClientBattleCommands.UNIT_MOVE:
                     return OnClientUnitMove((UnitMoveClientBattleMessage)clientBattleMessage);
+                case ClientBattleCommands.UNIT_ATTACK:
+                    return OnClientUnitAttack((UnitAttackClientBattleMessage)clientBattleMessage);
                 default:
                     throw new ClientCommandRejected("Unknown client command");
             }
+        }
+
+        private async Task OnClientUnitAttack(UnitAttackClientBattleMessage command)
+        {
+            var targetActor =
+                BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
+            if (targetActor == null)
+                throw new BattleLogicException("Not found target actor for client command");
+
+            var targetTarget = BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.TargetId);
+            if (targetTarget == null)
+                throw new BattleLogicException("Not found target unit for client command");
+
+            if (command.TurnIndex != _expectedTurn?.TurnIndex || (int)command.Player != _expectedTurn?.PlayerIndex)
+                throw new BattleLogicException("Wrong turn index or player index");
+
+            var mutableActor = targetActor;
+            mutableActor.Column = command.MoveToCell.C;
+            mutableActor.Row = command.MoveToCell.R;
+
+            //TODO Check if it is reachable 
+
+            await BattleUnitsService.UpdateUnits(new[] { mutableActor });
+
+            var serverMoveCommand = new UnitMoveCommandFromServer
+            {
+                CommandId = Guid.NewGuid().ToString(),
+                TurnNumber = command.TurnIndex,
+                Player = command.Player.ToString(),
+                ActorId = command.ActorId,
+                MoveToCell = command.MoveToCell
+            };
+            BroadcastMessageToClientAndSave(serverMoveCommand);
+
+            var serverUnitAttackCommand = new UnitAttackCommandFromServer
+            {
+                CommandId = Guid.NewGuid().ToString(),
+                TurnNumber = command.TurnIndex,
+                Player = command.Player.ToString(),
+                ActorId = command.ActorId,
+                TargetId = command.TargetId,
+            };
+            BroadcastMessageToClientAndSave(serverUnitAttackCommand);
+            
+            var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(targetActor, targetTarget);
+            targetTarget.UserUnit.Count = unitTakesDamageData.RemainingCount;
+            targetTarget.UserUnit.IsAlive = targetTarget.UserUnit.Count > 0;
+
+            await UserUnitsService.UpdateUnits(new [] { targetTarget.UserUnit });
+
+            targetTarget.CurrentHealth = unitTakesDamageData.RemainingHealth;
+            
+            await BattleUnitsService.UpdateUnits(new[] { targetTarget });
+                
+            var serverUnitTakesDamage = new UnitTakesDamageCommandFromServer
+            {
+                CommandId = Guid.NewGuid().ToString(),
+                TurnNumber = command.TurnIndex,
+                Player = command.Player.ToString(),
+                ActorId = command.TargetId,
+                DamageTaken = unitTakesDamageData.DamageTaken,
+                KilledCount = unitTakesDamageData.KilledCount,
+                RemainingCount = unitTakesDamageData.RemainingCount,
+                RemainingHealth = unitTakesDamageData.RemainingHealth,
+            };
+            BroadcastMessageToClientAndSave(serverUnitTakesDamage);
+            
+            _awaitPlayerTurnTaskCompletionSource?.SetResult(null);
         }
 
         private async Task OnClientUnitMove(UnitMoveClientBattleMessage command)

@@ -1,6 +1,6 @@
 namespace Epic.Core.ServerMessages
 {
-    public class UnitTakeDamageCommandFromServer : UnitCommandFromServer
+    public class UnitTakesDamageCommandFromServer : UnitCommandFromServer
     {
         public override string Command => "TAKE_DAMAGE";
         public int DamageTaken { get; set; }
