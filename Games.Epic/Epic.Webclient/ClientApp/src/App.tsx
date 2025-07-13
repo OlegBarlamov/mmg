@@ -5,6 +5,7 @@ import {IBattleDefinition} from "./battle/IBattleDefinition";
 import {MenuComponent} from "./components/menuComponent";
 import {BattleComponent} from "./components/battleComponent";
 import {IUserInfo} from "./services/serverAPI";
+import { BattleMap } from './battleMap/battleMap';
 
 export interface IAppProps {
     serviceLocator: IServiceLocator;
@@ -12,16 +13,17 @@ export interface IAppProps {
 
 export interface IAppState {
     userInfo: IUserInfo | null
-    selectedBattle: IBattleDefinition | null
+    selectedBattle: BattleMap | null
+    isLoading: boolean
 }
 
 export class App extends PureComponent<IAppProps, IAppState> {
     constructor(props: IAppProps) {
         super(props)
         
-        this.state = {selectedBattle: null, userInfo: null}
+        this.state = {selectedBattle: null, userInfo: null, isLoading: true}
         
-        this.onBattleSelected = this.onBattleSelected.bind(this)
+        this.onBattleDefinitionSelected = this.onBattleDefinitionSelected.bind(this)
         this.onBattleFinished = this.onBattleFinished.bind(this)
     }
     async componentDidMount(): Promise<void> {
@@ -30,16 +32,48 @@ export class App extends PureComponent<IAppProps, IAppState> {
         try {
             userInfo = await serverAPI.getUserInfo()
         } catch (error) {
-            userInfo = await serverAPI.login("FakeName")
+            await serverAPI.login()
+            userInfo = await serverAPI.getUserInfo()
         }
-        this.setState({
-            ...this.state,
-            userInfo,
-        })
+
+        const activeBattle = await serverAPI.getActiveBattle()
+        if (activeBattle) {
+            this.setState({
+                ...this.state,
+                selectedBattle: activeBattle,
+                userInfo,
+                isLoading: false,
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                userInfo,
+                isLoading: false,
+            })
+        }
     }
     
-    private onBattleSelected(definition: IBattleDefinition) {
-        this.setState({selectedBattle: definition})
+    private onBattleDefinitionSelected(definition: IBattleDefinition) {
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        })
+
+        const battleLoader = this.props.serviceLocator.battleLoader()
+        battleLoader.loadBattle(definition).then(map => {
+            this.setState({
+                ...this.state,
+                selectedBattle: map,
+                isLoading: false,
+            })
+        }).catch(() =>
+            this.setState({
+                ...this.state,
+                isLoading: false,
+            })
+        )
+
+
     }
     
     private onBattleFinished() {
@@ -47,7 +81,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
     } 
 
     render() {
-        const showMenuComponent = !this.state.selectedBattle && this.state.userInfo
+        const showMenuComponent = !this.state.isLoading || (!this.state.selectedBattle && this.state.userInfo)
         const showBattleComponent = this.state.selectedBattle
         return (
             <div className="App">
@@ -56,7 +90,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
                         <div className="BattleComponent">
                             <BattleComponent serviceLocator={this.props.serviceLocator}
                                              onBattleFinished={this.onBattleFinished}
-                                             battleDefinition={this.state.selectedBattle!} />
+                                             battleMap={this.state.selectedBattle!} />
                         </div>
                     ) 
                 }
@@ -65,7 +99,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
                         <div className="MenuComponent">
                             <div>Hello {this.state.userInfo!.userName}</div>
                             <MenuComponent serviceLocator={this.props.serviceLocator}
-                                           onBattleSelected={this.onBattleSelected}/>
+                                           onBattleSelected={this.onBattleDefinitionSelected}/>
                         </div>
                     )
                 }

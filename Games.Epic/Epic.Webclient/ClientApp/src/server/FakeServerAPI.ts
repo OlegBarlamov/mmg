@@ -53,12 +53,12 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     ])
     private messagesHandler: IBattleConnectionMessagesHandler | undefined = undefined
     
-    login(userName: string): Promise<IUserInfo> {
+    login(): Promise<void> {
         const token = FakeUserToken //getRandomStringKey(10)
         const userId = getRandomStringKey(7)
         const userInfo = {
             userId,
-            userName,
+            userName: "FakeName",
         }
         this.users.set(token, userInfo)
         
@@ -188,7 +188,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         ])
         
         setSessionCookie(token)
-        return Promise.resolve(userInfo)
+        return Promise.resolve()
     }
     async getUserInfo(): Promise<IUserInfo> {
         const token = await this.getSessionToken()

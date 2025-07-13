@@ -15,7 +15,7 @@ export interface IUserUnit {
 }
 
 export interface IServerAPI {
-    login(userName: string): Promise<IUserInfo>
+    login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
     
     getUnits(): Promise<IUserUnit[]>

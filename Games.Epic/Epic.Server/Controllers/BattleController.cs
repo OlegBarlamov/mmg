@@ -32,7 +32,7 @@ namespace Epic.Server.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetCurrentUserActiveBattle()
+        public async Task<IActionResult> GetCurrentUserActiveBattles()
         {
             var userId = User.GetId();
             

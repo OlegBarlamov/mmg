@@ -16,7 +16,7 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         super(baseUrl)
     }
     
-    login(userName: string): Promise<IUserInfo> {
+    login(): Promise<void> {
         return this.fetchResource("login", "GET", "login")
     }
     getUserInfo(): Promise<IUserInfo> {
@@ -32,6 +32,23 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         const battleMap = await this.fetchResource<BattleMap>("api/battle", "POST", "begin_battle", {
             battleDefinitionId: battleId,
         })
+        this.fillMapCells(battleMap)
+        return battleMap
+    }
+    async getActiveBattle(): Promise<BattleMap | null> {
+        const response = await this.fetchResource<BattleMap[]>("api/battle", "GET", "active_battle")
+        const map = response ? response[0] : null
+        if (map) {
+            this.fillMapCells(map)
+        }
+        return map
+    }
+    async establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
+        const webSocket = await this.establishWS(`api/battle/${battleId}`)
+        return new BattleServerConnection(webSocket, handler)
+    }
+
+    private fillMapCells(battleMap: BattleMap) {
         const cells: BattleMapCell[][] = []
         for (let i = 0; i < battleMap.height; i++) {
             const row: BattleMapCell[] = []
@@ -43,14 +60,6 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         }
         
         battleMap.grid = new OddRGrid(cells)
-        return battleMap
-    }
-    getActiveBattle(): Promise<BattleMap | null> {
-        return this.fetchResource("api/battle", "GET", "active_battle")
-    }
-    async establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
-        const webSocket = await this.establishWS(`api/battle/${battleId}`)
-        return new BattleServerConnection(webSocket, handler)
     }
     
 }

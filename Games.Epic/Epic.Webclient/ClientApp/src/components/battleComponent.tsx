@@ -12,7 +12,7 @@ const CanvasContainerId = 'CanvasContainer'
 
 export interface IBattleComponentProps {
     serviceLocator: IServiceLocator
-    battleDefinition: IBattleDefinition
+    battleMap: BattleMap
     
     onBattleFinished(): void
 }
@@ -32,14 +32,12 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     
     async componentDidMount() {
         const canvasContainer = document.getElementById(CanvasContainerId)!
-        const battleLoader = this.props.serviceLocator.battleLoader()
-        const map = await battleLoader.loadBattle(this.props.battleDefinition)
 
         const canvasService = this.props.serviceLocator.canvasService()
-        await canvasService.init(canvasContainer, this.getMapHexagonStyle(map))
+        await canvasService.init(canvasContainer, this.getMapHexagonStyle(this.props.battleMap))
         
         const battlesService = this.props.serviceLocator.battlesService()
-        this.battleController = await battlesService.createBattle(map)
+        this.battleController = await battlesService.createBattle(this.props.battleMap)
         this.battleController.startBattle().then(this.props.onBattleFinished)
         
         this.setState({...this.state, battleLoaded: true})

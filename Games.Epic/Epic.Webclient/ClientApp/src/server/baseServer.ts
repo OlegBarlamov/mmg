@@ -12,7 +12,7 @@ export class BaseServer {
         const response = await fetch(`${this.baseUrl}/${route}`, {
             method: method,
             headers: basicHeaders,
-            body: JSON.stringify(body),
+            body: body ? JSON.stringify(body) : undefined,
         });
 
         if (!response.ok) {
@@ -20,7 +20,12 @@ export class BaseServer {
             throw new Error(errorData.message || `Failed to fetch ${resourceName}.`);
         }
 
-        return await response.json();
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+            return await response.json();
+        } else {
+            return await response.text() as T;
+        }
     }
     
     protected establishWS(route: string): Promise<WebSocket> {
