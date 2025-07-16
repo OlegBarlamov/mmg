@@ -14,18 +14,23 @@ namespace Epic.Server.Controllers
     public class BattleDefinitionsController : ControllerBase
     {
         public IBattleDefinitionsService BattleDefinitionsService { get; }
+        public IRewardsService RewardsService { get; }
 
-        public BattleDefinitionsController([NotNull] IBattleDefinitionsService battleDefinitionsService)
+        public BattleDefinitionsController(
+            [NotNull] IBattleDefinitionsService battleDefinitionsService,
+            [NotNull] IRewardsService rewardsService)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
+            RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetCurrentUserBattles()
+        public async Task<IActionResult> GetCurrentUserBattleDefinitions()
         {
             var userId = User.GetId();
-            var battles = await BattleDefinitionsService.GetBattleDefinitionsByUserAsync(userId);
-            var battlesResources = battles.Select(x => new BattleDefinitionResource(x)).ToArray();
+            var battles = await BattleDefinitionsService.GetActiveBattleDefinitionsByUserAsync(userId);
+            var rewards = await RewardsService.GetRewardsFromBattleDefinitions(battles.Select(x => x.Id).ToArray());
+            var battlesResources = battles.Select(x => new BattleDefinitionResource(x, rewards[x.Id]));
             return Ok(battlesResources);
         }
     }

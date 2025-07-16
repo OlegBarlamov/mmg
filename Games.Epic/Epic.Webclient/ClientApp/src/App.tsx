@@ -18,6 +18,8 @@ export interface IAppState {
 }
 
 export class App extends PureComponent<IAppProps, IAppState> {
+    private menuComponentRef = React.createRef<MenuComponent>()  // Add this ref
+    
     constructor(props: IAppProps) {
         super(props)
         
@@ -76,8 +78,13 @@ export class App extends PureComponent<IAppProps, IAppState> {
 
     }
     
-    private onBattleFinished() {
+    private onBattleFinished() : void {
         this.setState({selectedBattle: null})
+        
+        // Call the refresh method on MenuComponent
+        if (this.menuComponentRef.current) {
+            this.menuComponentRef.current.refreshBattles()
+        }
     } 
 
     render() {
@@ -98,8 +105,10 @@ export class App extends PureComponent<IAppProps, IAppState> {
                     && (
                         <div className="MenuComponent">
                             <div>Hello {this.state.userInfo!.userName}</div>
-                            <MenuComponent serviceLocator={this.props.serviceLocator}
-                                           onBattleSelected={this.onBattleDefinitionSelected}/>
+                            <MenuComponent 
+                                ref={this.menuComponentRef}  // Add the ref here
+                                serviceLocator={this.props.serviceLocator}
+                                onBattleSelected={this.onBattleDefinitionSelected}/>
                         </div>
                     )
                 }

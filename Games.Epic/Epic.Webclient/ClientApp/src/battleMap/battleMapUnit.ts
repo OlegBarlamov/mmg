@@ -1,4 +1,4 @@
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 import {UnitProperties} from "../units/unitProperties";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 import {getRandomStringKey} from "../units/getRandomString";
@@ -7,7 +7,7 @@ export type BattleMapUnit = {
     id: string
     position: IHexoPoint
     
-    player: PlayerNumber
+    player: BattlePlayerNumber
     
     props: UnitProperties
     currentProps: UnitProperties
@@ -15,7 +15,7 @@ export type BattleMapUnit = {
     count: number
 }
 
-export function getTestUnit(r: number, c: number, count: number, player: PlayerNumber): BattleMapUnit {
+export function getTestUnit(r: number, c: number, count: number, player: BattlePlayerNumber): BattleMapUnit {
     const props = {
         battleImgUrl: "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
         speed: 5,

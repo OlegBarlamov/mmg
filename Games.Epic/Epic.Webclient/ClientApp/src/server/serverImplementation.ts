@@ -8,14 +8,15 @@ import {
 } from "./battleServerConnection";
 import {BaseServer} from "./baseServer";
 import {OddRGrid} from "../hexogrid/oddRGrid";
+import { IRewardToAccept } from "../rewards/IRewardToAccept";
+import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
 export const SERVER_BASE_URL = "http://localhost:5000"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
-    }
-    
+    }    
     login(): Promise<void> {
         return this.fetchResource("login", "GET", "login")
     }
@@ -46,6 +47,13 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     async establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
         const webSocket = await this.establishWS(`api/battle/${battleId}`)
         return new BattleServerConnection(webSocket, handler)
+    }
+    async acceptReward(id: string, body: AcceptRewardBody): Promise<void> {
+        await this.fetchResource(`api/rewards/${id}`, "POST", 'accept_reward', body)
+    }
+
+    getMyRewards(): Promise<IRewardToAccept[]> {
+        return this.fetchResource("api/rewards", "GET", "rewards")
     }
 
     private fillMapCells(battleMap: BattleMap) {

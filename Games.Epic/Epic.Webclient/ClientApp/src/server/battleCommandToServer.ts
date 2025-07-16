@@ -1,10 +1,10 @@
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 
 interface BaseCommandToServer {
     commandId: string
     command: string
-    player: PlayerNumber
+    player: BattlePlayerNumber
     turnIndex: number
 }
 

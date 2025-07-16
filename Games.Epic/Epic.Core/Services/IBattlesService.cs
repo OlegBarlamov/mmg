@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Epic.Core.Logic;
 using Epic.Core.Objects.Battle;
 
 namespace Epic.Core
@@ -13,5 +14,7 @@ namespace Epic.Core
         
         Task<IBattleObject> BeginBattle(Guid userId, IBattleObject battleObject);
         Task UpdateBattle(IBattleObject battleObject);
+        
+        Task FinishBattle(IBattleObject battleObject, BattleResult result);
     }
 }

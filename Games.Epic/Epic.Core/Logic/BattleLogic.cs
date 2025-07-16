@@ -21,6 +21,7 @@ namespace Epic.Core.Logic
         private IBattleUnitsService BattleUnitsService { get; }
         private IUserUnitsService UserUnitsService { get; }
         private IBattlesService BattlesService { get; }
+        private IRewardsService RewardsService { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
@@ -33,26 +34,37 @@ namespace Epic.Core.Logic
             [NotNull] MutableBattleObject battleObject, 
             [NotNull] IBattleUnitsService battleUnitsService,
             [NotNull] IUserUnitsService userUnitsService,
-            [NotNull] IBattlesService battlesService)
+            [NotNull] IBattlesService battlesService,
+            [NotNull] IRewardsService rewardsService)
         {
-            BattleObject = battleObject;
+            BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
+            RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
             _sortedBattleUnitObjects.Sort((x, y) => x.UserUnit.UnitType.Speed.CompareTo(y.UserUnit.UnitType.Speed));
         }
-
-        public async Task Run(CancellationToken cancellationToken)
+        
+        public void Dispose()
         {
+            _sortedBattleUnitObjects.Clear();
+            _awaitPlayerTurnTaskCompletionSource?.TrySetCanceled();
+            _passedServerBattleMessages.Clear();
+        }
+
+        public async Task<BattleResult> Run(CancellationToken cancellationToken)
+        {
+            var activeUnit = GetActiveUnit(BattleObject.TurnIndex);
+            var battleResult = GetBattleResult();
+
             try
             {
-                var activeUnit = GetActiveUnit(BattleObject.TurnIndex);
-                while (true)
+                while (!battleResult.Finished)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    
+
                     if (IsPlayerControlled(activeUnit))
                     {
                         await WaitForClientTurn(activeUnit.PlayerIndex, BattleObject.TurnIndex);
@@ -63,15 +75,13 @@ namespace Epic.Core.Logic
                         // TODO AI
                     }
 
-                    var winner = GetWinner();
-                    if (winner != null)
-                    {
-                        // Finish the battle
-                    }
-                    
                     BattleObject.TurnIndex++;
                     await BattlesService.UpdateBattle(BattleObject);
 
+                    battleResult = GetBattleResult();
+                    if (battleResult.Finished)
+                        continue;
+                    
                     activeUnit = GetActiveUnit(BattleObject.TurnIndex);
                     var serverCommand = new NextTurnCommandFromServer
                     {
@@ -86,6 +96,33 @@ namespace Epic.Core.Logic
             {
                 // ignore
             }
+
+            if (battleResult.Finished)
+            {
+                if (battleResult.Winner != null)
+                {
+                    var winnerUserId = BattleObject.GetPlayerUserId(battleResult.Winner.Value);
+                    if (winnerUserId.HasValue)
+                    {
+                        var rewards =
+                            await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
+                        var rewardsIds = rewards.Select(x => x.Id).ToArray();
+                        await RewardsService.GiveRewardsToUserAsync(rewardsIds, winnerUserId.Value);
+                    }
+                }
+
+                var battleFinishedCommand = new BattleFinishedCommandFromServer
+                {
+                    CommandId = Guid.NewGuid().ToString(),
+                    TurnNumber = BattleObject.TurnIndex,
+                    Winner = battleResult.Winner?.ToString() ?? string.Empty,
+                };
+                BroadcastMessageToClientAndSave(battleFinishedCommand);
+
+                await BattlesService.FinishBattle(BattleObject, battleResult);
+            }
+            
+            return battleResult;
         }
 
         private void BroadcastMessageToClientAndSave(IServerBattleMessage message)
@@ -95,9 +132,32 @@ namespace Epic.Core.Logic
             BroadcastMessage?.Invoke(message);
         }
 
-        private InBattlePlayerNumber? GetWinner()
+        private BattleResult GetBattleResult()
         {
-            return null;
+            var noAliveUnits = true;
+            InBattlePlayerNumber? winner = null;
+            foreach (var battleUnitObject in _sortedBattleUnitObjects)
+            {
+                if (battleUnitObject.UserUnit.IsAlive)
+                {
+                    var player = (InBattlePlayerNumber)battleUnitObject.PlayerIndex;
+                    noAliveUnits = false;
+                    if (winner == null)
+                        winner = player;
+                    else if (player != winner)
+                    {
+                        winner = null;
+                        break;
+                    }
+                        
+                }
+            }
+
+            return new BattleResult
+            {
+                Finished = noAliveUnits || winner.HasValue,
+                Winner = winner
+            };
         }
 
         private bool IsPlayerControlled(IBattleUnitObject unit)

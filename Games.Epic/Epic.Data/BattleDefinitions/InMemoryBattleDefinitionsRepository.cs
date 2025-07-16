@@ -11,10 +11,10 @@ namespace Epic.Data.BattleDefinitions
         public string Name => nameof(InMemoryBattleDefinitionsRepository);
         public string EntityName => "BattleDefinition";
         
-        private readonly List<IBattleDefinitionEntity> _battleDefinitions = new List<IBattleDefinitionEntity>();
+        private readonly List<BattleDefinitionEntity> _battleDefinitions = new List<BattleDefinitionEntity>();
         private readonly List<IUserBattleDefinitionEntity> _userBattleDefinitions = new List<IUserBattleDefinitionEntity>();
 
-        public Task<IBattleDefinitionEntity[]> GetBattleDefinitionsByUserAsync(Guid userId)
+        public Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByUserAsync(Guid userId)
         {
             // Find all user-battle relations for the given user
             var userBattles = _userBattleDefinitions
@@ -24,8 +24,8 @@ namespace Epic.Data.BattleDefinitions
 
             // Find corresponding battle definitions
             var battles = _battleDefinitions
-                .Where(bd => userBattles.Contains(bd.Id))
-                .ToArray();
+                .Where(bd => !bd.Finished && userBattles.Contains(bd.Id))
+                .ToArray<IBattleDefinitionEntity>();
 
             return Task.FromResult(battles);
         }
@@ -38,6 +38,7 @@ namespace Epic.Data.BattleDefinitions
                 Height = height,
                 Width = width,
                 UnitsIds = unitIds,
+                Finished = false,
             };
             _battleDefinitions.Add(battleDefinition);
 
@@ -59,7 +60,13 @@ namespace Epic.Data.BattleDefinitions
             if (userBattleDefinition == null)
                 throw new EntityNotFoundException(this, $"UserId: {userId}; BattleDefinitionId: {battleDefinitionId}");
 
-            return Task.FromResult(_battleDefinitions.First(x => x.Id == battleDefinitionId));
+            return Task.FromResult<IBattleDefinitionEntity>(_battleDefinitions.First(x => x.Id == battleDefinitionId));
+        }
+
+        public Task SetFinished(Guid battleDefinitionId)
+        {
+            _battleDefinitions.First(x => x.Id == battleDefinitionId).Finished = true;
+            return Task.CompletedTask;
         }
     }
 }

@@ -3,6 +3,7 @@ import {IBattleConnectionMessagesHandler} from "../server/battleServerConnection
 import {getUnitById} from "./battleLogic";
 import {IBattleMapController} from "../battleMap/battleMapController";
 import {BattleTurnInfo} from "../battleMap/battleMap";
+import { BattlePlayerNumber } from "../player/playerNumber";
 
 export interface ITurnAwaiter {
     readonly currentTurnIndex: number
@@ -73,7 +74,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
         this.disposed = true
         
         this.rejectAwaitingPromises.forEach((reject: (error: Error) => void, key: number) =>
-            this.rejectAwaitingPromiseForTurn(key, new Error("The battle is over"))
+            this.rejectAwaitingPromiseForTurn(key, new Error("The battle is disposed"))
         )
         
         this.triggerAwaitingPromises.clear()
@@ -97,11 +98,9 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             const turnInfo: BattleTurnInfo = {
                 index: message.turnNumber,
                 player: message.player,
+                result: undefined,
             }
-            this.currentTurnIndex = message.turnNumber
-            this.mapController.map.turnInfo = turnInfo
-            this.previousTurnInfos.set(message.turnNumber, turnInfo)
-            this.triggerAwaitingPromiseForTurn(message.turnNumber, turnInfo)
+            this.onNextTurnInfo(turnInfo)
             return
         } else if (message.command === 'UNIT_ATTACK') {
             // Nothing
@@ -114,9 +113,27 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
+        } else if (message.command === 'BATTLE_FINISHED') {
+            const turnInfo: BattleTurnInfo = {
+                index: message.turnNumber,
+                player: BattlePlayerNumber.Player1,
+                result: {
+                    finished: true,
+                    winner: message.winner
+                },
+            }
+            this.onNextTurnInfo(turnInfo)
+            return
         }
 
         throw Error("Unknown or invalid command from server")
+    }
+
+    private onNextTurnInfo(turnInfo: BattleTurnInfo) {
+        this.currentTurnIndex = turnInfo.index
+        this.mapController.map.turnInfo = turnInfo
+        this.previousTurnInfos.set(turnInfo.index, turnInfo)
+        this.triggerAwaitingPromiseForTurn(turnInfo.index, turnInfo)
     }
     
 }

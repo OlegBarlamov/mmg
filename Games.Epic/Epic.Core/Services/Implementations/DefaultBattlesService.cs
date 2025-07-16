@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Logic;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Data.Battles;
@@ -12,24 +13,27 @@ namespace Epic.Core
     [UsedImplicitly]
     public class DefaultBattlesService : IBattlesService
     {
-        [NotNull] public IBattlesRepository BattlesRepository { get; }
-        [NotNull] public IBattleUnitsService BattleUnitsService { get; }
-        [NotNull] public IBattleDefinitionsService BattleDefinitionsService { get; }
-        [NotNull] public IBattlesCacheService BattlesCacheService { get; }
-        public IUserUnitsService UserUnitsService { get; }
+        [NotNull] private IBattlesRepository BattlesRepository { get; }
+        [NotNull] private IBattleUnitsService BattleUnitsService { get; }
+        [NotNull] private IBattleDefinitionsService BattleDefinitionsService { get; }
+        [NotNull] private IBattlesCacheService BattlesCacheService { get; }
+        [NotNull] private IUserUnitsService UserUnitsService { get; }
+        [NotNull] private IUsersService UsersService { get; }
 
         public DefaultBattlesService(
             [NotNull] IBattlesRepository battlesRepository,
             [NotNull] IBattleUnitsService battleUnitsService,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IBattlesCacheService battlesCacheService,
-            [NotNull] IUserUnitsService userUnitsService)
+            [NotNull] IUserUnitsService userUnitsService,
+            [NotNull] IUsersService usersService)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
             UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
+            UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
         }
 
         public async Task<IBattleObject> GetBattleById(Guid battleId)
@@ -39,8 +43,9 @@ namespace Epic.Core
                 return uploadedBattle;
             
             var battleEntity = await BattlesRepository.GetBattleByIdAsync(battleId);
-            var battleObject = ToBattleObject(battleEntity);
+            var battleObject = MutableBattleObject.FromEntity(battleEntity);
             await FillUnits(battleObject);
+            await FillUsers(battleObject);
 
             return battleObject;
         }
@@ -55,8 +60,9 @@ namespace Epic.Core
             if (uploadedBattle != null)
                 return uploadedBattle;
             
-            var battleObject = ToBattleObject(battleEntity);
+            var battleObject = MutableBattleObject.FromEntity(battleEntity);
             await FillUnits(battleObject);
+            await FillUsers(battleObject);
             
             return battleObject;
         }
@@ -73,10 +79,12 @@ namespace Epic.Core
                 battleDefinition.Height,
                 false);
             
-            var battleObject = ToBattleObject(battleEntity);
+            var battleObject = MutableBattleObject.FromEntity(battleEntity);
             
             var battleInitialUnits = await BattleUnitsService.CreateUnitsFromBattleDefinition(battleDefinition, battleObject.Id);
             battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
+            
+            await FillUsers(battleObject);
             
             return battleObject;
         }
@@ -85,7 +93,7 @@ namespace Epic.Core
         {
             var mutableBattleObject = ToMutableObject(battleObject);
             mutableBattleObject.IsActive = true;
-            await BattlesRepository.UpdateBattle(ToBattleEntity(mutableBattleObject));
+            await BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(mutableBattleObject));
             
             var userUnits = await UserUnitsService.GetAliveUnitsByUserAsync(userId);
             var userBattleUnits = await BattleUnitsService.CreateUnitsFromUserUnits(userUnits, InBattlePlayerNumber.Player1, battleObject.Id);
@@ -100,7 +108,16 @@ namespace Epic.Core
 
         public Task UpdateBattle(IBattleObject battleObject)
         {
-            return BattlesRepository.UpdateBattle(ToBattleEntity(battleObject));
+            return BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(battleObject));
+        }
+
+        public async Task FinishBattle(IBattleObject battleObject, BattleResult result)
+        {
+            var mutableObject = ToMutableObject(battleObject);
+            mutableObject.IsActive = false;
+            await UpdateBattle(mutableObject);
+
+            await BattleDefinitionsService.SetFinished(battleObject.BattleDefinitionId);
         }
 
         private void PlaceBattleUnits(MutableBattleObject battleObject)
@@ -134,35 +151,15 @@ namespace Epic.Core
             battleObject.Units = new List<MutableBattleUnitObject>(mutableBattleUnits);
         }
 
-        private IBattleEntity ToBattleEntity(IBattleObject battleObject)
+        private async Task FillUsers(MutableBattleObject battleObject)
         {
-            return new MutableBattleEntity
-            {
-                Id = battleObject.Id,
-                TurnIndex = battleObject.TurnIndex,
-                Width = battleObject.Width,
-                Height = battleObject.Height,
-                IsActive = battleObject.IsActive,
-            };
+            var userIds = await BattlesRepository.GetBattleUsers(battleObject.Id);
+            battleObject.UsersIds = new List<Guid>(userIds);
         }
 
         private MutableBattleObject ToMutableObject(IBattleObject battleObject)
         {
             return (MutableBattleObject)battleObject;
-        }
-
-        private MutableBattleObject ToBattleObject(IBattleEntity entity)
-        {
-            return new MutableBattleObject
-            {
-                Id = entity.Id,
-                TurnIndex = entity.TurnIndex,
-                Width = entity.Width,
-                Height = entity.Height,
-                IsActive = entity.IsActive,
-                Units = null,
-                TurnPlayerIndex = 0,
-            };
         }
     }
 }

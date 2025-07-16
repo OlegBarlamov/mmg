@@ -6,13 +6,16 @@ using Epic.Data;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Battles;
 using Epic.Data.BattleUnits;
+using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Data.UserUnits;
 using Epic.Server.Services;
 using FrameworkSDK.DependencyInjection;
+using JetBrains.Annotations;
 
 namespace Epic.Server
 {
+    [UsedImplicitly]
     public class ServerServicesModule : IServicesModule
     {
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
@@ -32,6 +35,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IClientMessagesParserService, ClientMessagesParserService>();
             serviceRegistrator.RegisterType<IBattleConnectionsService, BattleConnectionsService>();
             serviceRegistrator.RegisterType<IBattlesCacheService, DefaultBattlesCacheService>();
+            serviceRegistrator.RegisterType<IRewardsService, DefaultRewardsService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();
@@ -40,6 +44,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleDefinitionsRepository, InMemoryBattleDefinitionsRepository>();
             serviceRegistrator.RegisterType<IBattlesRepository, InMemoryBattlesRepository>();
             serviceRegistrator.RegisterType<IBattleUnitsRepository, InMemoryBattleUnitsRepository>();
+            serviceRegistrator.RegisterType<IRewardsRepository, InMemoryRewardsRepository>();
         }
     }
 }

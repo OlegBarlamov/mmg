@@ -1,7 +1,7 @@
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {IAttackTarget} from "./attackTarget";
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 
 export function getUnit(map: BattleMap, row: number, col: number): BattleMapUnit | null {
     return map.units.find(x => x.position.r === row && x.position.c === col) ?? null
@@ -11,23 +11,24 @@ export function getUnitById(map: BattleMap, id: string): BattleMapUnit | null {
     return map.units.find(x => x.id === id) ?? null
 }
 
-export function getWinner(map: BattleMap): PlayerNumber | null {
-    const unitsCounts = new Map<PlayerNumber, number>()
-    map.units.forEach((unit) => {
-        const count = unitsCounts.get(unit.player) ?? 0
-        unitsCounts.set(unit.player, count + 1)
-    })
-    const playersWithUnits: PlayerNumber[] = []
-    for (const playerKey of unitsCounts.keys()) {
-        if (unitsCounts.get(playerKey) ?? 0 > 0) {
-            playersWithUnits.push(playerKey)
-        }
-    }
-    if (playersWithUnits.length === 1) {
-        return playersWithUnits[0]
-    }
-    return null
-}
+// TODO
+// export function getWinner(map: BattleMap): BattlePlayerNumber | null {
+//     const unitsCounts = new Map<BattlePlayerNumber, number>()
+//     map.units.forEach((unit) => {
+//         const count = unitsCounts.get(unit.player) ?? 0
+//         unitsCounts.set(unit.player, count + 1)
+//     })
+//     const playersWithUnits: BattlePlayerNumber[] = []
+//     for (const playerKey of unitsCounts.keys()) {
+//         if (unitsCounts.get(playerKey) ?? 0 > 0) {
+//             playersWithUnits.push(playerKey)
+//         }
+//     }
+//     if (playersWithUnits.length === 1) {
+//         return playersWithUnits[0]
+//     }
+//     return null
+// }
 
 export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableCells: BattleMapCell[]): IAttackTarget[] {
     const possibleTargets = map.units.filter(x => x.player !== unit.player)

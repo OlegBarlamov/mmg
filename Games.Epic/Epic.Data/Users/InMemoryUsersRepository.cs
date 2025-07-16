@@ -25,6 +25,14 @@ namespace Epic.Data
                 throw new EntityNotFoundException(this, id.ToString());
         }
 
+        public Task<IUserEntity[]> GetUsersByIdsAsync(Guid[] ids)
+        {
+            return Task.FromResult(_users
+                .Where(x => ids.Contains(x.Key))
+                .Select(x => x.Value)
+                .ToArray());
+        }
+
         public Task<IUserEntity> GetUserByHashAsync(string hash)
         {
             // Find the user by hash

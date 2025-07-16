@@ -35,6 +35,7 @@ namespace Epic.Data.UnitTypes
             var entity = new UnitTypeEntity
             {
                 Id = id,
+                Name = properties.Name,
                 Speed = properties.Speed,
                 AttackMaxRange = properties.AttackMaxRange,
                 AttackMinRange = properties.AttackMinRange,

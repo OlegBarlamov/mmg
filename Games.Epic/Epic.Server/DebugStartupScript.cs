@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Epic.Core;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
+using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Data.UserUnits;
 using Epic.Server.Authentication;
@@ -15,6 +16,7 @@ namespace Epic.Server
     {
         [NotNull] public IUsersService UsersService { get; }
         [NotNull] public IUserUnitsRepository UserUnitsRepository { get; }
+        public IRewardsRepository RewardsRepository { get; }
         [NotNull] public IUsersRepository UsersRepository { get; }
         [NotNull] public ISessionsRepository SessionsRepository { get; }
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
@@ -28,10 +30,12 @@ namespace Epic.Server
             [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
             [NotNull] IUnitTypesRepository unitTypesRepository,
             [NotNull] IUsersService usersService,
-            [NotNull] IUserUnitsRepository userUnitsRepository)
+            [NotNull] IUserUnitsRepository userUnitsRepository,
+            [NotNull] IRewardsRepository rewardsRepository)
         {
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
             UserUnitsRepository = userUnitsRepository ?? throw new ArgumentNullException(nameof(userUnitsRepository));
+            RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UsersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
             SessionsRepository = sessionsRepository ?? throw new ArgumentNullException(nameof(sessionsRepository));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
@@ -48,6 +52,7 @@ namespace Epic.Server
             var unitTypeId = Guid.NewGuid();
             UnitTypesRepository.CreateUnitType(unitTypeId, new UnitTypeProperties
             {
+                Name = "Unit",
                 Speed = 5,
                 AttackMaxRange = 1,
                 AttackMinRange = 1,
@@ -73,11 +78,19 @@ namespace Epic.Server
                 {
                     var unitsTasks = unitsTask.Result;
                     BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 10, 8, new []{unitsTasks[0].Result.Id});
-                    BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 6, 6, new []{unitsTasks[1].Result.Id});
+                    BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 6, 6, new []{unitsTasks[1].Result.Id}).ContinueWith(
+                        t =>
+                        {
+                            var battleDefinition = t.Result;
+                            RewardsRepository.CreateRewardAsync(battleDefinition.Id, RewardType.UnitsGain,
+                                new[] { unitTypeId }, new[] { 10 }, "Reward!");
+                        });
                 });
                 
                 UserUnitsRepository.CreateUserUnit(unitTypeId, 30, _userId, true);
             });
+            
+            
         }
 
         private class SessionData : ISessionData
@@ -99,6 +112,7 @@ namespace Epic.Server
             public int AttackMinRange { get; set; }
             public int Damage { get; set; }
             public int Health { get; set; }
+            public string Name { get; set; }
             public string BattleImgUrl { get; set; }
             public string DashboardImgUrl { get; set; }
         }

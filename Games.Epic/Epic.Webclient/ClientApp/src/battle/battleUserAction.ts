@@ -1,10 +1,10 @@
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 import {BattleMapCell} from "../battleMap/battleMap";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 
 interface BaseUserAction {
     command: string
-    player: PlayerNumber
+    player: BattlePlayerNumber
 }
 
 interface UnitAction extends BaseUserAction {

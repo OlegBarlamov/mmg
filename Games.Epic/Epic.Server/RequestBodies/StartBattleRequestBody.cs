@@ -1,6 +1,4 @@
-using System;
-
-namespace Epic.Server.Resources
+namespace Epic.Server.RequestBodies
 {
     public class StartBattleRequestBody
     {

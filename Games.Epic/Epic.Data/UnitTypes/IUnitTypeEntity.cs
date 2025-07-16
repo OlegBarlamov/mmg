@@ -4,6 +4,7 @@ namespace Epic.Data.UnitTypes
 {
     public interface IUnitTypeProperties : IUnitProps
     {
+        string Name { get; }
         string BattleImgUrl { get; }
         public string DashboardImgUrl { get; set; }
     }
@@ -16,6 +17,7 @@ namespace Epic.Data.UnitTypes
     internal class UnitTypeEntity : IUnitTypeEntity
     {
         public Guid Id { get; set; }
+        public string Name { get; set; }
         public int Speed { get; set; }
         public int AttackMaxRange { get; set; }
         public int AttackMinRange { get; set; }

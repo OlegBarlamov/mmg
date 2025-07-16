@@ -4,7 +4,7 @@ import {IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 import {UnitProperties} from "../units/unitProperties";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 import {getRandomStringKey} from "../units/getRandomString";
@@ -17,6 +17,8 @@ import {
 import {BattleCommandToServer} from "./battleCommandToServer";
 import {getUnitById} from "../battle/battleLogic";
 import {IBattleCommandToServerResponse} from "./IBattleCommandToServerResponse";
+import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
+import { IRewardToAccept } from "../rewards/IRewardToAccept";
 
 class ServerSideBattle implements IBattleDefinition {
     readonly id: string
@@ -238,6 +240,13 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         return Promise.resolve(this)
     }
 
+    getMyRewards(): Promise<IRewardToAccept[]> {
+        throw new Error("Method not implemented.");
+    }
+    acceptReward(id: string, body: AcceptRewardBody): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
     private getSessionToken(): Promise<string> {
         const token = getSessionCookie()
         if (!token) {
@@ -270,17 +279,17 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             height: battleDefinition.height,
             grid: new OddRGrid(cells),
             units: [
-                ...this.loadUnits(battleDefinition.enemyUnits, PlayerNumber.Player2, battleDefinition.width, battleDefinition.height),
-                ...this.loadUnits(userUnits, PlayerNumber.Player1, battleDefinition.width, battleDefinition.height),
+                ...this.loadUnits(battleDefinition.enemyUnits, BattlePlayerNumber.Player2, battleDefinition.width, battleDefinition.height),
+                ...this.loadUnits(userUnits, BattlePlayerNumber.Player1, battleDefinition.width, battleDefinition.height),
             ],
             turnInfo: {
-                player: PlayerNumber.Player1,
+                player: BattlePlayerNumber.Player1,
                 index: 0,
             }
         })
     }
     
-    private loadUnits(userUnits: IUserUnit[], playerNumber: PlayerNumber, mapWidth: number, mapHeight: number): BattleMapUnit[] {
+    private loadUnits(userUnits: IUserUnit[], playerNumber: BattlePlayerNumber, mapWidth: number, mapHeight: number): BattleMapUnit[] {
         return userUnits.map((unit, index) => {
             const unitPosition = this.getUnitPosition(index, playerNumber, mapWidth, mapHeight)  
             const unitType = this.unitTypes.get(unit.typeId)
@@ -295,14 +304,14 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         })
     }
     
-    private getUnitPosition(index: number, playerNumber: PlayerNumber, mapWidth: number, mapHeight: number): IHexoPoint {
+    private getUnitPosition(index: number, playerNumber: BattlePlayerNumber, mapWidth: number, mapHeight: number): IHexoPoint {
         const halfWidth = Math.floor(mapWidth / 2)
 
         // Determine position based on player
         let column: number
         let row: number
 
-        if (playerNumber === PlayerNumber.Player1) {
+        if (playerNumber === BattlePlayerNumber.Player1) {
             // Player 1 units are placed on the left side (columns 0 to halfWidth - 1)
             column = Math.floor(index / mapHeight);
             row = index % mapHeight;

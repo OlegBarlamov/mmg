@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Epic.Core;
 using Epic.Data.Exceptions;
 using Epic.Server.Authentication;
+using Epic.Server.RequestBodies;
 using Epic.Server.Resources;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ namespace Epic.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> StartBattle(StartBattleRequestBody battleRequestBody)
+        public async Task<IActionResult> StartBattle([FromBody] StartBattleRequestBody battleRequestBody)
         {
             var userId = User.GetId();
             Guid battleDefinitionId;

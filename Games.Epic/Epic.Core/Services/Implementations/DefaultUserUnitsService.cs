@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
+using Epic.Core.Objects.UserUnit;
 using Epic.Data.UserUnits;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -51,6 +52,15 @@ namespace Epic.Core
             
             var entities = userUnits.Select(UserUnitEntity.FromUserUnitObject).ToArray<IUserUnitEntity>();
             return UserUnitsRepository.Update(entities);
+        }
+
+        public async Task<IReadOnlyCollection<IUserUnitObject>> CreateUnits(IReadOnlyCollection<CreateUserUnitData> unitsToCreate)
+        {
+            var unitEntities = await Task.WhenAll(unitsToCreate.Select(data =>
+                UserUnitsRepository.CreateUserUnit(data.UnitTypeId, data.Amount, data.UserId, true)));
+            
+            var unitObjects = unitEntities.Select(MutableUserUnitObject.FromEntity).ToArray();
+            return await FillUserObjects(unitObjects);
         }
 
         private async Task<IReadOnlyCollection<MutableUserUnitObject>> FillUserObjects(IReadOnlyCollection<MutableUserUnitObject> userUnits)

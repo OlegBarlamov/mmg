@@ -17,6 +17,7 @@ namespace Epic.Core.Objects.BattleClientConnection
         public IBattleObject BattleObject { get; }
         
         Task SendMessageAsync([NotNull] IServerBattleMessage message);
+        Task CloseAsync();
     }
 
     internal class BattleClientConnection : IBattleClientConnection
@@ -62,6 +63,11 @@ namespace Epic.Core.Objects.BattleClientConnection
                 }
             );
             return ClientConnection.SendMessageAsync(json);
+        }
+
+        public Task CloseAsync()
+        {
+            return ClientConnection.CloseAsync();
         }
 
         public void Dispose()

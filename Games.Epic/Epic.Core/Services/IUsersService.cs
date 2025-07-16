@@ -7,6 +7,7 @@ namespace Epic.Core
     public interface IUsersService
     {
         Task<IUserObject> GetUserById(Guid userId);
+        Task<IUserObject[]> GetUsersByIds(Guid[] userId);
         Task<IUserObject> GetUserByHashAsync(string hash);
 
         Task<IUserObject> CreateComputerUser();

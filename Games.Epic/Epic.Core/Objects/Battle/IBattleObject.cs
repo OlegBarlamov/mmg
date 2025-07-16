@@ -7,12 +7,17 @@ namespace Epic.Core.Objects.Battle
     public interface IBattleObject
     {
         Guid Id { get; }
+        Guid BattleDefinitionId { get; }
         int TurnIndex { get; }
         int Width { get; }
         int Height { get; }
         bool IsActive { get; }
         int TurnPlayerIndex { get; }
         
+        IReadOnlyList<Guid> UsersIds { get; }
+        
         IReadOnlyCollection<IBattleUnitObject> Units { get; }
+
+        Guid? GetPlayerUserId(InBattlePlayerNumber playerNumber);
     }
 }

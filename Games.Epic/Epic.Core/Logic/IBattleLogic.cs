@@ -7,11 +7,11 @@ using Epic.Core.ServerMessages;
 
 namespace Epic.Core.Logic
 {
-    public interface IBattleLogic
+    public interface IBattleLogic : IDisposable
     {
         event Action<IServerBattleMessage> BroadcastMessage;
         Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage clientBattleMessage);
         
-        Task Run(CancellationToken cancellationToken);
+        Task<BattleResult> Run(CancellationToken cancellationToken);
     }
 }

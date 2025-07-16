@@ -12,9 +12,9 @@ namespace Epic.Server.Resources
 
         public string Player { get; }
         
-        public UnitPropsResource Props { get; }
+        public BattleUnitPropsResource Props { get; }
         
-        public UnitPropsResource CurrentProps { get; }
+        public BattleUnitPropsResource CurrentProps { get; }
         
         public int Count { get; }
         public Guid UserId { get; }
@@ -32,8 +32,8 @@ namespace Epic.Server.Resources
             Count = battleUnitObject.UserUnit.Count;
             UserId = battleUnitObject.UserUnit.UserId;
             IsAlive = battleUnitObject.UserUnit.IsAlive;
-            Props = new UnitPropsResource(battleUnitObject, false);
-            CurrentProps = new UnitPropsResource(battleUnitObject, true);
+            Props = new BattleUnitPropsResource(battleUnitObject, false);
+            CurrentProps = new BattleUnitPropsResource(battleUnitObject, true);
         }
     }
 }

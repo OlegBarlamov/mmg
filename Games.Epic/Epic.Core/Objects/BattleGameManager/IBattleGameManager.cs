@@ -7,6 +7,7 @@ namespace Epic.Core.Objects.BattleGameManager
 {
     public interface IBattleGameManager : IDisposable
     {
+        event Action<IBattleGameManager> Finished;
         bool IsDisposed { get; }
         Guid BattleId { get; }
         int GetClientsCount(); 
@@ -16,5 +17,7 @@ namespace Epic.Core.Objects.BattleGameManager
     
         Task AddClient(IBattleClientConnection connection);
         Task RemoveClient(IBattleClientConnection connection);
+
+        Task StopAllConnections();
     }
 }

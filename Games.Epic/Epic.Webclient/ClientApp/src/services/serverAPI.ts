@@ -1,5 +1,7 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap} from "../battleMap/battleMap";
+import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
+import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import {IBattleConnectionMessagesHandler, IBattleServerConnection} from "../server/battleServerConnection";
 
 export interface IUserInfo {
@@ -23,6 +25,9 @@ export interface IServerAPI {
     getBattles(): Promise<IBattleDefinition[]>
     beginBattle(battleDefinitionId: string): Promise<BattleMap>
     getActiveBattle(): Promise<BattleMap | null>
+
+    getMyRewards(): Promise<IRewardToAccept[]>
+    acceptReward(id: string, body: AcceptRewardBody): Promise<void>
     
     establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
 }

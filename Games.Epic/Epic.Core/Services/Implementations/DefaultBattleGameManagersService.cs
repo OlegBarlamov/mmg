@@ -17,6 +17,7 @@ namespace Epic.Core
         private IBattleUnitsService BattleUnitsService { get; }
         private IUserUnitsService UserUnitsService { get; }
         private IBattlesService BattlesService { get; }
+        private IRewardsService RewardsService { get; }
 
         private readonly ConcurrentDictionary<Guid, BattleGameManager> _battleGameManagers = new ConcurrentDictionary<Guid, BattleGameManager>();
 
@@ -25,13 +26,15 @@ namespace Epic.Core
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IBattleUnitsService battleUnitsService,
             [NotNull] IUserUnitsService userUnitsService,
-            [NotNull] IBattlesService battlesService)
+            [NotNull] IBattlesService battlesService,
+            [NotNull] IRewardsService rewardsService)
         {
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
+            RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
         }
         
         public Task<IBattleGameManager> GetBattleGameManager(IBattleClientConnection clientConnection)
@@ -44,8 +47,6 @@ namespace Epic.Core
             
             var manager = CreateBattleGameManager(battleObject);
             manager.AddClient(clientConnection);
-            if (!manager.IsBattlePlaying())
-                manager.PlayBattle();
             
             return Task.FromResult((IBattleGameManager)manager);
         }
@@ -56,25 +57,28 @@ namespace Epic.Core
                 throw new InvalidOperationException($"The battle game manager was not found for battle {clientConnection.BattleObject.Id}"); 
                     
             manager.RemoveClient(clientConnection);
-            if (manager.GetClientsCount() == 0)
-            {
-                BattlesCacheService.ReleaseBattle(clientConnection.BattleObject.Id);
-                _battleGameManagers.TryRemove(manager.BattleObject.Id, out _);
-                manager.SuspendBattle();
-                manager.Dispose();
-            }
             
             return Task.FromResult((IBattleGameManager)manager);
         }
 
         private BattleGameManager CreateBattleGameManager(MutableBattleObject battleObject)
         {
-            return _battleGameManagers.GetOrAdd(battleObject.Id, id => new BattleGameManager(
+            var gameManager = _battleGameManagers.GetOrAdd(battleObject.Id, id => new BattleGameManager(
                 battleObject,
                 LoggerFactory,
                 BattleUnitsService,
                 UserUnitsService,
-                BattlesService));
+                BattlesService,
+                RewardsService));
+
+            gameManager.Finished += GameManagerOnFinished;
+            
+            return gameManager;
+        }
+
+        private void GameManagerOnFinished(IBattleGameManager gameManager)
+        {
+            gameManager.Dispose();
         }
     }
 }

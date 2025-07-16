@@ -1,16 +1,21 @@
 import {BattleMapUnit} from "./battleMapUnit";
 import {IHexoGrid} from "../hexogrid/hexoGrid";
-import {BattlePlayerSide} from "./battlePlayerSide";
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 
 export type BattleMapCell = {
     r: number
     c: number
 }
 
+export type BattleResult = {
+    finished: boolean
+    winner?: BattlePlayerNumber
+}
+
 export type BattleTurnInfo = {
     index: number
-    player: PlayerNumber
+    player: BattlePlayerNumber
+    result?: BattleResult
 }
 
 export type BattleMap = {

@@ -1,4 +1,4 @@
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 
 interface BaseCommandFromServer {
@@ -8,7 +8,7 @@ interface BaseCommandFromServer {
 }
 
 interface PlayerCommandFromServer extends BaseCommandFromServer {
-    player: PlayerNumber
+    player: BattlePlayerNumber
 }
 
 interface UnitCommandFromServer extends PlayerCommandFromServer {
@@ -37,8 +37,9 @@ export interface NextTurnCommandFromServer extends PlayerCommandFromServer {
     command: 'NEXT_TURN'
 }
 
-export interface PlayerWonCommandFromServer extends PlayerCommandFromServer {
-    command: 'PLAYER_WON'
+export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {
+    command: 'BATTLE_FINISHED'
+    winner?: BattlePlayerNumber
 }
 
 export type BattleCommandFromServer = 
@@ -46,4 +47,4 @@ export type BattleCommandFromServer =
     | UnitAttackCommandFromServer
     | UnitTakeDamageCommandFromServer
     | NextTurnCommandFromServer
-    | PlayerWonCommandFromServer
+    | BattleFinishedCommandFromServer

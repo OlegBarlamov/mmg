@@ -6,6 +6,7 @@ namespace Epic.Core
     public class MutualUnitTypeObject : IUnitTypeObject
     {
         public Guid Id { get; set; }
+        public string Name { get; set; }
         public int Speed { get; set; }
         public int AttackMaxRange { get; set; }
         public int AttackMinRange { get; set; }
@@ -24,6 +25,7 @@ namespace Epic.Core
             return new MutualUnitTypeObject
             {
                 Id = entity.Id,
+                Name = entity.Name,
                 AttackMinRange = entity.AttackMinRange,
                 AttackMaxRange = entity.AttackMaxRange,
                 BattleImgUrl = entity.BattleImgUrl,

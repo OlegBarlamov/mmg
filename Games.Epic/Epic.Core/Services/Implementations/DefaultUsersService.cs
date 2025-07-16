@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Data;
@@ -20,6 +21,12 @@ namespace Epic.Core
         {
             var userEntity = await UsersRepository.GetUserByIdAsync(userId);
             return ToUserObject(userEntity);
+        }
+
+        public async Task<IUserObject[]> GetUsersByIds(Guid[] userIds)
+        {
+            var entities = await UsersRepository.GetUsersByIdsAsync(userIds);
+            return entities.Select(ToUserObject).ToArray();
         }
 
         public async Task<IUserObject> GetUserByHashAsync(string hash)

@@ -3,7 +3,7 @@ import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IBattleMapsService} from "./battleMapsService";
 import {IServerAPI} from "./serverAPI";
 import {OddRGrid} from "../hexogrid/oddRGrid";
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 
 export interface IBattleLoader {
     loadBattle(battleDefinition: IBattleDefinition): Promise<BattleMap>

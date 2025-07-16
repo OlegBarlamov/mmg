@@ -20,10 +20,10 @@ namespace Epic.Core
             UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
         }
         
-        public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetBattleDefinitionsByUserAsync(Guid userId)
+        public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByUserAsync(Guid userId)
         {
-            var entities = await BattleDefinitionsRepository.GetBattleDefinitionsByUserAsync(userId);
-            var battleDefinitions = entities.Select(ToBattleDefinitionObject).ToArray();
+            var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByUserAsync(userId);
+            var battleDefinitions = entities.Select(MutableBattleDefinitionObject.FromEntity).ToArray();
             await Task.WhenAll(battleDefinitions.Select(FillBattleDefinitionObject));
             return battleDefinitions;
         }
@@ -32,9 +32,14 @@ namespace Epic.Core
         {
             var battleDefinition =
                 await BattleDefinitionsRepository.GetBattleDefinitionByUserAndId(userId, battleDefinitionId);
-            var battleDefinitionObject = ToBattleDefinitionObject(battleDefinition);
+            var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(battleDefinition);
             await FillBattleDefinitionObject(battleDefinitionObject);
             return battleDefinitionObject;
+        }
+
+        public Task SetFinished(Guid battleDefinitionId)
+        {
+            return BattleDefinitionsRepository.SetFinished(battleDefinitionId);
         }
 
         private Task FillBattleDefinitionObject(MutableBattleDefinitionObject battleDefinitionObject)
@@ -42,17 +47,6 @@ namespace Epic.Core
             return UserUnitsService
                 .GetUnitsByIds(battleDefinitionObject.UnitsIds)
                 .ContinueWith(task => battleDefinitionObject.Units = task.Result);
-        }
-
-        private MutableBattleDefinitionObject ToBattleDefinitionObject(IBattleDefinitionEntity entity)
-        {
-            return new MutableBattleDefinitionObject
-            {
-                Id = entity.Id,
-                Width = entity.Width,
-                Height = entity.Height,
-                UnitsIds = entity.UnitsIds,
-            };
         }
     }
 }

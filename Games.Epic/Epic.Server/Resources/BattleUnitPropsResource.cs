@@ -2,7 +2,7 @@ using Epic.Core.Objects.BattleUnit;
 
 namespace Epic.Server.Resources
 {
-    public class UnitPropsResource
+    public class BattleUnitPropsResource
     {
         public string BattleImgUrl { get; }
         public int Speed { get; }
@@ -11,7 +11,7 @@ namespace Epic.Server.Resources
         public int Damage { get; }
         public int Health { get; }
 
-        public UnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps)
+        public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps)
         {
             BattleImgUrl = battleUnitObject.UserUnit.UnitType.BattleImgUrl;
             Speed = battleUnitObject.Speed;

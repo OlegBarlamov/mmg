@@ -52,6 +52,7 @@ namespace Epic.Data.Battles
             var battleEntity = new MutableBattleEntity
             {
                 Id = newBattleId,
+                BattleDefinitionId = battleDefinitionId,
                 Width = width,
                 Height = height,
                 IsActive = isActive,
@@ -83,6 +84,12 @@ namespace Epic.Data.Battles
             mutableBattleInstance.TurnIndex = battleEntity.TurnIndex;
             
             return Task.CompletedTask;
+        }
+
+        public Task<Guid[]> GetBattleUsers(Guid battleId)
+        {
+            var userIds = _userBattles.Where(x => x.BattleId == battleId).Select(x => x.UserId).ToArray();
+            return Task.FromResult(userIds);
         }
     }
 }

@@ -1,7 +1,7 @@
 import {ICanvasService} from "./canvasService";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {BattleMapController, IBattleMapController} from "../battleMap/battleMapController";
-import {PlayerNumber} from "../player/playerNumber";
+import {BattlePlayerNumber} from "../player/playerNumber";
 import {OddRGrid} from "../hexogrid/oddRGrid";
 import {getTestUnit} from "../battleMap/battleMapUnit";
 
@@ -40,12 +40,12 @@ export class BattleMapsService implements IBattleMapsService {
             height: height,
             grid: new OddRGrid(cells),
             units: [
-                getTestUnit(0, 0, 15, PlayerNumber.Player1),
-                getTestUnit(0, 1, 199, PlayerNumber.Player1),
-                getTestUnit(1, 1, 80, PlayerNumber.Player2),
+                getTestUnit(0, 0, 15, BattlePlayerNumber.Player1),
+                getTestUnit(0, 1, 199, BattlePlayerNumber.Player1),
+                getTestUnit(1, 1, 80, BattlePlayerNumber.Player2),
             ],
             turnInfo: {
-                player: PlayerNumber.Player1,
+                player: BattlePlayerNumber.Player1,
                 index: 0,
             }
         }
