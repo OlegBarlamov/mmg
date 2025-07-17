@@ -44,14 +44,21 @@ namespace Epic.Server.Services
             ConnectionId = connectionId;
             Logger = loggerFactory.CreateLogger<WebSocketClientConnection>();
         }
-        
+
         public void Dispose()
         {
-            _cancellationTokenSource.Cancel();
+            if (IsActive)
+            {
+                _cancellationTokenSource.Cancel();
+                CloseAsync().ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                        Logger.LogError(t.Exception, "Error while disposing websocket connection");
+                });
+            }
             _cancellationTokenSource.Dispose();
-            CloseAsync().Wait();
         }
-        
+
         public Task SendMessageAsync(string message)
         {
             if (!IsActive)
@@ -92,8 +99,13 @@ namespace Epic.Server.Services
 
         public Task CloseAsync()
         {
-            IsActive = false;
-            return CloseAsyncInternal();
+            if (IsActive)
+            {
+                IsActive = false;
+                _cancellationTokenSource.Cancel();
+                return CloseAsyncInternal();
+            }
+            return Task.CompletedTask;
         }
         
         private Task CloseAsyncInternal(WebSocketCloseStatus closeStatus = WebSocketCloseStatus.NormalClosure, string statusDescription = "Closing")

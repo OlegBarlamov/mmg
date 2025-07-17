@@ -57,6 +57,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     ${reward.unitRewardResources.map(resource => `${resource.name}: ${resource.amount}`).join('\n')}
                     \n\nAccept?`
 
+                // eslint-disable-next-line no-restricted-globals
                 if (confirm(message)) {
                     await serverAPI.acceptReward(reward.id, {
                         accepted: true,

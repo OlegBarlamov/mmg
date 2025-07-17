@@ -1,7 +1,7 @@
 using System;
 using Epic.Core.Objects.BattleUnit;
 
-namespace Epic.Core.Logic
+namespace Epic.Logic
 {
     public class UnitTakesDamageData
     {

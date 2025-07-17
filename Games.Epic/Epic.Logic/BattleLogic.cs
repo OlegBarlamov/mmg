@@ -4,24 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Epic.Core;
 using Epic.Core.ClientMessages;
+using Epic.Core.Logic;
 using Epic.Core.Logic.Erros;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
+using Epic.Core.Objects.BattleGameManager;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Core.ServerMessages;
 using JetBrains.Annotations;
 
-namespace Epic.Core.Logic
+namespace Epic.Logic
 {
     public class BattleLogic : IBattleLogic
     {
-        public event Action<IServerBattleMessage> BroadcastMessage;
         private MutableBattleObject BattleObject { get; }
         private IBattleUnitsService BattleUnitsService { get; }
         private IUserUnitsService UserUnitsService { get; }
         private IBattlesService BattlesService { get; }
         private IRewardsService RewardsService { get; }
+        private IBattleMessageBroadcaster Broadcaster { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
@@ -29,19 +32,22 @@ namespace Epic.Core.Logic
 
         [CanBeNull] private TurnInfo _expectedTurn;
         [CanBeNull] private TaskCompletionSource<Task> _awaitPlayerTurnTaskCompletionSource;
+        private bool _isDisposed;
         
         public BattleLogic(
             [NotNull] MutableBattleObject battleObject, 
             [NotNull] IBattleUnitsService battleUnitsService,
             [NotNull] IUserUnitsService userUnitsService,
             [NotNull] IBattlesService battlesService,
-            [NotNull] IRewardsService rewardsService)
+            [NotNull] IRewardsService rewardsService,
+            [NotNull] IBattleMessageBroadcaster broadcaster)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
+            Broadcaster = broadcaster ?? throw new ArgumentNullException(nameof(broadcaster));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
             _sortedBattleUnitObjects.Sort((x, y) => x.UserUnit.UnitType.Speed.CompareTo(y.UserUnit.UnitType.Speed));
@@ -49,6 +55,7 @@ namespace Epic.Core.Logic
         
         public void Dispose()
         {
+            _isDisposed = true;
             _sortedBattleUnitObjects.Clear();
             _awaitPlayerTurnTaskCompletionSource?.TrySetCanceled();
             _passedServerBattleMessages.Clear();
@@ -56,6 +63,9 @@ namespace Epic.Core.Logic
 
         public async Task<BattleResult> Run(CancellationToken cancellationToken)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(BattleLogic));
+                
             var activeUnit = GetActiveUnit(BattleObject.TurnIndex);
             var battleResult = GetBattleResult();
 
@@ -89,7 +99,7 @@ namespace Epic.Core.Logic
                         TurnNumber = BattleObject.TurnIndex,
                         Player = ((InBattlePlayerNumber)activeUnit.PlayerIndex).ToString(),
                     };
-                    BroadcastMessageToClientAndSave(serverCommand);
+                    await BroadcastMessageToClientAndSaveAsync(serverCommand);
                 }
             }
             catch (OperationCanceledException)
@@ -117,7 +127,7 @@ namespace Epic.Core.Logic
                     TurnNumber = BattleObject.TurnIndex,
                     Winner = battleResult.Winner?.ToString() ?? string.Empty,
                 };
-                BroadcastMessageToClientAndSave(battleFinishedCommand);
+                await BroadcastMessageToClientAndSaveAsync(battleFinishedCommand);
 
                 await BattlesService.FinishBattle(BattleObject, battleResult);
             }
@@ -125,11 +135,11 @@ namespace Epic.Core.Logic
             return battleResult;
         }
 
-        private void BroadcastMessageToClientAndSave(IServerBattleMessage message)
+        private Task BroadcastMessageToClientAndSaveAsync(IServerBattleMessage message)
         {
             var turnMessages = _passedServerBattleMessages.GetOrAdd(message.TurnNumber, _ => new List<IServerBattleMessage>());
             turnMessages.Add(message);
-            BroadcastMessage?.Invoke(message);
+            return Broadcaster.BroadcastMessageAsync(message);
         }
 
         private BattleResult GetBattleResult()
@@ -175,6 +185,9 @@ namespace Epic.Core.Logic
 
         public Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage clientBattleMessage)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(BattleLogic));
+            
             switch (clientBattleMessage.Command)
             {
                 case ClientBattleCommands.CLIENT_CONNECTED:
@@ -218,7 +231,7 @@ namespace Epic.Core.Logic
                 ActorId = command.ActorId,
                 MoveToCell = command.MoveToCell
             };
-            BroadcastMessageToClientAndSave(serverMoveCommand);
+            await BroadcastMessageToClientAndSaveAsync(serverMoveCommand);
 
             var serverUnitAttackCommand = new UnitAttackCommandFromServer
             {
@@ -228,7 +241,7 @@ namespace Epic.Core.Logic
                 ActorId = command.ActorId,
                 TargetId = command.TargetId,
             };
-            BroadcastMessageToClientAndSave(serverUnitAttackCommand);
+            await BroadcastMessageToClientAndSaveAsync(serverUnitAttackCommand);
             
             var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(targetActor, targetTarget);
             targetTarget.UserUnit.Count = unitTakesDamageData.RemainingCount;
@@ -251,7 +264,7 @@ namespace Epic.Core.Logic
                 RemainingCount = unitTakesDamageData.RemainingCount,
                 RemainingHealth = unitTakesDamageData.RemainingHealth,
             };
-            BroadcastMessageToClientAndSave(serverUnitTakesDamage);
+            await BroadcastMessageToClientAndSaveAsync(serverUnitTakesDamage);
             
             _awaitPlayerTurnTaskCompletionSource?.SetResult(null);
         }
@@ -282,7 +295,7 @@ namespace Epic.Core.Logic
                 ActorId = command.ActorId,
                 MoveToCell = command.MoveToCell
             };
-            BroadcastMessageToClientAndSave(serverCommand);
+            await BroadcastMessageToClientAndSaveAsync(serverCommand);
             
             _awaitPlayerTurnTaskCompletionSource?.SetResult(null);
         }

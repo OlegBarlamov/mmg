@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Epic.Core.Objects.Battle;
 using JetBrains.Annotations;
@@ -8,22 +9,21 @@ namespace Epic.Core
     [UsedImplicitly]
     public class DefaultBattlesCacheService : IBattlesCacheService
     {
-        private readonly Dictionary<Guid, MutableBattleObject> _battleObjects = new Dictionary<Guid, MutableBattleObject>();
+        private readonly ConcurrentDictionary<Guid, MutableBattleObject> _battleObjects = new ConcurrentDictionary<Guid, MutableBattleObject>();
         
         public MutableBattleObject FindBattleById(Guid battleId)
         {
             return _battleObjects.GetValueOrDefault(battleId);
         }
 
-        public void AddBattle(MutableBattleObject battleObject)
+        public void AddIfAbsent(MutableBattleObject battleObject)
         {
-            if (!_battleObjects.TryAdd(battleObject.Id, battleObject))
-                throw new ArgumentException($"Battle with id {battleObject.Id} already exists");
+            _battleObjects.TryAdd(battleObject.Id, battleObject);
         }
 
         public void ReleaseBattle(Guid battleId)
         {
-            _battleObjects.Remove(battleId);
+            _battleObjects.TryRemove(battleId, out _);
         }
     }
 }

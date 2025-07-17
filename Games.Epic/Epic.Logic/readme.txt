@@ -1,1 +1,0 @@
-﻿Game objects behaviour. Game formulas etc.

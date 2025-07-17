@@ -2,6 +2,7 @@ using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
 using Epic.Core;
+using Epic.Core.Services;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Battles;
@@ -9,6 +10,7 @@ using Epic.Data.BattleUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Data.UserUnits;
+using Epic.Logic;
 using Epic.Server.Services;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
@@ -36,6 +38,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleConnectionsService, BattleConnectionsService>();
             serviceRegistrator.RegisterType<IBattlesCacheService, DefaultBattlesCacheService>();
             serviceRegistrator.RegisterType<IRewardsService, DefaultRewardsService>();
+            serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

@@ -7,7 +7,9 @@ using Epic.Server.Authentication;
 using Epic.Server.RequestBodies;
 using Epic.Server.Resources;
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Epic.Server.Controllers
 {
@@ -19,17 +21,20 @@ namespace Epic.Server.Controllers
         public IClientConnectionsService<WebSocket> ClientConnectionService { get; }
         public IBattleGameManagersService BattleGameManagersService { get; }
         public IBattleConnectionsService BattleConnectionsService { get; }
+        public ILogger<BattleController> Logger { get; }
 
         public BattleController(
             [NotNull] IBattlesService battlesService,
             [NotNull] IClientConnectionsService<WebSocket> clientConnectionService,
             [NotNull] IBattleGameManagersService battleGameManagersService,
-            [NotNull] IBattleConnectionsService battleConnectionsService)
+            [NotNull] IBattleConnectionsService battleConnectionsService,
+            [NotNull] ILogger<BattleController> logger)
         {
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             ClientConnectionService = clientConnectionService ?? throw new ArgumentNullException(nameof(clientConnectionService));
             BattleGameManagersService = battleGameManagersService ?? throw new ArgumentNullException(nameof(battleGameManagersService));
             BattleConnectionsService = battleConnectionsService ?? throw new ArgumentNullException(nameof(battleConnectionsService));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         [HttpGet]
@@ -71,46 +76,51 @@ namespace Epic.Server.Controllers
         }
 
         [HttpGet("{battleIdString}/ws")]
-        public async Task<IActionResult> EstablishWsConnection(string battleIdString)
+        public async Task EstablishWsConnection(string battleIdString)
         {
             if (!HttpContext.WebSockets.IsWebSocketRequest)
-                return BadRequest("WebSocket connection expected.");
-
-            Guid battleId;
-            try
             {
-                battleId = Guid.Parse(battleIdString);
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("WebSocket connection expected.");
+                return;
             }
-            catch (FormatException)
+            if (!Guid.TryParse(battleIdString, out var battleId))
             {
-                return BadRequest("Invalid ID format of BattleId");
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Invalid ID format of BattleId");
+                return;
             }
 
             var battleObject = await BattlesService.GetBattleById(battleId);
             if (!battleObject.IsActive)
-                return BadRequest("Battle is not active.");
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Battle is not active.");
+                return;
+            }
             
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            using (var clientConnection = ClientConnectionService.CreateConnection(webSocket))
+            using var clientConnection = ClientConnectionService.CreateConnection(webSocket);
+            using var battleConnection = BattleConnectionsService.CreateConnection(clientConnection, battleObject);
+            
+            await BattleGameManagersService.GetBattleGameManager(battleConnection);
+
+            try
             {
-                using (var battleConnection = BattleConnectionsService.CreateConnection(clientConnection, battleObject))
-                {
-                    await BattleGameManagersService.GetBattleGameManager(battleConnection);
-                    try
-                    {
-                        await clientConnection.ListenMessagesAsync();
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // Ignore
-                    }
-                    finally
-                    {
-                        await BattleGameManagersService.RemoveClientConnection(battleConnection);
-                    }
-                }
+                await clientConnection.ListenMessagesAsync();
             }
-            return Ok();
+            catch (OperationCanceledException)
+            {
+                // Ignore
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.Message);
+            }
+            finally
+            {
+                await BattleGameManagersService.RemoveClientConnection(battleConnection);
+            }
         }
     }
 }

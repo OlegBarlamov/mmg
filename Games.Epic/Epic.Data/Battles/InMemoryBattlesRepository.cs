@@ -25,10 +25,13 @@ namespace Epic.Data.Battles
 
         public Task<IBattleEntity> FindActiveBattleByUserIdAsync(Guid userId)
         {
-            var userBattle = _userBattles.FirstOrDefault(ub => ub.UserId == userId);
-            if (userBattle != null)
+            var userBattles = _userBattles.Where(ub => ub.UserId == userId)
+                .Select(ub => ub.BattleId)
+                .ToArray();
+            
+            if (userBattles.Length > 0)
             {
-                var battle = _battles.FirstOrDefault(b => b.Id == userBattle.BattleId && b.IsActive);
+                var battle = _battles.FirstOrDefault(b => userBattles.Contains(b.Id) && b.IsActive);
                 return Task.FromResult(battle);
             }
 

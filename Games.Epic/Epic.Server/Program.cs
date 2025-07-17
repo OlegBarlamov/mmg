@@ -34,6 +34,7 @@ namespace Epic.Server
 
              
              //app.UseCors("AllowLocalhost3000");
+             app.UseMiddleware<RequestResponseLoggingMiddleware>();
              app.UseRouting();
              // app.UseHttpsRedirection();
              app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/api"), a =>

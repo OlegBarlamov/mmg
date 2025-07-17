@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Objects.BattleGameManager;
+using Epic.Core.Services;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -14,36 +15,24 @@ namespace Epic.Core
     {
         private IBattlesCacheService BattlesCacheService { get; }
         private ILoggerFactory LoggerFactory { get; }
-        private IBattleUnitsService BattleUnitsService { get; }
-        private IUserUnitsService UserUnitsService { get; }
-        private IBattlesService BattlesService { get; }
-        private IRewardsService RewardsService { get; }
+        private IBattleLogicFactory BattleLogicFactory { get; }
 
         private readonly ConcurrentDictionary<Guid, BattleGameManager> _battleGameManagers = new ConcurrentDictionary<Guid, BattleGameManager>();
 
         public DefaultBattleGameManagersService(
             [NotNull] IBattlesCacheService battlesCacheService,
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IBattleUnitsService battleUnitsService,
-            [NotNull] IUserUnitsService userUnitsService,
-            [NotNull] IBattlesService battlesService,
-            [NotNull] IRewardsService rewardsService)
+            [NotNull] IBattleLogicFactory battleLogicFactory)
         {
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
-            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
-            BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
-            RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
+            BattleLogicFactory = battleLogicFactory ?? throw new ArgumentNullException(nameof(battleLogicFactory));
         }
         
         public Task<IBattleGameManager> GetBattleGameManager(IBattleClientConnection clientConnection)
         {
             var battleObject = (MutableBattleObject)clientConnection.BattleObject;
-            if (BattlesCacheService.FindBattleById(battleObject.Id) == null)
-            {
-                BattlesCacheService.AddBattle(battleObject);
-            }
+            BattlesCacheService.AddIfAbsent(battleObject);
             
             var manager = CreateBattleGameManager(battleObject);
             manager.AddClient(clientConnection);
@@ -51,33 +40,34 @@ namespace Epic.Core
             return Task.FromResult((IBattleGameManager)manager);
         }
 
-        public Task<IBattleGameManager> RemoveClientConnection(IBattleClientConnection clientConnection)
+        public Task RemoveClientConnection(IBattleClientConnection clientConnection)
         {
-            if (!_battleGameManagers.TryGetValue(clientConnection.BattleObject.Id, out var manager)) 
-                throw new InvalidOperationException($"The battle game manager was not found for battle {clientConnection.BattleObject.Id}"); 
-                    
-            manager.RemoveClient(clientConnection);
-            
-            return Task.FromResult((IBattleGameManager)manager);
+            // Battle might be already removed due to finishing
+            if (_battleGameManagers.TryGetValue(clientConnection.BattleObject.Id, out var manager))
+            {
+                manager.RemoveClient(clientConnection);
+            }
+            return Task.CompletedTask;
         }
 
         private BattleGameManager CreateBattleGameManager(MutableBattleObject battleObject)
         {
-            var gameManager = _battleGameManagers.GetOrAdd(battleObject.Id, id => new BattleGameManager(
-                battleObject,
-                LoggerFactory,
-                BattleUnitsService,
-                UserUnitsService,
-                BattlesService,
-                RewardsService));
-
-            gameManager.Finished += GameManagerOnFinished;
-            
-            return gameManager;
+            return _battleGameManagers.GetOrAdd(battleObject.Id, id =>
+            {
+                var newInstance = new BattleGameManager(
+                    battleObject,
+                    LoggerFactory,
+                    BattleLogicFactory);
+                newInstance.Finished += GameManagerOnFinished;
+                return newInstance;
+            });
         }
 
         private void GameManagerOnFinished(IBattleGameManager gameManager)
         {
+            // TODO So far, game manager persists until gets finished
+            _battleGameManagers.TryRemove(gameManager.BattleId, out _);
+            gameManager.Finished -= GameManagerOnFinished;
             gameManager.Dispose();
         }
     }

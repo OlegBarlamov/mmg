@@ -74,6 +74,7 @@ namespace Epic.Core.Objects.BattleClientConnection
         {
             ClientConnection.OnMessageReceived -= ClientConnectionOnOnMessageReceived;
             MessageReceived = null;
+            ClientConnection.Dispose();
         }
     }
 }

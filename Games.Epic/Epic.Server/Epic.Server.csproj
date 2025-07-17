@@ -16,6 +16,7 @@
       <ProjectReference Include="..\..\Utils\Adapters\Console.FrameworkAdapter\Console.FrameworkAdapter.csproj" />
       <ProjectReference Include="..\Epic.Core\Epic.Core.csproj" />
       <ProjectReference Include="..\Epic.Data\Epic.Data.csproj" />
+      <ProjectReference Include="..\Epic.Logic\Epic.Logic.csproj" />
     </ItemGroup>
 
     <ItemGroup>

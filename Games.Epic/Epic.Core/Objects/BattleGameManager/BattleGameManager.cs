@@ -9,59 +9,52 @@ using Epic.Core.Logic.Erros;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.ServerMessages;
+using Epic.Core.Services;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Epic.Core.Objects.BattleGameManager
 {
-    public class BattleGameManager : IBattleGameManager
+    public class BattleGameManager : IBattleGameManager, IBattleMessageBroadcaster
     {
         public event Action<IBattleGameManager> Finished;
-        public bool IsDisposed { get; private set; }
         public Guid BattleId => BattleObject.Id;
-        private MutableBattleObject BattleObject { get; set; }
-        private IBattleUnitsService BattleUnitsService { get; }
-        private IUserUnitsService UserUnitsService { get; }
-        private IBattlesService BattlesService { get; }
-        private IRewardsService RewardsService { get; }
+        
+        private MutableBattleObject BattleObject { get; }
+        private IBattleLogicFactory BattleLogicFactory { get; }
 
         private ILogger Logger { get; }
         
+        [CanBeNull] private IBattleLogic _battleLogic;
+        [CanBeNull] private CancellationTokenSource _battleLogicCancellationTokenSource;
+
+        private bool _isDisposed;
         private bool _isPlaying;
-        private IBattleLogic _battleLogic;
         private readonly object _battleLogicLock = new object();
-        private CancellationTokenSource _battleLogicCancellationTokenSource;
-        
         private readonly object _clientConnectionsLock = new object();
+        
         private readonly List<IBattleClientConnection> _clientConnections = new List<IBattleClientConnection>();
         
         public BattleGameManager(
             [NotNull] MutableBattleObject battleObject,
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IBattleUnitsService battleUnitsService,
-            [NotNull] IUserUnitsService userUnitsService,
-            [NotNull] IBattlesService battlesService,
-            [NotNull] IRewardsService rewardsService)
+            [NotNull] IBattleLogicFactory battleLogicFactory)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
-            BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
-            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
-            BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
-            RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
+            BattleLogicFactory = battleLogicFactory ?? throw new ArgumentNullException(nameof(battleLogicFactory));
             Logger = loggerFactory.CreateLogger<BattleGameManager>();
         }
         
         public void Dispose()
         {
-            IsDisposed = true;
+            _isDisposed = true;
             Finished = null;
-            SuspendBattle();
-            _battleLogic.Dispose();
             if (_clientConnections.Count > 0)
             {
                 Logger.LogError("There are client connections left in the BattleGameManager while disposing.");
             }
+            SuspendBattle();
         }
 
         public int GetClientsCount()
@@ -79,6 +72,9 @@ namespace Epic.Core.Objects.BattleGameManager
 
         public void PlayBattle()
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(BattleGameManager));
+                
             if (IsBattlePlaying())
                 return;
 
@@ -88,51 +84,35 @@ namespace Epic.Core.Objects.BattleGameManager
                     return;
 
                 _isPlaying = true;
-                _battleLogic ??= new BattleLogic(
-                    BattleObject,
-                    BattleUnitsService,
-                    UserUnitsService,
-                    BattlesService,
-                    RewardsService);
-                
-                _battleLogic.BroadcastMessage += BattleLogicOnBroadcastMessage;
-                _battleLogicCancellationTokenSource?.Dispose();
-                _battleLogicCancellationTokenSource = new CancellationTokenSource();
-            }
-
-            _battleLogic.Run(_battleLogicCancellationTokenSource.Token).ContinueWith(t =>
-            {
-                var battleResult = t.Result;
-                if (battleResult.Finished)
+                _battleLogic = CreateBattleLogic();
+                _battleLogic!.Run(_battleLogicCancellationTokenSource!.Token).ContinueWith(t =>
                 {
                     SuspendBattle();
-                    Finished?.Invoke(this);
-                }
-            });
 
-        }
-
-        private void BattleLogicOnBroadcastMessage(IServerBattleMessage message)
-        {
-            lock (_clientConnectionsLock)
-            {
-                Task.WhenAll(
-                    _clientConnections.Select(clientConnection => clientConnection.SendMessageAsync(message))
-                );
+                    var battleResult = t.Result;
+                    if (battleResult.Finished)
+                        Finished?.Invoke(this);
+                });
             }
         }
 
         public void SuspendBattle()
         {
             _isPlaying = false;
-            _battleLogicCancellationTokenSource?.Cancel();
+            DestroyBattleLogic();
+            StopAllConnections();
         }
 
         public Task AddClient(IBattleClientConnection connection)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(BattleGameManager));
+            
             lock (_clientConnectionsLock)
             {
                 _clientConnections.Add(connection);
+                Logger.LogInformation($"Added battle {BattleId} connection {connection.ConnectionId}. Connections: {_clientConnections.Count}");
+                
                 connection.MessageReceived += ConnectionOnMessageReceived;
                 if (_clientConnections.Count == 1)
                 {
@@ -144,21 +124,88 @@ namespace Epic.Core.Objects.BattleGameManager
         
         public Task RemoveClient(IBattleClientConnection connection)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(BattleGameManager));
+            
             lock (_clientConnectionsLock)
             {
-                _clientConnections.Remove(connection);
-                connection.MessageReceived -= ConnectionOnMessageReceived;
-                if (_clientConnections.Count == 0)
+                if (_clientConnections.Remove(connection))
                 {
-                    SuspendBattle();
+                    Logger.LogInformation(
+                        $"Removed battle {BattleId} connection {connection.ConnectionId}. Connections: {_clientConnections.Count}");
+
+                    connection.MessageReceived -= ConnectionOnMessageReceived;
+                    if (_clientConnections.Count == 0)
+                    {
+                        SuspendBattle();
+                    }
                 }
             }
             return Task.CompletedTask;
         }
-
-        public Task StopAllConnections()
+        
+        public Task BroadcastMessageAsync(IServerBattleMessage message)
         {
-            throw new NotImplementedException();
+            lock (_clientConnectionsLock)
+            {
+                return Task.WhenAll(
+                    _clientConnections.Select(clientConnection => clientConnection.SendMessageAsync(message))
+                );
+            }
+        }
+
+        private void StopAllConnections()
+        {
+            lock (_clientConnectionsLock)
+            {
+                _clientConnections.ForEach(connection =>
+                {
+                    try
+                    {
+                        connection.CloseAsync().ContinueWith(t =>
+                        {
+                            if (t.IsFaulted)
+                                Logger.LogError(t.Exception?.GetBaseException(), "Error while stopping battle connection.");
+                        });
+                        connection.Dispose();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e, "Unexpected Error while stopping or disposing a battle connection while stopping all connections.");
+                    }
+                });
+                _clientConnections.Clear();
+            }
+        }
+
+        private IBattleLogic CreateBattleLogic()
+        {
+            if (_battleLogic != null)
+            {
+                Logger.LogError("Battle logic does already exist. Disposing.");
+                DestroyBattleLogic();
+            }
+
+            _battleLogic = BattleLogicFactory.Create(BattleObject, this);
+            _battleLogicCancellationTokenSource?.Dispose();
+            _battleLogicCancellationTokenSource = new CancellationTokenSource();
+            
+            return _battleLogic;
+        }
+
+        private void DestroyBattleLogic()
+        {
+            lock (_battleLogicLock)
+            {
+                _battleLogicCancellationTokenSource?.Cancel();
+                _battleLogicCancellationTokenSource?.Dispose();
+                _battleLogicCancellationTokenSource = null;
+                if (_battleLogic != null)
+                {
+                    _battleLogic.Dispose();
+                    _battleLogic = null;
+                }
+            }
         }
 
         private async void ConnectionOnMessageReceived(IBattleClientConnection connection, IClientBattleMessage clientMessage)

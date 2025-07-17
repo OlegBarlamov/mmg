@@ -9,7 +9,6 @@ namespace Epic.Core.Logic
 {
     public interface IBattleLogic : IDisposable
     {
-        event Action<IServerBattleMessage> BroadcastMessage;
         Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage clientBattleMessage);
         
         Task<BattleResult> Run(CancellationToken cancellationToken);

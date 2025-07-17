@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Epic.Core;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
@@ -47,10 +46,10 @@ namespace Epic.Server
             UsersRepository.DeleteUserAsync(_userId);
         }
 
-        public void Configure()
+        public async void Configure()
         {
             var unitTypeId = Guid.NewGuid();
-            UnitTypesRepository.CreateUnitType(unitTypeId, new UnitTypeProperties
+            await UnitTypesRepository.CreateUnitType(unitTypeId, new UnitTypeProperties
             {
                 Name = "Unit",
                 Speed = 5,
@@ -58,39 +57,35 @@ namespace Epic.Server
                 AttackMinRange = 1,
                 Damage = 6,
                 Health = 10,
-                BattleImgUrl = "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
-                DashboardImgUrl = "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp"
+                BattleImgUrl =
+                    "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
+                DashboardImgUrl =
+                    "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp"
             });
 
-            var computerUserTask = UsersService.CreateComputerUser();
-            var computerUnit1 = computerUserTask.ContinueWith(task => UserUnitsRepository.CreateUserUnit(unitTypeId, 10, task.Result.Id, true));
-            var computerUnit2 = computerUserTask.ContinueWith(task => UserUnitsRepository.CreateUserUnit(unitTypeId, 20, task.Result.Id, true));
-            
-            UsersRepository.CreateUserAsync("admin", BasicAuthentication.GetHashFromCredentials("admin", "123"),
-                UserEntityType.Player).ContinueWith(task =>
-            {
-                var user = task.Result;
-                _userId = user.Id;
+            var computerUser = await UsersService.CreateComputerUser();
+            var computerUnit1 = await UserUnitsRepository.CreateUserUnit(unitTypeId, 10, computerUser.Id, true);
+            var computerUnit2 = await UserUnitsRepository.CreateUserUnit(unitTypeId, 20, computerUser.Id, true);
 
-                SessionsRepository.CreateSessionAsync("test_token", _userId, new SessionData());
+            var user = await UsersRepository.CreateUserAsync("admin",
+                BasicAuthentication.GetHashFromCredentials("admin", "123"),
+                UserEntityType.Player);
 
-                Task.WhenAll(computerUnit1, computerUnit2).ContinueWith(unitsTask =>
-                {
-                    var unitsTasks = unitsTask.Result;
-                    BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 10, 8, new []{unitsTasks[0].Result.Id});
-                    BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 6, 6, new []{unitsTasks[1].Result.Id}).ContinueWith(
-                        t =>
-                        {
-                            var battleDefinition = t.Result;
-                            RewardsRepository.CreateRewardAsync(battleDefinition.Id, RewardType.UnitsGain,
-                                new[] { unitTypeId }, new[] { 10 }, "Reward!");
-                        });
-                });
-                
-                UserUnitsRepository.CreateUserUnit(unitTypeId, 30, _userId, true);
-            });
-            
-            
+            _userId = user.Id;
+
+            SessionsRepository.CreateSessionAsync("test_token", _userId, new SessionData());
+
+
+            var bd1 = await BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 10, 8,
+                new[] { computerUnit1.Id });
+            var bd2 = await BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 6, 6,
+                new[] { computerUnit2.Id });
+
+
+            await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
+                new[] { unitTypeId }, new[] { 10 }, "Reward!");
+
+            await UserUnitsRepository.CreateUserUnit(unitTypeId, 30, _userId, true);
         }
 
         private class SessionData : ISessionData

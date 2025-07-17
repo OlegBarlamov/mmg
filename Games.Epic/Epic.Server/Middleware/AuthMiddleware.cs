@@ -5,6 +5,7 @@ using Epic.Server.Services;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using IAuthorizationService = Epic.Server.Services.IAuthorizationService;
 
 namespace Epic.Server.Middleware
@@ -13,13 +14,15 @@ namespace Epic.Server.Middleware
     {
         private ISessionsService SessionsService { get; }
         private IAuthorizationService AuthorizationService { get; }
+        public ILogger<AuthMiddleware> Logger { get; }
         private readonly RequestDelegate _next;
 
         public AuthMiddleware(RequestDelegate next, [NotNull] ISessionsService sessionsService,
-            [NotNull] IAuthorizationService authorizationService)
+            [NotNull] IAuthorizationService authorizationService, [NotNull] ILogger<AuthMiddleware> logger)
         {
             SessionsService = sessionsService ?? throw new ArgumentNullException(nameof(sessionsService));
             AuthorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _next = next;
         }
 
