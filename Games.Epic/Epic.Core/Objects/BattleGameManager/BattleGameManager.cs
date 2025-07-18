@@ -218,13 +218,7 @@ namespace Epic.Core.Objects.BattleGameManager
                 {
                     await _battleLogic.OnClientMessage(connection, clientMessage);
                     if (connection.IsConnected)
-                    {
-                        await connection.SendMessageAsync(new CommandApproved(clientMessage)
-                        {
-                            CommandId = Guid.NewGuid().ToString(),
-                            TurnNumber = clientMessage.TurnIndex,
-                        });
-                    }
+                        await connection.SendMessageAsync(new CommandApproved(clientMessage));
                 }
                 else
                 {
@@ -234,22 +228,13 @@ namespace Epic.Core.Objects.BattleGameManager
             catch (ClientCommandRejected e)
             {
                 if (connection.IsConnected)
-                {
-                    await connection.SendMessageAsync(new CommandRejected(clientMessage, e.GetType().Name, e.Message)
-                    {
-                        CommandId = Guid.NewGuid().ToString(),
-                        TurnNumber = clientMessage.TurnIndex,
-                    });
-                }
+                    await connection.SendMessageAsync(new CommandRejected(clientMessage, e.GetType().Name, e.Message));
             }
             catch (Exception e)
             {
                 Logger.LogError($"Error while processing the client message: {clientMessage}. {e.Message}");
-                await connection.SendMessageAsync(new CommandRejected(clientMessage, "Unknown reason", e.Message)
-                {
-                    CommandId = Guid.NewGuid().ToString(),
-                    TurnNumber = clientMessage.TurnIndex,
-                });
+                if (connection.IsConnected)
+                    await connection.SendMessageAsync(new CommandRejected(clientMessage, "Unknown reason", e.Message));
             }
         }
     }

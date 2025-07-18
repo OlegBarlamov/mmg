@@ -93,12 +93,7 @@ namespace Epic.Logic
                         continue;
                     
                     activeUnit = GetActiveUnit(BattleObject.TurnIndex);
-                    var serverCommand = new NextTurnCommandFromServer
-                    {
-                        CommandId = Guid.NewGuid().ToString(),
-                        TurnNumber = BattleObject.TurnIndex,
-                        Player = ((InBattlePlayerNumber)activeUnit.PlayerIndex).ToString(),
-                    };
+                    var serverCommand = new NextTurnCommandFromServer(BattleObject.TurnIndex, (InBattlePlayerNumber)activeUnit.PlayerIndex);
                     await BroadcastMessageToClientAndSaveAsync(serverCommand);
                 }
             }
@@ -121,10 +116,8 @@ namespace Epic.Logic
                     }
                 }
 
-                var battleFinishedCommand = new BattleFinishedCommandFromServer
+                var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnIndex)
                 {
-                    CommandId = Guid.NewGuid().ToString(),
-                    TurnNumber = BattleObject.TurnIndex,
                     Winner = battleResult.Winner?.ToString() ?? string.Empty,
                 };
                 await BroadcastMessageToClientAndSaveAsync(battleFinishedCommand);
@@ -222,26 +215,14 @@ namespace Epic.Logic
             //TODO Check if it is reachable 
 
             await BattleUnitsService.UpdateUnits(new[] { mutableActor });
-
-            var serverMoveCommand = new UnitMoveCommandFromServer
-            {
-                CommandId = Guid.NewGuid().ToString(),
-                TurnNumber = command.TurnIndex,
-                Player = command.Player.ToString(),
-                ActorId = command.ActorId,
-                MoveToCell = command.MoveToCell
-            };
-            await BroadcastMessageToClientAndSaveAsync(serverMoveCommand);
-
-            var serverUnitAttackCommand = new UnitAttackCommandFromServer
-            {
-                CommandId = Guid.NewGuid().ToString(),
-                TurnNumber = command.TurnIndex,
-                Player = command.Player.ToString(),
-                ActorId = command.ActorId,
-                TargetId = command.TargetId,
-            };
-            await BroadcastMessageToClientAndSaveAsync(serverUnitAttackCommand);
+            
+            await BroadcastMessageToClientAndSaveAsync(
+                new UnitMoveCommandFromServer(command.TurnIndex, command.Player, command.ActorId, command.MoveToCell)
+                );
+            
+            await BroadcastMessageToClientAndSaveAsync(
+                new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.ActorId, command.TargetId)
+                );
             
             var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(targetActor, targetTarget);
             targetTarget.UserUnit.Count = unitTakesDamageData.RemainingCount;
@@ -253,12 +234,8 @@ namespace Epic.Logic
             
             await BattleUnitsService.UpdateUnits(new[] { targetTarget });
                 
-            var serverUnitTakesDamage = new UnitTakesDamageCommandFromServer
+            var serverUnitTakesDamage = new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, command.ActorId)
             {
-                CommandId = Guid.NewGuid().ToString(),
-                TurnNumber = command.TurnIndex,
-                Player = command.Player.ToString(),
-                ActorId = command.TargetId,
                 DamageTaken = unitTakesDamageData.DamageTaken,
                 KilledCount = unitTakesDamageData.KilledCount,
                 RemainingCount = unitTakesDamageData.RemainingCount,
@@ -286,15 +263,9 @@ namespace Epic.Logic
             //TODO Check if it is reachable 
             
             await BattleUnitsService.UpdateUnits(new[] { mutableActor });
-            
-            var serverCommand = new UnitMoveCommandFromServer
-            {
-                CommandId = Guid.NewGuid().ToString(),
-                TurnNumber = command.TurnIndex,
-                Player = command.Player.ToString(),
-                ActorId = command.ActorId,
-                MoveToCell = command.MoveToCell
-            };
+
+            var serverCommand = new UnitMoveCommandFromServer(command.TurnIndex, command.Player, command.ActorId,
+                command.MoveToCell);
             await BroadcastMessageToClientAndSaveAsync(serverCommand);
             
             _awaitPlayerTurnTaskCompletionSource?.SetResult(null);

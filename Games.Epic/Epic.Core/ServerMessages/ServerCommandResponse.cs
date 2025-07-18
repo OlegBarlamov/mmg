@@ -2,10 +2,6 @@ using Epic.Core.ClientMessages;
 
 namespace Epic.Core.ServerMessages
 {
-    // requestedCommand: BattleCommandToServer
-    // status: BattleServerMessageResponseStatus
-    // rejectedReason: BattleServerMessageRejectionReason | undefined
-    // rejectedReasonDetails: string | undefined
     public abstract class ServerCommandResponse : BaseCommandFromServer
     {
         public IClientBattleMessage RequestedCommand { get; }
@@ -14,7 +10,7 @@ namespace Epic.Core.ServerMessages
         public string RejectedReasonDetails { get; set; }
         public override string Command { get; } = "RESPONSE";
 
-        public ServerCommandResponse(IClientBattleMessage requestedCommand)
+        protected ServerCommandResponse(int turnNumber, IClientBattleMessage requestedCommand) : base(turnNumber)
         {
             RequestedCommand = requestedCommand;
         }
@@ -25,7 +21,7 @@ namespace Epic.Core.ServerMessages
         public override string Status => "Approved";
         
         public CommandApproved(IClientBattleMessage requestedCommand)
-            : base(requestedCommand)
+            : base(requestedCommand.TurnIndex, requestedCommand)
         {
         }
     }
@@ -35,7 +31,7 @@ namespace Epic.Core.ServerMessages
         public override string Status => "Rejected";
 
         public CommandRejected(IClientBattleMessage requestedCommand, string rejectedReason, string rejectedReasonDetails)
-            : base(requestedCommand)
+            : base(requestedCommand.TurnIndex, requestedCommand)
         {
             RejectedReason = rejectedReason;
             RejectedReasonDetails = rejectedReasonDetails;
