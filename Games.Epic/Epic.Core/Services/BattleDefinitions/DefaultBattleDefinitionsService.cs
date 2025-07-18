@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Services.Units;
 using Epic.Data.BattleDefinitions;
 using JetBrains.Annotations;
 
-namespace Epic.Core
+namespace Epic.Core.Services.BattleDefinitions
 {
     [UsedImplicitly]
     public class DefaultBattleDefinitionsService : IBattleDefinitionsService

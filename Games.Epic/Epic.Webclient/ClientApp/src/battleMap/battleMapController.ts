@@ -1,24 +1,24 @@
-import {IHexagon} from "../canvas/hexagon";
-import {BattleMap, BattleMapCell} from "./battleMap";
-import {ICanvasService} from "../services/canvasService";
-import {IUnitTile} from "../canvas/unitTile";
-import {getPlayerColor} from "../player/getPlayerColor";
-import {BattleMapUnit} from "./battleMapUnit";
-import {Point} from "../common/Point";
-import {distance} from "../common/math";
-import {BattleMapHighlighter, IBattleMapHighlighter} from "./battleMapHighlighter";
+import { IHexagon } from "../canvas/hexagon";
+import { BattleMap, BattleMapCell } from "./battleMap";
+import { ICanvasService } from "../services/canvasService";
+import { IUnitTile } from "../canvas/unitTile";
+import { getPlayerColor } from "../player/getPlayerColor";
+import { BattleMapUnit } from "./battleMapUnit";
+import { Point } from "../common/Point";
+import { distance } from "../common/math";
+import { BattleMapHighlighter, IBattleMapHighlighter } from "./battleMapHighlighter";
 
 export interface IBattleMapController {
     readonly map: BattleMap
     readonly battleMapHighlighter: IBattleMapHighlighter
-    
+
     moveUnit(unit: BattleMapUnit, row: number, col: number): Promise<void>
     removeUnit(unit: BattleMapUnit): Promise<void>
 
     getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell
-    
-    unitTakeDamage(unit: BattleMapUnit, damage: number): Promise<void>
-    
+
+    unitTakeDamage(unit: BattleMapUnit, damageTaken: number, killedCount: number, remainingCount: number, remainingHealth: number): Promise<void>
+
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
 
@@ -28,7 +28,7 @@ export interface IBattleMapController {
 export class BattleMapController implements IBattleMapController {
     readonly map: BattleMap
     readonly battleMapHighlighter: IBattleMapHighlighter
-    
+
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
 
@@ -38,7 +38,7 @@ export class BattleMapController implements IBattleMapController {
     onUnitMouseMove: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
     onUnitMouseEnter: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
     onUnitMouseLeave: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
-    
+
     private hexagons: IHexagon[][] = []
     private units: IUnitTile[] = []
 
@@ -57,16 +57,16 @@ export class BattleMapController implements IBattleMapController {
         this.canvasService = canvasService
         this.battleMapHighlighterImpl = new BattleMapHighlighter(canvasService, this, this.defaultCellsFillColor)
         this.battleMapHighlighter = this.battleMapHighlighterImpl
-        
+
         this.visualOffset = this.getCanvasOffset()
     }
 
     destroy(): void {
         this.battleMapHighlighterImpl.destroy()
-        
+
         this.units.forEach(x => this.canvasService.destroyUnit(x))
         this.units = []
-        
+
         this.hexagons.forEach(rows => rows.forEach(x => this.canvasService.destroyHexagon(x)))
         this.hexagons = []
     }
@@ -92,23 +92,18 @@ export class BattleMapController implements IBattleMapController {
         return closestHexagon.cell
     }
 
-    async unitTakeDamage(target: BattleMapUnit, damage: number): Promise<void> {
-        // TODO copy-past
-        target.currentProps.health = target.currentProps.health - damage
-        if (target.currentProps.health < 0) {
-            const killedUnits = Math.trunc(target.currentProps.health * (-1) / target.props.health) + 1
-            target.currentProps.health = target.currentProps.health + killedUnits * target.props.health
-            target.count = target.count - killedUnits
+    async unitTakeDamage(target: BattleMapUnit, damageTaken: number, killedCount: number, remainingCount: number, remainingHealth: number): Promise<void> {
+        target.currentProps.health = remainingHealth
+        target.count = remainingCount
 
-            if (target.count < 1) {
-                await this.removeUnit(target)
-            } else {
-                const unitTile = this.getUnitTile(target)
-                await this.canvasService.changeUnit(unitTile, {
-                    ...unitTile,
-                    text: target.count.toString()
-                })
-            }
+        if (target.count < 1) {
+            await this.removeUnit(target)
+        } else {
+            const unitTile = this.getUnitTile(target)
+            await this.canvasService.changeUnit(unitTile, {
+                ...unitTile,
+                text: target.count.toString()
+            })
         }
     }
 
@@ -117,14 +112,14 @@ export class BattleMapController implements IBattleMapController {
         this.canvasService.destroyUnit(unitTile)
         const unitIndex = this.map.units.indexOf(unit)
         if (unitIndex >= 0) {
-            this.map.units.splice(this.map.units.indexOf(unit), 1)   
+            this.map.units.splice(this.map.units.indexOf(unit), 1)
         }
         this.units.splice(this.units.indexOf(unitTile), 1)
         return Promise.resolve()
     }
 
     private getCanvasOffset(): Point {
-        const offset = {x: 0, y: 0}
+        const offset = { x: 0, y: 0 }
         const containerSize = this.canvasService.size()
         const gridDesiredSize = this.map.grid.getSize(this.cellRadius)
 
@@ -150,7 +145,7 @@ export class BattleMapController implements IBattleMapController {
                 y: newPoint.y + this.visualOffset.y,
             }
         })
-        unit.position = {r, c}
+        unit.position = { r, c }
     }
 
     getHexagon(row: number, col: number): IHexagon {
@@ -162,7 +157,7 @@ export class BattleMapController implements IBattleMapController {
         if (!tileUnit) throw new Error("Unit not found on the map")
         return tileUnit
     }
-    
+
 
     loadMap(): Promise<void> {
         if (this.hexagons.length !== 0) throw new Error("Cannot regenerate the visuals of already loaded map")
@@ -194,7 +189,7 @@ export class BattleMapController implements IBattleMapController {
         return Promise.resolve()
     }
 
-    async loadUnits() : Promise<void> {
+    async loadUnits(): Promise<void> {
         if (this.units.length !== 0) throw new Error("Cannot regenerate the units tiles of already loaded map")
 
         for (const unit of this.map.units) {

@@ -5,7 +5,7 @@ using Epic.Core.Objects;
 using Epic.Data;
 using JetBrains.Annotations;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Users
 {
     [UsedImplicitly]
     public class DefaultUsersService : IUsersService

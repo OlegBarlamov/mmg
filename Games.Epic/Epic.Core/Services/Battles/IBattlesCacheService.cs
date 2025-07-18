@@ -1,7 +1,7 @@
 using System;
 using Epic.Core.Objects.Battle;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Battles
 {
     public interface IBattlesCacheService
     {

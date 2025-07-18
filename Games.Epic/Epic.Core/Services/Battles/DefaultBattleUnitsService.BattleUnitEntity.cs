@@ -4,7 +4,7 @@ using Epic.Core.Objects.BattleUnit;
 using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Battles
 {
     public partial class DefaultBattleUnitsService
     {

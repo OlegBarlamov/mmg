@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Epic.Core;
+using Epic.Core.Services.Users;
 using Epic.Server.Authentication;
 using Epic.Server.Objects;
 using JetBrains.Annotations;

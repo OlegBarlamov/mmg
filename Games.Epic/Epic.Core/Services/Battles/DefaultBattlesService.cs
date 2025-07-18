@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Epic.Core.Logic;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleUnit;
+using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Units;
+using Epic.Core.Services.Users;
 using Epic.Data.Battles;
 using JetBrains.Annotations;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Battles
 {
     [UsedImplicitly]
     public class DefaultBattlesService : IBattlesService

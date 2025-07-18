@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Epic.Core.Objects.Battle;
 using JetBrains.Annotations;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Battles
 {
     [UsedImplicitly]
     public class DefaultBattlesCacheService : IBattlesCacheService

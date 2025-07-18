@@ -13,6 +13,9 @@ using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Objects.BattleGameManager;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Core.ServerMessages;
+using Epic.Core.Services.Battles;
+using Epic.Core.Services.Rewards;
+using Epic.Core.Services.Units;
 using JetBrains.Annotations;
 
 namespace Epic.Logic
@@ -103,29 +106,32 @@ namespace Epic.Logic
             }
 
             if (battleResult.Finished)
-            {
-                if (battleResult.Winner != null)
-                {
-                    var winnerUserId = BattleObject.GetPlayerUserId(battleResult.Winner.Value);
-                    if (winnerUserId.HasValue)
-                    {
-                        var rewards =
-                            await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
-                        var rewardsIds = rewards.Select(x => x.Id).ToArray();
-                        await RewardsService.GiveRewardsToUserAsync(rewardsIds, winnerUserId.Value);
-                    }
-                }
-
-                var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnIndex)
-                {
-                    Winner = battleResult.Winner?.ToString() ?? string.Empty,
-                };
-                await BroadcastMessageToClientAndSaveAsync(battleFinishedCommand);
-
-                await BattlesService.FinishBattle(BattleObject, battleResult);
-            }
+                await OnBattleFinished(battleResult);
             
             return battleResult;
+        }
+
+        private async Task OnBattleFinished(BattleResult battleResult)
+        {
+            if (battleResult.Winner != null)
+            {
+                var winnerUserId = BattleObject.GetPlayerUserId(battleResult.Winner.Value);
+                if (winnerUserId.HasValue)
+                {
+                    var rewards =
+                        await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
+                    var rewardsIds = rewards.Select(x => x.Id).ToArray();
+                    await RewardsService.GiveRewardsToUserAsync(rewardsIds, winnerUserId.Value);
+                }
+            }
+
+            var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnIndex)
+            {
+                Winner = battleResult.Winner?.ToString() ?? string.Empty,
+            };
+            await BroadcastMessageToClientAndSaveAsync(battleFinishedCommand);
+
+            await BattlesService.FinishBattle(BattleObject, battleResult);
         }
 
         private Task BroadcastMessageToClientAndSaveAsync(IServerBattleMessage message)

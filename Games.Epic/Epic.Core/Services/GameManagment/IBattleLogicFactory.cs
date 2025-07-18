@@ -2,7 +2,7 @@ using Epic.Core.Logic;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleGameManager;
 
-namespace Epic.Core.Services
+namespace Epic.Core.Services.GameManagment
 {
     public interface IBattleLogicFactory
     {

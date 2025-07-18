@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Epic.Core;
 using Epic.Core.Objects.ClientConnection;
+using Epic.Core.Services.Connection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 

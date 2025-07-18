@@ -1,5 +1,6 @@
 using System;
 using Epic.Core;
+using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Reward;

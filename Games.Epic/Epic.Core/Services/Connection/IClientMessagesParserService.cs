@@ -5,7 +5,7 @@ using Epic.Core.ClientMessages;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Connection
 {
     public interface IClientMessagesParserService
     {

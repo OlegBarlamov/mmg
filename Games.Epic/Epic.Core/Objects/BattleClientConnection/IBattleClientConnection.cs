@@ -5,6 +5,7 @@ using Epic.Core.ClientMessages;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.ClientConnection;
 using Epic.Core.ServerMessages;
+using Epic.Core.Services.Connection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 

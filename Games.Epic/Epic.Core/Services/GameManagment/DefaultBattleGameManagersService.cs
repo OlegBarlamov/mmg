@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Objects.BattleGameManager;
-using Epic.Core.Services;
+using Epic.Core.Services.Battles;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Core
+namespace Epic.Core.Services.GameManagment
 {
     [UsedImplicitly]
     public class DefaultBattleGameManagersService : IBattleGameManagersService
@@ -67,6 +67,7 @@ namespace Epic.Core
         {
             // TODO So far, game manager persists until gets finished
             _battleGameManagers.TryRemove(gameManager.BattleId, out _);
+            BattlesCacheService.ReleaseBattle(gameManager.BattleId);
             gameManager.Finished -= GameManagerOnFinished;
             gameManager.Dispose();
         }

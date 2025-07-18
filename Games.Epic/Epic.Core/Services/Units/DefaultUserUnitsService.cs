@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Objects.UserUnit;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.UserUnits;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Units
 {
     public class DefaultUserUnitsService : IUserUnitsService
     {

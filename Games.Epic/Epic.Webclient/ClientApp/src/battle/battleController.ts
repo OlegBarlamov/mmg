@@ -104,7 +104,7 @@ export class BattleController implements IBattleController {
             action = await this.battleUserInputController.getUserInputAction(unit, cellsForMove, attackTargets, cancellationTokenSource.token)
         } catch (e) {
             if (e instanceof TaskCancelledError) {
-                return
+                // Do nothing
             }
             throw e
         } finally {

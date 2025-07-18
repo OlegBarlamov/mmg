@@ -6,7 +6,7 @@ using Epic.Data.UnitTypes;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Core
+namespace Epic.Core.Services.UnitTypes
 {
     [UsedImplicitly]
     public class DefaultUnitTypesService : IUnitTypesService

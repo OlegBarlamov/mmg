@@ -5,7 +5,7 @@ using Epic.Core.Objects.ClientConnection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Connection
 {
     public interface IBattleConnectionsService
     {

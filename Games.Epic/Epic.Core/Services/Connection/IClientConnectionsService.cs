@@ -1,6 +1,6 @@
 using Epic.Core.Objects.ClientConnection;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Connection
 {
     public interface IClientConnectionsService<in TConnectionType>
     {

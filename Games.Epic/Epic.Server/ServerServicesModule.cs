@@ -3,6 +3,14 @@ using Console.Core;
 using Console.FrameworkAdapter;
 using Epic.Core;
 using Epic.Core.Services;
+using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Battles;
+using Epic.Core.Services.Connection;
+using Epic.Core.Services.GameManagment;
+using Epic.Core.Services.Rewards;
+using Epic.Core.Services.Units;
+using Epic.Core.Services.UnitTypes;
+using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Battles;
@@ -14,6 +22,7 @@ using Epic.Logic;
 using Epic.Server.Services;
 using FrameworkSDK.DependencyInjection;
 using JetBrains.Annotations;
+using DefaultBattleUnitsService = Epic.Core.Services.Battles.DefaultBattleUnitsService;
 
 namespace Epic.Server
 {

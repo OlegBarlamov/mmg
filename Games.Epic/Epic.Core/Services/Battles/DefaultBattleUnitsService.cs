@@ -4,28 +4,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Objects.BattleUnit;
+using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NetExtensions.Collections;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Battles
 {
     [UsedImplicitly]
     public partial class DefaultBattleUnitsService : IBattleUnitsService
     {
         public IBattleUnitsRepository BattleUnitsRepository { get; }
         public IUserUnitsService UserUnitsService { get; }
-        
+        public IBattlesCacheService CacheService { get; }
+
         private ILogger<DefaultBattleUnitsService> Logger { get; }
 
-        public DefaultBattleUnitsService([NotNull] IBattleUnitsRepository battleUnitsRepository,
-            [NotNull] IUserUnitsService userUnitsService, [NotNull] ILoggerFactory loggerFactory)
+        public DefaultBattleUnitsService(
+            [NotNull] IBattleUnitsRepository battleUnitsRepository,
+            [NotNull] IUserUnitsService userUnitsService,
+            [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] IBattlesCacheService cacheService)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             BattleUnitsRepository =
                 battleUnitsRepository ?? throw new ArgumentNullException(nameof(battleUnitsRepository));
             UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
+            CacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
             Logger = loggerFactory.CreateLogger<DefaultBattleUnitsService>();
         }
 
@@ -56,11 +62,8 @@ namespace Epic.Core
             return createdBattleUnits;
         }
 
-        public Task UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnits, bool updateCache = false)
+        public Task UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnits)
         {
-            if (updateCache)
-                throw new NotImplementedException();
-            
             var entities = battleUnits.Select(BattleUnitEntity.FromBattleUnitObject).ToArray<IBattleUnitEntity>();
             return BattleUnitsRepository.Update(entities);
         }

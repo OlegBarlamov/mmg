@@ -4,6 +4,10 @@ using Epic.Core.Logic;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleGameManager;
 using Epic.Core.Services;
+using Epic.Core.Services.Battles;
+using Epic.Core.Services.GameManagment;
+using Epic.Core.Services.Rewards;
+using Epic.Core.Services.Units;
 using JetBrains.Annotations;
 
 namespace Epic.Logic

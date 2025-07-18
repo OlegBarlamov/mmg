@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core;
+using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Rewards;
 using Epic.Server.Authentication;
 using Epic.Server.Resources;
 using JetBrains.Annotations;

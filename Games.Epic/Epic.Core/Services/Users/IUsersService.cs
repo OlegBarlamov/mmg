@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Users
 {
     public interface IUsersService
     {

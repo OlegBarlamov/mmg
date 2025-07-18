@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Objects.UserUnit;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Units
 {
     public interface IUserUnitsService
     {

@@ -117,7 +117,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
         } else if (message.command === 'TAKE_DAMAGE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                await this.mapController.unitTakeDamage(unit, message.damageTaken)
+                await this.mapController.unitTakeDamage(unit, message.damageTaken, message.killedCount, message.remainingCount, message.remainingHealth)
                 return
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)

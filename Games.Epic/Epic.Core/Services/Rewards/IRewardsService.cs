@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Epic.Core.Objects.Rewards;
 
-namespace Epic.Core
+namespace Epic.Core.Services.Rewards
 {
     public interface IRewardsService
     {
