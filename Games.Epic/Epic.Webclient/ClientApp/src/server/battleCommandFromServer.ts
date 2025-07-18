@@ -7,7 +7,7 @@ interface BaseCommandFromServer {
     turnNumber: number
 }
 
-interface PlayerCommandFromServer extends BaseCommandFromServer {
+export interface PlayerCommandFromServer extends BaseCommandFromServer {
     player: BattlePlayerNumber
 }
 

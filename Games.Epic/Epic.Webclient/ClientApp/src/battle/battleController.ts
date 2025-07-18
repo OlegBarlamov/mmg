@@ -8,6 +8,7 @@ import { BattleUserInputController } from "./battleUserInputController";
 import { getAttackTargets, getCellsForUnitMove } from "./battleLogic";
 import { IBattleActionsProcessor } from "./battleActionsProcessor";
 import { ITurnAwaiter } from "./battleServerMessagesHandler";
+import { SignalBasedCancellationToken, TaskCancelledError } from "../common/cancellationToken";
 
 export interface IBattleController {
     startBattle(): Promise<BattlePlayerNumber | null>
@@ -62,6 +63,7 @@ export class BattleController implements IBattleController {
 
             try {
                 const currentUnit = this.orderedUnits[currentStepUnitIndex]
+                this.map.turnInfo.player = currentUnit.player
 
                 await this.processStep(currentUnit)
 
@@ -95,16 +97,26 @@ export class BattleController implements IBattleController {
         this.mapController.battleMapHighlighter.highlightCellsForMove(cellsForMove)
         this.mapController.battleMapHighlighter.highlightAttackTargets(attackTargets)
 
-        let action: BattleUserAction
+        const cancellationTokenSource = new SignalBasedCancellationToken(this.turnAwaiter.onCurrentPlayerActionReceived)
+
+        let action: BattleUserAction | null = null
         try {
-            action = await this.battleUserInputController.getUserInputAction(unit, cellsForMove, attackTargets)
+            action = await this.battleUserInputController.getUserInputAction(unit, cellsForMove, attackTargets, cancellationTokenSource.token)
+        } catch (e) {
+            if (e instanceof TaskCancelledError) {
+                return
+            }
+            throw e
         } finally {
+            cancellationTokenSource.dispose()
             this.mapController.battleMapHighlighter.restoreHighlightingForCells(cellsForMove)
             this.mapController.battleMapHighlighter.restoreHighlightingForAttackTargets(attackTargets)
             await this.mapController.battleMapHighlighter.setActiveUnit(null)
         }
 
-        await this.battleActionProcessor.processAction(action)
+        if (action) {
+            await this.battleActionProcessor.processAction(action)
+        }
 
         await wait(500)
     }

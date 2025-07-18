@@ -3,6 +3,7 @@ import {BattleMapCell} from "../battleMap/battleMap";
 import {IAttackTarget} from "./attackTarget";
 import {BattleUserAction} from "./battleUserAction";
 import {IBattleMapController} from "../battleMap/battleMapController";
+import { CancellationToken, TaskCancelledError } from "../common/cancellationToken";
 
 export class BattleUserInputController {
     private mapController: IBattleMapController
@@ -11,8 +12,17 @@ export class BattleUserInputController {
         this.mapController = mapController
     }
     
-    getUserInputAction(originalUnit: BattleMapUnit, cellsToMove: BattleMapCell[], attackTargets: IAttackTarget[]): Promise<BattleUserAction> {
-        return new Promise((resolve) => {
+    getUserInputAction(
+        originalUnit: BattleMapUnit, 
+        cellsToMove: BattleMapCell[], 
+        attackTargets: IAttackTarget[],
+         cancellationToken: CancellationToken,
+        ): Promise<BattleUserAction> {
+        return new Promise((resolve, reject) => {
+            cancellationToken.onCancel(() => {
+                reject(new TaskCancelledError())
+            })
+
             this.mapController.onCellMouseClick = (cell) => {
                 if (cellsToMove.indexOf(cell) >= 0) {
                     this.mapController.onCellMouseClick = null

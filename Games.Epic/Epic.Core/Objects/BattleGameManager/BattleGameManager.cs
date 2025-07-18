@@ -217,11 +217,14 @@ namespace Epic.Core.Objects.BattleGameManager
                 if (_battleLogic != null)
                 {
                     await _battleLogic.OnClientMessage(connection, clientMessage);
-                    await connection.SendMessageAsync(new CommandApproved(clientMessage)
+                    if (connection.IsConnected)
                     {
-                        CommandId = Guid.NewGuid().ToString(),
-                        TurnNumber = clientMessage.TurnIndex,
-                    });
+                        await connection.SendMessageAsync(new CommandApproved(clientMessage)
+                        {
+                            CommandId = Guid.NewGuid().ToString(),
+                            TurnNumber = clientMessage.TurnIndex,
+                        });
+                    }
                 }
                 else
                 {
@@ -230,11 +233,14 @@ namespace Epic.Core.Objects.BattleGameManager
             }
             catch (ClientCommandRejected e)
             {
-                await connection.SendMessageAsync(new CommandRejected(clientMessage, e.GetType().Name, e.Message)
+                if (connection.IsConnected)
                 {
-                    CommandId = Guid.NewGuid().ToString(),
-                    TurnNumber = clientMessage.TurnIndex,
-                });
+                    await connection.SendMessageAsync(new CommandRejected(clientMessage, e.GetType().Name, e.Message)
+                    {
+                        CommandId = Guid.NewGuid().ToString(),
+                        TurnNumber = clientMessage.TurnIndex,
+                    });
+                }
             }
             catch (Exception e)
             {

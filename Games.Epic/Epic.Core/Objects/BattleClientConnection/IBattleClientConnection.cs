@@ -13,6 +13,7 @@ namespace Epic.Core.Objects.BattleClientConnection
     public interface IBattleClientConnection : IDisposable
     {
         event Action<IBattleClientConnection, IClientBattleMessage> MessageReceived;
+        bool IsConnected { get; }
         Guid ConnectionId { get; }
         public IBattleObject BattleObject { get; }
         
@@ -24,7 +25,8 @@ namespace Epic.Core.Objects.BattleClientConnection
     {
         public event Action<IBattleClientConnection, IClientBattleMessage> MessageReceived;
         public IClientConnection ClientConnection { get; }
-        
+
+        public bool IsConnected => ClientConnection.IsActive;
         public Guid ConnectionId => ClientConnection.ConnectionId;
         public IBattleObject BattleObject { get; }
         public IClientMessagesParserService ClientMessagesParserService { get; }

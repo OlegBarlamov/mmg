@@ -58,7 +58,7 @@ export class CanvasService implements ICanvasService {
         const pixiUnit = unit as PixiUnitTile
         if (!pixiUnit) throw new Error("The input unit is not PIXI based")
         
-        if (pixiUnit.text != newProps.text) {
+        if (pixiUnit.text !== newProps.text) {
             pixiUnit.textGraphics.text = newProps.text
         }
         

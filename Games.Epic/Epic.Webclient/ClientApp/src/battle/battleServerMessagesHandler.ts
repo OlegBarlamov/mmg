@@ -1,11 +1,13 @@
-import { BattleCommandFromServer } from "../server/battleCommandFromServer";
+import { BattleCommandFromServer, PlayerCommandFromServer } from "../server/battleCommandFromServer";
 import {IBattleConnectionMessagesHandler} from "../server/battleServerConnection";
 import {getUnitById} from "./battleLogic";
 import {IBattleMapController} from "../battleMap/battleMapController";
 import {BattleTurnInfo} from "../battleMap/battleMap";
 import { BattlePlayerNumber } from "../player/playerNumber";
+import { Signal } from "typed-signals";
 
 export interface ITurnAwaiter {
+    onCurrentPlayerActionReceived: Signal<() => void>
     readonly currentTurnIndex: number
     getCurrentTurnInfo(): BattleTurnInfo 
     waitForTurn(turnIndex: number): Promise<BattleTurnInfo>
@@ -13,6 +15,7 @@ export interface ITurnAwaiter {
 }
 
 export class BattleServerMessagesHandler implements IBattleConnectionMessagesHandler, ITurnAwaiter {
+    onCurrentPlayerActionReceived: Signal<() => void> = new Signal()
     currentTurnIndex: number
     
     private disposed = false
@@ -73,6 +76,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     dispose(): void {
         this.disposed = true
         
+        this.onCurrentPlayerActionReceived.disconnectAll()
+
         this.rejectAwaitingPromises.forEach((reject: (error: Error) => void, key: number) =>
             this.rejectAwaitingPromiseForTurn(key, new Error("The battle is disposed"))
         )
@@ -86,6 +91,10 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     async onMessage(message: BattleCommandFromServer): Promise<void> {
         if (this.disposed) return
         
+        if ((message as PlayerCommandFromServer).player === this.getCurrentTurnInfo().player) {
+            this.onCurrentPlayerActionReceived.emit()
+        }
+
         if (message.command === 'UNIT_MOVE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
