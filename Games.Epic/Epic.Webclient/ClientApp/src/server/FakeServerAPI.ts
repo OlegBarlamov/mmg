@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IPlayerInfo, IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -38,6 +38,15 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    getPlayer(id: string): Promise<IPlayerInfo> {
+        throw new Error("Method not implemented.");
+    }
+    getPlayers(): Promise<IPlayerInfo[]> {
+        throw new Error("Method not implemented.");
+    }
+    setActivePlayer(playerId: string): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
     private readonly users = new Map<string, IUserInfo>()
     
     private readonly units = new Map<string, IUserUnit[]>()
@@ -61,6 +70,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         const userInfo = {
             userId,
             userName: "FakeName",
+            playerId: null,
         }
         this.users.set(token, userInfo)
         

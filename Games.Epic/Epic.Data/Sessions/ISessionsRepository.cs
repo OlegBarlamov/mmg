@@ -10,6 +10,7 @@ namespace Epic.Data
         Task UpdateIsRevokedAsync(Guid sessionId, bool isRevoked);
         Task SetRevokedAsync(Guid sessionId, bool isRevoked, string reason, DateTime? revokedAt);
         Task UpdateLastVisit(Guid sessionId, DateTime lastVisit);
+        Task SetPlayerId(Guid sessionId, Guid? playerId);
         Task DeleteSessionByIdAsync(Guid sessionId);
     }
 }

@@ -25,8 +25,10 @@ namespace Epic.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentNotAcceptedRewards()
         {
-            var userId = User.GetId();
-            var rewards = await RewardsService.GetNotAcceptedUserRewards(userId);
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            
+            var rewards = await RewardsService.GetNotAcceptedPlayerRewards(playerId);
             var rewardResources = rewards.Select(x => new AcceptingRewardResource(x));
             return Ok(rewardResources);
         }
@@ -34,13 +36,16 @@ namespace Epic.Server.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> AcceptReward(Guid id, [FromBody] AcceptRewardRequestBody body)
         {
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            
             if (body.Accepted)
             {
-                var acceptResult = await RewardsService.AcceptRewardAsync(id, User.GetId(), body.Amounts);
+                var acceptResult = await RewardsService.AcceptRewardAsync(id, playerId, body.Amounts);
                 return Ok(new AcceptedRewardResource(acceptResult));
             }
 
-            var rejectResult = await RewardsService.RejectRewardAsync(id, User.GetId());
+            var rejectResult = await RewardsService.RejectRewardAsync(id, playerId);
             return Ok(new AcceptedRewardResource(rejectResult));
         }
     }

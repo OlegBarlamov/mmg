@@ -27,7 +27,7 @@ namespace Epic.Server.Controllers
             try
             {
                 var user = await UsersService.GetUserById(User.GetId());
-                return Ok(new UserResource(user));
+                return Ok(new UserResource(user, User.GetPlayerId()));
             }
             catch (EntityNotFoundException e)
             {

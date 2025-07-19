@@ -15,20 +15,20 @@ namespace Epic.Core.Services.Rewards
     {
         public IRewardsRepository RewardsRepository { get; }
         public IUnitTypesService UnitTypesService { get; }
-        public IUserUnitsService UserUnitsService { get; }
+        public IPlayerUnitsService PlayerUnitsService { get; }
 
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IUnitTypesService unitTypesService,
-            [NotNull] IUserUnitsService userUnitsService)
+            [NotNull] IPlayerUnitsService playerUnitsService)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
-            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
+            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
         }
-        public async Task<IRewardObject[]> GetNotAcceptedUserRewards(Guid userId)
+        public async Task<IRewardObject[]> GetNotAcceptedPlayerRewards(Guid playerId)
         {
-            var entities = await RewardsRepository.FindNotAcceptedRewardsByUserIdAsync(userId);
+            var entities = await RewardsRepository.FindNotAcceptedRewardsByPlayerId(playerId);
             return await Task.WhenAll(entities.Select(ToRewardObject));
         }
 
@@ -50,38 +50,38 @@ namespace Epic.Core.Services.Rewards
             return rewardsDictionary[battleDefinitionId];
         }
 
-        public Task GiveRewardsToUserAsync(Guid[] rewardIds, Guid userId)
+        public Task GiveRewardsToPlayerAsync(Guid[] rewardIds, Guid playerId)
         {
-            return RewardsRepository.GiveRewardsToUserAsync(rewardIds, userId);
+            return RewardsRepository.GiveRewardsToPlayerAsync(rewardIds, playerId);
         }
 
-        public async Task<AcceptedRewardData> AcceptRewardAsync(Guid rewardId, Guid userId, int[] amounts)
+        public async Task<AcceptedRewardData> AcceptRewardAsync(Guid rewardId, Guid playerId, int[] amounts)
         {
-            var rewardEntity = await RewardsRepository.RemoveRewardFromUser(userId, rewardId);
+            var rewardEntity = await RewardsRepository.RemoveRewardFromPlayer(playerId, rewardId);
             var rewardObject = await ToRewardObject(rewardEntity);
 
             var unitTypes = rewardObject.GetUnitTypes();
-            var unitTypesAndAmounts = amounts.Select((count, i) => new CreateUserUnitData
+            var unitTypesAndAmounts = amounts.Select((count, i) => new CreatePlayerUnitData
             {
-                UserId = userId,
+                PlayerId = playerId,
                 UnitTypeId = unitTypes[i].Id,
                 Amount = count,
             }).ToArray();
 
-            var units = await UserUnitsService.CreateUnits(unitTypesAndAmounts);
+            var units = await PlayerUnitsService.CreateUnits(unitTypesAndAmounts);
             
             return new AcceptedRewardData
             {
                 RewardId = rewardId,
-                UserId = userId,
+                PlayerId = playerId,
                 UnitsGiven = units.ToArray(),
             };
         }
 
-        public async Task<AcceptedRewardData> RejectRewardAsync(Guid rewardId, Guid userId)
+        public async Task<AcceptedRewardData> RejectRewardAsync(Guid rewardId, Guid playerId)
         {
-            await RewardsRepository.RemoveRewardFromUser(userId, rewardId);
-            return AcceptedRewardData.Empty(rewardId, userId);
+            await RewardsRepository.RemoveRewardFromPlayer(playerId, rewardId);
+            return AcceptedRewardData.Empty(rewardId, playerId);
         }
 
         private async Task<IRewardObject> ToRewardObject(IRewardEntity entity)

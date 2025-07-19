@@ -12,27 +12,27 @@ namespace Epic.Core.Services.BattleDefinitions
     public class DefaultBattleDefinitionsService : IBattleDefinitionsService
     {
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
-        public IUserUnitsService UserUnitsService { get; }
+        public IPlayerUnitsService PlayerUnitsService { get; }
 
         public DefaultBattleDefinitionsService([NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
-            [NotNull] IUserUnitsService userUnitsService)
+            [NotNull] IPlayerUnitsService playerUnitsService)
         {
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
-            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
+            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
         }
         
-        public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByUserAsync(Guid userId)
+        public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByPlayerAsync(Guid playerId)
         {
-            var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByUserAsync(userId);
+            var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByPlayer(playerId);
             var battleDefinitions = entities.Select(MutableBattleDefinitionObject.FromEntity).ToArray();
             await Task.WhenAll(battleDefinitions.Select(FillBattleDefinitionObject));
             return battleDefinitions;
         }
 
-        public async Task<IBattleDefinitionObject> GetBattleDefinitionByUserAndId(Guid userId, Guid battleDefinitionId)
+        public async Task<IBattleDefinitionObject> GetBattleDefinitionByPlayerAndId(Guid playerId, Guid battleDefinitionId)
         {
             var battleDefinition =
-                await BattleDefinitionsRepository.GetBattleDefinitionByUserAndId(userId, battleDefinitionId);
+                await BattleDefinitionsRepository.GetByPlayerAndId(playerId, battleDefinitionId);
             var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(battleDefinition);
             await FillBattleDefinitionObject(battleDefinitionObject);
             return battleDefinitionObject;
@@ -45,7 +45,7 @@ namespace Epic.Core.Services.BattleDefinitions
 
         private Task FillBattleDefinitionObject(MutableBattleDefinitionObject battleDefinitionObject)
         {
-            return UserUnitsService
+            return PlayerUnitsService
                 .GetUnitsByIds(battleDefinitionObject.UnitsIds)
                 .ContinueWith(task => battleDefinitionObject.Units = task.Result);
         }

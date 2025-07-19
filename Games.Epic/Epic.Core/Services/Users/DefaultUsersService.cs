@@ -40,24 +40,18 @@ namespace Epic.Core.Services.Users
         {
             var id = Guid.NewGuid();
             var name = "$computer:" + id;
-            var userEntity = await UsersRepository.CreateUserAsync(name, name, UserEntityType.Computer);
+            var userEntity = await UsersRepository.CreateUserAsync(name, name, true);
             return ToUserObject(userEntity);
         }
 
         private static IUserObject ToUserObject(IUserEntity userEntity)
         {
-            UserObjectType userType = userEntity.Type switch
-            {
-                UserEntityType.Computer => UserObjectType.Computer,
-                UserEntityType.Player => UserObjectType.Player,
-                _ => throw new ArgumentOutOfRangeException(nameof(userEntity.Type), userEntity.Type.ToString(), null)
-            };
             return new MutableUserObject
             {
                 Id = userEntity.Id,
                 Hash = userEntity.Hash,
                 Name = userEntity.Name,
-                Type = userType,
+                IsSystem = userEntity.IsSystem,
                 IsBlocked = userEntity.IsBlocked,
             };
         }

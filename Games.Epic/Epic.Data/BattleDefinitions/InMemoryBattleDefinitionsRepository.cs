@@ -12,13 +12,13 @@ namespace Epic.Data.BattleDefinitions
         public string EntityName => "BattleDefinition";
         
         private readonly List<BattleDefinitionEntity> _battleDefinitions = new List<BattleDefinitionEntity>();
-        private readonly List<IUserBattleDefinitionEntity> _userBattleDefinitions = new List<IUserBattleDefinitionEntity>();
+        private readonly List<IPlayerToBattleDefinitionEntity> _playerBattleDefinitions = new List<IPlayerToBattleDefinitionEntity>();
 
-        public Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByUserAsync(Guid userId)
+        public Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByPlayer(Guid playerId)
         {
             // Find all user-battle relations for the given user
-            var userBattles = _userBattleDefinitions
-                .Where(ub => ub.UserId == userId)
+            var userBattles = _playerBattleDefinitions
+                .Where(ub => ub.PlayerId == playerId)
                 .Select(ub => ub.BattleDefinitionId)
                 .ToList();
 
@@ -30,7 +30,7 @@ namespace Epic.Data.BattleDefinitions
             return Task.FromResult(battles);
         }
 
-        public Task<IBattleDefinitionEntity> CreateBattleDefinitionAsync(Guid userId, int width, int height, Guid[] unitIds)
+        public Task<IBattleDefinitionEntity> Create(Guid playerId, int width, int height, Guid[] unitIds)
         {
             var battleDefinition = new BattleDefinitionEntity
             {
@@ -42,23 +42,23 @@ namespace Epic.Data.BattleDefinitions
             };
             _battleDefinitions.Add(battleDefinition);
 
-            var userBattleDefinition = new UserBattleDefinitionEntity
+            var userBattleDefinition = new PlayerToBattleDefinitionEntity
             {
                 Id = Guid.NewGuid(),
                 BattleDefinitionId = battleDefinition.Id,
-                UserId = userId,
+                PlayerId = playerId,
             };
-            _userBattleDefinitions.Add(userBattleDefinition);
+            _playerBattleDefinitions.Add(userBattleDefinition);
 
             return Task.FromResult((IBattleDefinitionEntity)battleDefinition);
         }
 
-        public Task<IBattleDefinitionEntity> GetBattleDefinitionByUserAndId(Guid userId, Guid battleDefinitionId)
+        public Task<IBattleDefinitionEntity> GetByPlayerAndId(Guid playerId, Guid battleDefinitionId)
         {
-            var userBattleDefinition = _userBattleDefinitions.FirstOrDefault(x =>
-                x.UserId == userId && x.BattleDefinitionId == battleDefinitionId);
+            var userBattleDefinition = _playerBattleDefinitions.FirstOrDefault(x =>
+                x.PlayerId == playerId && x.BattleDefinitionId == battleDefinitionId);
             if (userBattleDefinition == null)
-                throw new EntityNotFoundException(this, $"UserId: {userId}; BattleDefinitionId: {battleDefinitionId}");
+                throw new EntityNotFoundException(this, $"PlayerId: {playerId}; BattleDefinitionId: {battleDefinitionId}");
 
             return Task.FromResult<IBattleDefinitionEntity>(_battleDefinitions.First(x => x.Id == battleDefinitionId));
         }

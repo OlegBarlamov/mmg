@@ -1,3 +1,4 @@
+using System;
 using Epic.Core.Objects;
 
 namespace Epic.Server.Resources
@@ -6,11 +7,13 @@ namespace Epic.Server.Resources
     {
         public string UserName { get; }
         public string UserId { get; }
+        public string PlayerId { get; }
         
-        public UserResource(IUserObject userObject)
+        public UserResource(IUserObject userObject, Guid? playerId)
         {
             UserName = userObject.Name;
             UserId = userObject.Id.ToString();
+            PlayerId = playerId?.ToString();
         }
     }
 }

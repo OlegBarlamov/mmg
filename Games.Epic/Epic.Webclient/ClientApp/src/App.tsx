@@ -4,7 +4,7 @@ import {IServiceLocator} from "./services/serviceLocator";
 import {IBattleDefinition} from "./battle/IBattleDefinition";
 import {MenuComponent} from "./components/menuComponent";
 import {BattleComponent} from "./components/battleComponent";
-import {IUserInfo} from "./services/serverAPI";
+import {IPlayerInfo, IUserInfo} from "./services/serverAPI";
 import { BattleMap } from './battleMap/battleMap';
 
 export interface IAppProps {
@@ -13,6 +13,7 @@ export interface IAppProps {
 
 export interface IAppState {
     userInfo: IUserInfo | null
+    playerInfo: IPlayerInfo | null
     selectedBattle: BattleMap | null
     isLoading: boolean
 }
@@ -23,7 +24,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
     constructor(props: IAppProps) {
         super(props)
         
-        this.state = {selectedBattle: null, userInfo: null, isLoading: true}
+        this.state = {selectedBattle: null, userInfo: null, playerInfo: null, isLoading: true}
         
         this.onBattleDefinitionSelected = this.onBattleDefinitionSelected.bind(this)
         this.onBattleFinished = this.onBattleFinished.bind(this)
@@ -31,11 +32,20 @@ export class App extends PureComponent<IAppProps, IAppState> {
     async componentDidMount(): Promise<void> {
         const serverAPI = this.props.serviceLocator.serverAPI()
         let userInfo: IUserInfo
+        let playerInfo: IPlayerInfo
         try {
             userInfo = await serverAPI.getUserInfo()
         } catch (error) {
             await serverAPI.login()
             userInfo = await serverAPI.getUserInfo()
+        }
+
+        if (!userInfo.playerId) {
+            const players = await serverAPI.getPlayers()
+            playerInfo = players[0]
+            await serverAPI.setActivePlayer(playerInfo.id)
+        } else {
+            playerInfo = await serverAPI.getPlayer(userInfo.playerId)
         }
 
         const activeBattle = await serverAPI.getActiveBattle()
@@ -44,12 +54,14 @@ export class App extends PureComponent<IAppProps, IAppState> {
                 ...this.state,
                 selectedBattle: activeBattle,
                 userInfo,
+                playerInfo,
                 isLoading: false,
             })
         } else {
             this.setState({
                 ...this.state,
                 userInfo,
+                playerInfo,
                 isLoading: false,
             })
         }
@@ -105,6 +117,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
                     && (
                         <div className="MenuComponent">
                             <div>Hello {this.state.userInfo!.userName}</div>
+                            <div>Player: {this.state.playerInfo!.name} | Day: {this.state.playerInfo!.day}{this.state.playerInfo!.isDefeated ? "DEFEATED" : ""}</div>
                             <MenuComponent 
                                 ref={this.menuComponentRef}  // Add the ref here
                                 serviceLocator={this.props.serviceLocator}

@@ -1,11 +1,11 @@
 using System;
-using Epic.Core;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
+using Epic.Data.PlayerUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
-using Epic.Data.UserUnits;
 using Epic.Server.Authentication;
 using FrameworkSDK;
 using JetBrains.Annotations;
@@ -15,14 +15,13 @@ namespace Epic.Server
     public class DebugStartupScript : IAppComponent
     {
         [NotNull] public IUsersService UsersService { get; }
-        [NotNull] public IUserUnitsRepository UserUnitsRepository { get; }
+        [NotNull] public IPlayerUnitsRepository PlayerUnitsRepository { get; }
         public IRewardsRepository RewardsRepository { get; }
+        public IPlayersService PlayersService { get; }
         [NotNull] public IUsersRepository UsersRepository { get; }
         [NotNull] public ISessionsRepository SessionsRepository { get; }
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         [NotNull] public IUnitTypesRepository UnitTypesRepository { get; set; }
-
-        private Guid _userId;
         
         public DebugStartupScript(
             [NotNull] IUsersRepository usersRepository,
@@ -30,12 +29,14 @@ namespace Epic.Server
             [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
             [NotNull] IUnitTypesRepository unitTypesRepository,
             [NotNull] IUsersService usersService,
-            [NotNull] IUserUnitsRepository userUnitsRepository,
-            [NotNull] IRewardsRepository rewardsRepository)
+            [NotNull] IPlayerUnitsRepository playerUnitsRepository,
+            [NotNull] IRewardsRepository rewardsRepository,
+            [NotNull] IPlayersService playersService)
         {
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
-            UserUnitsRepository = userUnitsRepository ?? throw new ArgumentNullException(nameof(userUnitsRepository));
+            PlayerUnitsRepository = playerUnitsRepository ?? throw new ArgumentNullException(nameof(playerUnitsRepository));
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             UsersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
             SessionsRepository = sessionsRepository ?? throw new ArgumentNullException(nameof(sessionsRepository));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
@@ -44,7 +45,6 @@ namespace Epic.Server
         
         public void Dispose()
         {
-            UsersRepository.DeleteUserAsync(_userId);
         }
 
         public async void Configure()
@@ -65,28 +65,30 @@ namespace Epic.Server
             });
 
             var computerUser = await UsersService.CreateComputerUser();
-            var computerUnit1 = await UserUnitsRepository.CreateUserUnit(unitTypeId, 10, computerUser.Id, true);
-            var computerUnit2 = await UserUnitsRepository.CreateUserUnit(unitTypeId, 20, computerUser.Id, true);
-
             var user = await UsersRepository.CreateUserAsync("admin",
-                BasicAuthentication.GetHashFromCredentials("admin", "123"),
-                UserEntityType.Player);
+                BasicAuthentication.GetHashFromCredentials("admin", "123"));
 
-            _userId = user.Id;
+            var userId = user.Id;
+            var userPlayer = await PlayersService.CreatePlayer(userId, "admin_player", PlayerObjectType.Human);
+            var computerPlayer = await PlayersService.CreateComputerPlayer(computerUser, userPlayer.Id);
+            var computerPlayerId = computerPlayer.Id;
+            var userPlayerId = userPlayer.Id;
 
-            SessionsRepository.CreateSessionAsync("test_token", _userId, new SessionData());
+            await SessionsRepository.CreateSessionAsync("test_token", userId, new SessionData());
 
-
-            var bd1 = await BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 10, 8,
+            var computerUnit1 = await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 10, computerPlayerId, true);
+            var computerUnit2 = await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 20, computerPlayerId, true);
+            
+            var bd1 = await BattleDefinitionsRepository.Create(userPlayerId, 10, 8,
                 new[] { computerUnit1.Id });
-            var bd2 = await BattleDefinitionsRepository.CreateBattleDefinitionAsync(_userId, 6, 6,
+            var bd2 = await BattleDefinitionsRepository.Create(userPlayerId, 6, 6,
                 new[] { computerUnit2.Id });
 
 
             await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
                 new[] { unitTypeId }, new[] { 10 }, "Reward!");
 
-            await UserUnitsRepository.CreateUserUnit(unitTypeId, 30, _userId, true);
+            await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 30, userPlayerId, true);
         }
 
         private class SessionData : ISessionData

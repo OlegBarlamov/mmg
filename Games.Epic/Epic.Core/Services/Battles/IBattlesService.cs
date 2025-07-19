@@ -8,11 +8,11 @@ namespace Epic.Core.Services.Battles
     public interface IBattlesService
     {
         Task<IBattleObject> GetBattleById(Guid battleId);
-        Task<IBattleObject> FindActiveBattleByUserId(Guid userId);
+        Task<IBattleObject> FindActiveBattleByPlayerId(Guid playerId);
 
-        Task<IBattleObject> CreateBattleFromDefinition(Guid userId, Guid battleDefinitionId);
+        Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, Guid battleDefinitionId);
         
-        Task<IBattleObject> BeginBattle(Guid userId, IBattleObject battleObject);
+        Task<IBattleObject> BeginBattle(Guid playerId, IBattleObject battleObject);
         Task UpdateBattle(IBattleObject battleObject);
         
         Task FinishBattle(IBattleObject battleObject, BattleResult result);

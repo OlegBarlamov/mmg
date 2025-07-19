@@ -12,7 +12,7 @@ namespace Epic.Core.Services.Battles
         {
             private Guid? Id { get; set; }
             public Guid BattleId { get; set; }
-            public Guid UserUnitId { get; set; }
+            public Guid PlayerUnitId { get; set; }
             public int Column { get; set; }
             public int Row { get; set; }
             public int PlayerIndex { get; set; }
@@ -34,17 +34,17 @@ namespace Epic.Core.Services.Battles
                 Damage = props.Damage;
             }
             
-            public static BattleUnitEntity FromUserUnit(IUserUnitObject userUnit, Guid battleId, InBattlePlayerNumber playerNumber, Guid? id = null)
+            public static BattleUnitEntity FromUserUnit(IPlayerUnitObject playerUnit, Guid battleId, InBattlePlayerNumber playerNumber, Guid? id = null)
             {
-                return new BattleUnitEntity(userUnit.UnitType)
+                return new BattleUnitEntity(playerUnit.UnitType)
                 {
                     Id = id,
                     BattleId = battleId,
-                    UserUnitId = userUnit.Id,
+                    PlayerUnitId = playerUnit.Id,
                     Column = -1,
                     Row = -1,
                     PlayerIndex = (int)playerNumber,
-                    CurrentHealth = userUnit.UnitType.Health,
+                    CurrentHealth = playerUnit.UnitType.Health,
                 };
             }
 
@@ -54,7 +54,7 @@ namespace Epic.Core.Services.Battles
                 {
                     Id = battleUnit.Id,
                     BattleId = battleUnit.BattleId,
-                    UserUnitId = battleUnit.UserUnit.Id,
+                    PlayerUnitId = battleUnit.PlayerUnit.Id,
                     Column = battleUnit.Column,
                     Row = battleUnit.Row,
                     PlayerIndex = battleUnit.PlayerIndex,

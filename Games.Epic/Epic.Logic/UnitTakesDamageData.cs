@@ -12,22 +12,22 @@ namespace Epic.Logic
 
         public static UnitTakesDamageData FromUnitAndTarget(IBattleUnitObject attacker, IBattleUnitObject target)
         {
-            var damage = attacker.Damage * attacker.UserUnit.Count;
+            var damage = attacker.Damage * attacker.PlayerUnit.Count;
             var finalHealth = target.CurrentHealth - damage;
-            var newCount = target.UserUnit.Count;
+            var newCount = target.PlayerUnit.Count;
             if (finalHealth < 0)
             {
                 var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / target.Health) + 1;
                 finalHealth += killedUnits * target.Health;
-                newCount = target.UserUnit.Count - killedUnits;
+                newCount = target.PlayerUnit.Count - killedUnits;
 
                 if (newCount < 1)
                 {
                     return new UnitTakesDamageData
                     {
                         DamageTaken =
-                            target.UserUnit.Count * target.Health + target.CurrentHealth,
-                        KilledCount = target.UserUnit.Count,
+                            target.PlayerUnit.Count * target.Health + target.CurrentHealth,
+                        KilledCount = target.PlayerUnit.Count,
                         RemainingHealth = finalHealth,
                         RemainingCount = 0,
                     };
@@ -37,7 +37,7 @@ namespace Epic.Logic
             return new UnitTakesDamageData
             {
                 DamageTaken = damage,
-                KilledCount = target.UserUnit.Count - newCount,
+                KilledCount = target.PlayerUnit.Count - newCount,
                 RemainingHealth = finalHealth,
                 RemainingCount = newCount,
             };

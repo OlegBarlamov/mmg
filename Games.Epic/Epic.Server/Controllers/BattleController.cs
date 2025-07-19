@@ -1,10 +1,10 @@
 using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using Epic.Core;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
-using Epic.Core.Services.GameManagment;
+using Epic.Core.Services.GameManagement;
 using Epic.Data.Exceptions;
 using Epic.Server.Authentication;
 using Epic.Server.RequestBodies;
@@ -43,9 +43,10 @@ namespace Epic.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentUserActiveBattles()
         {
-            var userId = User.GetId();
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
             
-            var battleObject = await BattlesService.FindActiveBattleByUserId(userId);
+            var battleObject = await BattlesService.FindActiveBattleByPlayerId(playerId);
             if (battleObject == null)
                 return Ok(Array.Empty<BattleResource>());
 
@@ -55,7 +56,9 @@ namespace Epic.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> StartBattle([FromBody] StartBattleRequestBody battleRequestBody)
         {
-            var userId = User.GetId();
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            
             Guid battleDefinitionId;
             try
             {
@@ -68,8 +71,8 @@ namespace Epic.Server.Controllers
 
             try
             {
-                var battleObject = await BattlesService.CreateBattleFromDefinition(userId, battleDefinitionId);
-                battleObject = await BattlesService.BeginBattle(userId, battleObject);
+                var battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleDefinitionId);
+                battleObject = await BattlesService.BeginBattle(playerId, battleObject);
                 return Ok(new BattleResource(battleObject));
             }
             catch (EntityNotFoundException e)
@@ -81,6 +84,13 @@ namespace Epic.Server.Controllers
         [HttpGet("{battleIdString}/ws")]
         public async Task EstablishWsConnection(string battleIdString)
         {
+            if (!User.TryGetPlayerId(out var playerId))
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+                return;
+            }
+            
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -99,6 +109,13 @@ namespace Epic.Server.Controllers
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await HttpContext.Response.WriteAsync("Battle is not active.");
+                return;
+            }
+
+            if (!battleObject.PlayersIds.Contains(playerId))
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await HttpContext.Response.WriteAsync("No access to the battle");
                 return;
             }
             

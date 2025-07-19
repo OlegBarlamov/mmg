@@ -8,11 +8,11 @@ namespace Epic.Server.Resources
         public string ImageUrl { get; }
         public int Count { get; }
         
-        public UserUnitInDashboardResource(IUserUnitObject userUnit)
+        public UserUnitInDashboardResource(IPlayerUnitObject playerUnit)
         {
-            Id = userUnit.Id.ToString();
-            ImageUrl = userUnit.UnitType.DashboardImgUrl;
-            Count = userUnit.Count;
+            Id = playerUnit.Id.ToString();
+            ImageUrl = playerUnit.UnitType.DashboardImgUrl;
+            Count = playerUnit.Count;
         }
     }
 }

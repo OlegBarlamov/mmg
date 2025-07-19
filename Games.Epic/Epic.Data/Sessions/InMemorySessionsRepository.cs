@@ -86,6 +86,18 @@ namespace Epic.Data
             return Task.CompletedTask;
         }
 
+        public Task SetPlayerId(Guid sessionId, Guid? playerId)
+        {
+            if (_sessions.TryGetValue(sessionId, out var session))
+            {
+                session.PlayerId = playerId;
+            } 
+            else 
+                throw new EntityNotFoundException(this, sessionId.ToString());
+            
+            return Task.CompletedTask;
+        }
+
         public Task DeleteSessionByIdAsync(Guid sessionId)
         {
             _sessions.Remove(sessionId);

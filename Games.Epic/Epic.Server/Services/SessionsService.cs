@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
+using Epic.Core.Services.Players;
 using Epic.Data;
 using Epic.Data.Exceptions;
 using Epic.Server.Exceptions;
@@ -15,18 +16,22 @@ namespace Epic.Server.Services
     {
         Task<ITokenValidationResult> ValidateToken(string token);
         Task UpdateLastAccessed(ISessionObject sessionObject);
+        Task SetPlayerId(ISessionObject sessionObject, Guid? playerId);
         Task RevokeSession(ISessionObject sessionObject, SessionRevokedReason reason);
         Task<ISessionObject> CreateSession(IUserObject user, SessionMetadata metadata);
+        Task<ISessionObject> GetSessionByToken(string token);
     }
 
     [UsedImplicitly]
     class DefaultSessionService : ISessionsService
     {
         public ISessionsRepository SessionsRepository { get; }
+        public IPlayersService PlayersService { get; }
 
-        public DefaultSessionService([NotNull] ISessionsRepository sessionsRepository)
+        public DefaultSessionService([NotNull] ISessionsRepository sessionsRepository, [NotNull] IPlayersService playersService)
         {
             SessionsRepository = sessionsRepository ?? throw new ArgumentNullException(nameof(sessionsRepository));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
         }
         
         public async Task<ITokenValidationResult> ValidateToken(string token)
@@ -53,6 +58,18 @@ namespace Epic.Server.Services
             return SessionsRepository.UpdateLastVisit(sessionObject.Id, DateTime.Now);
         }
 
+        public async Task SetPlayerId(ISessionObject sessionObject, Guid? playerId)
+        {
+            if (playerId.HasValue)
+            {
+                var player = await PlayersService.GetById(playerId.Value);
+                if (player.UserId != sessionObject.UserId)
+                    throw new InvalidOperationException("The player does not belong to this user.");
+            }
+            
+            await SessionsRepository.SetPlayerId(sessionObject.Id, playerId);
+        }
+
         public Task RevokeSession(ISessionObject sessionObject, SessionRevokedReason reason)
         {
             string reasonEntity = reason switch
@@ -68,7 +85,7 @@ namespace Epic.Server.Services
         {
             if (user.IsBlocked)
                 throw new UserBlockedException(user);
-            if (user.Type != UserObjectType.Player)
+            if (user.IsSystem)
                 throw new InvalidUserTypeException(user);
 
             var token = GenerateSecureToken(16);
@@ -83,6 +100,12 @@ namespace Epic.Server.Services
                 RevokedReason = null,
                 UserAgent = metadata.UserAgent,
             });
+            return ToSessionObject(sessionEntity);
+        }
+
+        public async Task<ISessionObject> GetSessionByToken(String token)
+        {
+            var sessionEntity = await SessionsRepository.GetSessionByTokenAsync(token);
             return ToSessionObject(sessionEntity);
         }
 
@@ -107,6 +130,7 @@ namespace Epic.Server.Services
                 Id = entity.Id,
                 Token = entity.Token,
                 UserId = entity.UserId,
+                PlayerId = entity.PlayerId,
 
                 Created = entity.Data.Created,
                 LastAccessed = entity.Data.LastAccessed,

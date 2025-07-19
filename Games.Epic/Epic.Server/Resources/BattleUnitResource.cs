@@ -17,7 +17,7 @@ namespace Epic.Server.Resources
         public BattleUnitPropsResource CurrentProps { get; }
         
         public int Count { get; }
-        public Guid UserId { get; }
+        public Guid PlayerId { get; }
         public bool IsAlive { get; }
         
         public BattleUnitResource(IBattleUnitObject battleUnitObject)
@@ -29,9 +29,9 @@ namespace Epic.Server.Resources
                 R = battleUnitObject.Row,
             };
             Player = ((InBattlePlayerNumber)battleUnitObject.PlayerIndex).ToString();
-            Count = battleUnitObject.UserUnit.Count;
-            UserId = battleUnitObject.UserUnit.UserId;
-            IsAlive = battleUnitObject.UserUnit.IsAlive;
+            Count = battleUnitObject.PlayerUnit.Count;
+            PlayerId = battleUnitObject.PlayerUnit.PlayerId;
+            IsAlive = battleUnitObject.PlayerUnit.IsAlive;
             Props = new BattleUnitPropsResource(battleUnitObject, false);
             CurrentProps = new BattleUnitPropsResource(battleUnitObject, true);
         }

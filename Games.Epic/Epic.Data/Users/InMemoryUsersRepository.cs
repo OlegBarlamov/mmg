@@ -42,7 +42,7 @@ namespace Epic.Data
             return Task.FromResult(user);
         }
         
-        public Task<IUserEntity> CreateUserAsync(string name, string hash, UserEntityType type)
+        public Task<IUserEntity> CreateUserAsync(string name, string hash, bool isSystem = false)
         {
             var entity = new UserEntity
             {
@@ -50,7 +50,7 @@ namespace Epic.Data
                 Name = name,
                 Hash = hash,
                 IsBlocked = false,
-                Type = type,
+                IsSystem = isSystem,
             };
             _users[entity.Id] = entity;
             return Task.FromResult((IUserEntity)entity);

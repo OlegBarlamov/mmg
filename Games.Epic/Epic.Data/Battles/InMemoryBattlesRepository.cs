@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Data.BattleDefinitions;
 using Epic.Data.Exceptions;
 using JetBrains.Annotations;
 
@@ -14,7 +15,7 @@ namespace Epic.Data.Battles
         public string EntityName => "Battle";
         
         private readonly List<IBattleEntity> _battles = new List<IBattleEntity>();
-        private readonly List<IUserBattleEntity> _userBattles = new List<IUserBattleEntity>();
+        private readonly List<IPlayerToBattleEntity> _playerBattles = new List<IPlayerToBattleEntity>();
         private readonly List<IBattleDefinitionToBattleEntity> _battleDefinitionToBattleEntities = new List<IBattleDefinitionToBattleEntity>();
 
         public Task<IBattleEntity> GetBattleByIdAsync(Guid id)
@@ -23,9 +24,9 @@ namespace Epic.Data.Battles
             return Task.FromResult(battle);
         }
 
-        public Task<IBattleEntity> FindActiveBattleByUserIdAsync(Guid userId)
+        public Task<IBattleEntity> FindActiveBattleByPlayerIdAsync(Guid playerId)
         {
-            var userBattles = _userBattles.Where(ub => ub.UserId == userId)
+            var userBattles = _playerBattles.Where(ub => ub.PlayerId == playerId)
                 .Select(ub => ub.BattleId)
                 .ToArray();
             
@@ -38,7 +39,7 @@ namespace Epic.Data.Battles
             return Task.FromResult<IBattleEntity>(null);
         }
 
-        public Task<IBattleEntity> CreateBattleAsync(Guid battleDefinitionId, Guid[] userIds, int width, int height, bool isActive)
+        public Task<IBattleEntity> CreateBattleAsync(Guid battleDefinitionId, Guid[] playerIds, int width, int height, bool isActive)
         {
             if (_battleDefinitionToBattleEntities.Any(x => x.BattleDefinitionId == battleDefinitionId))
                 throw new InvalidOperationException($"Battle with definition {battleDefinitionId} already exists");
@@ -63,13 +64,13 @@ namespace Epic.Data.Battles
             };
             _battles.Add(battleEntity);
 
-            var userRelations = userIds.Select(id => new UserBattleEntity
+            var playerRelations = playerIds.Select(id => new PlayerToBattleEntity
             {
                 Id = Guid.NewGuid(),
                 BattleId = newBattleId,
-                UserId = id,
+                PlayerId = id,
             });
-            _userBattles.AddRange(userRelations);
+            _playerBattles.AddRange(playerRelations);
 
             return Task.FromResult((IBattleEntity)battleEntity);
         }
@@ -91,7 +92,7 @@ namespace Epic.Data.Battles
 
         public Task<Guid[]> GetBattleUsers(Guid battleId)
         {
-            var userIds = _userBattles.Where(x => x.BattleId == battleId).Select(x => x.UserId).ToArray();
+            var userIds = _playerBattles.Where(x => x.BattleId == battleId).Select(x => x.PlayerId).ToArray();
             return Task.FromResult(userIds);
         }
     }

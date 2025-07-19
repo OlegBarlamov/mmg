@@ -9,7 +9,7 @@ namespace Epic.Data
         Task<IUserEntity[]> GetUsersByIdsAsync(Guid[] ids);
         Task<IUserEntity> GetUserByHashAsync(string hash);
         
-        Task<IUserEntity> CreateUserAsync(string name, string hash, UserEntityType type);
+        Task<IUserEntity> CreateUserAsync(string name, string hash, bool isSystem = false);
         Task DeleteUserAsync(Guid id);
     }
 }

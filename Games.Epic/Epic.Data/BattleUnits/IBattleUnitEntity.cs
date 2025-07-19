@@ -11,7 +11,7 @@ namespace Epic.Data.BattleUnits
     public interface IBattleUnitEntityFields : IUnitProps
     {
         Guid BattleId { get; }
-        Guid UserUnitId { get; }
+        Guid PlayerUnitId { get; }
         
         int Column { get; }
         int Row { get; }
@@ -25,7 +25,7 @@ namespace Epic.Data.BattleUnits
     {
         public Guid Id { get; set; }
         public Guid BattleId { get; set; }
-        public Guid UserUnitId { get; set; }
+        public Guid PlayerUnitId { get; set; }
         public int Column { get; set; }
         public int Row { get; set; }
         public int PlayerIndex { get; set; }
@@ -48,7 +48,7 @@ namespace Epic.Data.BattleUnits
             Column = fields.Column;
             Row = fields.Row;
             PlayerIndex = fields.PlayerIndex;
-            UserUnitId = fields.UserUnitId;
+            PlayerUnitId = fields.PlayerUnitId;
             CurrentHealth = fields.CurrentHealth;
             Speed = fields.Speed;
             AttackMaxRange = fields.AttackMaxRange;

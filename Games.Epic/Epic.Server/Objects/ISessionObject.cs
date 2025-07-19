@@ -7,6 +7,7 @@ namespace Epic.Server.Objects
         Guid Id { get; }
         string Token { get; }
         Guid UserId { get; }
+        Guid? PlayerId { get; }
         
         DateTime Created { get; }
         DateTime LastAccessed { get; }

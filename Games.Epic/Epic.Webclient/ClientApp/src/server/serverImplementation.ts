@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IPlayerInfo, IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -17,17 +17,26 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
     }    
+    getPlayer(id: string): Promise<IPlayerInfo> {
+        return this.fetchResource(`api/players/${id}`, "GET", "player")
+    }
     login(): Promise<void> {
         return this.fetchResource("login", "GET", "login")
     }
     getUserInfo(): Promise<IUserInfo> {
         return this.fetchResource("api/user", "GET", "userInfo") 
     }
+    getPlayers(): Promise<IPlayerInfo[]> {
+        return this.fetchResource("api/players", "GET", "players")
+    }
     getUnits(): Promise<IUserUnit[]> {
         return this.fetchResource("api/units", "GET", "units")
     }
     getBattles(): Promise<IBattleDefinition[]> {
         return this.fetchResource("api/battles", "GET", "battles")
+    }
+    setActivePlayer(playerId: string): Promise<void> {
+        return this.fetchResource(`api/players/${playerId}`, "POST", "set_active_player")
     }
     async beginBattle(battleId: string): Promise<BattleMap> {
         const battleMap = await this.fetchResource<BattleMap>("api/battle", "POST", "begin_battle", {

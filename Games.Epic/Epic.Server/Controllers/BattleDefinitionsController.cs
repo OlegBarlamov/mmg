@@ -29,8 +29,10 @@ namespace Epic.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentUserBattleDefinitions()
         {
-            var userId = User.GetId();
-            var battles = await BattleDefinitionsService.GetActiveBattleDefinitionsByUserAsync(userId);
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            
+            var battles = await BattleDefinitionsService.GetActiveBattleDefinitionsByPlayerAsync(playerId);
             var rewards = await RewardsService.GetRewardsFromBattleDefinitions(battles.Select(x => x.Id).ToArray());
             var battlesResources = battles.Select(x => new BattleDefinitionResource(x, rewards[x.Id]));
             return Ok(battlesResources);

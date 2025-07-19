@@ -23,6 +23,9 @@ namespace Epic.Server.Authentication
                 new Claim("IpAddress", session.IpAddress ?? "Unknown"),
                 new Claim("UserAgent", session.UserAgent ?? "Unknown")
             };
+            if (session.PlayerId.HasValue)
+                claims.Add(new Claim("PlayerId", session.PlayerId.Value.ToString()));
+            
             identity.AddClaims(claims);
         }
         
@@ -34,6 +37,22 @@ namespace Epic.Server.Authentication
         public static Guid GetId(this ClaimsPrincipal principal)
         {
             return Guid.Parse((ReadOnlySpan<char>)principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        }
+
+        public static bool TryGetPlayerId(this ClaimsPrincipal principal, out Guid playerId)
+        {
+            var id = GetPlayerId(principal);
+            playerId = id ?? Guid.Empty;
+            return id.HasValue;
+        }
+
+        public static Guid? GetPlayerId(this ClaimsPrincipal principal)
+        {
+            var playerId = principal.FindFirst("PlayerId")?.Value;
+            if (playerId != null)
+                return Guid.Parse(playerId);
+            
+            return null;
         }
     }
 }

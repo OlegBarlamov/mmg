@@ -6,9 +6,9 @@ namespace Epic.Core.Services.BattleDefinitions
 {
     public interface IBattleDefinitionsService
     {
-        Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByUserAsync(Guid userId);
+        Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByPlayerAsync(Guid playerId);
         
-        Task<IBattleDefinitionObject> GetBattleDefinitionByUserAndId(Guid userId, Guid battleDefinitionId);
+        Task<IBattleDefinitionObject> GetBattleDefinitionByPlayerAndId(Guid playerId, Guid battleDefinitionId);
         
         Task SetFinished(Guid battleDefinitionId);
     }

@@ -48,12 +48,12 @@ namespace Epic.Server.Resources
         public string ImageUrl { get; }
         public int Count { get; }
 
-        public BattleDefinitionUnitResource(IUserUnitObject userUnitObject)
+        public BattleDefinitionUnitResource(IPlayerUnitObject playerUnitObject)
         {
-            TypeId = userUnitObject.UnitType.Id;
-            Name = userUnitObject.UnitType.Name;
-            ImageUrl = userUnitObject.UnitType.DashboardImgUrl;
-            Count = userUnitObject.Count;
+            TypeId = playerUnitObject.UnitType.Id;
+            Name = playerUnitObject.UnitType.Name;
+            ImageUrl = playerUnitObject.UnitType.DashboardImgUrl;
+            Count = playerUnitObject.Count;
         }
     }
 }

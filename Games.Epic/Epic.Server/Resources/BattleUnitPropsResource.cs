@@ -13,7 +13,7 @@ namespace Epic.Server.Resources
 
         public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps)
         {
-            BattleImgUrl = battleUnitObject.UserUnit.UnitType.BattleImgUrl;
+            BattleImgUrl = battleUnitObject.PlayerUnit.UnitType.BattleImgUrl;
             Speed = battleUnitObject.Speed;
             AttackMinRange = battleUnitObject.AttackMinRange;
             AttackMaxRange = battleUnitObject.AttackMaxRange;

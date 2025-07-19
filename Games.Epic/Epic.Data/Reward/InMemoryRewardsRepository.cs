@@ -13,7 +13,7 @@ namespace Epic.Data.Reward
         public string EntityName => nameof(InMemoryRewardsRepository);
         
         private readonly List<MutableRewardEntity> _rewards = new List<MutableRewardEntity>();
-        private readonly List<UserRewardEntity> _userRewards = new List<UserRewardEntity>();
+        private readonly List<PlayerRewardEntity> _playerRewards = new List<PlayerRewardEntity>();
         
         public Task<IRewardEntity[]> GetRewardsByIdAsync(Guid[] ids)
         {
@@ -25,17 +25,17 @@ namespace Epic.Data.Reward
             return Task.FromResult(_rewards.Where(x => x.BattleDefinitionId == battleDefinitionId).ToArray<IRewardEntity>());
         }
 
-        public Task<IRewardEntity[]> FindNotAcceptedRewardsByUserIdAsync(Guid userId)
+        public Task<IRewardEntity[]> FindNotAcceptedRewardsByPlayerId(Guid playerId)
         {
-            var rewardIds = _userRewards.Where(x => x.UserId == userId && !x.Accepted).Select(x => x.RewardId);
+            var rewardIds = _playerRewards.Where(x => x.PlayerId == playerId && !x.Accepted).Select(x => x.RewardId);
             var rewards = _rewards.Where(x => rewardIds.Contains(x.Id)).ToArray<IRewardEntity>();
             return Task.FromResult(rewards);
         }
 
-        public Task<IRewardEntity> RemoveRewardFromUser(Guid userId, Guid rewardId)
+        public Task<IRewardEntity> RemoveRewardFromPlayer(Guid playerId, Guid rewardId)
         {
-            var reward = _userRewards.First(x => x.UserId == userId && x.RewardId == rewardId);
-            _userRewards.Remove(reward);
+            var reward = _playerRewards.First(x => x.PlayerId == playerId && x.RewardId == rewardId);
+            _playerRewards.Remove(reward);
             
             return Task.FromResult<IRewardEntity>(_rewards.First(x => x.Id == rewardId));
         }
@@ -56,23 +56,23 @@ namespace Epic.Data.Reward
             return Task.FromResult<IRewardEntity>(newReward);
         }
 
-        public Task GiveRewardsToUserAsync(Guid[] rewardIds, Guid userId)
+        public Task GiveRewardsToPlayerAsync(Guid[] rewardIds, Guid playerId)
         {
-            var records = rewardIds.Select(id => new UserRewardEntity
+            var records = rewardIds.Select(id => new PlayerRewardEntity
             {
                 Id = Guid.NewGuid(),
                 RewardId = id,
-                UserId = userId,
+                PlayerId = playerId,
                 Accepted = false,
             }).ToArray();
-            _userRewards.AddRange(records);
+            _playerRewards.AddRange(records);
 
             return Task.CompletedTask;
         }
 
-        public Task SetRewardAsAccepted(Guid rewardId, Guid userId, bool accepted)
+        public Task SetRewardAsAccepted(Guid rewardId, Guid playerId, bool accepted)
         {
-            var targetReward = _userRewards.First(x => x.Id == rewardId && x.UserId == userId);
+            var targetReward = _playerRewards.First(x => x.Id == rewardId && x.PlayerId == playerId);
             targetReward.Accepted = accepted;
             return Task.CompletedTask;
         }

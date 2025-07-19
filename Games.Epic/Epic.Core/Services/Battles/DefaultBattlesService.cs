@@ -20,7 +20,7 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IBattleUnitsService BattleUnitsService { get; }
         [NotNull] private IBattleDefinitionsService BattleDefinitionsService { get; }
         [NotNull] private IBattlesCacheService BattlesCacheService { get; }
-        [NotNull] private IUserUnitsService UserUnitsService { get; }
+        [NotNull] private IPlayerUnitsService PlayerUnitsService { get; }
         [NotNull] private IUsersService UsersService { get; }
 
         public DefaultBattlesService(
@@ -28,14 +28,14 @@ namespace Epic.Core.Services.Battles
             [NotNull] IBattleUnitsService battleUnitsService,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IBattlesCacheService battlesCacheService,
-            [NotNull] IUserUnitsService userUnitsService,
+            [NotNull] IPlayerUnitsService playerUnitsService,
             [NotNull] IUsersService usersService)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
-            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
+            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
         }
 
@@ -53,9 +53,9 @@ namespace Epic.Core.Services.Battles
             return battleObject;
         }
 
-        public async Task<IBattleObject> FindActiveBattleByUserId(Guid userId)
+        public async Task<IBattleObject> FindActiveBattleByPlayerId(Guid playerId)
         {
-            var battleEntity = await BattlesRepository.FindActiveBattleByUserIdAsync(userId);
+            var battleEntity = await BattlesRepository.FindActiveBattleByPlayerIdAsync(playerId);
             if (battleEntity == null)
                 return null;
 
@@ -70,14 +70,14 @@ namespace Epic.Core.Services.Battles
             return battleObject;
         }
 
-        public async Task<IBattleObject> CreateBattleFromDefinition(Guid userId, Guid battleDefinitionId)
+        public async Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, Guid battleDefinitionId)
         {
             var battleDefinition =
-                await BattleDefinitionsService.GetBattleDefinitionByUserAndId(userId, battleDefinitionId);
+                await BattleDefinitionsService.GetBattleDefinitionByPlayerAndId(playerId, battleDefinitionId);
             
             var battleEntity = await BattlesRepository.CreateBattleAsync(
                 battleDefinitionId,
-                new[] { userId },
+                new[] { playerId },
                 battleDefinition.Width,
                 battleDefinition.Height,
                 false);
@@ -92,14 +92,14 @@ namespace Epic.Core.Services.Battles
             return battleObject;
         }
 
-        public async Task<IBattleObject> BeginBattle(Guid userId, IBattleObject battleObject)
+        public async Task<IBattleObject> BeginBattle(Guid playerId, IBattleObject battleObject)
         {
             var mutableBattleObject = ToMutableObject(battleObject);
             mutableBattleObject.IsActive = true;
             await BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(mutableBattleObject));
             
-            var userUnits = await UserUnitsService.GetAliveUnitsByUserAsync(userId);
-            var userBattleUnits = await BattleUnitsService.CreateUnitsFromUserUnits(userUnits, InBattlePlayerNumber.Player1, battleObject.Id);
+            var userUnits = await PlayerUnitsService.GetAliveUnitsByPlayer(playerId);
+            var userBattleUnits = await BattleUnitsService.CreateUnitsFromPlayerUnits(userUnits, InBattlePlayerNumber.Player1, battleObject.Id);
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
             PlaceBattleUnits(mutableBattleObject);

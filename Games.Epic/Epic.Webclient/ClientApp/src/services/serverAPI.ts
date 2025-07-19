@@ -7,6 +7,7 @@ import {IBattleConnectionMessagesHandler, IBattleServerConnection} from "../serv
 export interface IUserInfo {
     readonly userId: string
     readonly userName: string
+    readonly playerId: string | null
 }
 
 export interface IUserUnit {
@@ -16,12 +17,20 @@ export interface IUserUnit {
     readonly thumbnailUrl: string
 }
 
+export interface IPlayerInfo {
+    readonly id: string
+    readonly day: number
+    readonly name: string
+    readonly isDefeated: boolean
+}
+
 export interface IServerAPI {
     login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
-    
+    getPlayer(id: string): Promise<IPlayerInfo>
+    getPlayers(): Promise<IPlayerInfo[]>
     getUnits(): Promise<IUserUnit[]>
-    
+    setActivePlayer(playerId: string): Promise<void>
     getBattles(): Promise<IBattleDefinition[]>
     beginBattle(battleDefinitionId: string): Promise<BattleMap>
     getActiveBattle(): Promise<BattleMap | null>

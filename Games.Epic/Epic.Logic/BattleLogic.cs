@@ -10,10 +10,10 @@ using Epic.Core.Logic;
 using Epic.Core.Logic.Erros;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleClientConnection;
-using Epic.Core.Objects.BattleGameManager;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using JetBrains.Annotations;
@@ -24,7 +24,7 @@ namespace Epic.Logic
     {
         private MutableBattleObject BattleObject { get; }
         private IBattleUnitsService BattleUnitsService { get; }
-        private IUserUnitsService UserUnitsService { get; }
+        private IPlayerUnitsService PlayerUnitsService { get; }
         private IBattlesService BattlesService { get; }
         private IRewardsService RewardsService { get; }
         private IBattleMessageBroadcaster Broadcaster { get; }
@@ -40,20 +40,20 @@ namespace Epic.Logic
         public BattleLogic(
             [NotNull] MutableBattleObject battleObject, 
             [NotNull] IBattleUnitsService battleUnitsService,
-            [NotNull] IUserUnitsService userUnitsService,
+            [NotNull] IPlayerUnitsService playerUnitsService,
             [NotNull] IBattlesService battlesService,
             [NotNull] IRewardsService rewardsService,
             [NotNull] IBattleMessageBroadcaster broadcaster)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
-            UserUnitsService = userUnitsService ?? throw new ArgumentNullException(nameof(userUnitsService));
+            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             Broadcaster = broadcaster ?? throw new ArgumentNullException(nameof(broadcaster));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
-            _sortedBattleUnitObjects.Sort((x, y) => x.UserUnit.UnitType.Speed.CompareTo(y.UserUnit.UnitType.Speed));
+            _sortedBattleUnitObjects.Sort((x, y) => x.PlayerUnit.UnitType.Speed.CompareTo(y.PlayerUnit.UnitType.Speed));
         }
         
         public void Dispose()
@@ -115,13 +115,16 @@ namespace Epic.Logic
         {
             if (battleResult.Winner != null)
             {
-                var winnerUserId = BattleObject.GetPlayerUserId(battleResult.Winner.Value);
+                var winnerUserId = BattleObject.GetPlayerId(battleResult.Winner.Value);
                 if (winnerUserId.HasValue)
                 {
+                    // TODO ignore AI player
                     var rewards =
                         await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
                     var rewardsIds = rewards.Select(x => x.Id).ToArray();
-                    await RewardsService.GiveRewardsToUserAsync(rewardsIds, winnerUserId.Value);
+                    await RewardsService.GiveRewardsToPlayerAsync(rewardsIds, winnerUserId.Value);
+                    
+                    
                 }
             }
 
@@ -147,7 +150,7 @@ namespace Epic.Logic
             InBattlePlayerNumber? winner = null;
             foreach (var battleUnitObject in _sortedBattleUnitObjects)
             {
-                if (battleUnitObject.UserUnit.IsAlive)
+                if (battleUnitObject.PlayerUnit.IsAlive)
                 {
                     var player = (InBattlePlayerNumber)battleUnitObject.PlayerIndex;
                     noAliveUnits = false;
@@ -231,16 +234,16 @@ namespace Epic.Logic
                 );
             
             var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(targetActor, targetTarget);
-            targetTarget.UserUnit.Count = unitTakesDamageData.RemainingCount;
-            targetTarget.UserUnit.IsAlive = targetTarget.UserUnit.Count > 0;
+            targetTarget.PlayerUnit.Count = unitTakesDamageData.RemainingCount;
+            targetTarget.PlayerUnit.IsAlive = targetTarget.PlayerUnit.Count > 0;
 
-            await UserUnitsService.UpdateUnits(new [] { targetTarget.UserUnit });
+            await PlayerUnitsService.UpdateUnits(new [] { targetTarget.PlayerUnit });
 
             targetTarget.CurrentHealth = unitTakesDamageData.RemainingHealth;
             
             await BattleUnitsService.UpdateUnits(new[] { targetTarget });
                 
-            var serverUnitTakesDamage = new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, command.ActorId)
+            var serverUnitTakesDamage = new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, command.TargetId)
             {
                 DamageTaken = unitTakesDamageData.DamageTaken,
                 KilledCount = unitTakesDamageData.KilledCount,
@@ -292,7 +295,7 @@ namespace Epic.Logic
         {
             turnIndex %= _sortedBattleUnitObjects.Count;
             var activeUnit = _sortedBattleUnitObjects[turnIndex];
-            while (!activeUnit.UserUnit.IsAlive)
+            while (!activeUnit.PlayerUnit.IsAlive)
             {
                 turnIndex++;
                 turnIndex %= _sortedBattleUnitObjects.Count;
