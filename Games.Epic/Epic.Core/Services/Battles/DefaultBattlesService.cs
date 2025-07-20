@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
-using Epic.Core.Objects.Battle;
-using Epic.Core.Objects.BattleUnit;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;

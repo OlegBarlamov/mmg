@@ -8,11 +8,9 @@ using Epic.Core;
 using Epic.Core.ClientMessages;
 using Epic.Core.Logic;
 using Epic.Core.Logic.Erros;
-using Epic.Core.Objects.Battle;
-using Epic.Core.Objects.BattleClientConnection;
-using Epic.Core.Objects.BattleUnit;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
@@ -76,7 +74,7 @@ namespace Epic.Logic
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(BattleLogic));
                 
-            var activeUnit = GetActiveUnit(BattleObject.TurnIndex);
+            var activeUnit = GetActiveUnit(BattleObject.TurnNumber);
             var battleResult = GetBattleResult();
 
             try
@@ -87,7 +85,7 @@ namespace Epic.Logic
 
                     if (IsPlayerControlled(activeUnit))
                     {
-                        await WaitForClientTurn(activeUnit.PlayerIndex, BattleObject.TurnIndex);
+                        await WaitForClientTurn(activeUnit.PlayerIndex, BattleObject.TurnNumber);
                         cancellationToken.ThrowIfCancellationRequested();
                     }
                     else
@@ -95,15 +93,15 @@ namespace Epic.Logic
                         // TODO AI
                     }
 
-                    BattleObject.TurnIndex++;
+                    BattleObject.TurnNumber++;
                     await BattlesService.UpdateBattle(BattleObject);
 
                     battleResult = GetBattleResult();
                     if (battleResult.Finished)
                         continue;
                     
-                    activeUnit = GetActiveUnit(BattleObject.TurnIndex);
-                    var serverCommand = new NextTurnCommandFromServer(BattleObject.TurnIndex, (InBattlePlayerNumber)activeUnit.PlayerIndex);
+                    activeUnit = GetActiveUnit(BattleObject.TurnNumber);
+                    var serverCommand = new NextTurnCommandFromServer(BattleObject.TurnNumber, (InBattlePlayerNumber)activeUnit.PlayerIndex);
                     await BroadcastMessageToClientAndSaveAsync(serverCommand);
                 }
             }
@@ -138,7 +136,7 @@ namespace Epic.Logic
 
             await DaysProcessor.ProcessNewDay(BattleObject.PlayerIds.ToArray());
 
-            var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnIndex)
+            var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnNumber)
             {
                 Winner = battleResult.Winner?.ToString() ?? string.Empty,
             };
@@ -298,7 +296,7 @@ namespace Epic.Logic
         {
             await connection.SendMessageAsync(new CommandApproved(message));
             
-            for (int i = message.TurnIndex; i <= BattleObject.TurnIndex; i++)
+            for (int i = message.TurnIndex; i <= BattleObject.TurnNumber; i++)
             {
                 if (_passedServerBattleMessages.TryGetValue(i, out var messagesFromTurn))
                 {

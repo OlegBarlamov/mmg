@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Epic.Core.Objects;
+using Epic.Core.Services.Units;
+using Epic.Data.BattleDefinitions;
 
-namespace Epic.Core
+namespace Epic.Core.Services.BattleDefinitions
 {
-    public interface IBattleDefinitionObject
+    public interface IBattleDefinitionObject : IGameObject<IBattleDefinitionEntity>
     {
         Guid Id { get; }
 

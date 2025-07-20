@@ -1,6 +1,6 @@
 using System;
 using Epic.Core.Objects;
-using Epic.Core.Objects.BattleUnit;
+using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes;
 
@@ -8,7 +8,7 @@ namespace Epic.Core.Services.Battles
 {
     public partial class DefaultBattleUnitsService
     {
-        private class BattleUnitEntity : IBattleUnitEntity
+        internal class BattleUnitEntity : IBattleUnitEntity
         {
             private Guid? Id { get; set; }
             public Guid BattleId { get; set; }

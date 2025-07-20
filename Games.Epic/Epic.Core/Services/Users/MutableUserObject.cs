@@ -1,7 +1,7 @@
 using System;
-using Epic.Core.Services.Players;
+using Epic.Data;
 
-namespace Epic.Core.Objects
+namespace Epic.Core.Services.Users
 {
     public class MutableUserObject : IUserObject
     {
@@ -10,5 +10,9 @@ namespace Epic.Core.Objects
         public bool IsSystem { get; set; }
         public string Hash { get; set; }
         public bool IsBlocked { get; set; }
+        public IUserEntity ToEntity()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Epic.Core.Objects.Rewards;
+using Epic.Core.Services.Rewards;
 using Epic.Data.Reward;
 
 namespace Epic.Server.Resources

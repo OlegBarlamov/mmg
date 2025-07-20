@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
-using Epic.Core.Objects.UserUnit;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.PlayerUnits;
 using JetBrains.Annotations;
@@ -11,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Epic.Core.Services.Units
 {
+    [UsedImplicitly]
     public class DefaultPlayerUnitsService : IPlayerUnitsService
     {
         public IPlayerUnitsRepository PlayerUnitsRepository { get; }

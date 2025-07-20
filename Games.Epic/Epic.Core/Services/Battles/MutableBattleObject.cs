@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Epic.Core.Objects.BattleUnit;
 using Epic.Data.Battles;
 
-namespace Epic.Core.Objects.Battle
+namespace Epic.Core.Services.Battles
 {
     public class MutableBattleObject : IBattleObject
     {
         public Guid Id { get; set; }
         public Guid BattleDefinitionId { get; set; }
-        public int TurnIndex { get; set; }
+        public int TurnNumber { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public bool IsActive { get; set; }
@@ -41,7 +40,7 @@ namespace Epic.Core.Objects.Battle
             {
                 Id = entity.Id,
                 BattleDefinitionId = entity.BattleDefinitionId,
-                TurnIndex = entity.TurnIndex,
+                TurnNumber = entity.TurnIndex,
                 Width = entity.Width,
                 Height = entity.Height,
                 IsActive = entity.IsActive,
@@ -56,11 +55,16 @@ namespace Epic.Core.Objects.Battle
             {
                 Id = battleObject.Id,
                 BattleDefinitionId = battleObject.BattleDefinitionId,
-                TurnIndex = battleObject.TurnIndex,
+                TurnIndex = battleObject.TurnNumber,
                 Width = battleObject.Width,
                 Height = battleObject.Height,
                 IsActive = battleObject.IsActive,
             };
+        }
+
+        public IBattleEntity ToEntity()
+        {
+            return ToEntity(this);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
+using Epic.Core.Services.Users;
 
 namespace Epic.Core.Services.Players
 {

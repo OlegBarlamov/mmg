@@ -1,7 +1,8 @@
 using System;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.PlayerUnits;
 
-namespace Epic.Core.Objects
+namespace Epic.Core.Services.Units
 {
     public class MutablePlayerUnitObject : IPlayerUnitObject
     {
@@ -40,6 +41,11 @@ namespace Epic.Core.Objects
                 PlayerId = entity.PlayerId,
                 UnitTypeId = entity.TypeId,
             };
+        }
+
+        public IPlayerUnitEntity ToEntity()
+        {
+            throw new NotImplementedException();
         }
     }
 }

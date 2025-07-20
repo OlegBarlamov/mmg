@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Services.Players;
+using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.Exceptions;
 using Epic.Server.Exceptions;

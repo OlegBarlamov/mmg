@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects.Rewards;
-using Epic.Core.Objects.UserUnit;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.Reward;

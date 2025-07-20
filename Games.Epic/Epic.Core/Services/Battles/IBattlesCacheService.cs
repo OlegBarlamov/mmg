@@ -1,5 +1,4 @@
 using System;
-using Epic.Core.Objects.Battle;
 
 namespace Epic.Core.Services.Battles
 {

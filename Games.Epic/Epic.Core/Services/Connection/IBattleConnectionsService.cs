@@ -1,7 +1,6 @@
 using System;
-using Epic.Core.Objects.Battle;
-using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Objects.ClientConnection;
+using Epic.Core.Services.Battles;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 

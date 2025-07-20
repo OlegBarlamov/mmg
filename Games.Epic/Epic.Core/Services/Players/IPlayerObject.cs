@@ -1,9 +1,10 @@
 using System;
+using Epic.Core.Objects;
 using Epic.Data.Players;
 
 namespace Epic.Core.Services.Players
 {
-    public interface IPlayerObject
+    public interface IPlayerObject : IGameObject<IPlayerEntity>
     {
         Guid Id { get; }
         Guid UserId { get; }
@@ -52,6 +53,11 @@ namespace Epic.Core.Services.Players
                 IsDefeated = mutablePlayerObject.IsDefeated,
                 GenerationInProgress = mutablePlayerObject.GenerationInProgress
             };
+        }
+
+        public IPlayerEntity ToEntity()
+        {
+            return ToEntity(this);
         }
     }
 }

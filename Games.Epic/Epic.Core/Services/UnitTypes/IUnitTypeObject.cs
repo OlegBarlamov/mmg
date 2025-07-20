@@ -1,9 +1,10 @@
 using System;
+using Epic.Core.Objects;
 using Epic.Data.UnitTypes;
 
-namespace Epic.Core
+namespace Epic.Core.Services.UnitTypes
 {
-    public interface IUnitTypeObject : IUnitProps
+    public interface IUnitTypeObject : IGameObject<IUnitTypeEntity>, IUnitProps
     {
         Guid Id { get; }
         string Name { get; }

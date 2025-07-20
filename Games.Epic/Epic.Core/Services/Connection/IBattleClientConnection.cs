@@ -2,14 +2,13 @@ using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Epic.Core.ClientMessages;
-using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.ClientConnection;
 using Epic.Core.ServerMessages;
-using Epic.Core.Services.Connection;
+using Epic.Core.Services.Battles;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Core.Objects.BattleClientConnection
+namespace Epic.Core.Services.Connection
 {
     public interface IBattleClientConnection : IDisposable
     {

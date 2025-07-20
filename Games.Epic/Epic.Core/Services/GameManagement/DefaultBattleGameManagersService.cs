@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Epic.Core.Objects.Battle;
-using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.Connection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 

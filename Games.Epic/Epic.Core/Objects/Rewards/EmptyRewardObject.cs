@@ -1,4 +1,6 @@
 using System;
+using Epic.Core.Services.Rewards;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.Reward;
 
 namespace Epic.Core.Objects.Rewards
@@ -33,6 +35,11 @@ namespace Epic.Core.Objects.Rewards
         public IUnitTypeObject[] GetUnitTypes()
         {
             return Array.Empty<IUnitTypeObject>();
+        }
+
+        public IRewardEntity ToEntity()
+        {
+            throw new NotImplementedException();
         }
     }
 }

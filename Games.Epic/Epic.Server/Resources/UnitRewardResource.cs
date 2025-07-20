@@ -1,5 +1,6 @@
 using System;
 using Epic.Core;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.UnitTypes;
 
 namespace Epic.Server.Resources

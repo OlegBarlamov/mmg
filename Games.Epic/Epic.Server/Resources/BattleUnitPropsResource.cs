@@ -1,4 +1,4 @@
-using Epic.Core.Objects.BattleUnit;
+using Epic.Core.Services.Battles;
 
 namespace Epic.Server.Resources
 {

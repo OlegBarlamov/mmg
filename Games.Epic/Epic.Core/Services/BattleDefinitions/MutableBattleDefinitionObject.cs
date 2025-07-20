@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Epic.Core.Objects;
-using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.Rewards;
+using Epic.Core.Services.Rewards;
+using Epic.Core.Services.Units;
 using Epic.Data.BattleDefinitions;
-using Epic.Data.Battles;
 
-namespace Epic.Core
+namespace Epic.Core.Services.BattleDefinitions
 {
     public class MutableBattleDefinitionObject : IBattleDefinitionObject
     {
@@ -33,6 +33,11 @@ namespace Epic.Core
                 UnitsIds = entity.UnitsIds,
                 IsFinished = entity.Finished,
             };
+        }
+
+        public IBattleDefinitionEntity ToEntity()
+        {
+            throw new NotImplementedException();
         }
     }
 }

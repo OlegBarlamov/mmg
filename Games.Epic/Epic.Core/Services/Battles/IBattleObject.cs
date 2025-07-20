@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using Epic.Core.Objects.BattleUnit;
+using Epic.Core.Objects;
+using Epic.Data.Battles;
 
-namespace Epic.Core.Objects.Battle
+namespace Epic.Core.Services.Battles
 {
-    public interface IBattleObject
+    public interface IBattleObject : IGameObject<IBattleEntity>
     {
         Guid Id { get; }
         Guid BattleDefinitionId { get; }
-        int TurnIndex { get; }
+        int TurnNumber { get; }
         int Width { get; }
         int Height { get; }
         bool IsActive { get; }

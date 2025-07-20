@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Epic.Core.ClientMessages;
 using Epic.Core.Logic;
 using Epic.Core.Logic.Erros;
-using Epic.Core.Objects.Battle;
-using Epic.Core.Objects.BattleClientConnection;
 using Epic.Core.ServerMessages;
+using Epic.Core.Services.Battles;
+using Epic.Core.Services.Connection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 

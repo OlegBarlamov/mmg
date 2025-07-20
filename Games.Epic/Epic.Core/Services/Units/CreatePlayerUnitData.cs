@@ -1,6 +1,6 @@
 using System;
 
-namespace Epic.Core.Objects.UserUnit
+namespace Epic.Core.Services.Units
 {
     public class CreatePlayerUnitData
     {

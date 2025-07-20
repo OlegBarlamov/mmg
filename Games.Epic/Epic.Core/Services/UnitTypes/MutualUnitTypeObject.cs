@@ -1,7 +1,7 @@
 using System;
 using Epic.Data.UnitTypes;
 
-namespace Epic.Core
+namespace Epic.Core.Services.UnitTypes
 {
     public class MutualUnitTypeObject : IUnitTypeObject
     {
@@ -34,6 +34,11 @@ namespace Epic.Core
                 Speed = entity.Speed,
                 Health = entity.Health,
             };
+        }
+
+        public IUnitTypeEntity ToEntity()
+        {
+            throw new NotImplementedException();
         }
     }
 }

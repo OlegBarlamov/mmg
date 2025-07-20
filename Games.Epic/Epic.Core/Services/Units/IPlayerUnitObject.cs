@@ -1,8 +1,11 @@
 using System;
+using Epic.Core.Objects;
+using Epic.Core.Services.UnitTypes;
+using Epic.Data.PlayerUnits;
 
-namespace Epic.Core.Objects
+namespace Epic.Core.Services.Units
 {
-    public interface IPlayerUnitObject
+    public interface IPlayerUnitObject : IGameObject<IPlayerUnitEntity>
     {
         Guid Id { get; }
         IUnitTypeObject UnitType { get; }

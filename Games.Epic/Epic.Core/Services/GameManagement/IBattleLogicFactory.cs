@@ -1,5 +1,5 @@
 using Epic.Core.Logic;
-using Epic.Core.Objects.Battle;
+using Epic.Core.Services.Battles;
 
 namespace Epic.Core.Services.GameManagement
 {

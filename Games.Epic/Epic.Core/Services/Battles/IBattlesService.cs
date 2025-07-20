@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
-using Epic.Core.Objects.Battle;
 
 namespace Epic.Core.Services.Battles
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Epic.Core.Objects.Battle;
+using Epic.Core.Services.Battles;
 
 namespace Epic.Server.Resources
 {
@@ -19,7 +19,7 @@ namespace Epic.Server.Resources
             Width = battleObject.Width;
             Height = battleObject.Height;
             Units = battleObject.Units.Select(x => new BattleUnitResource(x)).ToList();
-            TurnInfo = new TurnInfoResource(battleObject.TurnIndex, battleObject.TurnPlayerIndex);
+            TurnInfo = new TurnInfoResource(battleObject.TurnNumber, battleObject.TurnPlayerIndex);
         }
     }
 }

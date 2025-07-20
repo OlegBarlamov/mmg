@@ -1,7 +1,9 @@
 using System;
+using Epic.Core.Objects;
+using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
 
-namespace Epic.Core.Objects.BattleUnit
+namespace Epic.Core.Services.Battles
 {
     public class MutableBattleUnitObject : IBattleUnitObject
     {
@@ -63,6 +65,11 @@ namespace Epic.Core.Objects.BattleUnit
                 Damage = x.Damage,
                 Health = x.Health,
             };
+        }
+
+        public IBattleUnitEntity ToEntity()
+        {
+            return DefaultBattleUnitsService.BattleUnitEntity.FromBattleUnitObject(this);
         }
     }
 }

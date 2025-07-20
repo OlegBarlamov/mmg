@@ -3,6 +3,9 @@ using System.Linq;
 using Epic.Core;
 using Epic.Core.Objects;
 using Epic.Core.Objects.Rewards;
+using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Rewards;
+using Epic.Core.Services.Units;
 
 namespace Epic.Server.Resources
 {

@@ -1,7 +1,6 @@
 using System;
 using Epic.Core;
 using Epic.Core.Logic;
-using Epic.Core.Objects.Battle;
 using Epic.Core.Services;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameManagement;

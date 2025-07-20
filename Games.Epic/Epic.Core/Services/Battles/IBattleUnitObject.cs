@@ -1,9 +1,12 @@
 using System;
+using Epic.Core.Objects;
+using Epic.Core.Services.Units;
+using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes;
 
-namespace Epic.Core.Objects.BattleUnit
+namespace Epic.Core.Services.Battles
 {
-    public interface IBattleUnitObject : IUnitProps
+    public interface IBattleUnitObject : IGameObject<IBattleUnitEntity>, IUnitProps
     {
         Guid Id { get; }
         Guid BattleId { get; }

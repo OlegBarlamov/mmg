@@ -1,9 +1,10 @@
 using System;
-using Epic.Core.Services.Players;
+using Epic.Core.Objects;
+using Epic.Data;
 
-namespace Epic.Core.Objects
+namespace Epic.Core.Services.Users
 {
-    public interface IUserObject
+    public interface IUserObject : IGameObject<IUserEntity>
     {
         Guid Id { get; }
         string Name { get; }
