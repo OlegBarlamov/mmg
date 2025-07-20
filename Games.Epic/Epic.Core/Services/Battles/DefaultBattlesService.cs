@@ -107,7 +107,7 @@ namespace Epic.Core.Services.Battles
             mutableBattleObject.IsActive = true;
             await BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(mutableBattleObject));
             
-            var userUnits = await PlayerUnitsService.GetAliveUnitsByPlayer(playerId);
+            var userUnits = await PlayerUnitsService.GetAliveUnitsByContainerId(player.ArmyContainerId);
             var userBattleUnits = await BattleUnitsService.CreateUnitsFromPlayerUnits(userUnits, InBattlePlayerNumber.Player1, battleObject.Id);
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 

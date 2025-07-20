@@ -215,7 +215,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         }
     }
     
-    async getUnits(): Promise<IUserUnit[]> {
+    async getArmyUnits(): Promise<IUserUnit[]> {
         const id = await this.getUserId()
         return structuredClone(this.units.get(id)) ?? []
     }

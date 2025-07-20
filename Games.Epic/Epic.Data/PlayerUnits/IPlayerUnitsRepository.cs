@@ -6,13 +6,13 @@ namespace Epic.Data.PlayerUnits
 {
     public interface IPlayerUnitsRepository : IRepository
     {
-        Task<IPlayerUnitEntity[]> GetByPlayer(Guid playerId);
+        Task<IPlayerUnitEntity[]> GetByContainerId(Guid containerId);
         
-        Task<IPlayerUnitEntity[]> GetAliveByPlayer(Guid playerId);
+        Task<IPlayerUnitEntity[]> GetAliveByContainerId(Guid containerId);
         
         Task<IPlayerUnitEntity[]> FetchUnitsByIds(IReadOnlyCollection<Guid> ids);
         
-        Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, bool isAlive);
+        Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, Guid containerId, bool isAlive);
         
         Task Update(IPlayerUnitEntity[] entities);
     }

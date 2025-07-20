@@ -15,16 +15,16 @@ namespace Epic.Data.PlayerUnits
         
         private readonly List<PlayerUnitEntity> _playerUnits = new List<PlayerUnitEntity>();
         
-        public Task<IPlayerUnitEntity[]> GetByPlayer(Guid playerId)
+        public Task<IPlayerUnitEntity[]> GetByContainerId(Guid containerId)
         {
-            var units = _playerUnits.Where(unit => unit.PlayerId == playerId).ToArray<IPlayerUnitEntity>();
+            var units = _playerUnits.Where(unit => unit.ContainerId == containerId).ToArray<IPlayerUnitEntity>();
             return Task.FromResult(units);
         }
         
-        public Task<IPlayerUnitEntity[]> GetAliveByPlayer(Guid playerId)
+        public Task<IPlayerUnitEntity[]> GetAliveByContainerId(Guid containerId)
         {
             var aliveUnits = _playerUnits
-                .Where(unit => unit.PlayerId == playerId && unit.IsAlive)
+                .Where(unit => unit.ContainerId == containerId && unit.IsAlive)
                 .ToArray<IPlayerUnitEntity>();
             return Task.FromResult(aliveUnits);
         }
@@ -34,7 +34,7 @@ namespace Epic.Data.PlayerUnits
             return Task.FromResult(_playerUnits.Where(unit => ids.Contains(unit.Id)).ToArray<IPlayerUnitEntity>());
         }
 
-        public Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, bool isAlive)
+        public Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, Guid containerId, bool isAlive)
         {
             var entity = new PlayerUnitEntity
             {
@@ -43,6 +43,7 @@ namespace Epic.Data.PlayerUnits
                 Count = count,
                 PlayerId = playerId,
                 IsAlive = isAlive,
+                ContainerId = containerId,
             };
             
             _playerUnits.Add(entity);
@@ -59,6 +60,7 @@ namespace Epic.Data.PlayerUnits
                 target.PlayerId = entity.PlayerId;
                 target.IsAlive = entity.IsAlive;
                 target.TypeId = entity.TypeId;
+                target.ContainerId = entity.ContainerId;
             });
             return Task.CompletedTask;
         }

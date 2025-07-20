@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
+using Epic.Core.Services.UnitsContainers;
 using Epic.Data.BattleDefinitions;
 using JetBrains.Annotations;
 
@@ -14,16 +14,16 @@ namespace Epic.Core.Services.BattleDefinitions
     {
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         public IPlayerUnitsService PlayerUnitsService { get; }
-        public IPlayersService PlayersService { get; }
+        public IUnitsContainersService UnitsContainersService { get; }
 
         public DefaultBattleDefinitionsService(
             [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
             [NotNull] IPlayerUnitsService playerUnitsService,
-            [NotNull] IPlayersService playersService)
+            [NotNull] IUnitsContainersService unitsContainersService)
         {
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
-            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
         }
 
         public Task<int> GetBattlesCountForPlayer(Guid playerId)
@@ -35,7 +35,7 @@ namespace Epic.Core.Services.BattleDefinitions
         {
             var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByPlayer(playerId);
             var battleDefinitions = entities.Select(MutableBattleDefinitionObject.FromEntity).ToArray();
-            await Task.WhenAll(battleDefinitions.Select(FillBattleDefinitionObject));
+            await Task.WhenAll(battleDefinitions.Select(x => FillBattleDefinitionObject(x)));
             return battleDefinitions;
         }
 
@@ -48,16 +48,27 @@ namespace Epic.Core.Services.BattleDefinitions
             return battleDefinitionObject;
         }
 
+        public async Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height)
+        {
+            var container = await UnitsContainersService.Create(60);
+            var entity = await BattleDefinitionsRepository.Create(playerId, width, height, container.Id);
+            var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(entity);
+            await FillBattleDefinitionObject(battleDefinitionObject, container);
+            return battleDefinitionObject;
+        }
+
         public Task SetFinished(Guid battleDefinitionId)
         {
             return BattleDefinitionsRepository.SetFinished(battleDefinitionId);
         }
 
-        private Task FillBattleDefinitionObject(MutableBattleDefinitionObject battleDefinitionObject)
+        private async Task FillBattleDefinitionObject(MutableBattleDefinitionObject battleDefinitionObject, IUnitsContainerObject unitsContainerObject = null)
         {
-            return PlayerUnitsService
-                .GetUnitsByIds(battleDefinitionObject.UnitsIds)
-                .ContinueWith(task => battleDefinitionObject.Units = task.Result);
+
+            battleDefinitionObject.Units =
+                await PlayerUnitsService.GetAliveUnitsByContainerId(battleDefinitionObject.ContainerId);
+            battleDefinitionObject.UnitsContainerObject = unitsContainerObject ??
+                await UnitsContainersService.GetById(battleDefinitionObject.ContainerId);
         }
     }
 }

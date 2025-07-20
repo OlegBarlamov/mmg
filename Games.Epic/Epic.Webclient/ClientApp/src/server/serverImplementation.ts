@@ -29,8 +29,11 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     getPlayers(): Promise<IPlayerInfo[]> {
         return this.fetchResource("api/players", "GET", "players")
     }
-    getUnits(): Promise<IUserUnit[]> {
-        return this.fetchResource("api/units", "GET", "units")
+    getArmyUnits(): Promise<IUserUnit[]> {
+        return this.fetchResource("api/units/army", "GET", "army_units")
+    }
+    getSupplyUnits(): Promise<IUserUnit[]> {
+        return this.fetchResource("api/units/supply", "GET", "supply_units")
     }
     getBattles(): Promise<IBattleDefinition[]> {
         return this.fetchResource("api/battles", "GET", "battles")

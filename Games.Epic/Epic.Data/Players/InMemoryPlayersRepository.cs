@@ -40,6 +40,8 @@ namespace Epic.Data.Players
             targetPlayer.PlayerType = entity.PlayerType;
             targetPlayer.Day = entity.Day;
             targetPlayer.GenerationInProgress = entity.GenerationInProgress;
+            targetPlayer.ArmyContainerId = entity.ArmyContainerId;
+            targetPlayer.SupplyContainerId = entity.SupplyContainerId;
             return Task.CompletedTask;
         }
 
@@ -54,6 +56,8 @@ namespace Epic.Data.Players
                 PlayerType = fields.PlayerType,
                 Day = fields.Day,
                 GenerationInProgress = fields.GenerationInProgress,
+                ArmyContainerId = fields.ArmyContainerId,
+                SupplyContainerId = fields.SupplyContainerId,
             };
             _playerEntities.Add(newPlayer);
             

@@ -8,7 +8,7 @@ namespace Epic.Data.BattleDefinitions
         int Width { get; }
         int Height { get; }
         
-        Guid[] UnitsIds { get; }
+        Guid ContainerId { get; }
         public bool Finished { get; }
     }
 
@@ -17,7 +17,7 @@ namespace Epic.Data.BattleDefinitions
         public Guid Id { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public Guid[] UnitsIds { get; set; }
+        public Guid ContainerId { get; set; }
         public bool Finished { get; set; }
     }
 }

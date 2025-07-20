@@ -12,6 +12,7 @@ namespace Epic.Core.Services.Units
         public int Count { get; set; }
         public Guid PlayerId { get; set; }
         public bool IsAlive { get; set; }
+        public Guid ContainerId { get; set; }
 
         private MutablePlayerUnitObject()
         {
@@ -28,6 +29,7 @@ namespace Epic.Core.Services.Units
                 Count = x.Count,
                 PlayerId = x.PlayerId,
                 IsAlive = x.IsAlive,
+                ContainerId = x.ContainerId,
             };
         }
 
@@ -40,12 +42,21 @@ namespace Epic.Core.Services.Units
                 IsAlive = entity.IsAlive,
                 PlayerId = entity.PlayerId,
                 UnitTypeId = entity.TypeId,
+                ContainerId = entity.ContainerId,
             };
         }
 
         public IPlayerUnitEntity ToEntity()
         {
-            throw new NotImplementedException();
+            return new PlayerUnitEntity
+            {
+                Id = Id,
+                TypeId = UnitType.Id,
+                Count = Count,
+                PlayerId = PlayerId,
+                IsAlive = IsAlive,
+                ContainerId = ContainerId,
+            };
         }
     }
 }

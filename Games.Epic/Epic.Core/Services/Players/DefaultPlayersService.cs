@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Epic.Core.Objects;
+using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.Users;
 using Epic.Data.Players;
 using JetBrains.Annotations;
@@ -13,11 +13,16 @@ namespace Epic.Core.Services.Players
     {
         public IPlayersRepository PlayersRepository { get; }
         public IUsersService UsersService { get; }
+        public IUnitsContainersService UnitsContainersService { get; }
 
-        public DefaultPlayersService([NotNull] IPlayersRepository playersRepository, [NotNull] IUsersService usersService)
+        public DefaultPlayersService(
+            [NotNull] IPlayersRepository playersRepository,
+            [NotNull] IUsersService usersService,
+            [NotNull] IUnitsContainersService unitsContainersService)
         {
             PlayersRepository = playersRepository ?? throw new ArgumentNullException(nameof(playersRepository));
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
+            UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
         }
 
         public async Task<IPlayerObject> GetByIdAndUserId(Guid userId, Guid playerId)
@@ -27,12 +32,16 @@ namespace Epic.Core.Services.Players
             if (user.Id != player.UserId) 
                 throw new InvalidOperationException("Player does not belong to this user");
 
-            return MutablePlayerObject.FromEntity(player);
+            return await FromEntity(player);
         }
 
         public async Task<IPlayerObject> CreatePlayer(Guid userId, string name, PlayerObjectType playerObjectType)
         {
             var user = await UsersService.GetUserById(userId);
+
+            var armyContainer = await UnitsContainersService.Create(5);
+            var supplyContainer = await UnitsContainersService.Create(30);
+            
             var entity = await PlayersRepository.Create(new MutablePlayerEntityFields
             {
                 Day = 0,
@@ -40,8 +49,12 @@ namespace Epic.Core.Services.Players
                 Name = name,
                 PlayerType = playerObjectType.ToEntity(),
                 UserId = user.Id,
+                GenerationInProgress = false,
+                ArmyContainerId = armyContainer.Id,
+                SupplyContainerId = supplyContainer.Id,
             });
-            return MutablePlayerObject.FromEntity(entity);
+            
+            return await FromEntity(entity, armyContainer, supplyContainer);
         }
 
         public Task<IPlayerObject> CreateComputerPlayer(IUserObject user, Guid humanPlayerId)
@@ -55,19 +68,19 @@ namespace Epic.Core.Services.Players
         public async Task<IPlayerObject> GetComputerPlayer(Guid humanPlayerId)
         {
             var playerEntity = await PlayersRepository.GetByName($"npc_for_{humanPlayerId}");
-            return MutablePlayerObject.FromEntity(playerEntity);
+            return await FromEntity(playerEntity);
         }
 
         public async Task<IPlayerObject> GetById(Guid playerId)
         {
             var playerEntity = await PlayersRepository.GetById(playerId);
-            return MutablePlayerObject.FromEntity(playerEntity);
+            return await FromEntity(playerEntity);
         }
 
         public async Task<IPlayerObject[]> GetAllByUserId(Guid userId)
         {
             var entities = await PlayersRepository.GetByUserId(userId);
-            return entities.Select(MutablePlayerObject.FromEntity).ToArray<IPlayerObject>();
+            return await Task.WhenAll(entities.Select(x => FromEntity(x)));
         }
 
         public Task SetDefeated(Guid[] playerIds)
@@ -83,6 +96,14 @@ namespace Epic.Core.Services.Players
         public Task SetGenerationInProgress(Guid playerId, bool generationInProgress)
         {
             return PlayersRepository.SetGenerationInProgress(new[] { playerId }, generationInProgress);
+        }
+
+        private async Task<IPlayerObject> FromEntity(IPlayerEntity playerEntity, IUnitsContainerObject armyContainer = null, IUnitsContainerObject supplyContainer = null)
+        {
+            var mutableObject = MutablePlayerObject.FromEntity(playerEntity);
+            mutableObject.Army = armyContainer ?? await UnitsContainersService.GetById(mutableObject.ArmyContainerId);
+            mutableObject.Supply = supplyContainer ?? await UnitsContainersService.GetById(mutableObject.SupplyContainerId);
+            return mutableObject;
         }
     }
 }

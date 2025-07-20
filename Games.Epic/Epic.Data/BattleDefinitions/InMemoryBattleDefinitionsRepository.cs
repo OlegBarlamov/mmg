@@ -30,14 +30,14 @@ namespace Epic.Data.BattleDefinitions
             return Task.FromResult(battles);
         }
 
-        public Task<IBattleDefinitionEntity> Create(Guid playerId, int width, int height, Guid[] unitIds)
+        public Task<IBattleDefinitionEntity> Create(Guid playerId, int width, int height, Guid containerId)
         {
             var battleDefinition = new BattleDefinitionEntity
             {
                 Id = Guid.NewGuid(),
                 Height = height,
                 Width = width,
-                UnitsIds = unitIds,
+                ContainerId = containerId,
                 Finished = false,
             };
             _battleDefinitions.Add(battleDefinition);

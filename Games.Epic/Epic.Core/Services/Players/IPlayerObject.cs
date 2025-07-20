@@ -1,5 +1,6 @@
 using System;
 using Epic.Core.Objects;
+using Epic.Core.Services.UnitsContainers;
 using Epic.Data.Players;
 
 namespace Epic.Core.Services.Players
@@ -8,22 +9,31 @@ namespace Epic.Core.Services.Players
     {
         Guid Id { get; }
         Guid UserId { get; }
+        Guid ArmyContainerId { get; }
+        Guid SupplyContainerId { get; }
         int Day { get; }
         string Name { get; }
         PlayerObjectType PlayerType { get; }
         bool IsDefeated { get; }
         bool GenerationInProgress { get; }
+        IUnitsContainerObject Army { get; }
+        IUnitsContainerObject Supply { get; }
     }
 
     internal class MutablePlayerObject : IPlayerObject
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public Guid ArmyContainerId { get; set; }
+        public Guid SupplyContainerId { get; set; }
         public int Day { get; set; }
         public string Name { get; set; }
         public PlayerObjectType PlayerType { get; set; }
         public bool IsDefeated { get; set; }
         public bool GenerationInProgress { get; set; }
+        
+        public IUnitsContainerObject Army { get; set; }
+        public IUnitsContainerObject Supply { get; set; }
 
         private MutablePlayerObject() {}
 
@@ -37,7 +47,9 @@ namespace Epic.Core.Services.Players
                 Name = entity.Name,
                 PlayerType = entity.PlayerType.ToObjectType(),
                 IsDefeated = entity.IsDefeated,
-                GenerationInProgress = entity.GenerationInProgress
+                GenerationInProgress = entity.GenerationInProgress,
+                ArmyContainerId = entity.ArmyContainerId,
+                SupplyContainerId = entity.SupplyContainerId,
             };
         }
 
@@ -51,7 +63,9 @@ namespace Epic.Core.Services.Players
                 Name = mutablePlayerObject.Name,
                 PlayerType = mutablePlayerObject.PlayerType.ToEntity(),
                 IsDefeated = mutablePlayerObject.IsDefeated,
-                GenerationInProgress = mutablePlayerObject.GenerationInProgress
+                GenerationInProgress = mutablePlayerObject.GenerationInProgress,
+                ArmyContainerId = mutablePlayerObject.ArmyContainerId,
+                SupplyContainerId = mutablePlayerObject.SupplyContainerId,
             };
         }
 

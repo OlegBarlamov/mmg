@@ -9,6 +9,7 @@ using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
+using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
 using Epic.Core.Services.Users;
 using Epic.Data;
@@ -18,6 +19,7 @@ using Epic.Data.BattleUnits;
 using Epic.Data.Players;
 using Epic.Data.PlayerUnits;
 using Epic.Data.Reward;
+using Epic.Data.UnitsContainers;
 using Epic.Data.UnitTypes;
 using Epic.Logic;
 using Epic.Server.Services;
@@ -52,6 +54,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IPlayersService, DefaultPlayersService>();
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
             serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
+            serviceRegistrator.RegisterType<IUnitsContainersService, DefaultUnitsContainerService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();
@@ -62,6 +65,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleUnitsRepository, InMemoryBattleUnitsRepository>();
             serviceRegistrator.RegisterType<IRewardsRepository, InMemoryRewardsRepository>();
             serviceRegistrator.RegisterType<IPlayersRepository, InMemoryPlayersRepository>();
+            serviceRegistrator.RegisterType<IUnitsContainerRepository, InMemoryUnitsContainerRepository>();
         }
     }
 }

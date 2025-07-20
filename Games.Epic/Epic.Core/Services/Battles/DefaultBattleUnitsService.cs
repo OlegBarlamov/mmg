@@ -50,7 +50,8 @@ namespace Epic.Core.Services.Battles
         public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromPlayerUnits(IReadOnlyCollection<IPlayerUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId)
         {
             var userUnitsById = playerUnits.ToDictionary(u => u.Id, u => u);
-            var entities = playerUnits.Select(u => BattleUnitEntity.FromUserUnit(u, battleId, playerNumber)).ToArray<IBattleUnitEntityFields>();
+            var entities = playerUnits.Select(u => BattleUnitEntity.FromUserUnit(u, battleId, playerNumber))
+                .ToArray<IBattleUnitEntityFields>();
 
             var createdInstances = await BattleUnitsRepository.CreateBatch(entities);
             var createdBattleUnits = createdInstances.Select(MutableBattleUnitObject.FromEntity).ToArray();

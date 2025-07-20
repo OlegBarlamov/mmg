@@ -30,7 +30,7 @@ export interface IServerAPI {
     getUserInfo(): Promise<IUserInfo>
     getPlayer(id: string): Promise<IPlayerInfo>
     getPlayers(): Promise<IPlayerInfo[]>
-    getUnits(): Promise<IUserUnit[]>
+    getArmyUnits(): Promise<IUserUnit[]>
     setActivePlayer(playerId: string): Promise<void>
     getBattles(): Promise<IBattleDefinition[]>
     beginBattle(battleDefinitionId: string): Promise<BattleMap>

@@ -10,6 +10,8 @@ namespace Epic.Core.Services.BattleDefinitions
         Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByPlayerAsync(Guid playerId);
         
         Task<IBattleDefinitionObject> GetBattleDefinitionByPlayerAndId(Guid playerId, Guid battleDefinitionId);
+
+        Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height);
         
         Task SetFinished(Guid battleDefinitionId);
     }

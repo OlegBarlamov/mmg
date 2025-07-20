@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Epic.Core;
 using Epic.Core.Objects.ClientConnection;
 using Epic.Core.Services.Connection;
 using JetBrains.Annotations;
@@ -44,6 +44,7 @@ namespace Epic.Server.Services
             WebSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
             ConnectionId = connectionId;
             Logger = loggerFactory.CreateLogger<WebSocketClientConnection>();
+            IsActive = true;
         }
 
         public void Dispose()
@@ -75,7 +76,6 @@ namespace Epic.Server.Services
 
         public async Task ListenMessagesAsync()
         {
-            IsActive = true;
             var buffer = new byte[1024 * 4];
             var result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationTokenSource.Token);
             while (!result.CloseStatus.HasValue)

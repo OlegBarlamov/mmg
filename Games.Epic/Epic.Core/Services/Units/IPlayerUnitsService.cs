@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Epic.Core.Objects;
 
 namespace Epic.Core.Services.Units
 {
     public interface IPlayerUnitsService
     {
-        Task<IReadOnlyCollection<IPlayerUnitObject>> GetAliveUnitsByPlayer(Guid playerId);
+        Task<IReadOnlyCollection<IPlayerUnitObject>> GetAliveUnitsByContainerId(Guid containerId);
         
         Task<IReadOnlyCollection<IPlayerUnitObject>> GetUnitsByIds(IReadOnlyCollection<Guid> ids);
         
