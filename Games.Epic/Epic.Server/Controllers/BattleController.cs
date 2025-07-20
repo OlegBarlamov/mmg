@@ -123,11 +123,12 @@ namespace Epic.Server.Controllers
             using var clientConnection = ClientConnectionService.CreateConnection(webSocket);
             using var battleConnection = BattleConnectionsService.CreateConnection(clientConnection, battleObject);
             
+            var listenMessagesTask = clientConnection.ListenMessagesAsync(); 
             await BattleGameManagersService.GetBattleGameManager(battleConnection);
 
             try
             {
-                await clientConnection.ListenMessagesAsync();
+                await listenMessagesTask;
             }
             catch (OperationCanceledException)
             {

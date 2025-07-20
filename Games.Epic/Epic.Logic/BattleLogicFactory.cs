@@ -8,6 +8,7 @@ using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Epic.Logic
 {
@@ -20,6 +21,7 @@ namespace Epic.Logic
         [NotNull] public IRewardsService RewardsService { get; }
         public IDaysProcessor DaysProcessor { get; }
         public IPlayersService PlayersService { get; }
+        public ILoggerFactory LoggerFactory { get; }
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
@@ -27,7 +29,8 @@ namespace Epic.Logic
             [NotNull] IBattlesService battlesService,
             [NotNull] IRewardsService rewardsService,
             [NotNull] IDaysProcessor daysProcessor,
-            [NotNull] IPlayersService playersService)
+            [NotNull] IPlayersService playersService,
+            [NotNull] ILoggerFactory loggerFactory)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
@@ -35,6 +38,7 @@ namespace Epic.Logic
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
         
         public IBattleLogic Create(MutableBattleObject battleObject, IBattleMessageBroadcaster broadcaster)
@@ -46,7 +50,8 @@ namespace Epic.Logic
                 RewardsService,
                 broadcaster,
                 DaysProcessor,
-                PlayersService);
+                PlayersService,
+                LoggerFactory.CreateLogger<BattleLogic>());
         }
     }
 }

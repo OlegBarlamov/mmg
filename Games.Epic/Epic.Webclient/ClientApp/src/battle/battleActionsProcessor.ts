@@ -8,12 +8,22 @@ import {getRandomStringKey} from "../units/getRandomString";
 import {IBattleCommandToServerResponse} from "../server/IBattleCommandToServerResponse";
 
 export interface IBattleActionsProcessor {
+    onClientConnected(): Promise<void>
     processAction(action: BattleUserAction): Promise<void>
 }
 
 export class BattleActionsProcessor implements IBattleActionsProcessor {
     constructor(private readonly mapController: IBattleMapController,
                 private readonly battleServerConnection: IBattleServerConnection) {
+    }
+    async onClientConnected(): Promise<void> {
+        await this.battleServerConnection.sendMessage({
+            command: 'CLIENT_CONNECTED',
+            commandId: getRandomStringKey(10),
+            // TODO: send the correct player number
+            player: this.mapController.map.turnInfo.player,
+            turnIndex: this.mapController.map.turnInfo.index,
+        })
     }
     
     async processAction(action: BattleUserAction): Promise<void> {

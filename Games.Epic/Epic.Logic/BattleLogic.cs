@@ -16,6 +16,7 @@ using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Epic.Logic
 {
@@ -28,12 +29,14 @@ namespace Epic.Logic
         private IRewardsService RewardsService { get; }
         private IBattleMessageBroadcaster Broadcaster { get; }
         private IDaysProcessor DaysProcessor { get; }
-        public IPlayersService PlayersService { get; }
+        private IPlayersService PlayersService { get; }
+        private ILogger<BattleLogic> Logger { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
         private readonly ConcurrentDictionary<int, List<IServerBattleMessage>> _passedServerBattleMessages = new ConcurrentDictionary<int, List<IServerBattleMessage>>();
 
+        private IBattleUnitObject _activeUnit;
         [CanBeNull] private TurnInfo _expectedTurn;
         [CanBeNull] private TaskCompletionSource<Task> _awaitPlayerTurnTaskCompletionSource;
         private bool _isDisposed;
@@ -46,7 +49,8 @@ namespace Epic.Logic
             [NotNull] IRewardsService rewardsService,
             [NotNull] IBattleMessageBroadcaster broadcaster,
             [NotNull] IDaysProcessor daysProcessor,
-            [NotNull] IPlayersService playersService)
+            [NotNull] IPlayersService playersService,
+            [NotNull] ILogger<BattleLogic> logger)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -56,6 +60,7 @@ namespace Epic.Logic
             Broadcaster = broadcaster ?? throw new ArgumentNullException(nameof(broadcaster));
             DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
             _sortedBattleUnitObjects.Sort((x, y) => x.PlayerUnit.UnitType.Speed.CompareTo(y.PlayerUnit.UnitType.Speed));
@@ -74,40 +79,52 @@ namespace Epic.Logic
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(BattleLogic));
                 
-            var activeUnit = GetActiveUnit(BattleObject.TurnNumber);
             var battleResult = GetBattleResult();
-
             try
             {
                 while (!battleResult.Finished)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (IsPlayerControlled(activeUnit))
+                    BattleObject.TurnNumber++;
+                    await BattlesService.UpdateBattle(BattleObject);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    _activeUnit = GetActiveUnit(BattleObject.LastTurnUnitIndex, out var activeUnitIndex);
+                    BattleObject.LastTurnUnitIndex = activeUnitIndex;
+                    await BattlesService.UpdateBattle(BattleObject);
+                    
+                    cancellationToken.ThrowIfCancellationRequested();
+                    
+                    await BroadcastMessageToClientAndSaveAsync(new NextTurnCommandFromServer(
+                        BattleObject.TurnNumber,
+                        (InBattlePlayerNumber)_activeUnit.PlayerIndex,
+                        _activeUnit.Id));
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (IsHumanControlled(_activeUnit))
                     {
-                        await WaitForClientTurn(activeUnit.PlayerIndex, BattleObject.TurnNumber);
-                        cancellationToken.ThrowIfCancellationRequested();
+                        await WaitForClientTurn(_activeUnit.PlayerIndex, BattleObject.TurnNumber);
                     }
                     else
                     {
                         // TODO AI
                     }
 
-                    BattleObject.TurnNumber++;
-                    await BattlesService.UpdateBattle(BattleObject);
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     battleResult = GetBattleResult();
-                    if (battleResult.Finished)
-                        continue;
-                    
-                    activeUnit = GetActiveUnit(BattleObject.TurnNumber);
-                    var serverCommand = new NextTurnCommandFromServer(BattleObject.TurnNumber, (InBattlePlayerNumber)activeUnit.PlayerIndex);
-                    await BroadcastMessageToClientAndSaveAsync(serverCommand);
                 }
             }
             catch (OperationCanceledException)
             {
                 // ignore
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Unexpected error in battle logic cycle: {e}");
             }
 
             if (battleResult.Finished)
@@ -180,7 +197,7 @@ namespace Epic.Logic
             };
         }
 
-        private bool IsPlayerControlled(IBattleUnitObject unit)
+        private bool IsHumanControlled(IBattleUnitObject unit)
         {
             // TODO change to add AI
             return true;
@@ -217,7 +234,9 @@ namespace Epic.Logic
                 BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
             if (targetActor == null)
                 throw new BattleLogicException("Not found target actor for client command");
-
+            if (targetActor != _activeUnit)
+                throw new BattleLogicException("Wrong target actor for client command");
+                
             var targetTarget = BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.TargetId);
             if (targetTarget == null)
                 throw new BattleLogicException("Not found target unit for client command");
@@ -271,7 +290,9 @@ namespace Epic.Logic
                 BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
             if (targetActor == null)
                 throw new BattleLogicException("Not found target actor for client command");
-
+            if (targetActor != _activeUnit)
+                throw new BattleLogicException("Wrong target actor for client command");
+            
             if (command.TurnIndex != _expectedTurn?.TurnIndex || (int)command.Player != _expectedTurn?.PlayerIndex) 
                 throw new BattleLogicException("Wrong turn index or player index");
             
@@ -305,17 +326,23 @@ namespace Epic.Logic
             }
         }
 
-        private IBattleUnitObject GetActiveUnit(int turnIndex)
+        private IBattleUnitObject GetActiveUnit(int lastTurnUnitIndex, out int activeUnitIndex)
         {
-            turnIndex %= _sortedBattleUnitObjects.Count;
-            var activeUnit = _sortedBattleUnitObjects[turnIndex];
-            while (!activeUnit.PlayerUnit.IsAlive)
+            int count = _sortedBattleUnitObjects.Count;
+
+            for (int i = 1; i <= count; i++)
             {
-                turnIndex++;
-                turnIndex %= _sortedBattleUnitObjects.Count;
-                activeUnit = _sortedBattleUnitObjects[turnIndex];
+                int nextIndex = (lastTurnUnitIndex + i) % count;
+                var unit = _sortedBattleUnitObjects[nextIndex];
+
+                if (unit.PlayerUnit.IsAlive)
+                {
+                    activeUnitIndex = nextIndex;
+                    return unit;
+                }
             }
-            return activeUnit;
+
+            throw new BattleLogicException("No alive unit found for active unit");
         }
     }
 }

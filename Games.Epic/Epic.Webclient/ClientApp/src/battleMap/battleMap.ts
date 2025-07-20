@@ -16,6 +16,7 @@ export type BattleTurnInfo = {
     index: number
     player: BattlePlayerNumber
     result?: BattleResult
+    nextTurnUnitId?: string
 }
 
 export type BattleMap = {

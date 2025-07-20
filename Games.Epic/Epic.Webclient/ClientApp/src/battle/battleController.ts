@@ -22,7 +22,6 @@ export class BattleController implements IBattleController {
     private battleFinished: boolean = false
     private currentTurnIndex: number = -1
     private winnerPlayer: BattlePlayerNumber | null = null
-    private orderedUnits: BattleMapUnit[]
 
     private readonly map: BattleMap
 
@@ -39,15 +38,12 @@ export class BattleController implements IBattleController {
         this.battleActionProcessor = battleActionProcessor
         this.turnAwaiter = turnAwaiter
 
-        this.orderedUnits = [...this.mapController.map.units]
-            .sort((a, b) => b.currentProps.speed - a.currentProps.speed)
         this.map = mapController.map
 
         this.battleUserInputController = new BattleUserInputController(mapController)
     }
 
     dispose(): void {
-        this.orderedUnits.splice(0)
         this.mapController.destroy()
         this.turnAwaiter.dispose()
     }
@@ -57,20 +53,22 @@ export class BattleController implements IBattleController {
         this.battleStarted = true
         this.currentTurnIndex = this.turnAwaiter.currentTurnIndex
 
-        while (!this.battleFinished) {
-            const currentUnit = this.getActiveUnit(this.currentTurnIndex)
-            this.map.turnInfo.player = currentUnit.player
+        await this.battleActionProcessor.onClientConnected()
 
+        while (!this.battleFinished) {
             try {
-                await this.processStep(currentUnit)
+                if (this.isPlayerControlled(this.map.turnInfo.player)) {
+                    const currentUnit = this.getActiveUnit(this.map.turnInfo.nextTurnUnitId!)
+                    if (currentUnit) {
+                        await this.processStep(currentUnit)
+                    } else {
+                        console.error("No active unit found for turn " + this.currentTurnIndex)
+                    }
+                }
 
                 const turnInfo = await this.turnAwaiter.waitForTurn(this.currentTurnIndex + 1)
 
-                this.orderedUnits = [...this.mapController.map.units]
-                    .sort((a, b) => b.currentProps.speed - a.currentProps.speed)
-
                 this.currentTurnIndex = turnInfo.index
-
                 this.battleFinished = turnInfo.result?.finished ?? false
                 this.winnerPlayer = turnInfo.result?.winner ?? null
 
@@ -79,22 +77,17 @@ export class BattleController implements IBattleController {
             }
         }
 
-        await wait(1000 * 3)
+        await wait(2000)
 
         return this.winnerPlayer
     }
 
-    private getActiveUnit(turnIndex: number): BattleMapUnit {
-        turnIndex %= this.orderedUnits.length;
-        let activeUnit = this.orderedUnits[turnIndex];
-        
-        while (!activeUnit.isAlive) {
-            turnIndex++;
-            turnIndex %= this.orderedUnits.length;
-            activeUnit = this.orderedUnits[turnIndex];
-        }
-        
-        return activeUnit;
+    private isPlayerControlled(player: BattlePlayerNumber): boolean {
+        return player == BattlePlayerNumber.Player1 || player == BattlePlayerNumber.Player2
+    }
+
+    private getActiveUnit(unitId: string): BattleMapUnit | null {
+        return this.map.units.find(unit => unit.id === unitId) ?? null
     }
 
     private async processStep(unit: BattleMapUnit): Promise<void> {
@@ -115,8 +108,9 @@ export class BattleController implements IBattleController {
         } catch (e) {
             if (e instanceof TaskCancelledError) {
                 // Do nothing
-            }
+            } else {
             throw e
+            }
         } finally {
             cancellationTokenSource.dispose()
             this.mapController.battleMapHighlighter.restoreHighlightingForCells(cellsForMove)

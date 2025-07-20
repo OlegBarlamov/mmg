@@ -90,12 +90,9 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     
     async onMessage(message: BattleCommandFromServer): Promise<void> {
         if (this.disposed) return
-        
-        if ((message as PlayerCommandFromServer).player === this.getCurrentTurnInfo().player) {
-            this.onCurrentPlayerActionReceived.emit()
-        }
 
         if (message.command === 'UNIT_MOVE') {
+            this.cancelCurrentUserActionPending(message)
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
                 await this.mapController.moveUnit(unit, message.moveToCell.r, message.moveToCell.c)
@@ -108,11 +105,12 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 index: message.turnNumber,
                 player: message.player,
                 result: undefined,
+                nextTurnUnitId: message.nextTurnUnitId,
             }
             this.onNextTurnInfo(turnInfo)
             return
         } else if (message.command === 'UNIT_ATTACK') {
-            // Nothing
+            this.cancelCurrentUserActionPending(message)
             return
         } else if (message.command === 'TAKE_DAMAGE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
@@ -130,12 +128,19 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                     finished: true,
                     winner: message.winner
                 },
+                nextTurnUnitId: undefined,
             }
             this.onNextTurnInfo(turnInfo)
             return
         }
 
         throw Error("Unknown or invalid command from server")
+    }
+
+    private cancelCurrentUserActionPending(command: BattleCommandFromServer): void {
+        if ((command as PlayerCommandFromServer).player === this.getCurrentTurnInfo().player) {
+            this.onCurrentPlayerActionReceived.emit()
+        }
     }
 
     private onNextTurnInfo(turnInfo: BattleTurnInfo) {

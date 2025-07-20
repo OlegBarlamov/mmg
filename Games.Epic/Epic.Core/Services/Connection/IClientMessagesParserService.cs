@@ -30,19 +30,18 @@ namespace Epic.Core.Services.Connection
                 using var document = JsonDocument.Parse(message);
                 var root = document.RootElement;
 
-                var command = root.GetProperty("command").GetString();
+                var command = root.GetProperty("command").GetString() ?? "NULL";
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
                 options.Converters.Add(new JsonStringEnumConverter());
-                parsedMessage = command switch
-                {
-                    "UNIT_MOVE" => JsonSerializer.Deserialize<UnitMoveClientBattleMessage>(message, options),
-                    "UNIT_ATTACK" => JsonSerializer.Deserialize<UnitAttackClientBattleMessage>(message, options),
-                    _ => throw new InvalidOperationException("Unknown command type")
-                };
+                if (!ClientBattleCommands.CommandTypes.TryGetValue(command, out var commandType))
+                    throw new InvalidOperationException("Unknown command type");
+
+                parsedMessage = (IClientBattleMessage)JsonSerializer.Deserialize(message, commandType, options); 
+                
                 return true;
             }
             catch (Exception e)

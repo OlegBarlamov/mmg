@@ -60,7 +60,8 @@ namespace Epic.Data.Battles
                 Width = width,
                 Height = height,
                 IsActive = isActive,
-                TurnIndex = 0,
+                TurnNumber = -1,
+                LastTurnUnitIndex = -1,
             };
             _battles.Add(battleEntity);
 
@@ -85,7 +86,7 @@ namespace Epic.Data.Battles
             mutableBattleInstance.Width = battleEntity.Width;
             mutableBattleInstance.Height = battleEntity.Height;
             mutableBattleInstance.IsActive = battleEntity.IsActive;
-            mutableBattleInstance.TurnIndex = battleEntity.TurnIndex;
+            mutableBattleInstance.TurnNumber = battleEntity.TurnNumber;
             
             return Task.CompletedTask;
         }

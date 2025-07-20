@@ -512,6 +512,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             player: targetUnit.player,
             commandId: getRandomStringKey(10),
             turnNumber: map.turnInfo.index,
+            nextTurnUnitId: targetUnit.id,
         })
     }
     

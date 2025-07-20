@@ -27,4 +27,4 @@ interface UnitAttackCommandToServer extends UnitCommandToServer {
     moveToCell: IHexoPoint
 }
 
-export type BattleCommandToServer = UnitMoveCommandToServer | UnitAttackCommandToServer
+export type BattleCommandToServer = UnitMoveCommandToServer | UnitAttackCommandToServer | ClientConnectedCommandToServer

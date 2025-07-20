@@ -13,7 +13,8 @@ namespace Epic.Core.Services.Battles
         public int Height { get; set; }
         public bool IsActive { get; set; }
         public int TurnPlayerIndex { get; set; }
-        
+        public int LastTurnUnitIndex { get; set; }
+
         public List<Guid> PlayerIds { get; set; }
         public List<MutableBattleUnitObject> Units { get; set; }
 
@@ -40,12 +41,13 @@ namespace Epic.Core.Services.Battles
             {
                 Id = entity.Id,
                 BattleDefinitionId = entity.BattleDefinitionId,
-                TurnNumber = entity.TurnIndex,
+                TurnNumber = entity.TurnNumber,
                 Width = entity.Width,
                 Height = entity.Height,
                 IsActive = entity.IsActive,
                 Units = null,
                 TurnPlayerIndex = 0,
+                LastTurnUnitIndex = entity.LastTurnUnitIndex,
             };
         }
         
@@ -55,10 +57,11 @@ namespace Epic.Core.Services.Battles
             {
                 Id = battleObject.Id,
                 BattleDefinitionId = battleObject.BattleDefinitionId,
-                TurnIndex = battleObject.TurnNumber,
+                TurnNumber = battleObject.TurnNumber,
                 Width = battleObject.Width,
                 Height = battleObject.Height,
                 IsActive = battleObject.IsActive,
+                LastTurnUnitIndex = battleObject.LastTurnUnitIndex,
             };
         }
 

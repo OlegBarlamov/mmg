@@ -35,6 +35,7 @@ export interface UnitTakeDamageCommandFromServer extends UnitCommandFromServer {
 
 export interface NextTurnCommandFromServer extends PlayerCommandFromServer {
     command: 'NEXT_TURN'
+    nextTurnUnitId: string
 }
 
 export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {

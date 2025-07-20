@@ -14,6 +14,7 @@ namespace Epic.Core.Services.Battles
         int Height { get; }
         bool IsActive { get; }
         int TurnPlayerIndex { get; }
+        int LastTurnUnitIndex { get; }
         
         IReadOnlyList<Guid> PlayersIds { get; }
         

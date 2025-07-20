@@ -6,20 +6,23 @@ namespace Epic.Data.Battles
     {
         Guid Id { get; }
         Guid BattleDefinitionId { get; }
-        int TurnIndex { get; }
+        int TurnNumber { get; }
         int Width { get; }
         int Height { get; }
         bool IsActive { get; }
+        int LastTurnUnitIndex { get; }
     }
 
     public class MutableBattleEntity : IBattleEntity
     {
         public Guid Id { get; set; }
         public Guid BattleDefinitionId { get; set; }
-        public int TurnIndex { get; set; }
+        public int TurnNumber { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public bool IsActive { get; set; }
+        
+        public int LastTurnUnitIndex { get; set; }
 
         public MutableBattleEntity()
         {
