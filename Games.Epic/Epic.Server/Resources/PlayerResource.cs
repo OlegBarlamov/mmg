@@ -10,6 +10,7 @@ namespace Epic.Server.Resources
         public int Day { get; }
         public string Name { get; }
         public bool IsDefeated { get; }
+        public bool BattlesGenerationInProgress { get; }
         
         public PlayerResource(IPlayerObject playerObject)
         {
@@ -18,6 +19,7 @@ namespace Epic.Server.Resources
             Day = playerObject.Day;
             Name = playerObject.Name;
             IsDefeated = playerObject.IsDefeated;
+            BattlesGenerationInProgress = playerObject.GenerationInProgress;
         }
     }
 }

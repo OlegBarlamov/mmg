@@ -14,6 +14,7 @@ namespace Epic.Data.Players
         string Name { get; }
         PlayerEntityType PlayerType { get; }
         bool IsDefeated { get; }
+        bool GenerationInProgress { get; }
     }
 
     public class MutablePlayerEntityFields : IPlayerEntityFields
@@ -23,6 +24,7 @@ namespace Epic.Data.Players
         public string Name { get; set; }
         public PlayerEntityType PlayerType { get; set; }
         public bool IsDefeated { get; set; }
+        public bool GenerationInProgress { get; set; }
     }
     
     public class MutablePlayerEntity : MutablePlayerEntityFields, IPlayerEntity

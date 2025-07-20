@@ -22,6 +22,7 @@ export interface IPlayerInfo {
     readonly day: number
     readonly name: string
     readonly isDefeated: boolean
+    readonly battlesGenerationInProgress: boolean
 }
 
 export interface IServerAPI {

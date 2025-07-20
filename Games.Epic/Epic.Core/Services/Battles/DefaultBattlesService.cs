@@ -6,8 +6,8 @@ using Epic.Core.Logic;
 using Epic.Core.Objects.Battle;
 using Epic.Core.Objects.BattleUnit;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
-using Epic.Core.Services.Users;
 using Epic.Data.Battles;
 using JetBrains.Annotations;
 
@@ -21,7 +21,7 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IBattleDefinitionsService BattleDefinitionsService { get; }
         [NotNull] private IBattlesCacheService BattlesCacheService { get; }
         [NotNull] private IPlayerUnitsService PlayerUnitsService { get; }
-        [NotNull] private IUsersService UsersService { get; }
+        [NotNull] private IPlayersService PlayersService { get; }
 
         public DefaultBattlesService(
             [NotNull] IBattlesRepository battlesRepository,
@@ -29,14 +29,14 @@ namespace Epic.Core.Services.Battles
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IBattlesCacheService battlesCacheService,
             [NotNull] IPlayerUnitsService playerUnitsService,
-            [NotNull] IUsersService usersService)
+            [NotNull] IPlayersService playersService)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
-            UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
         }
 
         public async Task<IBattleObject> GetBattleById(Guid battleId)
@@ -72,8 +72,15 @@ namespace Epic.Core.Services.Battles
 
         public async Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, Guid battleDefinitionId)
         {
+            var player = await PlayersService.GetById(playerId);
+            if (player.IsDefeated)
+                throw new InvalidOperationException("Player is already defeated.");
+            
             var battleDefinition =
                 await BattleDefinitionsService.GetBattleDefinitionByPlayerAndId(playerId, battleDefinitionId);
+            
+            if (battleDefinition.IsFinished)
+                throw new InvalidOperationException("Battle definition is finished");
             
             var battleEntity = await BattlesRepository.CreateBattleAsync(
                 battleDefinitionId,
@@ -94,6 +101,10 @@ namespace Epic.Core.Services.Battles
 
         public async Task<IBattleObject> BeginBattle(Guid playerId, IBattleObject battleObject)
         {
+            var player = await PlayersService.GetById(playerId);
+            if (player.IsDefeated)
+                throw new InvalidOperationException("Player is already defeated.");
+            
             var mutableBattleObject = ToMutableObject(battleObject);
             mutableBattleObject.IsActive = true;
             await BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(mutableBattleObject));
@@ -157,7 +168,7 @@ namespace Epic.Core.Services.Battles
         private async Task FillUsers(MutableBattleObject battleObject)
         {
             var userIds = await BattlesRepository.GetBattleUsers(battleObject.Id);
-            battleObject.UsersIds = new List<Guid>(userIds);
+            battleObject.PlayerIds = new List<Guid>(userIds);
         }
 
         private MutableBattleObject ToMutableObject(IBattleObject battleObject)

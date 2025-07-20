@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
+using Epic.Core.Services;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
@@ -49,6 +50,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IRewardsService, DefaultRewardsService>();
             serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             serviceRegistrator.RegisterType<IPlayersService, DefaultPlayersService>();
+            serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
+            serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

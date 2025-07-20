@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleDefinitions;
 using JetBrains.Annotations;
@@ -13,14 +14,23 @@ namespace Epic.Core.Services.BattleDefinitions
     {
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         public IPlayerUnitsService PlayerUnitsService { get; }
+        public IPlayersService PlayersService { get; }
 
-        public DefaultBattleDefinitionsService([NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
-            [NotNull] IPlayerUnitsService playerUnitsService)
+        public DefaultBattleDefinitionsService(
+            [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
+            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IPlayersService playersService)
         {
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
         }
-        
+
+        public Task<int> GetBattlesCountForPlayer(Guid playerId)
+        {
+            return BattleDefinitionsRepository.CountBattles(playerId);
+        }
+
         public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByPlayerAsync(Guid playerId)
         {
             var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByPlayer(playerId);

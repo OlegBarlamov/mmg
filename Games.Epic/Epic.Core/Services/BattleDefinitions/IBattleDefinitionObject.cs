@@ -10,6 +10,8 @@ namespace Epic.Core
 
         int Width { get; }
         int Height { get; }
+        
+        bool IsFinished { get; }
 
         IReadOnlyCollection<IPlayerUnitObject> Units { get; }
     }

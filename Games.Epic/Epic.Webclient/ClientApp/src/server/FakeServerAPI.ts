@@ -309,6 +309,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 props: {...unitType!},
                 currentProps: {...unitType!},
                 count: unit.count,
+                isAlive: true,
                 position: unitPosition,
             }
         })

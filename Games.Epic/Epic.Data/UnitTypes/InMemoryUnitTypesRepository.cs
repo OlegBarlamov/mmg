@@ -49,5 +49,10 @@ namespace Epic.Data.UnitTypes
             
             return Task.FromResult((IUnitTypeEntity)entity);
         }
+
+        public Task<IUnitTypeEntity[]> GetAll()
+        {
+            return Task.FromResult(_unitTypes.ToArray());
+        }
     }
 }

@@ -13,6 +13,7 @@ export type BattleMapUnit = {
     currentProps: UnitProperties
     
     count: number
+    isAlive: boolean
 }
 
 export function getTestUnit(r: number, c: number, count: number, player: BattlePlayerNumber): BattleMapUnit {
@@ -26,6 +27,7 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
     }
     return {
         id: getRandomStringKey(10),
+        isAlive: true,
         position: {
             c: c,
             r: r

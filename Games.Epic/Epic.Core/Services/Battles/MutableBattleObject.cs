@@ -15,10 +15,10 @@ namespace Epic.Core.Objects.Battle
         public bool IsActive { get; set; }
         public int TurnPlayerIndex { get; set; }
         
-        public List<Guid> UsersIds { get; set; }
+        public List<Guid> PlayerIds { get; set; }
         public List<MutableBattleUnitObject> Units { get; set; }
 
-        IReadOnlyList<Guid> IBattleObject.PlayersIds => UsersIds;
+        IReadOnlyList<Guid> IBattleObject.PlayersIds => PlayerIds;
         IReadOnlyCollection<IBattleUnitObject> IBattleObject.Units => Units;
 
         private MutableBattleObject()
@@ -29,10 +29,10 @@ namespace Epic.Core.Objects.Battle
         public Guid? GetPlayerId(InBattlePlayerNumber playerNumber)
         {
             int index = (int)playerNumber - 1;
-            if (index < 0 || index >= UsersIds.Count)
+            if (index < 0 || index >= PlayerIds.Count)
                 return null;
             
-            return UsersIds[index];
+            return PlayerIds[index];
         }
         
         internal static MutableBattleObject FromEntity(IBattleEntity entity)

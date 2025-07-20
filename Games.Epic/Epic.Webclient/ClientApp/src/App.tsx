@@ -92,12 +92,33 @@ export class App extends PureComponent<IAppProps, IAppState> {
     
     private onBattleFinished() : void {
         this.setState({selectedBattle: null})
-        
+
+        this.refreshPlayerInfoAndBattles()
+    } 
+
+    private async refreshPlayerInfoAndBattles() {
+        const serverAPI = this.props.serviceLocator.serverAPI()
+        serverAPI.getPlayer(this.state.playerInfo!.id).then(playerInfo => {
+            this.setState({
+                ...this.state,
+                playerInfo,
+            })
+        })
+
         // Call the refresh method on MenuComponent
         if (this.menuComponentRef.current) {
             this.menuComponentRef.current.refreshBattles()
         }
-    } 
+
+        if (this.state.playerInfo!.battlesGenerationInProgress) {
+            this.menuComponentRef.current?.setBattlesGenerationInProgress(true)
+            setTimeout(() => {
+                this.refreshPlayerInfoAndBattles()
+            }, 2000)
+        } else {
+            this.menuComponentRef.current?.setBattlesGenerationInProgress(false)
+        }
+    }
 
     render() {
         const showMenuComponent = !this.state.isLoading || (!this.state.selectedBattle && this.state.userInfo)
@@ -117,7 +138,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
                     && (
                         <div className="MenuComponent">
                             <div>Hello {this.state.userInfo!.userName}</div>
-                            <div>Player: {this.state.playerInfo!.name} | Day: {this.state.playerInfo!.day}{this.state.playerInfo!.isDefeated ? "DEFEATED" : ""}</div>
+                            <div>Player: {this.state.playerInfo!.name} | Day: {this.state.playerInfo!.day}{this.state.playerInfo!.isDefeated ? " | DEFEATED" : ""}</div>
                             <MenuComponent 
                                 ref={this.menuComponentRef}  // Add the ref here
                                 serviceLocator={this.props.serviceLocator}

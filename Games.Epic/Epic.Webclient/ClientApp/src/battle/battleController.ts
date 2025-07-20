@@ -56,15 +56,12 @@ export class BattleController implements IBattleController {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
         this.currentTurnIndex = this.turnAwaiter.currentTurnIndex
-        let currentStepUnitIndex = this.currentTurnIndex
 
         while (!this.battleFinished) {
-            currentStepUnitIndex = this.currentTurnIndex % this.orderedUnits.length
+            const currentUnit = this.getActiveUnit(this.currentTurnIndex)
+            this.map.turnInfo.player = currentUnit.player
 
             try {
-                const currentUnit = this.orderedUnits[currentStepUnitIndex]
-                this.map.turnInfo.player = currentUnit.player
-
                 await this.processStep(currentUnit)
 
                 const turnInfo = await this.turnAwaiter.waitForTurn(this.currentTurnIndex + 1)
@@ -85,6 +82,19 @@ export class BattleController implements IBattleController {
         await wait(1000 * 3)
 
         return this.winnerPlayer
+    }
+
+    private getActiveUnit(turnIndex: number): BattleMapUnit {
+        turnIndex %= this.orderedUnits.length;
+        let activeUnit = this.orderedUnits[turnIndex];
+        
+        while (!activeUnit.isAlive) {
+            turnIndex++;
+            turnIndex %= this.orderedUnits.length;
+            activeUnit = this.orderedUnits[turnIndex];
+        }
+        
+        return activeUnit;
     }
 
     private async processStep(unit: BattleMapUnit): Promise<void> {

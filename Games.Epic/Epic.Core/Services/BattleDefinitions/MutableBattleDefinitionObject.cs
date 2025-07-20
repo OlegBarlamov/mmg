@@ -13,6 +13,7 @@ namespace Epic.Core
         public Guid Id { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public bool IsFinished { get; set; }
         public IReadOnlyCollection<Guid> UnitsIds { get; set; }
         public IReadOnlyCollection<IPlayerUnitObject> Units { get; set; }
         public IReadOnlyCollection<Guid> RewardsIds { get; set; }
@@ -30,6 +31,7 @@ namespace Epic.Core
                 Width = entity.Width,
                 Height = entity.Height,
                 UnitsIds = entity.UnitsIds,
+                IsFinished = entity.Finished,
             };
         }
     }

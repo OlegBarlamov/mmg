@@ -19,6 +19,5 @@ namespace Epic.Data.BattleDefinitions
         public int Height { get; set; }
         public Guid[] UnitsIds { get; set; }
         public bool Finished { get; set; }
-        public Guid[] RewardIds { get; set; }
     }
 }

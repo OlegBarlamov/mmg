@@ -5,6 +5,7 @@ using Epic.Core.Objects.Battle;
 using Epic.Core.Services;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using JetBrains.Annotations;
@@ -18,17 +19,23 @@ namespace Epic.Logic
         [NotNull] public IPlayerUnitsService PlayerUnitsService { get; }
         [NotNull] public IBattlesService BattlesService { get; }
         [NotNull] public IRewardsService RewardsService { get; }
+        public IDaysProcessor DaysProcessor { get; }
+        public IPlayersService PlayersService { get; }
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
             [NotNull] IPlayerUnitsService playerUnitsService,
             [NotNull] IBattlesService battlesService,
-            [NotNull] IRewardsService rewardsService)
+            [NotNull] IRewardsService rewardsService,
+            [NotNull] IDaysProcessor daysProcessor,
+            [NotNull] IPlayersService playersService)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
+            DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
         }
         
         public IBattleLogic Create(MutableBattleObject battleObject, IBattleMessageBroadcaster broadcaster)
@@ -38,7 +45,9 @@ namespace Epic.Logic
                 PlayerUnitsService,
                 BattlesService,
                 RewardsService,
-                broadcaster);
+                broadcaster,
+                DaysProcessor,
+                PlayersService);
         }
     }
 }

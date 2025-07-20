@@ -52,6 +52,12 @@ namespace Epic.Core.Services.Players
             return CreatePlayer(user.Id, $"npc_for_{humanPlayerId}", PlayerObjectType.Computer);
         }
 
+        public async Task<IPlayerObject> GetComputerPlayer(Guid humanPlayerId)
+        {
+            var playerEntity = await PlayersRepository.GetByName($"npc_for_{humanPlayerId}");
+            return MutablePlayerObject.FromEntity(playerEntity);
+        }
+
         public async Task<IPlayerObject> GetById(Guid playerId)
         {
             var playerEntity = await PlayersRepository.GetById(playerId);
@@ -62,6 +68,21 @@ namespace Epic.Core.Services.Players
         {
             var entities = await PlayersRepository.GetByUserId(userId);
             return entities.Select(MutablePlayerObject.FromEntity).ToArray<IPlayerObject>();
+        }
+
+        public Task SetDefeated(Guid[] playerIds)
+        {
+            return PlayersRepository.SetDefeated(playerIds);
+        }
+
+        public Task DayIncrement(Guid[] playerIds)
+        {
+           return PlayersRepository.DayIncrement(playerIds);
+        }
+
+        public Task SetGenerationInProgress(Guid playerId, bool generationInProgress)
+        {
+            return PlayersRepository.SetGenerationInProgress(new[] { playerId }, generationInProgress);
         }
     }
 }

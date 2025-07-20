@@ -14,6 +14,7 @@ using Epic.Core.Objects.BattleUnit;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using JetBrains.Annotations;
@@ -28,6 +29,8 @@ namespace Epic.Logic
         private IBattlesService BattlesService { get; }
         private IRewardsService RewardsService { get; }
         private IBattleMessageBroadcaster Broadcaster { get; }
+        private IDaysProcessor DaysProcessor { get; }
+        public IPlayersService PlayersService { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
@@ -43,7 +46,9 @@ namespace Epic.Logic
             [NotNull] IPlayerUnitsService playerUnitsService,
             [NotNull] IBattlesService battlesService,
             [NotNull] IRewardsService rewardsService,
-            [NotNull] IBattleMessageBroadcaster broadcaster)
+            [NotNull] IBattleMessageBroadcaster broadcaster,
+            [NotNull] IDaysProcessor daysProcessor,
+            [NotNull] IPlayersService playersService)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -51,6 +56,8 @@ namespace Epic.Logic
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             Broadcaster = broadcaster ?? throw new ArgumentNullException(nameof(broadcaster));
+            DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
             _sortedBattleUnitObjects.Sort((x, y) => x.PlayerUnit.UnitType.Speed.CompareTo(y.PlayerUnit.UnitType.Speed));
@@ -113,20 +120,23 @@ namespace Epic.Logic
 
         private async Task OnBattleFinished(BattleResult battleResult)
         {
+            var winnerPlayerId = Guid.Empty;
             if (battleResult.Winner != null)
             {
-                var winnerUserId = BattleObject.GetPlayerId(battleResult.Winner.Value);
-                if (winnerUserId.HasValue)
+                var winnerId = BattleObject.GetPlayerId(battleResult.Winner.Value);
+                if (winnerId.HasValue)
                 {
-                    // TODO ignore AI player
-                    var rewards =
-                        await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
+                    winnerPlayerId = winnerId.Value;
+                    var rewards = await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
                     var rewardsIds = rewards.Select(x => x.Id).ToArray();
-                    await RewardsService.GiveRewardsToPlayerAsync(rewardsIds, winnerUserId.Value);
-                    
-                    
+                    await RewardsService.GiveRewardsToPlayerAsync(rewardsIds, winnerPlayerId);
                 }
             }
+            
+            var defeatedPlayers = BattleObject.PlayerIds.Where(x => x != winnerPlayerId).ToArray();
+            await PlayersService.SetDefeated(defeatedPlayers);
+
+            await DaysProcessor.ProcessNewDay(BattleObject.PlayerIds.ToArray());
 
             var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnIndex)
             {
@@ -195,15 +205,15 @@ namespace Epic.Logic
                 case ClientBattleCommands.CLIENT_CONNECTED:
                     return OnClientConnected(connection, (ClientConnectedBattleMessage)clientBattleMessage);
                 case ClientBattleCommands.UNIT_MOVE:
-                    return OnClientUnitMove((UnitMoveClientBattleMessage)clientBattleMessage);
+                    return OnClientUnitMove(connection, (UnitMoveClientBattleMessage)clientBattleMessage);
                 case ClientBattleCommands.UNIT_ATTACK:
-                    return OnClientUnitAttack((UnitAttackClientBattleMessage)clientBattleMessage);
+                    return OnClientUnitAttack(connection, (UnitAttackClientBattleMessage)clientBattleMessage);
                 default:
                     throw new ClientCommandRejected("Unknown client command");
             }
         }
 
-        private async Task OnClientUnitAttack(UnitAttackClientBattleMessage command)
+        private async Task OnClientUnitAttack(IBattleClientConnection connection, UnitAttackClientBattleMessage command)
         {
             var targetActor =
                 BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
@@ -222,6 +232,8 @@ namespace Epic.Logic
             mutableActor.Row = command.MoveToCell.R;
 
             //TODO Check if it is reachable 
+            
+            await connection.SendMessageAsync(new CommandApproved(command));
 
             await BattleUnitsService.UpdateUnits(new[] { mutableActor });
             
@@ -255,7 +267,7 @@ namespace Epic.Logic
             _awaitPlayerTurnTaskCompletionSource?.SetResult(null);
         }
 
-        private async Task OnClientUnitMove(UnitMoveClientBattleMessage command)
+        private async Task OnClientUnitMove(IBattleClientConnection connection, UnitMoveClientBattleMessage command)
         {
             var targetActor =
                 BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
@@ -270,6 +282,8 @@ namespace Epic.Logic
             mutableActor.Row = command.MoveToCell.R;
             
             //TODO Check if it is reachable 
+
+            await connection.SendMessageAsync(new CommandApproved(command));
             
             await BattleUnitsService.UpdateUnits(new[] { mutableActor });
 
@@ -282,6 +296,8 @@ namespace Epic.Logic
 
         private async Task OnClientConnected(IBattleClientConnection connection, ClientConnectedBattleMessage message)
         {
+            await connection.SendMessageAsync(new CommandApproved(message));
+            
             for (int i = message.TurnIndex; i <= BattleObject.TurnIndex; i++)
             {
                 if (_passedServerBattleMessages.TryGetValue(i, out var messagesFromTurn))

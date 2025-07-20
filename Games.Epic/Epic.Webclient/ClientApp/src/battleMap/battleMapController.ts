@@ -193,6 +193,10 @@ export class BattleMapController implements IBattleMapController {
         if (this.units.length !== 0) throw new Error("Cannot regenerate the units tiles of already loaded map")
 
         for (const unit of this.map.units) {
+            if (!unit.isAlive) {
+                continue
+            }
+
             const center = this.map.grid.getCellCenterPoint(unit.position.r, unit.position.c, this.cellRadius)
             const unitTile = await this.canvasService.createUnit({
                 model: unit,

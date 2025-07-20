@@ -212,12 +212,10 @@ namespace Epic.Core.Services.GameManagement
             try
             {
                 Logger.LogInformation($"Message from {connection.ConnectionId}: {clientMessage.Command}");
-                
+
                 if (_battleLogic != null)
                 {
                     await _battleLogic.OnClientMessage(connection, clientMessage);
-                    if (connection.IsConnected)
-                        await connection.SendMessageAsync(new CommandApproved(clientMessage));
                 }
                 else
                 {

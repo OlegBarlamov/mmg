@@ -10,6 +10,7 @@ export interface IMenuComponentProps {
 interface IMenuComponentState {
     availableBattles: IBattleDefinition[] | null 
     isLoading: boolean
+    battlesGenerationInProgress: boolean
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -21,12 +22,20 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         
         this.state = {
             availableBattles: null,
-            isLoading: true
+            isLoading: true,
+            battlesGenerationInProgress: false
         }
     }
     
     async componentDidMount() {
         await this.fetchBattles()
+    }
+
+    public setBattlesGenerationInProgress(battlesGenerationInProgress: boolean) {
+        this.setState({
+            ...this.state,
+            battlesGenerationInProgress
+        })
     }
     
     componentWillUnmount() {
@@ -75,6 +84,9 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                         <div>No battles available</div>
                     )
                 }
+                {this.state.battlesGenerationInProgress && (
+                    <div>Battles generation in progress...</div>
+                )}
             </div>
         )
     }

@@ -11,6 +11,7 @@ namespace Epic.Core.Services.Players
         string Name { get; }
         PlayerObjectType PlayerType { get; }
         bool IsDefeated { get; }
+        bool GenerationInProgress { get; }
     }
 
     internal class MutablePlayerObject : IPlayerObject
@@ -21,7 +22,8 @@ namespace Epic.Core.Services.Players
         public string Name { get; set; }
         public PlayerObjectType PlayerType { get; set; }
         public bool IsDefeated { get; set; }
-        
+        public bool GenerationInProgress { get; set; }
+
         private MutablePlayerObject() {}
 
         public static MutablePlayerObject FromEntity(IPlayerEntity entity)
@@ -34,6 +36,7 @@ namespace Epic.Core.Services.Players
                 Name = entity.Name,
                 PlayerType = entity.PlayerType.ToObjectType(),
                 IsDefeated = entity.IsDefeated,
+                GenerationInProgress = entity.GenerationInProgress
             };
         }
 
@@ -47,6 +50,7 @@ namespace Epic.Core.Services.Players
                 Name = mutablePlayerObject.Name,
                 PlayerType = mutablePlayerObject.PlayerType.ToEntity(),
                 IsDefeated = mutablePlayerObject.IsDefeated,
+                GenerationInProgress = mutablePlayerObject.GenerationInProgress
             };
         }
     }

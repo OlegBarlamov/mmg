@@ -9,5 +9,6 @@ namespace Epic.Data.BattleDefinitions
         Task<IBattleDefinitionEntity> Create(Guid playerId, int width, int height, Guid[] unitIds);
         Task<IBattleDefinitionEntity> GetByPlayerAndId(Guid playerId, Guid battleDefinitionId);
         Task SetFinished(Guid battleDefinitionId);
+        Task<int> CountBattles(Guid playerId);
     }
 }
