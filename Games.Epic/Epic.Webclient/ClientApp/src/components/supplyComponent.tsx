@@ -20,6 +20,10 @@ interface ISupplyComponentState {
     error: string | null
     selectedUnit: { unit: IUserUnit, containerType: 'supply' | 'army' } | null
     isDragging: boolean
+    showSplitModal: boolean
+    splitAmount: number
+    splitTargetSlot: number | null
+    splitTargetContainer: 'supply' | 'army' | null
 }
 
 export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISupplyComponentState> {
@@ -32,7 +36,11 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
             isLoading: true,
             error: null,
             selectedUnit: null,
-            isDragging: false
+            isDragging: false,
+            showSplitModal: false,
+            splitAmount: 1,
+            splitTargetSlot: null,
+            splitTargetContainer: null
         }
     }
     
@@ -63,8 +71,15 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
     }
 
     private handleUnitClick = (unit: IUserUnit, containerType: 'supply' | 'army') => {
-        if (this.state.selectedUnit) {
-            // If we have a selected unit, try to move it to this slot
+        // Check if we're in split mode (selected unit exists but not dragging)
+        if (this.state.selectedUnit && !this.state.isDragging) {
+            // We're in split mode, check if this is a valid target
+            const canBeSplitTarget = this.state.selectedUnit.unit.typeId === unit.typeId
+            if (canBeSplitTarget) {
+                this.handleSplitTargetSelect(unit.slotIndex, containerType)
+            }
+        } else if (this.state.selectedUnit) {
+            // If we have a selected unit and are dragging, try to move it to this slot
             this.moveUnitToSlot(unit.slotIndex, containerType)
         } else {
             // Select this unit for moving
@@ -72,8 +87,24 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         }
     }
 
+    private handleSplitClick = (unit: IUserUnit, containerType: 'supply' | 'army') => {
+        this.setState({ 
+            selectedUnit: { unit, containerType }, 
+            isDragging: false,
+            showSplitModal: false,
+            splitAmount: Math.max(1, Math.floor(unit.count / 2)),
+            splitTargetSlot: null,
+            splitTargetContainer: null
+        })
+    }
+
     private handleEmptySlotClick = (slotIndex: number, containerType: 'supply' | 'army') => {
-        if (this.state.selectedUnit) {
+        // Check if we're in split mode (selected unit exists but not dragging)
+        if (this.state.selectedUnit && !this.state.isDragging) {
+            // We're in split mode, empty slots are always valid targets
+            this.handleSplitTargetSelect(slotIndex, containerType)
+        } else if (this.state.selectedUnit) {
+            // If we have a selected unit and are dragging, try to move it to this slot
             this.moveUnitToSlot(slotIndex, containerType)
         }
     }
@@ -157,15 +188,111 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         }
     }
 
+    private handleSplitModalClose = () => {
+        this.setState({ 
+            showSplitModal: false, 
+            selectedUnit: null,
+            splitAmount: 1,
+            splitTargetSlot: null,
+            splitTargetContainer: null
+        })
+    }
+
+    private handleSplitAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const amount = parseInt(event.target.value)
+        this.setState({ splitAmount: amount })
+    }
+
+    private handleSplitTargetSelect = (slotIndex: number, containerType: 'supply' | 'army') => {
+        this.setState({ 
+            splitTargetSlot: slotIndex, 
+            splitTargetContainer: containerType,
+            showSplitModal: true
+        })
+    }
+
+    private handleSplitConfirm = async () => {
+        if (!this.state.selectedUnit || this.state.splitTargetSlot === null || this.state.splitTargetContainer === null) {
+            return
+        }
+
+        const { unit: selectedUnit, containerType: sourceContainerType } = this.state.selectedUnit
+        const targetContainerType = this.state.splitTargetContainer
+        const targetSlotIndex = this.state.splitTargetSlot
+        const splitAmount = this.state.splitAmount
+
+        try {
+            const serverAPI = this.props.serviceLocator.serverAPI()
+            const containerId = targetContainerType === 'supply' 
+                ? this.props.playerInfo?.supplyContainerId 
+                : this.props.playerInfo?.armyContainerId
+
+            if (!containerId) {
+                throw new Error('Container ID not available')
+            }
+
+            // Split the units
+            const updatedContainer = await serverAPI.moveUnits(
+                selectedUnit.id, 
+                containerId, 
+                splitAmount, 
+                targetSlotIndex
+            )
+
+            // Update the target container state
+            if (targetContainerType === 'supply') {
+                this.setState({ 
+                    supplyUnits: updatedContainer.units,
+                    showSplitModal: false,
+                    selectedUnit: null,
+                    splitAmount: 1,
+                    splitTargetSlot: null,
+                    splitTargetContainer: null
+                })
+            } else {
+                // Update parent's army units state
+                this.props.onArmyUnitsUpdate?.(updatedContainer.units)
+                this.setState({ 
+                    showSplitModal: false,
+                    selectedUnit: null,
+                    splitAmount: 1,
+                    splitTargetSlot: null,
+                    splitTargetContainer: null
+                })
+            }
+
+            // If moving between containers, refresh the source container
+            if (sourceContainerType !== targetContainerType) {
+                await this.refreshSourceContainer(sourceContainerType)
+            }
+
+        } catch (error) {
+            console.error('Failed to split units:', error)
+            this.setState({ 
+                error: 'Failed to split units', 
+                showSplitModal: false,
+                selectedUnit: null,
+                splitAmount: 1,
+                splitTargetSlot: null,
+                splitTargetContainer: null
+            })
+        }
+    }
+
     private renderSupplySlot(unit: IUserUnit | null, index: number) {
         const isSelected = this.state.selectedUnit?.unit.id === unit?.id && this.state.selectedUnit?.containerType === 'supply'
         const isTarget = this.state.isDragging && !isSelected
+        const isSplitTarget = this.state.showSplitModal && 
+            this.state.splitTargetSlot === index && 
+            this.state.splitTargetContainer === 'supply'
+        const canBeSplitTarget = this.state.showSplitModal && unit && 
+            this.state.selectedUnit?.unit.typeId === unit.typeId
         
         if (unit) {
             return (
                 <div 
                     key={index} 
-                    className={`supply-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''}`}
+                    className={`supply-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''} ${isSplitTarget ? 'split-target' : ''} ${canBeSplitTarget ? 'split-valid' : ''}`}
                     onClick={() => this.handleUnitClick(unit, 'supply')}
                 >
                     <img 
@@ -174,16 +301,18 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
                         className="unit-image"
                     />
                     <div className="unit-count">{unit.count}</div>
+
                 </div>
             )
         } else {
             return (
                 <div 
                     key={index} 
-                    className={`supply-slot empty ${isTarget ? 'target' : ''}`}
+                    className={`supply-slot empty ${isTarget ? 'target' : ''} ${isSplitTarget ? 'split-target' : ''}`}
                     onClick={() => this.handleEmptySlotClick(index, 'supply')}
                 >
                     <div className="empty-slot">Empty</div>
+
                 </div>
             )
         }
@@ -192,12 +321,17 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
     private renderArmySlot(unit: IUserUnit | null, index: number) {
         const isSelected = this.state.selectedUnit?.unit.id === unit?.id && this.state.selectedUnit?.containerType === 'army'
         const isTarget = this.state.isDragging && !isSelected
+        const isSplitTarget = this.state.showSplitModal && 
+            this.state.splitTargetSlot === index && 
+            this.state.splitTargetContainer === 'army'
+        const canBeSplitTarget = this.state.showSplitModal && unit && 
+            this.state.selectedUnit?.unit.typeId === unit.typeId
         
         if (unit) {
             return (
                 <div 
                     key={index} 
-                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''}`}
+                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''} ${isSplitTarget ? 'split-target' : ''} ${canBeSplitTarget ? 'split-valid' : ''}`}
                     onClick={() => this.handleUnitClick(unit, 'army')}
                 >
                     <img 
@@ -206,16 +340,18 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
                         className="unit-image"
                     />
                     <div className="unit-count">{unit.count}</div>
+
                 </div>
             )
         } else {
             return (
                 <div 
                     key={index} 
-                    className={`army-slot empty ${isTarget ? 'target' : ''}`}
+                    className={`army-slot empty ${isTarget ? 'target' : ''} ${isSplitTarget ? 'split-target' : ''}`}
                     onClick={() => this.handleEmptySlotClick(index, 'army')}
                 >
                     <div className="empty-slot">Empty</div>
+
                 </div>
             )
         }
@@ -277,33 +413,118 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         }
 
         return (
-            <div className="supply-overlay">
-                <div className="supply-modal">
-                    <div className="supply-header">
-                        <h1 className="supply-title">Supply Depot</h1>
-                        <div className="header-buttons">
-                            {this.state.isDragging && (
-                                <button className="cancel-button" onClick={() => this.setState({ selectedUnit: null, isDragging: false })}>
-                                    Cancel
-                                </button>
-                            )}
-                            <button className="close-button" onClick={this.props.onClose}>×</button>
+            <>
+                <div className="supply-overlay">
+                    <div className="supply-modal">
+                        <div className="supply-header">
+                            <h1 className="supply-title">Supply Depot</h1>
+                            <div className="header-buttons">
+                                {this.state.isDragging && (
+                                    <button className="cancel-button" onClick={() => this.setState({ selectedUnit: null, isDragging: false })}>
+                                        Cancel
+                                    </button>
+                                )}
+                                <button className="close-button" onClick={this.props.onClose}>×</button>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="supply-content">
+                        
+                                            <div className="supply-content">
                         <div className="supply-section">
-                            <h2 className="section-title">Supply Units ({supplyCapacity} slots)</h2>
+                            <div className="section-header">
+                                <h2 className="section-title">Supply Units ({supplyCapacity} slots)</h2>
+                                {this.renderSplitButton('supply')}
+                            </div>
                             <div className="supply-grid">
                                 {supplySlots.map((unit, index) => this.renderSupplySlot(unit, index))}
                             </div>
                         </div>
                         
                         <div className="army-section">
-                            <h2 className="section-title">Your Army ({armyCapacity} slots)</h2>
+                            <div className="section-header">
+                                <h2 className="section-title">Your Army ({armyCapacity} slots)</h2>
+                                {this.renderSplitButton('army')}
+                            </div>
                             <div className="army-grid">
                                 {armySlots.map((unit, index) => this.renderArmySlot(unit, index))}
                             </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {this.renderSplitModal()}
+            </>
+        )
+    }
+
+    private renderSplitButton(containerType: 'supply' | 'army') {
+        const isSelected = this.state.selectedUnit?.containerType === containerType
+        const selectedUnit = this.state.selectedUnit?.unit
+        const isDisabled = !isSelected || !selectedUnit || selectedUnit.count <= 1
+
+        return (
+            <button 
+                className={`split-button ${isDisabled ? 'disabled' : ''}`}
+                onClick={() => {
+                    if (!isDisabled && selectedUnit) {
+                        this.handleSplitClick(selectedUnit, containerType)
+                    }
+                }}
+                disabled={isDisabled}
+            >
+                Split
+            </button>
+        )
+    }
+
+    private renderSplitModal() {
+        if (!this.state.showSplitModal || !this.state.selectedUnit) {
+            return null
+        }
+
+        const { unit: selectedUnit } = this.state.selectedUnit
+        const maxAmount = selectedUnit.count - 1
+        const minAmount = 1
+
+        return (
+            <div className="split-modal-overlay">
+                <div className="split-modal">
+                    <div className="split-modal-header">
+                        <h2>Split Army</h2>
+                        <button className="close-button" onClick={this.handleSplitModalClose}>×</button>
+                    </div>
+                    <div className="split-modal-content">
+                        <div className="split-unit-info">
+                            <img src={selectedUnit.thumbnailUrl} alt="Unit" className="unit-thumbnail" />
+                            <div>
+                                <div className="unit-name">{selectedUnit.typeId}</div>
+                                <div className="unit-count">Total: {selectedUnit.count}</div>
+                            </div>
+                        </div>
+                        
+                        <div className="split-amount-section">
+                            <label htmlFor="split-amount">Amount to split: {this.state.splitAmount}</label>
+                            <input
+                                id="split-amount"
+                                type="range"
+                                min={minAmount}
+                                max={maxAmount}
+                                value={this.state.splitAmount}
+                                onChange={this.handleSplitAmountChange}
+                                className="split-slider"
+                            />
+                            <div className="split-amount-display">
+                                Split: {this.state.splitAmount} | Keep: {selectedUnit.count - this.state.splitAmount}
+                            </div>
+                        </div>
+
+                        <div className="split-confirmation">
+                            <p>Target: {this.state.splitTargetContainer} slot {this.state.splitTargetSlot! + 1}</p>
+                            <button 
+                                className="confirm-split-button"
+                                onClick={this.handleSplitConfirm}
+                            >
+                                Confirm Split
+                            </button>
                         </div>
                     </div>
                 </div>
