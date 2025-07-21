@@ -1,0 +1,252 @@
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+}
+
+.battles-section {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.battles-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ecf0f1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Battles Table Styles */
+.battles-table-container {
+    overflow-x: auto;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.battles-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.battles-table th {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    color: #ecf0f1;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #1f4e79;
+    font-size: 0.9rem;
+}
+
+.battles-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #34495e;
+    vertical-align: top;
+    font-size: 0.85rem;
+}
+
+.battle-row:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
+
+
+
+.battle-size {
+    text-align: center;
+    color: #bdc3c7;
+    font-weight: bold;
+}
+
+/* Units Display */
+.units-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.unit-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    background: rgba(139, 69, 19, 0.3);
+    border-radius: 4px;
+    border: 1px solid #654321;
+    position: relative;
+}
+
+.unit-thumbnail {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid #654321;
+    flex-shrink: 0;
+    display: block;
+}
+
+.unit-name {
+    flex: 1;
+    color: #f1c40f;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unit-count {
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 0.8rem;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Rewards Display */
+.rewards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    background: rgba(46, 204, 113, 0.3);
+    border-radius: 4px;
+    border: 1px solid #27ae60;
+    position: relative;
+}
+
+.reward-thumbnail {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid #27ae60;
+    flex-shrink: 0;
+    display: block;
+}
+
+.reward-name {
+    flex: 1;
+    color: #2ecc71;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reward-amount {
+    color: #f39c12;
+    font-weight: bold;
+    font-size: 0.8rem;
+    min-width: 30px;
+    text-align: center;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.battle-action {
+    text-align: center;
+}
+
+.battle-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    border: 2px solid #1f4e79;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    white-space: nowrap;
+}
+
+.battle-button:hover {
+    background: linear-gradient(145deg, #5dade2, #3498db);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.battle-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #bdc3c7;
+    margin: 20px 0;
+}
+
+.no-battles {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #e74c3c;
+    margin: 20px 0;
+}
+
+.generation-progress {
+    text-align: center;
+    font-size: 1rem;
+    color: #f39c12;
+    margin: 10px 0;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .battles-table {
+        font-size: 0.75rem;
+    }
+    
+    .battles-table th,
+    .battles-table td {
+        padding: 8px 4px;
+    }
+    
+    .unit-thumbnail,
+    .reward-thumbnail {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .unit-name,
+    .reward-name {
+        font-size: 0.75rem;
+    }
+    
+    .battle-button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+} 

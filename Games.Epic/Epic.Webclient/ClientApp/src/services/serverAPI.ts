@@ -23,6 +23,8 @@ export interface IPlayerInfo {
     readonly name: string
     readonly isDefeated: boolean
     readonly battlesGenerationInProgress: boolean
+    readonly armyCapacity: number
+    readonly supplyCapacity: number
 }
 
 export interface IServerAPI {
@@ -31,6 +33,7 @@ export interface IServerAPI {
     getPlayer(id: string): Promise<IPlayerInfo>
     getPlayers(): Promise<IPlayerInfo[]>
     getArmyUnits(): Promise<IUserUnit[]>
+    getSupplyUnits(): Promise<IUserUnit[]>
     setActivePlayer(playerId: string): Promise<void>
     getBattles(): Promise<IBattleDefinition[]>
     beginBattle(battleDefinitionId: string): Promise<BattleMap>

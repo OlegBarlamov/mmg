@@ -108,6 +108,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
         // Call the refresh method on MenuComponent
         if (this.menuComponentRef.current) {
             this.menuComponentRef.current.refreshBattles()
+            this.menuComponentRef.current.refreshArmy()
         }
 
         if (this.state.playerInfo!.battlesGenerationInProgress) {
@@ -120,9 +121,60 @@ export class App extends PureComponent<IAppProps, IAppState> {
         }
     }
 
+    private renderUserInfoSection() {
+        const { userInfo, playerInfo } = this.state
+        
+        if (!userInfo || !playerInfo) return null
+
+        return (
+            <div className="user-info-section">
+                <div className="user-info">
+                    <div className="user-avatar">
+                        {userInfo.userName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="user-name">Hello, {userInfo.userName}</div>
+                </div>
+                
+                <div className="player-info">
+                    <div className={`player-badge ${playerInfo.isDefeated ? 'defeated' : ''}`}>
+                        <div className="player-icon">P</div>
+                        {playerInfo.name}
+                    </div>
+                    
+                    <div className="day-badge">
+                        <div className="day-icon">D</div>
+                        Day {playerInfo.day}
+                    </div>
+                    
+                    {playerInfo.isDefeated && (
+                        <div className="defeated-badge">
+                            DEFEATED
+                        </div>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+    private renderLoadingState() {
+        return (
+            <div className="loading-container">
+                <div>
+                    <div className="loading-spinner"></div>
+                    <div className="loading-text">Loading...</div>
+                </div>
+            </div>
+        )
+    }
+
     render() {
         const showMenuComponent = !this.state.isLoading || (!this.state.selectedBattle && this.state.userInfo)
         const showBattleComponent = this.state.selectedBattle
+        
+        if (this.state.isLoading) {
+            return this.renderLoadingState()
+        }
+        
         return (
             <div className="App">
                 { showBattleComponent
@@ -136,19 +188,19 @@ export class App extends PureComponent<IAppProps, IAppState> {
                 }
                 { showMenuComponent
                     && (
-                        <div className="MenuComponent">
-                            <div>Hello {this.state.userInfo!.userName}</div>
-                            <div>Player: {this.state.playerInfo!.name} | Day: {this.state.playerInfo!.day}{this.state.playerInfo!.isDefeated ? " | DEFEATED" : ""}</div>
-                            <MenuComponent 
-                                ref={this.menuComponentRef}  // Add the ref here
-                                serviceLocator={this.props.serviceLocator}
-                                onBattleSelected={this.onBattleDefinitionSelected}/>
-                        </div>
+                        <>
+                            {this.renderUserInfoSection()}
+                            <div className="MenuComponent">
+                                <MenuComponent 
+                                    ref={this.menuComponentRef}
+                                    serviceLocator={this.props.serviceLocator}
+                                    onBattleSelected={this.onBattleDefinitionSelected}
+                                    playerInfo={this.state.playerInfo}
+                                />
+                            </div>
+                        </>
                     )
                 }
-                {!showMenuComponent && !showBattleComponent && (
-                    <div>Loading</div>
-                )}
             </div>
         )
     }

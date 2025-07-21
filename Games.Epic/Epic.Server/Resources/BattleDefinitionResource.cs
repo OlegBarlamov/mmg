@@ -31,7 +31,7 @@ namespace Epic.Server.Resources
     public class BattleDefinitionRewardResource
     {
         public string Name { get; }
-        public string IconUrl { get; }
+        public string ThumbnailUrl { get; }
         public string Amount { get; }
 
         public BattleDefinitionRewardResource(IRewardObject rewardObject)
@@ -39,7 +39,7 @@ namespace Epic.Server.Resources
             var description = rewardObject.GetDescription();
             
             Name = description.Name;
-            IconUrl = description.IconUrl;
+            ThumbnailUrl = description.IconUrl;
             Amount = description.Amount;
         }
     }
@@ -48,14 +48,14 @@ namespace Epic.Server.Resources
     {
         public Guid TypeId { get; }
         public string Name { get; }
-        public string ImageUrl { get; }
+        public string ThumbnailUrl { get; }
         public int Count { get; }
 
         public BattleDefinitionUnitResource(IPlayerUnitObject playerUnitObject)
         {
             TypeId = playerUnitObject.UnitType.Id;
             Name = playerUnitObject.UnitType.Name;
-            ImageUrl = playerUnitObject.UnitType.DashboardImgUrl;
+            ThumbnailUrl = playerUnitObject.UnitType.DashboardImgUrl;
             Count = playerUnitObject.Count;
         }
     }

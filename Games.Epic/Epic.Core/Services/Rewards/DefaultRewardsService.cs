@@ -3,27 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects.Rewards;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
+using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.Reward;
 using JetBrains.Annotations;
 
 namespace Epic.Core.Services.Rewards
 {
+    [UsedImplicitly]
     public class DefaultRewardsService : IRewardsService
     {
         public IRewardsRepository RewardsRepository { get; }
         public IUnitTypesService UnitTypesService { get; }
         public IPlayerUnitsService PlayerUnitsService { get; }
+        public IUnitsContainersService ContainersService { get; }
+        public IPlayersService PlayersService { get; }
 
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IUnitTypesService unitTypesService,
-            [NotNull] IPlayerUnitsService playerUnitsService)
+            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IUnitsContainersService containersService,
+            [NotNull] IPlayersService playersService)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            ContainersService = containersService ?? throw new ArgumentNullException(nameof(containersService));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
         }
         public async Task<IRewardObject[]> GetNotAcceptedPlayerRewards(Guid playerId)
         {
@@ -56,6 +65,7 @@ namespace Epic.Core.Services.Rewards
 
         public async Task<AcceptedRewardData> AcceptRewardAsync(Guid rewardId, Guid playerId, int[] amounts)
         {
+            var player = await PlayersService.GetById(playerId);
             var rewardEntity = await RewardsRepository.RemoveRewardFromPlayer(playerId, rewardId);
             var rewardObject = await ToRewardObject(rewardEntity);
 
@@ -65,6 +75,7 @@ namespace Epic.Core.Services.Rewards
                 PlayerId = playerId,
                 UnitTypeId = unitTypes[i].Id,
                 Amount = count,
+                ContainerId = player.SupplyContainerId,
             }).ToArray();
 
             var units = await PlayerUnitsService.CreateUnits(unitTypesAndAmounts);

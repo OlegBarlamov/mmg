@@ -11,6 +11,8 @@ namespace Epic.Server.Resources
         public string Name { get; }
         public bool IsDefeated { get; }
         public bool BattlesGenerationInProgress { get; }
+        public int ArmyCapacity { get; }
+        public int SupplyCapacity { get; }
         
         public PlayerResource(IPlayerObject playerObject)
         {
@@ -20,6 +22,8 @@ namespace Epic.Server.Resources
             Name = playerObject.Name;
             IsDefeated = playerObject.IsDefeated;
             BattlesGenerationInProgress = playerObject.GenerationInProgress;
+            ArmyCapacity = playerObject.Army.Capacity;
+            SupplyCapacity = playerObject.Supply.Capacity;
         }
     }
 }

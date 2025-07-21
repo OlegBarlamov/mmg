@@ -30,7 +30,7 @@ namespace Epic.Core.Objects.Rewards
             {
                 Name = string.Join(',', Units.Select(x => x.Name)),
                 Amount = Amounts.Sum().ToString(),
-                IconUrl = "",
+                IconUrl = Units.FirstOrDefault()?.DashboardImgUrl ?? string.Empty,
             };
         }
 

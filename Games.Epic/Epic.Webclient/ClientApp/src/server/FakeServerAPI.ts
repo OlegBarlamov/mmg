@@ -1,4 +1,4 @@
-import {IBattleDefinition} from "../battle/IBattleDefinition";
+import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {IPlayerInfo, IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
@@ -24,6 +24,8 @@ class ServerSideBattle implements IBattleDefinition {
     readonly id: string
     readonly width: number
     readonly height: number
+    readonly units: IBattleDefinitionUnit[] = []
+    readonly rewards: IBattleDefinitionReward[] = []
 
     readonly enemyUnits: IUserUnit[]
 
@@ -33,11 +35,15 @@ class ServerSideBattle implements IBattleDefinition {
         this.height = mapHeight
         this.enemyUnits = enemyUnits
     }
+
 }
 
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    getSupplyUnits(): Promise<IUserUnit[]> {
+        throw new Error("Method not implemented.");
+    }
     getPlayer(id: string): Promise<IPlayerInfo> {
         throw new Error("Method not implemented.");
     }
