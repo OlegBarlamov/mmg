@@ -133,19 +133,19 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         const supplySlots = new Array(supplyCapacity).fill(null)
         const armySlots = new Array(armyCapacity).fill(null)
         
-        // Fill the slots with actual units
+        // Fill the slots with actual units using slotIndex from server
         if (supplyUnits) {
-            supplyUnits.forEach((unit, index) => {
-                if (index < supplySlots.length) {
-                    supplySlots[index] = unit
+            supplyUnits.forEach((unit) => {
+                if (unit.slotIndex >= 0 && unit.slotIndex < supplySlots.length) {
+                    supplySlots[unit.slotIndex] = unit
                 }
             })
         }
         
         if (armyUnits) {
-            armyUnits.forEach((unit, index) => {
-                if (index < armySlots.length) {
-                    armySlots[index] = unit
+            armyUnits.forEach((unit) => {
+                if (unit.slotIndex >= 0 && unit.slotIndex < armySlots.length) {
+                    armySlots[unit.slotIndex] = unit
                 }
             })
         }

@@ -55,6 +55,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
             serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             serviceRegistrator.RegisterType<IUnitsContainersService, DefaultUnitsContainerService>();
+            serviceRegistrator.RegisterType<IContainersManipulator, DefaultContainersManipulator>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

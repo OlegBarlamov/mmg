@@ -50,7 +50,7 @@ namespace Epic.Core.Services.BattleDefinitions
 
         public async Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height)
         {
-            var container = await UnitsContainersService.Create(60);
+            var container = await UnitsContainersService.Create(height, playerId);
             var entity = await BattleDefinitionsRepository.Create(playerId, width, height, container.Id);
             var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(entity);
             await FillBattleDefinitionObject(battleDefinitionObject, container);

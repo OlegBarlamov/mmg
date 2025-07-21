@@ -34,7 +34,7 @@ namespace Epic.Data.PlayerUnits
             return Task.FromResult(_playerUnits.Where(unit => ids.Contains(unit.Id)).ToArray<IPlayerUnitEntity>());
         }
 
-        public Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, Guid containerId, bool isAlive)
+        public Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, Guid containerId, bool isAlive, int containerSlotIndex)
         {
             var entity = new PlayerUnitEntity
             {
@@ -44,6 +44,7 @@ namespace Epic.Data.PlayerUnits
                 PlayerId = playerId,
                 IsAlive = isAlive,
                 ContainerId = containerId,
+                ContainerSlotIndex = containerSlotIndex,
             };
             
             _playerUnits.Add(entity);

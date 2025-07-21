@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using NetExtensions.Collections;
 
 namespace Epic.Data.UnitsContainers
 {
@@ -16,16 +17,26 @@ namespace Epic.Data.UnitsContainers
             return Task.FromResult(_unitsContainers.First(x => x.Id == id));
         }
 
-        public Task<IUnitsContainerEntity> Create(int capacity)
+        public Task<IUnitsContainerEntity> Create(int capacity, Guid ownerPlayerId)
         {
             var instance = new MutableUnitsContainerEntity
             {
                 Id = Guid.NewGuid(),
-                Capacity = capacity
+                Capacity = capacity,
+                OwnerPlayerId = ownerPlayerId,
             };
             _unitsContainers.Add(instance);
             
             return Task.FromResult<IUnitsContainerEntity>(instance);
+        }
+
+        public Task Update(params IUnitsContainerEntity[] entities)
+        {
+            entities.ForEach(x =>
+            {
+                _unitsContainers.First(y => y.Id == x.Id).OwnerPlayerId = x.OwnerPlayerId;
+            });
+            return Task.CompletedTask;
         }
     }
 }

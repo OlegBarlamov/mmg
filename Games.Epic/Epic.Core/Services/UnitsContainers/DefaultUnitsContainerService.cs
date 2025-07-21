@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 
 namespace Epic.Core.Services.UnitsContainers
 {
+    [UsedImplicitly]
     public class DefaultUnitsContainerService : IUnitsContainersService
     {
         public IUnitsContainerRepository UnitsContainerRepository { get; }
@@ -20,9 +21,19 @@ namespace Epic.Core.Services.UnitsContainers
             return MutableUnitsContainerObject.FromEntity(entity);
         }
 
-        public async Task<IUnitsContainerObject> Create(int capacity)
+        public async Task<IUnitsContainerObject> Create(int capacity, Guid ownerPlayerId)
         {
-            var entity = await UnitsContainerRepository.Create(capacity);
+            var entity = await UnitsContainerRepository.Create(capacity, ownerPlayerId);
+            return MutableUnitsContainerObject.FromEntity(entity);
+        }
+
+        public async Task<IUnitsContainerObject> ChangeOwner(IUnitsContainerObject container, Guid ownerPlayerId)
+        {
+            var entity = container.ToEntity();
+            entity.OwnerPlayerId = ownerPlayerId;
+
+            await UnitsContainerRepository.Update(entity);
+
             return MutableUnitsContainerObject.FromEntity(entity);
         }
     }

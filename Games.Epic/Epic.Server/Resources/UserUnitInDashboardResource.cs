@@ -9,6 +9,7 @@ namespace Epic.Server.Resources
         public string TypeId { get; }
         public string ThumbnailUrl { get; }
         public int Count { get; }
+        public int SlotIndex { get; }
         
         public UserUnitInDashboardResource(IPlayerUnitObject playerUnit)
         {
@@ -16,6 +17,7 @@ namespace Epic.Server.Resources
             ThumbnailUrl = playerUnit.UnitType.DashboardImgUrl;
             Count = playerUnit.Count;
             TypeId = playerUnit.UnitType.Id.ToString();
+            SlotIndex = playerUnit.ContainerSlotIndex;
         }
     }
 }

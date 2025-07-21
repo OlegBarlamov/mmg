@@ -58,7 +58,7 @@ namespace Epic.Core.Services.Units
             IReadOnlyCollection<CreatePlayerUnitData> unitsToCreate)
         {
             var unitEntities = await Task.WhenAll(unitsToCreate.Select(data =>
-                PlayerUnitsRepository.CreatePlayerUnit(data.UnitTypeId, data.Amount, data.PlayerId, data.ContainerId, true)));
+                PlayerUnitsRepository.CreatePlayerUnit(data.UnitTypeId, data.Amount, data.PlayerId, data.ContainerId, true, 0)));
 
             var unitObjects = unitEntities.Select(MutablePlayerUnitObject.FromEntity).ToArray();
             return await FillUserObjects(unitObjects);

@@ -13,5 +13,6 @@ namespace Epic.Core.Services.Units
         Guid PlayerId { get; }
         bool IsAlive { get; }
         Guid ContainerId { get; }
+        int ContainerSlotIndex { get; }
     }
 }

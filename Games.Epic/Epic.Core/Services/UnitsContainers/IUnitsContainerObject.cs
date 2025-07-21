@@ -8,19 +8,27 @@ namespace Epic.Core.Services.UnitsContainers
     {
         Guid Id { get; }
         int Capacity { get; }
+        Guid OwnerPlayerId { get; }
     }
     
     public class MutableUnitsContainerObject : IUnitsContainerObject
     {
         public Guid Id { get; set; }
         public int Capacity { get; set; }
+        public Guid OwnerPlayerId { get; set; }
+
+        protected MutableUnitsContainerObject()
+        {
+            
+        }
         
         public IUnitsContainerEntity ToEntity()
         {
             return new MutableUnitsContainerEntity
             {
                 Id = Id,
-                Capacity = Capacity
+                Capacity = Capacity,
+                OwnerPlayerId = OwnerPlayerId,
             };
         }
 
@@ -29,7 +37,8 @@ namespace Epic.Core.Services.UnitsContainers
             return new MutableUnitsContainerObject
             {
                 Id = entity.Id,
-                Capacity = entity.Capacity
+                Capacity = entity.Capacity,
+                OwnerPlayerId = entity.OwnerPlayerId,
             };
         }
     }

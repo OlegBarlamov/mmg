@@ -1,6 +1,6 @@
 import React, {PureComponent} from "react";
 import {IServiceLocator} from "../services/serviceLocator";
-import {IPlayerInfo} from "../services/serverAPI";
+import {IPlayerInfo, IUserUnit} from "../services/serverAPI";
 import "./armyDisplay.css";
 
 export interface IArmyDisplayProps {
@@ -10,7 +10,7 @@ export interface IArmyDisplayProps {
 }
 
 interface IArmyDisplayState {
-    armyUnits: any[] | null
+    armyUnits: IUserUnit[] | null
     isLoading: boolean
     error: string | null
 }
@@ -50,7 +50,7 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
         }
     }
 
-    private renderArmySlot(unit: any, index: number) {
+    private renderArmySlot(unit: IUserUnit | null, index: number) {
         if (unit) {
             return (
                 <div key={index} className="army-slot">
@@ -116,11 +116,11 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
         const armyCapacity = playerInfo?.armyCapacity || 7
         const armySlots = new Array(armyCapacity).fill(null)
         
-        // Fill the slots with actual units
+        // Fill the slots with actual units using slotIndex from server
         if (armyUnits) {
-            armyUnits.forEach((unit, index) => {
-                if (index < armySlots.length) {
-                    armySlots[index] = unit
+            armyUnits.forEach((unit) => {
+                if (unit.slotIndex >= 0 && unit.slotIndex < armySlots.length) {
+                    armySlots[unit.slotIndex] = unit
                 }
             })
         }

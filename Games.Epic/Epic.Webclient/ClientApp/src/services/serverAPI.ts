@@ -15,6 +15,7 @@ export interface IUserUnit {
     readonly typeId: string
     readonly count: number
     readonly thumbnailUrl: string
+    readonly slotIndex: number
 }
 
 export interface IPlayerInfo {

@@ -87,13 +87,13 @@ namespace Epic.Server
             var bd1 = await BattleDefinitionsService.CreateBattleDefinition(userPlayerId, 10, 8);
             var bd2 = await BattleDefinitionsService.CreateBattleDefinition(userPlayerId, 6, 6);
             
-            var computerUnit1 = await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 10, computerPlayerId, bd1.ContainerId,  true);
-            var computerUnit2 = await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 20, computerPlayerId, bd2.ContainerId, true);
+            var computerUnit1 = await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 10, computerPlayerId, bd1.ContainerId, true, 0);
+            var computerUnit2 = await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 20, computerPlayerId, bd2.ContainerId, true, 0);
 
             await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
                 new[] { unitTypeId }, new[] { 10 }, "Reward!");
 
-            await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 30, userPlayerId, userPlayer.ArmyContainerId, true);
+            await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 30, userPlayerId, userPlayer.ArmyContainerId, true, 1);
         }
 
         private class SessionData : ISessionData

@@ -134,19 +134,15 @@ namespace Epic.Core.Services.Battles
 
         private void PlaceBattleUnits(MutableBattleObject battleObject)
         {
-            var unitsPlayer1Index = 0;
-            var unitsPlayer2Index = 0;
             battleObject.Units.ForEach(u =>
             {
                 if (u.PlayerIndex == (int)InBattlePlayerNumber.Player1)
                 {
                     u.Column = 0;
-                    u.Row = unitsPlayer1Index++;
                 }
                 else if (u.PlayerIndex == (int)InBattlePlayerNumber.Player2)
                 {
                     u.Column = battleObject.Width - 1;
-                    u.Row = unitsPlayer2Index++;
                 }
                 else
                 {

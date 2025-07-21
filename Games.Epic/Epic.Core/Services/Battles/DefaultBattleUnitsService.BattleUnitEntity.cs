@@ -42,7 +42,7 @@ namespace Epic.Core.Services.Battles
                     BattleId = battleId,
                     PlayerUnitId = playerUnit.Id,
                     Column = -1,
-                    Row = -1,
+                    Row = playerUnit.ContainerSlotIndex,
                     PlayerIndex = (int)playerNumber,
                     CurrentHealth = playerUnit.UnitType.Health,
                 };

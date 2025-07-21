@@ -13,6 +13,8 @@ namespace Epic.Core.Services.Units
         public Guid PlayerId { get; set; }
         public bool IsAlive { get; set; }
         public Guid ContainerId { get; set; }
+        public int ContainerSlotIndex { get; set; }
+
 
         private MutablePlayerUnitObject()
         {
@@ -30,6 +32,7 @@ namespace Epic.Core.Services.Units
                 PlayerId = x.PlayerId,
                 IsAlive = x.IsAlive,
                 ContainerId = x.ContainerId,
+                ContainerSlotIndex = x.ContainerSlotIndex,
             };
         }
 
@@ -43,6 +46,7 @@ namespace Epic.Core.Services.Units
                 PlayerId = entity.PlayerId,
                 UnitTypeId = entity.TypeId,
                 ContainerId = entity.ContainerId,
+                ContainerSlotIndex = entity.ContainerSlotIndex,
             };
         }
 
@@ -56,6 +60,7 @@ namespace Epic.Core.Services.Units
                 PlayerId = PlayerId,
                 IsAlive = IsAlive,
                 ContainerId = ContainerId,
+                ContainerSlotIndex = ContainerSlotIndex,
             };
         }
     }
