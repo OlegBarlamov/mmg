@@ -31,22 +31,16 @@ namespace Epic.Server.Controllers
             return Ok(players.Select(x => new PlayerResource(x)));
         }
 
-        [HttpGet("{playerIdString}")]
-        public async Task<IActionResult> GetPlayer(string playerIdString)
+        [HttpGet("{playerId}")]
+        public async Task<IActionResult> GetPlayer(Guid playerId)
         {
-            if (!Guid.TryParse(playerIdString, out Guid playerId))
-                return BadRequest("Invalid playerId");
-
             var player = await PlayersService.GetByIdAndUserId(User.GetId(), playerId);
             return Ok(new PlayerResource(player));
         }
 
-        [HttpPost("{playerIdString}")]
-        public async Task<IActionResult> SetActivePlayer(string playerIdString)
+        [HttpPost("{playerId}")]
+        public async Task<IActionResult> SetActivePlayer(Guid playerId)
         {
-            if (!Guid.TryParse(playerIdString, out Guid playerId))
-                return BadRequest("Invalid playerId");
-            
             var sessionToken = User.GetSessionToken();
             var session = await SessionsService.GetSessionByToken(sessionToken);
             if (session.UserId != User.GetId())

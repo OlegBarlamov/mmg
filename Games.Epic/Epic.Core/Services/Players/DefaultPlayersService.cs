@@ -39,7 +39,7 @@ namespace Epic.Core.Services.Players
         {
             var user = await UsersService.GetUserById(userId);
 
-            var armyContainer = await UnitsContainersService.Create(5, Guid.Empty);
+            var armyContainer = await UnitsContainersService.Create(7, Guid.Empty);
             var supplyContainer = await UnitsContainersService.Create(30, Guid.Empty);
             var entity = await PlayersRepository.Create(new MutablePlayerEntityFields
             {
@@ -52,8 +52,8 @@ namespace Epic.Core.Services.Players
                 ArmyContainerId = armyContainer.Id,
                 SupplyContainerId = supplyContainer.Id,
             });
-            await UnitsContainersService.ChangeOwner(armyContainer, entity.Id);
-            await UnitsContainersService.ChangeOwner(supplyContainer, entity.Id);
+            armyContainer = await UnitsContainersService.ChangeOwner(armyContainer, entity.Id);
+            supplyContainer = await UnitsContainersService.ChangeOwner(supplyContainer, entity.Id);
             
             return await FromEntity(entity, armyContainer, supplyContainer);
         }

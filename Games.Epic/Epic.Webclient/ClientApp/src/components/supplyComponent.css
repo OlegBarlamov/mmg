@@ -34,6 +34,27 @@
     border-bottom: 1px solid #4a4a4a;
 }
 
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.cancel-button {
+    background: #e74c3c;
+    border: none;
+    color: white;
+    font-size: 14px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+    background: #c0392b;
+}
+
 .supply-title {
     margin: 0;
     font-size: 24px;
@@ -105,6 +126,22 @@
 .supply-slot:hover,
 .army-slot:hover {
     border-color: #6a6a6a;
+}
+
+.supply-slot.selected,
+.army-slot.selected {
+    border-color: #3498db;
+    border-width: 3px;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    transform: scale(1.05);
+}
+
+.supply-slot.target,
+.army-slot.target {
+    border-color: #27ae60;
+    border-width: 3px;
+    box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+    background-color: rgba(39, 174, 96, 0.1);
 }
 
 .supply-slot.empty,

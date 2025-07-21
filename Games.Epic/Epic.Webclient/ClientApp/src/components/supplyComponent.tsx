@@ -7,13 +7,19 @@ export interface ISupplyComponentProps {
     serviceLocator: IServiceLocator
     playerInfo: IPlayerInfo | null
     onClose: () => void
+    armyUnits: IUserUnit[] | null
+    armyCapacity: number
+    onArmyUnitsUpdate?: (units: IUserUnit[]) => void
+    onRefreshArmy?: () => Promise<void>
 }
 
 interface ISupplyComponentState {
     supplyUnits: IUserUnit[] | null
-    armyUnits: IUserUnit[] | null
+    supplyCapacity: number
     isLoading: boolean
     error: string | null
+    selectedUnit: { unit: IUserUnit, containerType: 'supply' | 'army' } | null
+    isDragging: boolean
 }
 
 export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISupplyComponentState> {
@@ -22,9 +28,11 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         
         this.state = {
             supplyUnits: null,
-            armyUnits: null,
+            supplyCapacity: 10,
             isLoading: true,
-            error: null
+            error: null,
+            selectedUnit: null,
+            isDragging: false
         }
     }
     
@@ -36,11 +44,15 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         this.setState({ isLoading: true, error: null })
         try {
             const serverAPI = this.props.serviceLocator.serverAPI()
-            const [supplyUnits, armyUnits] = await Promise.all([
-                serverAPI.getSupplyUnits(),
-                serverAPI.getArmyUnits()
-            ])
-            this.setState({ supplyUnits, armyUnits, isLoading: false })
+            if (!this.props.playerInfo?.supplyContainerId) {
+                throw new Error('Supply container ID not available')
+            }
+            const supplyContainer = await serverAPI.getUnitsContainer(this.props.playerInfo.supplyContainerId)
+            this.setState({ 
+                supplyUnits: supplyContainer.units, 
+                supplyCapacity: supplyContainer.capacity,
+                isLoading: false 
+            })
         } catch (error) {
             console.error('Failed to fetch supply data:', error)
             this.setState({ 
@@ -50,22 +62,127 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
         }
     }
 
+    private handleUnitClick = (unit: IUserUnit, containerType: 'supply' | 'army') => {
+        if (this.state.selectedUnit) {
+            // If we have a selected unit, try to move it to this slot
+            this.moveUnitToSlot(unit.slotIndex, containerType)
+        } else {
+            // Select this unit for moving
+            this.setState({ selectedUnit: { unit, containerType }, isDragging: true })
+        }
+    }
+
+    private handleEmptySlotClick = (slotIndex: number, containerType: 'supply' | 'army') => {
+        if (this.state.selectedUnit) {
+            this.moveUnitToSlot(slotIndex, containerType)
+        }
+    }
+
+    private moveUnitToSlot = async (targetSlotIndex: number, targetContainerType: 'supply' | 'army') => {
+        if (!this.state.selectedUnit) return
+
+        const { unit: selectedUnit, containerType: sourceContainerType } = this.state.selectedUnit
+        
+        // Don't allow moving to the same slot
+        if (sourceContainerType === targetContainerType && selectedUnit.slotIndex === targetSlotIndex) {
+            this.setState({ selectedUnit: null, isDragging: false })
+            return
+        }
+
+        try {
+            const serverAPI = this.props.serviceLocator.serverAPI()
+            const containerId = targetContainerType === 'supply' 
+                ? this.props.playerInfo?.supplyContainerId 
+                : this.props.playerInfo?.armyContainerId
+
+            if (!containerId) {
+                throw new Error('Container ID not available')
+            }
+
+            // Move the entire unit count
+            const updatedContainer = await serverAPI.moveUnits(
+                selectedUnit.id, 
+                containerId, 
+                selectedUnit.count, 
+                targetSlotIndex
+            )
+
+            // Update the target container state
+            if (targetContainerType === 'supply') {
+                this.setState({ 
+                    supplyUnits: updatedContainer.units,
+                    selectedUnit: null, 
+                    isDragging: false 
+                })
+            } else {
+                // Update parent's army units state
+                this.props.onArmyUnitsUpdate?.(updatedContainer.units)
+                this.setState({ 
+                    selectedUnit: null, 
+                    isDragging: false 
+                })
+            }
+
+            // If moving between containers, refresh the source container
+            if (sourceContainerType !== targetContainerType) {
+                await this.refreshSourceContainer(sourceContainerType)
+            }
+
+        } catch (error) {
+            console.error('Failed to move unit:', error)
+            this.setState({ 
+                error: 'Failed to move unit', 
+                selectedUnit: null, 
+                isDragging: false 
+            })
+        }
+    }
+
+    private refreshSourceContainer = async (containerType: 'supply' | 'army') => {
+        try {
+            if (containerType === 'supply') {
+                const serverAPI = this.props.serviceLocator.serverAPI()
+                const containerId = this.props.playerInfo?.supplyContainerId
+
+                if (!containerId) return
+
+                const container = await serverAPI.getUnitsContainer(containerId)
+                this.setState({ supplyUnits: container.units })
+            } else {
+                // Use the callback to refresh army units from parent
+                await this.props.onRefreshArmy?.()
+            }
+        } catch (error) {
+            console.error('Failed to refresh container:', error)
+        }
+    }
+
     private renderSupplySlot(unit: IUserUnit | null, index: number) {
+        const isSelected = this.state.selectedUnit?.unit.id === unit?.id && this.state.selectedUnit?.containerType === 'supply'
+        const isTarget = this.state.isDragging && !isSelected
+        
         if (unit) {
             return (
-                <div key={index} className="supply-slot">
+                <div 
+                    key={index} 
+                    className={`supply-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''}`}
+                    onClick={() => this.handleUnitClick(unit, 'supply')}
+                >
                     <img 
                         src={unit.thumbnailUrl} 
                         alt={`Supply Unit ${index + 1}`}
                         className="unit-image"
                     />
                     <div className="unit-count">{unit.count}</div>
-                    <div className="unit-name">{unit.typeId}</div>
                 </div>
             )
         } else {
             return (
-                <div key={index} className="supply-slot empty">
+                <div 
+                    key={index} 
+                    className={`supply-slot empty ${isTarget ? 'target' : ''}`}
+                    onClick={() => this.handleEmptySlotClick(index, 'supply')}
+                >
                     <div className="empty-slot">Empty</div>
                 </div>
             )
@@ -73,21 +190,31 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
     }
 
     private renderArmySlot(unit: IUserUnit | null, index: number) {
+        const isSelected = this.state.selectedUnit?.unit.id === unit?.id && this.state.selectedUnit?.containerType === 'army'
+        const isTarget = this.state.isDragging && !isSelected
+        
         if (unit) {
             return (
-                <div key={index} className="army-slot">
+                <div 
+                    key={index} 
+                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''}`}
+                    onClick={() => this.handleUnitClick(unit, 'army')}
+                >
                     <img 
                         src={unit.thumbnailUrl} 
                         alt={`Army Unit ${index + 1}`}
                         className="unit-image"
                     />
                     <div className="unit-count">{unit.count}</div>
-                    <div className="unit-name">{unit.typeId}</div>
                 </div>
             )
         } else {
             return (
-                <div key={index} className="army-slot empty">
+                <div 
+                    key={index} 
+                    className={`army-slot empty ${isTarget ? 'target' : ''}`}
+                    onClick={() => this.handleEmptySlotClick(index, 'army')}
+                >
                     <div className="empty-slot">Empty</div>
                 </div>
             )
@@ -95,8 +222,8 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
     }
 
     render() {
-        const { supplyUnits, armyUnits, isLoading, error } = this.state
-        const { playerInfo } = this.props
+        const { supplyUnits, isLoading, error } = this.state
+        const { playerInfo, armyUnits, armyCapacity } = this.props
 
         if (isLoading) {
             return (
@@ -126,9 +253,8 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
             )
         }
 
-        // Use supplyCapacity from playerInfo, default to 10 if not available
-        const supplyCapacity = playerInfo?.supplyCapacity || 10
-        const armyCapacity = playerInfo?.armyCapacity || 7
+        // Use capacities from state and props
+        const supplyCapacity = this.state.supplyCapacity
         
         const supplySlots = new Array(supplyCapacity).fill(null)
         const armySlots = new Array(armyCapacity).fill(null)
@@ -155,7 +281,14 @@ export class SupplyComponent extends PureComponent<ISupplyComponentProps, ISuppl
                 <div className="supply-modal">
                     <div className="supply-header">
                         <h1 className="supply-title">Supply Depot</h1>
-                        <button className="close-button" onClick={this.props.onClose}>×</button>
+                        <div className="header-buttons">
+                            {this.state.isDragging && (
+                                <button className="cancel-button" onClick={() => this.setState({ selectedUnit: null, isDragging: false })}>
+                                    Cancel
+                                </button>
+                            )}
+                            <button className="close-button" onClick={this.props.onClose}>×</button>
+                        </div>
                     </div>
                     
                     <div className="supply-content">

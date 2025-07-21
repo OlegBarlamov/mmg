@@ -57,13 +57,14 @@ namespace Epic.Data.PlayerUnits
             entities.ForEach(entity =>
             {
                 var target = _playerUnits.First(x => x.Id == entity.Id);
-                target.Count = entity.Count;
-                target.PlayerId = entity.PlayerId;
-                target.IsAlive = entity.IsAlive;
-                target.TypeId = entity.TypeId;
-                target.ContainerId = entity.ContainerId;
+                target.UpdateFrom(entity);
             });
             return Task.CompletedTask;
+        }
+
+        public Task<IPlayerUnitEntity> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex)
+        {
+            return Task.FromResult<IPlayerUnitEntity>(_playerUnits.First(unit => unit.ContainerId == containerId && unit.ContainerSlotIndex == slotIndex));
         }
     }
 }

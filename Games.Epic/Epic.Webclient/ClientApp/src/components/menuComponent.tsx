@@ -1,7 +1,7 @@
 import React, {PureComponent} from "react";
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
-import {IPlayerInfo} from "../services/serverAPI";
+import {IPlayerInfo, IUserUnit} from "../services/serverAPI";
 import {ArmyDisplay} from "./armyDisplay";
 import {SupplyComponent} from "./supplyComponent";
 import "./menuComponent.css";
@@ -17,6 +17,8 @@ interface IMenuComponentState {
     isLoading: boolean
     battlesGenerationInProgress: boolean
     showSupply: boolean
+    armyUnits: IUserUnit[] | null
+    armyCapacity: number
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -31,12 +33,17 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             availableBattles: null,
             isLoading: true,
             battlesGenerationInProgress: false,
-            showSupply: false
+            showSupply: false,
+            armyUnits: null,
+            armyCapacity: 7
         }
     }
     
     async componentDidMount() {
-        await this.fetchBattles()
+        await Promise.all([
+            this.fetchBattles(),
+            this.fetchArmyUnits()
+        ])
     }
 
     public setBattlesGenerationInProgress(battlesGenerationInProgress: boolean) {
@@ -59,11 +66,32 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         await this.fetchBattles()
     }
 
+    // Method to fetch army units
+    private async fetchArmyUnits() {
+        try {
+            const serverAPI = this.props.serviceLocator.serverAPI()
+            if (!this.props.playerInfo?.armyContainerId) {
+                throw new Error('No army container ID available')
+            }
+            const armyContainer = await serverAPI.getUnitsContainer(this.props.playerInfo.armyContainerId)
+            this.setState({ 
+                armyUnits: armyContainer.units, 
+                armyCapacity: armyContainer.capacity
+            })
+        } catch (error) {
+            console.error('Failed to fetch army units:', error)
+        }
+    }
+
     // Method to refresh army display
     public async refreshArmy() {
-        if (this.armyDisplayRef.current) {
-            await this.armyDisplayRef.current.refreshArmy()
-        }
+        await this.fetchArmyUnits()
+    }
+
+    // Method to check if there are any army units
+    private hasArmyUnits(): boolean {
+        const { armyUnits } = this.state
+        return armyUnits !== null && armyUnits.length > 0
     }
 
     private handleSupplyClick = () => {
@@ -72,6 +100,15 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
 
     private handleSupplyClose = () => {
         this.setState({ showSupply: false })
+    }
+
+    private handleArmyUnitsUpdate = (units: IUserUnit[]) => {
+        this.setState({ armyUnits: units })
+    }
+
+    // Method to refresh army units from server
+    private refreshArmyFromServer = async () => {
+        await this.fetchArmyUnits()
     }
     
     private async fetchBattles() {
@@ -147,6 +184,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                     <button 
                                                         className="battle-button"
                                                         onClick={() => this.props.onBattleSelected(battle)}
+                                                        disabled={!this.hasArmyUnits()}
                                                     >
                                                         Start Battle
                                                     </button>
@@ -170,6 +208,9 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                     serviceLocator={this.props.serviceLocator}
                     playerInfo={this.props.playerInfo}
                     onSupplyClick={this.handleSupplyClick}
+                    armyUnits={this.state.armyUnits}
+                    armyCapacity={this.state.armyCapacity}
+                    onArmyUnitsUpdate={this.handleArmyUnitsUpdate}
                 />
 
                 {this.state.showSupply && (
@@ -177,6 +218,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                         serviceLocator={this.props.serviceLocator}
                         playerInfo={this.props.playerInfo}
                         onClose={this.handleSupplyClose}
+                        armyUnits={this.state.armyUnits}
+                        armyCapacity={this.state.armyCapacity}
+                        onArmyUnitsUpdate={this.handleArmyUnitsUpdate}
+                        onRefreshArmy={this.refreshArmyFromServer}
                     />
                 )}
             </div>

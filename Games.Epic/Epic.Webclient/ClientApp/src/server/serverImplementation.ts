@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IPlayerInfo, IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IPlayerInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -17,6 +17,13 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
     }    
+    moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo> {
+        return this.fetchResource(`api/units/move/${unitId}`, "POST", "move_units", {
+            containerId: containerId,
+            amount: count,
+            slotIndex: slotIndex,
+        })
+    }
     getPlayer(id: string): Promise<IPlayerInfo> {
         return this.fetchResource(`api/players/${id}`, "GET", "player")
     }
@@ -29,11 +36,8 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     getPlayers(): Promise<IPlayerInfo[]> {
         return this.fetchResource("api/players", "GET", "players")
     }
-    getArmyUnits(): Promise<IUserUnit[]> {
-        return this.fetchResource("api/units/army", "GET", "army_units")
-    }
-    getSupplyUnits(): Promise<IUserUnit[]> {
-        return this.fetchResource("api/units/supply", "GET", "supply_units")
+    getUnitsContainer(containerId: string): Promise<IUnitsContainerInfo> {
+        return this.fetchResource(`api/units/containers/${containerId}`, "GET", "units_container")
     }
     getBattles(): Promise<IBattleDefinition[]> {
         return this.fetchResource("api/battles", "GET", "battles")

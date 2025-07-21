@@ -17,13 +17,9 @@ namespace Epic.Core.Services.UnitsContainers
 
         IReadOnlyList<IPlayerUnitObject> IUnitsContainerWithUnits.Units => Units; 
 
-        private IUnitsContainerObject Container { get; }
-
         public UnitsContainerWithUnits([NotNull] IUnitsContainerObject container, params IPlayerUnitObject[] units)
+            : base(container)
         {
-            Container = container ?? throw new ArgumentNullException(nameof(container));
-            Id = container.Id;
-            Capacity = container.Capacity;
             Units = new List<IPlayerUnitObject>(units);
         }
     }

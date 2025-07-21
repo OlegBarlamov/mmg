@@ -26,6 +26,18 @@ namespace Epic.Core.Services.Units
             Logger = loggerFactory.CreateLogger<DefaultPlayerUnitsService>();
         }
 
+        public async Task<IPlayerUnitObject> GetById(Guid id)
+        {
+            var units = await GetUnitsByIds(new[] { id });
+            return units.First();
+        }
+
+        public async Task<bool> HasAliveUnits(Guid containerId)
+        {
+            var units = await PlayerUnitsRepository.GetAliveByContainerId(containerId);
+            return units.Any();
+        }
+
         public async Task<IReadOnlyCollection<IPlayerUnitObject>> GetAliveUnitsByContainerId(Guid containerId)
         {
             var aliveUsersEntities = await PlayerUnitsRepository.GetAliveByContainerId(containerId);
@@ -62,6 +74,15 @@ namespace Epic.Core.Services.Units
 
             var unitObjects = unitEntities.Select(MutablePlayerUnitObject.FromEntity).ToArray();
             return await FillUserObjects(unitObjects);
+        }
+
+        public async Task<IPlayerUnitObject> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex)
+        {
+            var unitEntity = await PlayerUnitsRepository.GetAliveUnitFromContainerInSlot(containerId, slotIndex);
+            var unit = MutablePlayerUnitObject.FromEntity(unitEntity);
+            
+            var filledUnits = await FillUserObjects(new [] { unit });
+            return filledUnits.First();
         }
 
         private async Task<IReadOnlyCollection<MutablePlayerUnitObject>> FillUserObjects(

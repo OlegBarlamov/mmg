@@ -58,28 +58,67 @@ namespace Epic.Core.Services.UnitsContainers
             return await GetContainerWithUnits(containerId);
         }
 
-        public async Task<IUnitsContainerWithUnits> SplitUnits(IPlayerUnitObject originalUnit, Guid targetContainerId, int amountToSplit,
+        public async Task<IUnitsContainerWithUnits> MoveUnits(IPlayerUnitObject originalUnit, Guid targetContainerId, int? amountToSplitOptional,
             int? specificSlotIndex = null)
         {
             if (targetContainerId == DefaultContainers.EmptyContainerId)
                 throw new TargetContainerIdIsEmptyContainerException();
+            
+            var amountToSplit = amountToSplitOptional ?? originalUnit.Count;
             if (originalUnit.Count < amountToSplit)
                 throw new AmountOfUnitsInSlotExceededException(originalUnit, amountToSplit);
-            
-            var container = await UnitsContainersService.GetById(originalUnit.ContainerId);
-            var emptySlots = await FindEmptySlots(container);
-            if (emptySlots.Length == 0)
-                throw new EmptySlotNotFoundException(container);
-            if (specificSlotIndex.HasValue && !emptySlots.Contains(specificSlotIndex.Value))
-                throw new SlotIsOccupiedException(container, specificSlotIndex.Value);
-            
-            var targetSlot = specificSlotIndex ?? emptySlots.First();
 
-            await PlayerUnitsRepository.CreatePlayerUnit(originalUnit.UnitType.Id, amountToSplit, container.OwnerPlayerId,
-                targetContainerId, originalUnit.IsAlive, targetSlot);
+            var moveAllUnits = amountToSplit == originalUnit.Count;
+            var container = await UnitsContainersService.GetById(targetContainerId);
+            var emptySlots = await FindEmptySlots(container);
+            if (!specificSlotIndex.HasValue && emptySlots.Length == 0)
+                throw new EmptySlotNotFoundException(container);
 
             var originalUnitEntity = originalUnit.ToEntity();
-            originalUnitEntity.Count -= amountToSplit;
+            if (specificSlotIndex.HasValue && !emptySlots.Contains(specificSlotIndex.Value))
+            {
+                var targetUnit = await PlayerUnitsService.GetAliveUnitFromContainerInSlot(targetContainerId, specificSlotIndex.Value);
+                if (originalUnit.UnitType.Id != targetUnit.UnitType.Id)
+                {
+                    if (!moveAllUnits)
+                        throw new SlotIsOccupiedException(container, specificSlotIndex.Value);
+                    
+                    await ExchangeUnitSlots(originalUnit, targetUnit);
+                    return await GetContainerWithUnits(targetContainerId);
+                }
+                
+                // Combine units same type
+
+                var targetUnitEntity = targetUnit.ToEntity();
+
+                targetUnitEntity.Count += amountToSplit;
+                originalUnitEntity.Count -= amountToSplit;
+                if (originalUnitEntity.Count < 1)
+                {
+                    originalUnitEntity.ContainerId = DefaultContainers.EmptyContainerId;
+                    originalUnitEntity.PlayerId = DefaultContainers.EmptyContainerId;
+                }
+                
+                await PlayerUnitsRepository.Update(originalUnitEntity, targetUnitEntity);
+                return await GetContainerWithUnits(targetContainerId);
+            }
+            
+            // Move to an Empty slot
+            
+            var targetSlot = specificSlotIndex ?? emptySlots.First();
+            if (moveAllUnits)
+            {
+                originalUnitEntity.ContainerSlotIndex = targetSlot;
+                originalUnitEntity.PlayerId = container.OwnerPlayerId;
+                originalUnitEntity.ContainerId = container.Id;
+            }
+            else
+            {
+                await PlayerUnitsRepository.CreatePlayerUnit(originalUnit.UnitType.Id, amountToSplit, container.OwnerPlayerId,
+                    targetContainerId, originalUnit.IsAlive, targetSlot);
+                
+                originalUnitEntity.Count -= amountToSplit;
+            }
             
             await PlayerUnitsRepository.Update(originalUnitEntity);
 
@@ -175,8 +214,11 @@ namespace Epic.Core.Services.UnitsContainers
             toUnitEntity.Count += amountToGive;
 
             if (fromUnitEntity.Count < 1)
-                fromUnitEntity.ContainerId = Guid.Empty;
-            
+            {
+                fromUnitEntity.ContainerId = DefaultContainers.EmptyContainerId;
+                fromUnitEntity.PlayerId = DefaultContainers.EmptyContainerId;
+            }
+
             await PlayerUnitsRepository.Update(fromUnitEntity, toUnitEntity);
             
             return new Pair<IPlayerUnitObject>(

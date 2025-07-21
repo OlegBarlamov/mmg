@@ -27,5 +27,16 @@ namespace Epic.Data.PlayerUnits
         {
             
         }
+
+        public void UpdateFrom(IPlayerUnitEntity playerUnit)
+        {
+            Id = playerUnit.Id;
+            TypeId = playerUnit.TypeId;
+            Count = playerUnit.Count;
+            PlayerId = playerUnit.PlayerId;
+            ContainerId = playerUnit.ContainerId;
+            IsAlive = playerUnit.IsAlive;
+            ContainerSlotIndex = playerUnit.ContainerSlotIndex;
+        }
     }
 }

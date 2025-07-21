@@ -8,7 +8,7 @@ namespace Epic.Core.Services.UnitsContainers
     {
         Task<IUnitsContainerWithUnits> GetContainerWithUnits(Guid id);
         Task<IUnitsContainerWithUnits> PlaceUnitsToContainer(Guid containerId, params IPlayerUnitObject[] units);
-        Task<IUnitsContainerWithUnits> SplitUnits(IPlayerUnitObject originalUnit, Guid targetContainerId, int amountToSplit, int? specificSlotIndex = null);
+        Task<IUnitsContainerWithUnits> MoveUnits(IPlayerUnitObject originalUnit, Guid targetContainerId, int? amountToSplit, int? specificSlotIndex = null);
         Task<IUnitsContainerWithUnits> FillEmptySlotsWithUnits(IPlayerUnitObject originalUnit, Guid targetContainerId);
         Task ExchangeContainers(Guid container1Id, Guid container2Id);
         Task<Pair<IPlayerUnitObject>> ExchangeUnitSlots(IPlayerUnitObject unit1, IPlayerUnitObject unit2);

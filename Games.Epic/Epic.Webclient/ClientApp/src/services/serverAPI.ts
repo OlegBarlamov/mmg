@@ -24,8 +24,15 @@ export interface IPlayerInfo {
     readonly name: string
     readonly isDefeated: boolean
     readonly battlesGenerationInProgress: boolean
-    readonly armyCapacity: number
-    readonly supplyCapacity: number
+    readonly armyContainerId: string
+    readonly supplyContainerId: string
+}
+
+export interface IUnitsContainerInfo {
+    readonly id: string
+    readonly name: string
+    readonly units: IUserUnit[]
+    readonly capacity: number
 }
 
 export interface IServerAPI {
@@ -33,15 +40,17 @@ export interface IServerAPI {
     getUserInfo(): Promise<IUserInfo>
     getPlayer(id: string): Promise<IPlayerInfo>
     getPlayers(): Promise<IPlayerInfo[]>
-    getArmyUnits(): Promise<IUserUnit[]>
-    getSupplyUnits(): Promise<IUserUnit[]>
     setActivePlayer(playerId: string): Promise<void>
+
+    getUnitsContainer(containerId: string): Promise<IUnitsContainerInfo>
+
     getBattles(): Promise<IBattleDefinition[]>
     beginBattle(battleDefinitionId: string): Promise<BattleMap>
     getActiveBattle(): Promise<BattleMap | null>
+    establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
 
     getMyRewards(): Promise<IRewardToAccept[]>
     acceptReward(id: string, body: AcceptRewardBody): Promise<void>
     
-    establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
+    moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo>
 }

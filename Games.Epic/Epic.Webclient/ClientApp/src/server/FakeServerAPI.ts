@@ -1,6 +1,6 @@
 import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IPlayerInfo, IServerAPI, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IPlayerInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -41,11 +41,104 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
-    getSupplyUnits(): Promise<IUserUnit[]> {
-        throw new Error("Method not implemented.");
+    async moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo> {
+        const id = await this.getUserId()
+        const units = this.units.get(id) ?? []
+        
+        // Find the source unit
+        const sourceUnit = units.find(u => u.id === unitId)
+        if (!sourceUnit) {
+            throw new Error('Unit not found')
+        }
+        
+        // Check if we have enough units to move
+        if (sourceUnit.count < count) {
+            throw new Error('Not enough units to move')
+        }
+        
+        // Check if target slot is available
+        const targetSlotOccupied = units.some(u => u.slotIndex === slotIndex && u.id !== unitId)
+        if (targetSlotOccupied) {
+            throw new Error('Target slot is occupied')
+        }
+        
+        // Remove the source unit
+        const sourceIndex = units.findIndex(u => u.id === unitId)
+        if (sourceIndex !== -1) {
+            units.splice(sourceIndex, 1)
+        }
+        
+        // Create updated source unit with reduced count (if count > 0)
+        if (sourceUnit.count > count) {
+            const updatedSourceUnit: IUserUnit = {
+                id: getRandomStringKey(7),
+                typeId: sourceUnit.typeId,
+                count: sourceUnit.count - count,
+                thumbnailUrl: sourceUnit.thumbnailUrl,
+                slotIndex: sourceUnit.slotIndex
+            }
+            units.push(updatedSourceUnit)
+        }
+        
+        // Create new unit in target slot
+        const newUnit: IUserUnit = {
+            id: getRandomStringKey(7),
+            typeId: sourceUnit.typeId,
+            count: count,
+            thumbnailUrl: sourceUnit.thumbnailUrl,
+            slotIndex: slotIndex
+        }
+        units.push(newUnit)
+        
+        // Return updated container info
+        if (containerId.includes('army')) {
+            return {
+                id: containerId,
+                name: 'Army',
+                units: units,
+                capacity: 7
+            }
+        } else {
+            return {
+                id: containerId,
+                name: 'Supply',
+                units: units,
+                capacity: 10
+            }
+        }
+    }
+    async getUnitsContainer(containerId: string): Promise<IUnitsContainerInfo> {
+        const id = await this.getUserId()
+        const units = this.units.get(id) ?? []
+        
+        // For now, assume army container has ID ending with 'army' and supply with 'supply'
+        // In a real implementation, you'd have separate containers
+        if (containerId.includes('army')) {
+            return {
+                id: containerId,
+                name: 'Army',
+                units: units,
+                capacity: 7
+            }
+        } else {
+            return {
+                id: containerId,
+                name: 'Supply',
+                units: units,
+                capacity: 10
+            }
+        }
     }
     getPlayer(id: string): Promise<IPlayerInfo> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve({
+            id: id,
+            day: 1,
+            name: "FakePlayer",
+            isDefeated: false,
+            battlesGenerationInProgress: false,
+            armyContainerId: `${id}_army`,
+            supplyContainerId: `${id}_supply`
+        })
     }
     getPlayers(): Promise<IPlayerInfo[]> {
         throw new Error("Method not implemented.");
@@ -240,10 +333,6 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         }
     }
     
-    async getArmyUnits(): Promise<IUserUnit[]> {
-        const id = await this.getUserId()
-        return structuredClone(this.units.get(id)) ?? []
-    }
     async getBattles(): Promise<IBattleDefinition[]> {
         const id = await this.getUserId()
         return structuredClone(this.battles.get(id)) ?? []

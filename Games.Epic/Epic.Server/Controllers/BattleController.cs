@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Players;
+using Epic.Core.Services.Units;
 using Epic.Data.Exceptions;
 using Epic.Server.Authentication;
 using Epic.Server.RequestBodies;
@@ -25,19 +27,25 @@ namespace Epic.Server.Controllers
         public IBattleGameManagersService BattleGameManagersService { get; }
         public IBattleConnectionsService BattleConnectionsService { get; }
         public ILogger<BattleController> Logger { get; }
+        public IPlayersService PlayersService { get; }
+        public IPlayerUnitsService PlayerUnitsService { get; }
 
         public BattleController(
             [NotNull] IBattlesService battlesService,
             [NotNull] IClientConnectionsService<WebSocket> clientConnectionService,
             [NotNull] IBattleGameManagersService battleGameManagersService,
             [NotNull] IBattleConnectionsService battleConnectionsService,
-            [NotNull] ILogger<BattleController> logger)
+            [NotNull] ILogger<BattleController> logger,
+            [NotNull] IPlayersService playersService,
+            [NotNull] IPlayerUnitsService playerUnitsService)
         {
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             ClientConnectionService = clientConnectionService ?? throw new ArgumentNullException(nameof(clientConnectionService));
             BattleGameManagersService = battleGameManagersService ?? throw new ArgumentNullException(nameof(battleGameManagersService));
             BattleConnectionsService = battleConnectionsService ?? throw new ArgumentNullException(nameof(battleConnectionsService));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
         }
         
         [HttpGet]
@@ -68,6 +76,11 @@ namespace Epic.Server.Controllers
             {
                 return BadRequest($"Invalid ID format for {battleRequestBody.BattleDefinitionId}.");
             }
+            
+            var player = await PlayersService.GetById(playerId);
+            var hasUnits = await PlayerUnitsService.HasAliveUnits(player.ArmyContainerId);
+            if (!hasUnits)
+                return BadRequest("This player does not have any units.");
 
             try
             {
@@ -81,8 +94,8 @@ namespace Epic.Server.Controllers
             }
         }
 
-        [HttpGet("{battleIdString}/ws")]
-        public async Task EstablishWsConnection(string battleIdString)
+        [HttpGet("{battleId}/ws")]
+        public async Task EstablishWsConnection(Guid battleId)
         {
             if (!User.TryGetPlayerId(out var playerId))
             {
@@ -95,12 +108,6 @@ namespace Epic.Server.Controllers
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await HttpContext.Response.WriteAsync("WebSocket connection expected.");
-                return;
-            }
-            if (!Guid.TryParse(battleIdString, out var battleId))
-            {
-                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await HttpContext.Response.WriteAsync("Invalid ID format of BattleId");
                 return;
             }
 

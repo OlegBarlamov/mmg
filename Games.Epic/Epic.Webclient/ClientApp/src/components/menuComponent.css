@@ -201,6 +201,20 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+.battle-button:disabled {
+    background: #7f8c8d;
+    border-color: #6c7b7d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+.battle-button:disabled:hover {
+    background: #7f8c8d;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
 .loading {
     text-align: center;
     font-size: 1.2rem;

@@ -93,6 +93,20 @@
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
 }
 
+.army-slot.selected {
+    border-color: #3498db;
+    border-width: 3px;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    transform: scale(1.05);
+}
+
+.army-slot.target {
+    border-color: #27ae60;
+    border-width: 3px;
+    box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+    background-color: rgba(39, 174, 96, 0.1);
+}
+
 .unit-image {
     width: 100%;
     height: 100%;

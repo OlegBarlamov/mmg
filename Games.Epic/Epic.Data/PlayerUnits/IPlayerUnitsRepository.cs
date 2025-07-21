@@ -15,5 +15,7 @@ namespace Epic.Data.PlayerUnits
         Task<IPlayerUnitEntity> CreatePlayerUnit(Guid typeId, int count, Guid playerId, Guid containerId, bool isAlive, int containerSlotIndex);
         
         Task Update(params IPlayerUnitEntity[] entities);
+        
+        Task<IPlayerUnitEntity> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex);
     }
 }
