@@ -1,44 +1,26 @@
 using System;
-using Epic.Core.Objects;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
-using Epic.Data.UnitTypes;
 
 namespace Epic.Core.Services.Battles
 {
     public partial class DefaultBattleUnitsService
     {
-        internal class BattleUnitEntity : IBattleUnitEntity
+        internal class BattleUnitEntityFields : IBattleUnitEntityFields
         {
-            private Guid? Id { get; set; }
             public Guid BattleId { get; set; }
             public Guid PlayerUnitId { get; set; }
             public int Column { get; set; }
             public int Row { get; set; }
             public int PlayerIndex { get; set; }
             public int CurrentHealth { get; set; }
-            public int Speed { get; set; }
-            public int AttackMaxRange { get; set; }
-            public int AttackMinRange { get; set; }
-            public int Damage { get; set; }
-            public int Health { get; set; }
             
-            Guid IBattleUnitEntity.Id => Id ?? throw new InvalidOperationException("Battle Unit Entity has not been set for updating an instance in the repository");
+            protected BattleUnitEntityFields() {}
             
-            private BattleUnitEntity(IUnitProps props)
+            public static BattleUnitEntityFields FromUserUnit(IPlayerUnitObject playerUnit, Guid battleId, InBattlePlayerNumber playerNumber)
             {
-                Health = props.Health;
-                Speed = props.Speed;
-                AttackMaxRange = props.AttackMaxRange;
-                AttackMinRange = props.AttackMinRange;
-                Damage = props.Damage;
-            }
-            
-            public static BattleUnitEntity FromUserUnit(IPlayerUnitObject playerUnit, Guid battleId, InBattlePlayerNumber playerNumber, Guid? id = null)
-            {
-                return new BattleUnitEntity(playerUnit.UnitType)
+                return new BattleUnitEntityFields
                 {
-                    Id = id,
                     BattleId = battleId,
                     PlayerUnitId = playerUnit.Id,
                     Column = -1,
@@ -47,12 +29,21 @@ namespace Epic.Core.Services.Battles
                     CurrentHealth = playerUnit.UnitType.Health,
                 };
             }
+        }
+        
+        internal class BattleUnitEntity : BattleUnitEntityFields, IBattleUnitEntity
+        {
+            public Guid Id { get; }
+            
+            private BattleUnitEntity(Guid id)
+            {
+                Id = id;
+            }
 
             public static BattleUnitEntity FromBattleUnitObject(IBattleUnitObject battleUnit)
             {
-                return new BattleUnitEntity(battleUnit)
+                return new BattleUnitEntity(battleUnit.Id)
                 {
-                    Id = battleUnit.Id,
                     BattleId = battleUnit.BattleId,
                     PlayerUnitId = battleUnit.PlayerUnit.Id,
                     Column = battleUnit.Column,

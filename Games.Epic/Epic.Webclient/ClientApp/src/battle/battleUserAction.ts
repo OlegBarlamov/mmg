@@ -20,6 +20,7 @@ interface UnitAttackAction extends UnitAction {
     command: 'UNIT_ATTACK'
     moveToCell: BattleMapCell
     attackTarget: BattleMapUnit
+    attackTypeIndex: number
 }
 
 export type BattleUserAction = UnitMoveAction | UnitAttackAction

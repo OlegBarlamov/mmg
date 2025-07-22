@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.UnitsContainers;
@@ -8,6 +9,7 @@ using Epic.Data.BattleDefinitions;
 using Epic.Data.PlayerUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
+using Epic.Data.UnitTypes.Subtypes;
 using Epic.Server.Authentication;
 using FrameworkSDK;
 using JetBrains.Annotations;
@@ -62,14 +64,70 @@ namespace Epic.Server
             {
                 Name = "Unit",
                 Speed = 5,
-                AttackMaxRange = 1,
-                AttackMinRange = 1,
-                Damage = 6,
+                Attacks = new List<AttackFunctionType>
+                {
+                    new()
+                    {
+                        Name = "Melee",
+                        ThumbnailUrl = null,
+                        MinDamage = 4,
+                        MaxDamage = 6,
+                        AttackMaxRange = 1,
+                        AttackMinRange = 1,
+                        StayOnly = false,
+                        CounterattackAllowed = true,
+                        CounterattackPenaltyPercentage = 50,
+                        RangePenalty = false,
+                        RangePenaltyZonesCount = 0,
+                    },
+                },
                 Health = 10,
                 BattleImgUrl =
                     "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
                 DashboardImgUrl =
                     "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp"
+            });
+            var archerTypeId = Guid.NewGuid();
+            await UnitTypesRepository.CreateUnitType(archerTypeId, new UnitTypeProperties
+            {
+                Name = "Archer",
+                Speed = 4,
+                Attacks = new List<AttackFunctionType>
+                {
+                    new()
+                    {
+                        Name = "Range",
+                        ThumbnailUrl = null,
+                        MinDamage = 1,
+                        MaxDamage = 5,
+                        AttackMaxRange = 7,
+                        AttackMinRange = 3,
+                        StayOnly = true,
+                        CounterattackAllowed = false,
+                        CounterattackPenaltyPercentage = 0,
+                        RangePenalty = true,
+                        RangePenaltyZonesCount = 1,
+                    },
+                    new()
+                    {
+                        Name = "Melee",
+                        ThumbnailUrl = null,
+                        MinDamage = 1,
+                        MaxDamage = 2,
+                        AttackMaxRange = 1,
+                        AttackMinRange = 1,
+                        StayOnly = false,
+                        CounterattackAllowed = true,
+                        CounterattackPenaltyPercentage = 50,
+                        RangePenalty = false,
+                        RangePenaltyZonesCount = 0,
+                    },
+                },
+                Health = 7,
+                BattleImgUrl =
+                    "https://pbs.twimg.com/media/FkWlZU0XkAEUFdN.png",
+                DashboardImgUrl =
+                    "https://pbs.twimg.com/media/FkWlZU0XkAEUFdN.png"
             });
 
             var computerUser = await UsersService.CreateComputerUser();
@@ -93,7 +151,8 @@ namespace Epic.Server
             await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
                 new[] { unitTypeId }, new[] { 10 }, "Reward!");
 
-            await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 30, userPlayerId, userPlayer.ArmyContainerId, true, 1);
+            await PlayerUnitsRepository.CreatePlayerUnit(unitTypeId, 30, userPlayerId, userPlayer.ArmyContainerId, true, 0);
+            await PlayerUnitsRepository.CreatePlayerUnit(archerTypeId, 20, userPlayerId, userPlayer.ArmyContainerId, true, 1);
         }
 
         private class SessionData : ISessionData
@@ -106,18 +165,6 @@ namespace Epic.Server
             public string DeviceInfo { get; } = null;
             public string IpAddress { get; } = null;
             public string UserAgent { get; } = null;
-        }
-
-        private class UnitTypeProperties : IUnitTypeProperties
-        {
-            public int Speed { get; set; }
-            public int AttackMaxRange { get; set; }
-            public int AttackMinRange { get; set; }
-            public int Damage { get; set; }
-            public int Health { get; set; }
-            public string Name { get; set; }
-            public string BattleImgUrl { get; set; }
-            public string DashboardImgUrl { get; set; }
         }
     }
 }

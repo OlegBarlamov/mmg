@@ -50,14 +50,14 @@ namespace Epic.Core.Services.Battles
         public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromPlayerUnits(IReadOnlyCollection<IPlayerUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId)
         {
             var userUnitsById = playerUnits.ToDictionary(u => u.Id, u => u);
-            var entities = playerUnits.Select(u => BattleUnitEntity.FromUserUnit(u, battleId, playerNumber))
+            var entities = playerUnits.Select(u => BattleUnitEntityFields.FromUserUnit(u, battleId, playerNumber))
                 .ToArray<IBattleUnitEntityFields>();
 
             var createdInstances = await BattleUnitsRepository.CreateBatch(entities);
             var createdBattleUnits = createdInstances.Select(MutableBattleUnitObject.FromEntity).ToArray();
             createdBattleUnits.ForEach(u =>
             {
-                u.PlayerUnit = MutablePlayerUnitObject.CopyFrom(userUnitsById[u.UserUnitId]);
+                u.PlayerUnit = MutablePlayerUnitObject.CopyFrom(userUnitsById[u.PlayerUnitId]);
             });
 
             return createdBattleUnits;
@@ -72,20 +72,20 @@ namespace Epic.Core.Services.Battles
         private async Task<IReadOnlyCollection<MutableBattleUnitObject>> FillBattleUnitObjects(
             IReadOnlyCollection<MutableBattleUnitObject> battleUnitObjects)
         {
-            var userUnitIds = battleUnitObjects.Select(x => x.UserUnitId).ToArray();
+            var userUnitIds = battleUnitObjects.Select(x => x.PlayerUnitId).ToArray();
       
             var userUnits = await PlayerUnitsService.GetUnitsByIds(userUnitIds);
             var userUnitsById = userUnits.ToDictionary(u => u.Id, u => u);
             var validUnits = new List<MutableBattleUnitObject>();
             foreach (var battleUnitObject in battleUnitObjects)
             {
-                if (userUnitsById.TryGetValue(battleUnitObject.UserUnitId, out var userUnit))
-                    battleUnitObject.PlayerUnit = MutablePlayerUnitObject.CopyFrom(userUnit);
+                if (userUnitsById.TryGetValue(battleUnitObject.PlayerUnitId, out var playerUnitObject))
+                    battleUnitObject.PlayerUnit = MutablePlayerUnitObject.CopyFrom(playerUnitObject);
               
                 if (IsValid(battleUnitObject))
                     validUnits.Add(battleUnitObject);
                 else
-                    Logger.LogError($"Invalid User Unit: {battleUnitObject.UserUnitId}");
+                    Logger.LogError($"Invalid User Unit: {battleUnitObject.PlayerUnitId}");
             }
 
             return validUnits;

@@ -9,7 +9,7 @@ namespace Epic.Data.UnitTypes
         Task<IUnitTypeEntity> GetById(Guid id);
         Task<IReadOnlyCollection<IUnitTypeEntity>> FetchByIds(IEnumerable<Guid> ids);
 
-        Task<IUnitTypeEntity> CreateUnitType(Guid id, IUnitTypeProperties properties);
+        Task<IUnitTypeEntity> CreateUnitType(Guid id, UnitTypeProperties properties);
         Task<IUnitTypeEntity[]> GetAll();
     }
 }

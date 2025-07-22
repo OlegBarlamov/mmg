@@ -30,20 +30,9 @@ namespace Epic.Data.UnitTypes
             return Task.FromResult<IReadOnlyCollection<IUnitTypeEntity>>(unitTypes);
         }
 
-        public Task<IUnitTypeEntity> CreateUnitType(Guid id, IUnitTypeProperties properties)
+        public Task<IUnitTypeEntity> CreateUnitType(Guid id, UnitTypeProperties properties)
         {
-            var entity = new UnitTypeEntity
-            {
-                Id = id,
-                Name = properties.Name,
-                Speed = properties.Speed,
-                AttackMaxRange = properties.AttackMaxRange,
-                AttackMinRange = properties.AttackMinRange,
-                Damage = properties.Damage,
-                Health = properties.Health,
-                BattleImgUrl = properties.BattleImgUrl,
-                DashboardImgUrl = properties.DashboardImgUrl,
-            };
+            var entity = UnitTypeEntity.FromProperties(id, properties);
             
             _unitTypes.Add(entity);
             

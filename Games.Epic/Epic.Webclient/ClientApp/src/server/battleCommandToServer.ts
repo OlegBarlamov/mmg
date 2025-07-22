@@ -25,6 +25,7 @@ interface UnitAttackCommandToServer extends UnitCommandToServer {
     command: 'UNIT_ATTACK'
     targetId: string
     moveToCell: IHexoPoint
+    attackIndex: number
 }
 
 export type BattleCommandToServer = UnitMoveCommandToServer | UnitAttackCommandToServer | ClientConnectedCommandToServer

@@ -1,7 +1,5 @@
 using System;
-using Epic.Core;
 using Epic.Core.Logic;
-using Epic.Core.Services;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Players;
@@ -22,6 +20,7 @@ namespace Epic.Logic
         public IDaysProcessor DaysProcessor { get; }
         public IPlayersService PlayersService { get; }
         public ILoggerFactory LoggerFactory { get; }
+        public IRandomProvider RandomProvider { get; }
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
@@ -30,7 +29,8 @@ namespace Epic.Logic
             [NotNull] IRewardsService rewardsService,
             [NotNull] IDaysProcessor daysProcessor,
             [NotNull] IPlayersService playersService,
-            [NotNull] ILoggerFactory loggerFactory)
+            [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] IRandomProvider randomProvider)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
@@ -39,6 +39,7 @@ namespace Epic.Logic
             DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
         }
         
         public IBattleLogic Create(MutableBattleObject battleObject, IBattleMessageBroadcaster broadcaster)
@@ -51,7 +52,8 @@ namespace Epic.Logic
                 broadcaster,
                 DaysProcessor,
                 PlayersService,
-                LoggerFactory.CreateLogger<BattleLogic>());
+                LoggerFactory.CreateLogger<BattleLogic>(),
+                RandomProvider);
         }
     }
 }

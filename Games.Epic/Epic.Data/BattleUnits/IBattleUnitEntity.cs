@@ -1,5 +1,4 @@
 using System;
-using Epic.Data.UnitTypes;
 
 namespace Epic.Data.BattleUnits
 {
@@ -8,7 +7,7 @@ namespace Epic.Data.BattleUnits
         Guid Id { get; }
     }
 
-    public interface IBattleUnitEntityFields : IUnitProps
+    public interface IBattleUnitEntityFields
     {
         Guid BattleId { get; }
         Guid PlayerUnitId { get; }
@@ -31,11 +30,6 @@ namespace Epic.Data.BattleUnits
         public int PlayerIndex { get; set; }
         
         public int CurrentHealth { get; set; }
-        public int Speed { get; set; }
-        public int AttackMaxRange { get; set; }
-        public int AttackMinRange { get; set; }
-        public int Damage { get; set; }
-        public int Health { get; set; }
 
         public BattleUnitEntity(IBattleUnitEntityFields fields)
         {
@@ -50,11 +44,6 @@ namespace Epic.Data.BattleUnits
             PlayerIndex = fields.PlayerIndex;
             PlayerUnitId = fields.PlayerUnitId;
             CurrentHealth = fields.CurrentHealth;
-            Speed = fields.Speed;
-            AttackMaxRange = fields.AttackMaxRange;
-            AttackMinRange = fields.AttackMinRange;
-            Damage = fields.Damage;
-            Health = fields.Health;
         }
     }
 }

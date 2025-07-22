@@ -31,6 +31,7 @@ namespace Epic.Logic
         private IDaysProcessor DaysProcessor { get; }
         private IPlayersService PlayersService { get; }
         private ILogger<BattleLogic> Logger { get; }
+        public IRandomProvider RandomProvider { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
@@ -50,7 +51,8 @@ namespace Epic.Logic
             [NotNull] IBattleMessageBroadcaster broadcaster,
             [NotNull] IDaysProcessor daysProcessor,
             [NotNull] IPlayersService playersService,
-            [NotNull] ILogger<BattleLogic> logger)
+            [NotNull] ILogger<BattleLogic> logger,
+            [NotNull] IRandomProvider randomProvider)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -61,6 +63,7 @@ namespace Epic.Logic
             DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
             _sortedBattleUnitObjects.Sort((x, y) => x.PlayerUnit.UnitType.Speed.CompareTo(y.PlayerUnit.UnitType.Speed));
@@ -244,6 +247,16 @@ namespace Epic.Logic
             if (command.TurnIndex != _expectedTurn?.TurnIndex || (int)command.Player != _expectedTurn?.PlayerIndex)
                 throw new BattleLogicException("Wrong turn index or player index");
 
+            var availableAttacks = targetActor.PlayerUnit.UnitType.Attacks; 
+            if (command.AttackIndex < 0 || command.AttackIndex >= availableAttacks.Count)
+                throw new BattleLogicException($"Wrong Attack Type index {command.AttackIndex}");
+            var attackFunction = availableAttacks[command.AttackIndex];
+            if (attackFunction.StayOnly && command.MoveToCell != new HexoPoint(targetActor.Column, targetActor.Row))
+                throw new BattleLogicException($"The target Attack Type {attackFunction.Name} does not allow moving");
+            var range = OddRHexoGrid.Distance(command.MoveToCell.R, command.MoveToCell.C, targetTarget.Row, targetTarget.Column);
+            if (range < attackFunction.AttackMinRange || range > attackFunction.AttackMaxRange)
+                throw new BattleLogicException($"The target is out of range for attack");
+                
             var mutableActor = targetActor;
             mutableActor.Column = command.MoveToCell.C;
             mutableActor.Row = command.MoveToCell.R;
@@ -262,7 +275,14 @@ namespace Epic.Logic
                 new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.ActorId, command.TargetId)
                 );
             
-            var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(targetActor, targetTarget);
+            var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
+                targetActor, 
+                targetTarget,
+                attackFunction,
+                range,
+                false,
+                RandomProvider.Random);
+            
             targetTarget.PlayerUnit.Count = unitTakesDamageData.RemainingCount;
             targetTarget.PlayerUnit.IsAlive = targetTarget.PlayerUnit.Count > 0;
 

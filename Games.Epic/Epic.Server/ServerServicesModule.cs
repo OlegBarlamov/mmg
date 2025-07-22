@@ -1,7 +1,7 @@
+using System;
 using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
-using Epic.Core.Services;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
@@ -34,6 +34,8 @@ namespace Epic.Server
     {
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
+            serviceRegistrator.RegisterInstance<IRandomProvider>(new FixedRandomProvider(new Random(0)));
+            
             serviceRegistrator.RegisterType<IConsoleController, LoggerConsoleMessagesViewer>();
             
             serviceRegistrator.RegisterType<ISessionsService, DefaultSessionService>();

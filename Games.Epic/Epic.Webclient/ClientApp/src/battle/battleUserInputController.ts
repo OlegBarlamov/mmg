@@ -46,6 +46,7 @@ export class BattleUserInputController {
                         actor: originalUnit,
                         moveToCell: closestCell,
                         attackTarget: target.target,
+                        attackTypeIndex: target.attackType.index,
                     })
                 }
             }

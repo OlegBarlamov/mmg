@@ -14,23 +14,28 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
     const possibleTargets = map.units.filter(x => x.player !== unit.player)
     const result: IAttackTarget[] = []
 
-    for (const target of possibleTargets) {
-        const cellsToAttachFrom: BattleMapCell[] = []
+    for (let i = 0; i < unit.currentProps.attacks.length; i++) {
+        const attackType = unit.currentProps.attacks[i]
+        for (const target of possibleTargets) {
+            const cellsToAttackFrom: BattleMapCell[] = []
 
-        for (const cell of reachableCells) {
-            const targetPosition = map.grid.getCell(target.position.r, target.position.c)
-            const distance = map.grid.getDistance(targetPosition, cell)
-            if (distance <= unit.currentProps.attackMaxRange && distance >= unit.currentProps.attackMinRange) {
-                cellsToAttachFrom.push(cell)
+            const potentialCellsToAttackFrom = attackType.stayOnly ? [unit.position] : reachableCells
+            for (const cell of potentialCellsToAttackFrom) {
+                const targetPosition = map.grid.getCell(target.position.r, target.position.c)
+                const distance = map.grid.getDistance(targetPosition, cell)
+                if (distance <= attackType.attackMaxRange && distance >= attackType.attackMinRange) {
+                    cellsToAttackFrom.push(cell)
+                }
             }
-        }
 
-        if (cellsToAttachFrom.length > 0) {
-            result.push({
-                target,
-                actor: unit,
-                cells: cellsToAttachFrom,
-            })
+            if (cellsToAttackFrom.length > 0) {
+                result.push({
+                    target,
+                    actor: unit,
+                    cells: cellsToAttackFrom,
+                    attackType: { ...attackType, index: i },
+                })
+            }
         }
     }
 

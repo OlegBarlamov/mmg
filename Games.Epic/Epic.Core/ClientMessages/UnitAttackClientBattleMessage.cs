@@ -9,5 +9,6 @@ namespace Epic.Core.ClientMessages
         public string ActorId { get; set; }
         public string TargetId { get; set; }
         public HexoPoint MoveToCell { get; set; }
+        public int AttackIndex { get; set; }
     }
 }

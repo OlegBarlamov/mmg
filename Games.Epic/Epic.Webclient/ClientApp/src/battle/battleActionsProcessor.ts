@@ -47,6 +47,7 @@ export class BattleActionsProcessor implements IBattleActionsProcessor {
                     commandId: getRandomStringKey(10),
                     player: action.player,
                     moveToCell: action.moveToCell,
+                    attackIndex: action.attackTypeIndex,
                     turnIndex: this.mapController.map.turnInfo.index,
                 })
         } else {
