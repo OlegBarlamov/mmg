@@ -5,6 +5,11 @@ namespace Epic.Logic
 {
     public class OddRHexoGrid
     {
+        public static int Distance(IBattlePositioned p1, IBattlePositioned p2)
+        {
+            return Distance(p1.Row, p1.Column, p2.Row, p2.Column);
+        }
+        
         public static int Distance(HexoPoint p1, HexoPoint p2)
         {
             return Distance(p1.R, p1.C, p2.R, p2.C);

@@ -2,7 +2,7 @@ using System;
 
 namespace Epic.Core
 {
-    public struct HexoPoint : IEquatable<HexoPoint>
+    public struct HexoPoint : IEquatable<HexoPoint>, IBattlePositioned
     {
         public int C { get; set; }
         public int R { get; set; }
@@ -37,5 +37,9 @@ namespace Epic.Core
         {
             return !left.Equals(right);
         }
+
+        int IBattlePositioned.Column => C;
+
+        int IBattlePositioned.Row => R;
     }
 }

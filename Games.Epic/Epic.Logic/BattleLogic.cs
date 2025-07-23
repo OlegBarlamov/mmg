@@ -66,7 +66,7 @@ namespace Epic.Logic
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
-            _sortedBattleUnitObjects.Sort((x, y) => x.PlayerUnit.UnitType.Speed.CompareTo(y.PlayerUnit.UnitType.Speed));
+            _sortedBattleUnitObjects.Sort((x, y) => y.PlayerUnit.UnitType.Speed.CompareTo(x.PlayerUnit.UnitType.Speed));
         }
         
         public void Dispose()
@@ -253,9 +253,13 @@ namespace Epic.Logic
             var attackFunction = availableAttacks[command.AttackIndex];
             if (attackFunction.StayOnly && command.MoveToCell != new HexoPoint(targetActor.Column, targetActor.Row))
                 throw new BattleLogicException($"The target Attack Type {attackFunction.Name} does not allow moving");
-            var range = OddRHexoGrid.Distance(command.MoveToCell.R, command.MoveToCell.C, targetTarget.Row, targetTarget.Column);
+            var range = OddRHexoGrid.Distance(command.MoveToCell, targetTarget);
             if (range < attackFunction.AttackMinRange || range > attackFunction.AttackMaxRange)
-                throw new BattleLogicException($"The target is out of range for attack");
+                throw new BattleLogicException("The target is out of range for attack");
+            if (attackFunction.EnemyInRangeDisablesAttack > 0 && Utils.IsEnemyInRange(targetActor, attackFunction.EnemyInRangeDisablesAttack,
+                    _sortedBattleUnitObjects))
+                throw new BattleLogicException($"The attack is blocked by an enemy in range {attackFunction.EnemyInRangeDisablesAttack}");
+                
                 
             var mutableActor = targetActor;
             mutableActor.Column = command.MoveToCell.C;

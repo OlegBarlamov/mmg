@@ -169,6 +169,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     rangePenaltyZonesCount: 0,
                     minDamage: 1,
                     maxDamage: 1,
+                    enemyInRangeDisablesAttack: 0,
                 }
             ]
         }]

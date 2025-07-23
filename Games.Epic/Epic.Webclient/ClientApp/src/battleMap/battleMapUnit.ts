@@ -34,6 +34,7 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
                 rangePenaltyZonesCount: 0,
                 minDamage: 1,
                 maxDamage: 1,
+                enemyInRangeDisablesAttack: 0,
             }
         ]
     }

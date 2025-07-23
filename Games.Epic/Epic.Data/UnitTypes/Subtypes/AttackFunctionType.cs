@@ -14,6 +14,7 @@ namespace Epic.Data.UnitTypes.Subtypes
          * 1 - splits the range in two and applies 50% penalty for the furthest zone
          */
         int RangePenaltyZonesCount { get; }
+        int EnemyInRangeDisablesAttack { get; }
         int MinDamage { get; }
         int MaxDamage { get; }
     } 
@@ -29,6 +30,7 @@ namespace Epic.Data.UnitTypes.Subtypes
         public int CounterattackPenaltyPercentage { get; set; }
         public bool RangePenalty { get; set; }
         public int RangePenaltyZonesCount { get; set; }
+        public int EnemyInRangeDisablesAttack { get; set; }
         public int MinDamage { get; set; }
         public int MaxDamage { get; set; }
     }

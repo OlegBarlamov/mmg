@@ -5,7 +5,7 @@ using Epic.Data.BattleUnits;
 
 namespace Epic.Core.Services.Battles
 {
-    public interface IBattleUnitObject : IGameObject<IBattleUnitEntity>
+    public interface IBattleUnitObject : IGameObject<IBattleUnitEntity>, IBattlePositioned
     {
         Guid Id { get; }
         Guid BattleId { get; }

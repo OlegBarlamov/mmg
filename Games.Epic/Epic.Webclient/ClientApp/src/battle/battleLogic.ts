@@ -16,6 +16,16 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
 
     for (let i = 0; i < unit.currentProps.attacks.length; i++) {
         const attackType = unit.currentProps.attacks[i]
+        if (attackType.enemyInRangeDisablesAttack > 0) {
+            const enemyInRange = map.units.some(x => 
+                x.player !== unit.player &&
+                x.isAlive &&
+                map.grid.getDistance(unit.position, x.position) <= attackType.enemyInRangeDisablesAttack)
+            if (enemyInRange) {
+                continue
+            }
+        }
+
         for (const target of possibleTargets) {
             const cellsToAttackFrom: BattleMapCell[] = []
 

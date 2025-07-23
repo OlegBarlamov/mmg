@@ -7,14 +7,15 @@ export type UnitProperties = {
 
 export type AttackType = {
     name: string
-    thumbnailUrl: string,
-    attackMaxRange: number;
-    attackMinRange: number;
-    stayOnly: boolean;
-    counterattackAllowed: boolean;
-    counterattackPenaltyPercentage: number;
-    rangePenalty: boolean;
-    rangePenaltyZonesCount: number;
-    minDamage: number;
-    maxDamage: number;
+    thumbnailUrl: string
+    attackMaxRange: number
+    attackMinRange: number
+    stayOnly: boolean
+    counterattackAllowed: boolean
+    counterattackPenaltyPercentage: number
+    rangePenalty: boolean
+    rangePenaltyZonesCount: number
+    minDamage: number
+    maxDamage: number
+    enemyInRangeDisablesAttack: number
 }

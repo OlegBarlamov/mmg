@@ -10,6 +10,7 @@ using Epic.Data.PlayerUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Data.UnitTypes.Subtypes;
+using Epic.Data.UnitTypes.Subtypes.Presets;
 using Epic.Server.Authentication;
 using FrameworkSDK;
 using JetBrains.Annotations;
@@ -63,25 +64,16 @@ namespace Epic.Server
             await UnitTypesRepository.CreateUnitType(unitTypeId, new UnitTypeProperties
             {
                 Name = "Unit",
+                Health = 10,
                 Speed = 5,
                 Attacks = new List<AttackFunctionType>
                 {
-                    new()
+                    new MeleeAttackType
                     {
-                        Name = "Melee",
-                        ThumbnailUrl = null,
                         MinDamage = 4,
                         MaxDamage = 6,
-                        AttackMaxRange = 1,
-                        AttackMinRange = 1,
-                        StayOnly = false,
-                        CounterattackAllowed = true,
-                        CounterattackPenaltyPercentage = 50,
-                        RangePenalty = false,
-                        RangePenaltyZonesCount = 0,
                     },
                 },
-                Health = 10,
                 BattleImgUrl =
                     "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
                 DashboardImgUrl =
@@ -91,39 +83,23 @@ namespace Epic.Server
             await UnitTypesRepository.CreateUnitType(archerTypeId, new UnitTypeProperties
             {
                 Name = "Archer",
+                Health = 7,
                 Speed = 4,
                 Attacks = new List<AttackFunctionType>
                 {
-                    new()
+                    new RangeAttackType
                     {
-                        Name = "Range",
-                        ThumbnailUrl = null,
                         MinDamage = 1,
                         MaxDamage = 5,
                         AttackMaxRange = 7,
                         AttackMinRange = 3,
-                        StayOnly = true,
-                        CounterattackAllowed = false,
-                        CounterattackPenaltyPercentage = 0,
-                        RangePenalty = true,
-                        RangePenaltyZonesCount = 1,
                     },
-                    new()
+                    new MeleeAttackType
                     {
-                        Name = "Melee",
-                        ThumbnailUrl = null,
                         MinDamage = 1,
                         MaxDamage = 2,
-                        AttackMaxRange = 1,
-                        AttackMinRange = 1,
-                        StayOnly = false,
-                        CounterattackAllowed = true,
-                        CounterattackPenaltyPercentage = 50,
-                        RangePenalty = false,
-                        RangePenaltyZonesCount = 0,
                     },
                 },
-                Health = 7,
                 BattleImgUrl =
                     "https://pbs.twimg.com/media/FkWlZU0XkAEUFdN.png",
                 DashboardImgUrl =
