@@ -59,20 +59,6 @@ namespace Epic.Core.Services.Players
             return await FromEntity(entity, supplyContainer);
         }
 
-        public Task<IPlayerObject> CreateComputerPlayer(IUserObject user, Guid humanPlayerId)
-        {
-            if (!user.IsSystem) 
-                throw new InvalidOperationException("Computer player can only be created on system users.");
-
-            return CreatePlayer(user.Id, $"npc_for_{humanPlayerId}", PlayerObjectType.Computer);
-        }
-
-        public async Task<IPlayerObject> GetComputerPlayer(Guid humanPlayerId)
-        {
-            var playerEntity = await PlayersRepository.GetByName($"npc_for_{humanPlayerId}");
-            return await FromEntity(playerEntity);
-        }
-
         public async Task<IPlayerObject> GetById(Guid playerId)
         {
             var playerEntity = await PlayersRepository.GetById(playerId);

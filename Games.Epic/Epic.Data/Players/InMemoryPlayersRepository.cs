@@ -20,11 +20,6 @@ namespace Epic.Data.Players
             return Task.FromResult<IPlayerEntity>(player);
         }
 
-        public Task<IPlayerEntity> GetByName(string name)
-        {
-            return Task.FromResult<IPlayerEntity>(_playerEntities.First(x => x.Name == name));
-        }
-
         public Task<IPlayerEntity[]> GetByUserId(Guid userId)
         {
             var players = _playerEntities.Where(x => x.UserId == userId);
