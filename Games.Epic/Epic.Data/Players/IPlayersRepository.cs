@@ -13,5 +13,6 @@ namespace Epic.Data.Players
         Task SetDefeated(Guid[] playerIds);
         Task DayIncrement(Guid[] playerIds);
         Task SetGenerationInProgress(Guid[] playerIds, bool isGenerationInProgress);
+        Task SetActiveHero(Guid playerId, Guid heroId);
     }
 }

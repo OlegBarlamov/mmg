@@ -16,14 +16,14 @@ namespace Epic.Core.Services.Battles
     public partial class DefaultBattleUnitsService : IBattleUnitsService
     {
         public IBattleUnitsRepository BattleUnitsRepository { get; }
-        public IPlayerUnitsService PlayerUnitsService { get; }
+        public IGlobalUnitsService PlayerUnitsService { get; }
         public IBattlesCacheService CacheService { get; }
 
         private ILogger<DefaultBattleUnitsService> Logger { get; }
 
         public DefaultBattleUnitsService(
             [NotNull] IBattleUnitsRepository battleUnitsRepository,
-            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IGlobalUnitsService playerUnitsService,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IBattlesCacheService cacheService)
         {
@@ -44,10 +44,10 @@ namespace Epic.Core.Services.Battles
 
         public Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
         {
-            return CreateUnitsFromPlayerUnits(battleDefinition.Units, InBattlePlayerNumber.Player2, battleId);
+            return CreateBattleUnitsFromGlobalUnits(battleDefinition.Units, InBattlePlayerNumber.Player2, battleId);
         }
 
-        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromPlayerUnits(IReadOnlyCollection<IPlayerUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId)
+        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(IReadOnlyCollection<IGlobalUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId)
         {
             var userUnitsById = playerUnits.ToDictionary(u => u.Id, u => u);
             var entities = playerUnits.Select(u => BattleUnitEntityFields.FromUserUnit(u, battleId, playerNumber))
@@ -57,7 +57,7 @@ namespace Epic.Core.Services.Battles
             var createdBattleUnits = createdInstances.Select(MutableBattleUnitObject.FromEntity).ToArray();
             createdBattleUnits.ForEach(u =>
             {
-                u.PlayerUnit = MutablePlayerUnitObject.CopyFrom(userUnitsById[u.PlayerUnitId]);
+                u.GlobalUnit = MutableGlobalUnitObject.CopyFrom(userUnitsById[u.PlayerUnitId]);
             });
 
             return createdBattleUnits;
@@ -80,7 +80,7 @@ namespace Epic.Core.Services.Battles
             foreach (var battleUnitObject in battleUnitObjects)
             {
                 if (userUnitsById.TryGetValue(battleUnitObject.PlayerUnitId, out var playerUnitObject))
-                    battleUnitObject.PlayerUnit = MutablePlayerUnitObject.CopyFrom(playerUnitObject);
+                    battleUnitObject.GlobalUnit = MutableGlobalUnitObject.CopyFrom(playerUnitObject);
               
                 if (IsValid(battleUnitObject))
                     validUnits.Add(battleUnitObject);
@@ -93,7 +93,7 @@ namespace Epic.Core.Services.Battles
 
         private bool IsValid(IBattleUnitObject battleUnitObject)
         {
-            return battleUnitObject.PlayerUnit != null;
+            return battleUnitObject.GlobalUnit != null;
         }
     }
 }

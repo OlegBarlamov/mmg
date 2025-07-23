@@ -17,7 +17,7 @@ namespace Epic.Core.Services.Rewards
     {
         public IRewardsRepository RewardsRepository { get; }
         public IUnitTypesService UnitTypesService { get; }
-        public IPlayerUnitsService PlayerUnitsService { get; }
+        public IGlobalUnitsService GlobalUnitsService { get; }
         public IUnitsContainersService ContainersService { get; }
         public IPlayersService PlayersService { get; }
         public IContainersManipulator ContainersManipulator { get; }
@@ -25,14 +25,14 @@ namespace Epic.Core.Services.Rewards
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IUnitTypesService unitTypesService,
-            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IUnitsContainersService containersService,
             [NotNull] IPlayersService playersService,
             [NotNull] IContainersManipulator containersManipulator)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
-            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             ContainersService = containersService ?? throw new ArgumentNullException(nameof(containersService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             ContainersManipulator = containersManipulator ?? throw new ArgumentNullException(nameof(containersManipulator));
@@ -73,11 +73,12 @@ namespace Epic.Core.Services.Rewards
             var rewardObject = await ToRewardObject(rewardEntity);
 
             var unitTypes = rewardObject.GetUnitTypes();
-            var unitTypesAndAmounts = amounts.Select((count, i) => new CreatePlayerUnitData(playerId, unitTypes[i].Id, count)).ToArray();
-            var units = await PlayerUnitsService.CreateUnits(unitTypesAndAmounts);
+            var unitTypesAndAmounts = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
+            var units = await GlobalUnitsService.CreateUnits(unitTypesAndAmounts);
             var unitsArray = units.ToArray();
             
-            await ContainersManipulator.PlaceUnitsToContainer(player.ArmyContainerId, unitsArray);
+            // TODO use supply, if can not place
+            await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId, unitsArray);
             
             return new AcceptedRewardData
             {

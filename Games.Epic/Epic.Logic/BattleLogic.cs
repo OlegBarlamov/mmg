@@ -24,7 +24,7 @@ namespace Epic.Logic
     {
         private MutableBattleObject BattleObject { get; }
         private IBattleUnitsService BattleUnitsService { get; }
-        private IPlayerUnitsService PlayerUnitsService { get; }
+        private IGlobalUnitsService GlobalUnitsService { get; }
         private IBattlesService BattlesService { get; }
         private IRewardsService RewardsService { get; }
         private IBattleMessageBroadcaster Broadcaster { get; }
@@ -45,7 +45,7 @@ namespace Epic.Logic
         public BattleLogic(
             [NotNull] MutableBattleObject battleObject, 
             [NotNull] IBattleUnitsService battleUnitsService,
-            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IBattlesService battlesService,
             [NotNull] IRewardsService rewardsService,
             [NotNull] IBattleMessageBroadcaster broadcaster,
@@ -56,7 +56,7 @@ namespace Epic.Logic
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
-            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             Broadcaster = broadcaster ?? throw new ArgumentNullException(nameof(broadcaster));
@@ -66,7 +66,7 @@ namespace Epic.Logic
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
-            _sortedBattleUnitObjects.Sort((x, y) => y.PlayerUnit.UnitType.Speed.CompareTo(x.PlayerUnit.UnitType.Speed));
+            _sortedBattleUnitObjects.Sort((x, y) => y.GlobalUnit.UnitType.Speed.CompareTo(x.GlobalUnit.UnitType.Speed));
         }
         
         public void Dispose()
@@ -178,7 +178,7 @@ namespace Epic.Logic
             InBattlePlayerNumber? winner = null;
             foreach (var battleUnitObject in _sortedBattleUnitObjects)
             {
-                if (battleUnitObject.PlayerUnit.IsAlive)
+                if (battleUnitObject.GlobalUnit.IsAlive)
                 {
                     var player = (InBattlePlayerNumber)battleUnitObject.PlayerIndex;
                     noAliveUnits = false;
@@ -247,7 +247,7 @@ namespace Epic.Logic
             if (command.TurnIndex != _expectedTurn?.TurnIndex || (int)command.Player != _expectedTurn?.PlayerIndex)
                 throw new BattleLogicException("Wrong turn index or player index");
 
-            var availableAttacks = targetActor.PlayerUnit.UnitType.Attacks; 
+            var availableAttacks = targetActor.GlobalUnit.UnitType.Attacks; 
             if (command.AttackIndex < 0 || command.AttackIndex >= availableAttacks.Count)
                 throw new BattleLogicException($"Wrong Attack Type index {command.AttackIndex}");
             var attackFunction = availableAttacks[command.AttackIndex];
@@ -287,10 +287,10 @@ namespace Epic.Logic
                 false,
                 RandomProvider.Random);
             
-            targetTarget.PlayerUnit.Count = unitTakesDamageData.RemainingCount;
-            targetTarget.PlayerUnit.IsAlive = targetTarget.PlayerUnit.Count > 0;
+            targetTarget.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
+            targetTarget.GlobalUnit.IsAlive = targetTarget.GlobalUnit.Count > 0;
 
-            await PlayerUnitsService.UpdateUnits(new [] { targetTarget.PlayerUnit });
+            await GlobalUnitsService.UpdateUnits(new [] { targetTarget.GlobalUnit });
 
             targetTarget.CurrentHealth = unitTakesDamageData.RemainingHealth;
             
@@ -359,7 +359,7 @@ namespace Epic.Logic
                 int nextIndex = (lastTurnUnitIndex + i) % count;
                 var unit = _sortedBattleUnitObjects[nextIndex];
 
-                if (unit.PlayerUnit.IsAlive)
+                if (unit.GlobalUnit.IsAlive)
                 {
                     activeUnitIndex = nextIndex;
                     return unit;

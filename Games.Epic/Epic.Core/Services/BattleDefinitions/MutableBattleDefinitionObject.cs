@@ -15,7 +15,7 @@ namespace Epic.Core.Services.BattleDefinitions
         public bool IsFinished { get; set; }
         public Guid ContainerId { get; set; }
         public IUnitsContainerObject UnitsContainerObject { get; set; }
-        public IReadOnlyCollection<IPlayerUnitObject> Units { get; set; }
+        public IReadOnlyCollection<IGlobalUnitObject> Units { get; set; }
         public IReadOnlyCollection<Guid> RewardsIds { get; set; }
         public IReadOnlyCollection<IRewardObject> Rewards { get; set; }
 

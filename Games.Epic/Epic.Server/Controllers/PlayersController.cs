@@ -17,7 +17,9 @@ namespace Epic.Server.Controllers
         public IPlayersService PlayersService { get; }
         public ISessionsService SessionsService { get; }
 
-        public PlayersController([NotNull] IPlayersService playersService, [NotNull] ISessionsService sessionsService)
+        public PlayersController(
+            [NotNull] IPlayersService playersService, 
+            [NotNull] ISessionsService sessionsService)
         {
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             SessionsService = sessionsService ?? throw new ArgumentNullException(nameof(sessionsService));
@@ -28,14 +30,14 @@ namespace Epic.Server.Controllers
         {
             var userId = User.GetId();
             var players = await PlayersService.GetAllByUserId(userId);
-            return Ok(players.Select(x => new PlayerResource(x)));
+            return Ok(players.Select(x => new PlayerResource(x, x.ActiveHero.IsKilled, x.ActiveHero.ArmyContainerId)));
         }
 
         [HttpGet("{playerId}")]
         public async Task<IActionResult> GetPlayer(Guid playerId)
         {
             var player = await PlayersService.GetByIdAndUserId(User.GetId(), playerId);
-            return Ok(new PlayerResource(player));
+            return Ok(new PlayerResource(player, player.ActiveHero.IsKilled, player.ActiveHero.ArmyContainerId));
         }
 
         [HttpPost("{playerId}")]

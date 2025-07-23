@@ -11,7 +11,7 @@ namespace Epic.Core.Services.Battles
     {
         Task<IReadOnlyCollection<IBattleUnitObject>> GetBattleUnits(Guid battleId);
         Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId);
-        Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromPlayerUnits(IReadOnlyCollection<IPlayerUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId);
+        Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(IReadOnlyCollection<IGlobalUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId);
         Task UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnit);
     }
 }

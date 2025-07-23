@@ -10,6 +10,9 @@ namespace Epic.Data.UnitsContainers
     [UsedImplicitly]
     public class InMemoryUnitsContainerRepository : IUnitsContainerRepository
     {
+        public string Name => nameof(InMemoryUnitsContainerRepository);
+        public string EntityName => "UnitsContainer";
+        
         private readonly List<IUnitsContainerEntity> _unitsContainers = new List<IUnitsContainerEntity>();
         
         public Task<IUnitsContainerEntity> GetById(Guid id)

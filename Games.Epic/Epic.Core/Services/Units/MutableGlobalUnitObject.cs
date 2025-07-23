@@ -4,60 +4,56 @@ using Epic.Data.PlayerUnits;
 
 namespace Epic.Core.Services.Units
 {
-    public class MutablePlayerUnitObject : IPlayerUnitObject
+    public class MutableGlobalUnitObject : IGlobalUnitObject
     {
         public Guid Id { get; set; }
         public IUnitTypeObject UnitType { get; set; }
         public Guid UnitTypeId { get; set; }
         public int Count { get; set; }
-        public Guid PlayerId { get; set; }
         public bool IsAlive { get; set; }
         public Guid ContainerId { get; set; }
         public int ContainerSlotIndex { get; set; }
 
 
-        private MutablePlayerUnitObject()
+        private MutableGlobalUnitObject()
         {
             
         }
         
-        public static MutablePlayerUnitObject CopyFrom(IPlayerUnitObject x)
+        public static MutableGlobalUnitObject CopyFrom(IGlobalUnitObject x)
         {
-            return new MutablePlayerUnitObject
+            return new MutableGlobalUnitObject
             {
                 Id = x.Id,
                 UnitType = x.UnitType,
                 UnitTypeId = x.UnitType.Id,
                 Count = x.Count,
-                PlayerId = x.PlayerId,
                 IsAlive = x.IsAlive,
                 ContainerId = x.ContainerId,
                 ContainerSlotIndex = x.ContainerSlotIndex,
             };
         }
 
-        public static MutablePlayerUnitObject FromEntity(IPlayerUnitEntity entity)
+        public static MutableGlobalUnitObject FromEntity(IGlobalUnitEntity entity)
         {
-            return new MutablePlayerUnitObject
+            return new MutableGlobalUnitObject
             {
                 Id = entity.Id,
                 Count = entity.Count,
                 IsAlive = entity.IsAlive,
-                PlayerId = entity.PlayerId,
                 UnitTypeId = entity.TypeId,
                 ContainerId = entity.ContainerId,
                 ContainerSlotIndex = entity.ContainerSlotIndex,
             };
         }
 
-        public IPlayerUnitEntity ToEntity()
+        public IGlobalUnitEntity ToEntity()
         {
-            return new PlayerUnitEntity
+            return new GlobalUnitEntity
             {
                 Id = Id,
                 TypeId = UnitType.Id,
                 Count = Count,
-                PlayerId = PlayerId,
                 IsAlive = IsAlive,
                 ContainerId = ContainerId,
                 ContainerSlotIndex = ContainerSlotIndex,

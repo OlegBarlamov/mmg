@@ -5,12 +5,11 @@ using Epic.Data.PlayerUnits;
 
 namespace Epic.Core.Services.Units
 {
-    public interface IPlayerUnitObject : IGameObject<IPlayerUnitEntity>
+    public interface IGlobalUnitObject : IGameObject<IGlobalUnitEntity>
     {
         Guid Id { get; }
         IUnitTypeObject UnitType { get; }
         int Count { get; }
-        Guid PlayerId { get; }
         bool IsAlive { get; }
         Guid ContainerId { get; }
         int ContainerSlotIndex { get; }

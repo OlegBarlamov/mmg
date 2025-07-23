@@ -18,18 +18,21 @@ namespace Epic.Server.Controllers
     [Route("api/units")]
     public class UserUnitsController : ControllerBase
     {
-        [NotNull] public IPlayerUnitsService PlayerUnitsService { get; }
+        [NotNull] public IGlobalUnitsService GlobalUnitsService { get; }
         public IPlayersService PlayersService { get; }
         public IContainersManipulator ContainersManipulator { get; }
+        public IUnitsContainersService UnitsContainersService { get; }
 
         public UserUnitsController(
-            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IPlayersService playersService,
-            [NotNull] IContainersManipulator containersManipulator)
+            [NotNull] IContainersManipulator containersManipulator,
+            [NotNull] IUnitsContainersService unitsContainersService)
         {
-            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             ContainersManipulator = containersManipulator ?? throw new ArgumentNullException(nameof(containersManipulator));
+            UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
         }
 
         [HttpGet("containers/{containerId}")]
@@ -61,8 +64,9 @@ namespace Epic.Server.Controllers
             if (!User.TryGetPlayerId(out var playerId))
                 return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
 
-            var targetUnit = await PlayerUnitsService.GetById(unitId);
-            if (targetUnit.PlayerId != playerId)
+            var targetUnit = await GlobalUnitsService.GetById(unitId);
+            var sourceContainer = await UnitsContainersService.GetById(targetUnit.ContainerId);
+            if (sourceContainer.OwnerPlayerId != playerId)
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
                     message = "You are not authorized to manipulate this unit."

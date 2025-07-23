@@ -9,13 +9,13 @@ namespace Epic.Core.Services.Battles
         public Guid Id { get; }
         public Guid BattleId { get; set; }
         public Guid PlayerUnitId { get; set; }
-        public MutablePlayerUnitObject PlayerUnit { get; set; }
+        public MutableGlobalUnitObject GlobalUnit { get; set; }
         public int Column { get; set; }
         public int Row { get; set; }
         public int PlayerIndex { get; set; }
         public int CurrentHealth { get; set; }
         
-        IPlayerUnitObject IBattleUnitObject.PlayerUnit => PlayerUnit;
+        IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
 
         private MutableBattleUnitObject(Guid id)
         {
@@ -39,7 +39,7 @@ namespace Epic.Core.Services.Battles
         {
             var entity = x.ToEntity();
             var battleUnitObject = FromEntity(entity);
-            battleUnitObject.PlayerUnit = MutablePlayerUnitObject.CopyFrom(x.PlayerUnit);
+            battleUnitObject.GlobalUnit = MutableGlobalUnitObject.CopyFrom(x.GlobalUnit);
             return battleUnitObject;
         }
 

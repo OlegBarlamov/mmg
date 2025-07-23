@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Epic.Core.Objects;
 using Epic.Core.Services.Users;
 
 namespace Epic.Core.Services.Players
@@ -16,5 +15,6 @@ namespace Epic.Core.Services.Players
         Task SetDefeated(Guid[] playerIds);
         Task DayIncrement(Guid[] playerIds);
         Task SetGenerationInProgress(Guid playerId, bool generationInProgress);
+        Task SetActiveHero(Guid playerId, Guid heroId);
     }
 }

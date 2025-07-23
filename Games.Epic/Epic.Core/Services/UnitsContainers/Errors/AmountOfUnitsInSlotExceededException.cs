@@ -4,7 +4,7 @@ namespace Epic.Core.Services.UnitsContainers.Errors
 {
     public class AmountOfUnitsInSlotExceededException : InvalidUnitSlotsOperationException
     {
-        public AmountOfUnitsInSlotExceededException(IPlayerUnitObject unit, int desiredAmount) : base(
+        public AmountOfUnitsInSlotExceededException(IGlobalUnitObject unit, int desiredAmount) : base(
             $"Unit {unit} amount is exceeded for {desiredAmount}")
         {
         }

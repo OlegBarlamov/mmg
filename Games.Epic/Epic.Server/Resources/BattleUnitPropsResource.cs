@@ -14,10 +14,10 @@ namespace Epic.Server.Resources
 
         public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps)
         {
-            BattleImgUrl = battleUnitObject.PlayerUnit.UnitType.BattleImgUrl;
-            Speed = battleUnitObject.PlayerUnit.UnitType.Speed;
-            Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.PlayerUnit.UnitType.Health;
-            Attacks = battleUnitObject.PlayerUnit.UnitType.Attacks;
+            BattleImgUrl = battleUnitObject.GlobalUnit.UnitType.BattleImgUrl;
+            Speed = battleUnitObject.GlobalUnit.UnitType.Speed;
+            Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.GlobalUnit.UnitType.Health;
+            Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks;
         }
     }
 }

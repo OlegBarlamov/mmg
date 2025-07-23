@@ -67,12 +67,11 @@ namespace Epic.Logic
             
             var battlesCount = await BattleDefinitionsService.GetBattlesCountForPlayer(playerId);
             var currentDay = player.Day;
-
-            var computerPlayer = await PlayersService.GetComputerPlayer(playerId);
+            
             await PlayersService.SetGenerationInProgress(playerId, true);
             try
             {
-                await BattlesGenerator.Generate(playerId, computerPlayer.Id, currentDay, battlesCount);
+                await BattlesGenerator.Generate(playerId, currentDay, battlesCount);
             }
             finally
             {

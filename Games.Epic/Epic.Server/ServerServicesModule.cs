@@ -6,6 +6,7 @@ using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
@@ -16,6 +17,8 @@ using Epic.Data;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Battles;
 using Epic.Data.BattleUnits;
+using Epic.Data.GlobalUnits;
+using Epic.Data.Heroes;
 using Epic.Data.Players;
 using Epic.Data.PlayerUnits;
 using Epic.Data.Reward;
@@ -41,7 +44,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<ISessionsService, DefaultSessionService>();
             serviceRegistrator.RegisterType<IUsersService, DefaultUsersService>();
             serviceRegistrator.RegisterType<IAuthorizationService, DefaultAuthorizationService>();
-            serviceRegistrator.RegisterType<IPlayerUnitsService, DefaultPlayerUnitsService>();
+            serviceRegistrator.RegisterType<IGlobalUnitsService, DefaultGlobalUnitsService>();
             serviceRegistrator.RegisterType<IUnitTypesService, DefaultUnitTypesService>();
             serviceRegistrator.RegisterType<IBattleDefinitionsService, DefaultBattleDefinitionsService>();
             serviceRegistrator.RegisterType<IBattleUnitsService, DefaultBattleUnitsService>();
@@ -58,10 +61,11 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             serviceRegistrator.RegisterType<IUnitsContainersService, DefaultUnitsContainerService>();
             serviceRegistrator.RegisterType<IContainersManipulator, DefaultContainersManipulator>();
+            serviceRegistrator.RegisterType<IHeroesService, DefaultHeroesService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();
-            serviceRegistrator.RegisterType<IPlayerUnitsRepository, InMemoryPlayerUnitsRepository>();
+            serviceRegistrator.RegisterType<IGlobalUnitsRepository, InMemoryGlobalUnitsRepository>();
             serviceRegistrator.RegisterType<IUnitTypesRepository, InMemoryUnitTypesRepository>();
             serviceRegistrator.RegisterType<IBattleDefinitionsRepository, InMemoryBattleDefinitionsRepository>();
             serviceRegistrator.RegisterType<IBattlesRepository, InMemoryBattlesRepository>();
@@ -69,6 +73,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IRewardsRepository, InMemoryRewardsRepository>();
             serviceRegistrator.RegisterType<IPlayersRepository, InMemoryPlayersRepository>();
             serviceRegistrator.RegisterType<IUnitsContainerRepository, InMemoryUnitsContainerRepository>();
+            serviceRegistrator.RegisterType<IHeroEntitiesRepository, InMemoryHeroEntitiesRepository>();
         }
     }
 }

@@ -34,31 +34,13 @@ namespace Epic.Data.Players
         public Task Update(IPlayerEntity entity)
         {
             var targetPlayer = _playerEntities.First(x => x.Id == entity.Id);
-            targetPlayer.Name = entity.Name;
-            targetPlayer.UserId = entity.UserId;
-            targetPlayer.IsDefeated = entity.IsDefeated;
-            targetPlayer.PlayerType = entity.PlayerType;
-            targetPlayer.Day = entity.Day;
-            targetPlayer.GenerationInProgress = entity.GenerationInProgress;
-            targetPlayer.ArmyContainerId = entity.ArmyContainerId;
-            targetPlayer.SupplyContainerId = entity.SupplyContainerId;
+            targetPlayer.UpdateFrom(entity);
             return Task.CompletedTask;
         }
 
         public Task<IPlayerEntity> Create(IPlayerEntityFields fields)
         {
-            var newPlayer = new MutablePlayerEntity
-            {
-                Id = Guid.NewGuid(),
-                Name = fields.Name,
-                UserId = fields.UserId,
-                IsDefeated = fields.IsDefeated,
-                PlayerType = fields.PlayerType,
-                Day = fields.Day,
-                GenerationInProgress = fields.GenerationInProgress,
-                ArmyContainerId = fields.ArmyContainerId,
-                SupplyContainerId = fields.SupplyContainerId,
-            };
+            var newPlayer = MutablePlayerEntity.FromFields(Guid.NewGuid(), fields);
             _playerEntities.Add(newPlayer);
             
             return Task.FromResult<IPlayerEntity>(newPlayer);
@@ -78,7 +60,14 @@ namespace Epic.Data.Players
 
         public Task SetGenerationInProgress(Guid[] playerIds, bool isGenerationInProgress)
         {
-            _playerEntities.Where(x => playerIds.Contains(x.Id)).ToList().ForEach(x => x.GenerationInProgress = x.GenerationInProgress);
+            _playerEntities.Where(x => playerIds.Contains(x.Id)).ToList().ForEach(x => x.GenerationInProgress = isGenerationInProgress);
+            return Task.CompletedTask;
+        }
+
+        public Task SetActiveHero(Guid playerId, Guid heroId)
+        {
+            var targetPlayer = _playerEntities.First(x => x.Id == playerId);
+            targetPlayer.ActiveHeroId = heroId;
             return Task.CompletedTask;
         }
     }

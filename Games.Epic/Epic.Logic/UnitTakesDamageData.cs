@@ -23,7 +23,7 @@ namespace Epic.Logic
                 throw new NotImplementedException();
             
             var randomDamage = random.Next(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1);
-            var damage = randomDamage * attacker.PlayerUnit.Count;
+            var damage = randomDamage * attacker.GlobalUnit.Count;
             if (attackFunctionType.RangePenalty)
             {
                 damage = ApplyRangePenalty(
@@ -35,20 +35,20 @@ namespace Epic.Logic
             }
 
             var finalHealth = target.CurrentHealth - damage;
-            var newCount = target.PlayerUnit.Count;
+            var newCount = target.GlobalUnit.Count;
             if (finalHealth < 0)
             {
-                var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / target.PlayerUnit.UnitType.Health) + 1;
-                finalHealth += killedUnits * target.PlayerUnit.UnitType.Health;
-                newCount = target.PlayerUnit.Count - killedUnits;
+                var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / target.GlobalUnit.UnitType.Health) + 1;
+                finalHealth += killedUnits * target.GlobalUnit.UnitType.Health;
+                newCount = target.GlobalUnit.Count - killedUnits;
 
                 if (newCount < 1)
                 {
                     return new UnitTakesDamageData
                     {
                         DamageTaken =
-                            target.PlayerUnit.Count * target.PlayerUnit.UnitType.Health + target.CurrentHealth,
-                        KilledCount = target.PlayerUnit.Count,
+                            target.GlobalUnit.Count * target.GlobalUnit.UnitType.Health + target.CurrentHealth,
+                        KilledCount = target.GlobalUnit.Count,
                         RemainingHealth = finalHealth,
                         RemainingCount = 0,
                     };
@@ -58,7 +58,7 @@ namespace Epic.Logic
             return new UnitTakesDamageData
             {
                 DamageTaken = damage,
-                KilledCount = target.PlayerUnit.Count - newCount,
+                KilledCount = target.GlobalUnit.Count - newCount,
                 RemainingHealth = finalHealth,
                 RemainingCount = newCount,
             };

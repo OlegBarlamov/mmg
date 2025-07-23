@@ -9,10 +9,7 @@ namespace Epic.Core.Services.Battles
     {
         Guid Id { get; }
         Guid BattleId { get; }
-        IPlayerUnitObject PlayerUnit { get; }
-        
-        int Column { get; }
-        int Row { get; }
+        IGlobalUnitObject GlobalUnit { get; }
         int PlayerIndex { get; }
         int CurrentHealth { get; }
     }

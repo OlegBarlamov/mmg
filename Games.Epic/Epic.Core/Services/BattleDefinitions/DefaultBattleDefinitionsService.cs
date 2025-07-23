@@ -13,16 +13,16 @@ namespace Epic.Core.Services.BattleDefinitions
     public class DefaultBattleDefinitionsService : IBattleDefinitionsService
     {
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
-        public IPlayerUnitsService PlayerUnitsService { get; }
+        public IGlobalUnitsService GlobalUnitsService { get; }
         public IUnitsContainersService UnitsContainersService { get; }
 
         public DefaultBattleDefinitionsService(
             [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
-            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IUnitsContainersService unitsContainersService)
         {
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
-            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
         }
 
@@ -66,7 +66,7 @@ namespace Epic.Core.Services.BattleDefinitions
         {
 
             battleDefinitionObject.Units =
-                await PlayerUnitsService.GetAliveUnitsByContainerId(battleDefinitionObject.ContainerId);
+                await GlobalUnitsService.GetAliveUnitsByContainerId(battleDefinitionObject.ContainerId);
             battleDefinitionObject.UnitsContainerObject = unitsContainerObject ??
                 await UnitsContainersService.GetById(battleDefinitionObject.ContainerId);
         }

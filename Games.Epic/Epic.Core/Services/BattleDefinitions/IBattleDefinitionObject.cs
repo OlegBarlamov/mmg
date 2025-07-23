@@ -23,6 +23,6 @@ namespace Epic.Core.Services.BattleDefinitions
         
         IReadOnlyCollection<IRewardObject> Rewards { get; }
 
-        IReadOnlyCollection<IPlayerUnitObject> Units { get; }
+        IReadOnlyCollection<IGlobalUnitObject> Units { get; }
     }
 }

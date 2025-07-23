@@ -11,13 +11,13 @@ namespace Epic.Server.Resources
         public int Count { get; }
         public int SlotIndex { get; }
         
-        public UserUnitInDashboardResource(IPlayerUnitObject playerUnit)
+        public UserUnitInDashboardResource(IGlobalUnitObject globalUnit)
         {
-            Id = playerUnit.Id.ToString();
-            ThumbnailUrl = playerUnit.UnitType.DashboardImgUrl;
-            Count = playerUnit.Count;
-            TypeId = playerUnit.UnitType.Id.ToString();
-            SlotIndex = playerUnit.ContainerSlotIndex;
+            Id = globalUnit.Id.ToString();
+            ThumbnailUrl = globalUnit.UnitType.DashboardImgUrl;
+            Count = globalUnit.Count;
+            TypeId = globalUnit.UnitType.Id.ToString();
+            SlotIndex = globalUnit.ContainerSlotIndex;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Epic.Core.Objects.Rewards
     {
         public Guid RewardId { get; set; }
         public Guid PlayerId { get; set; }
-        public IPlayerUnitObject[] UnitsGiven { get; set; }
+        public IGlobalUnitObject[] UnitsGiven { get; set; }
 
         public static AcceptedRewardData Empty(Guid rewardId, Guid playerId)
         {
@@ -15,7 +15,7 @@ namespace Epic.Core.Objects.Rewards
             {
                 RewardId = rewardId,
                 PlayerId = playerId,
-                UnitsGiven = Array.Empty<IPlayerUnitObject>(),
+                UnitsGiven = Array.Empty<IGlobalUnitObject>(),
             };
         }
     }

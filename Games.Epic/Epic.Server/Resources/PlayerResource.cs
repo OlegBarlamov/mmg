@@ -14,15 +14,15 @@ namespace Epic.Server.Resources
         public string ArmyContainerId { get; }
         public string SupplyContainerId { get; }
         
-        public PlayerResource(IPlayerObject playerObject)
+        public PlayerResource(IPlayerObject playerObject, bool isDefeated, Guid armyContainerId)
         {
             Id = playerObject.Id;
             UserId = playerObject.UserId;
             Day = playerObject.Day;
             Name = playerObject.Name;
-            IsDefeated = playerObject.IsDefeated;
+            IsDefeated = isDefeated;
             BattlesGenerationInProgress = playerObject.GenerationInProgress;
-            ArmyContainerId = playerObject.Army.Id.ToString();
+            ArmyContainerId = armyContainerId.ToString();
             SupplyContainerId = playerObject.Supply.Id.ToString();
         }
     }

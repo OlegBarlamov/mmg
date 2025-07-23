@@ -17,16 +17,16 @@ namespace Epic.Core.Services.Battles
             
             protected BattleUnitEntityFields() {}
             
-            public static BattleUnitEntityFields FromUserUnit(IPlayerUnitObject playerUnit, Guid battleId, InBattlePlayerNumber playerNumber)
+            public static BattleUnitEntityFields FromUserUnit(IGlobalUnitObject globalUnit, Guid battleId, InBattlePlayerNumber playerNumber)
             {
                 return new BattleUnitEntityFields
                 {
                     BattleId = battleId,
-                    PlayerUnitId = playerUnit.Id,
+                    PlayerUnitId = globalUnit.Id,
                     Column = -1,
-                    Row = playerUnit.ContainerSlotIndex,
+                    Row = globalUnit.ContainerSlotIndex,
                     PlayerIndex = (int)playerNumber,
-                    CurrentHealth = playerUnit.UnitType.Health,
+                    CurrentHealth = globalUnit.UnitType.Health,
                 };
             }
         }
@@ -45,7 +45,7 @@ namespace Epic.Core.Services.Battles
                 return new BattleUnitEntity(battleUnit.Id)
                 {
                     BattleId = battleUnit.BattleId,
-                    PlayerUnitId = battleUnit.PlayerUnit.Id,
+                    PlayerUnitId = battleUnit.GlobalUnit.Id,
                     Column = battleUnit.Column,
                     Row = battleUnit.Row,
                     PlayerIndex = battleUnit.PlayerIndex,

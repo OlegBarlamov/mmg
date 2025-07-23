@@ -2,41 +2,38 @@ using System;
 
 namespace Epic.Data.PlayerUnits
 {
-    public interface IPlayerUnitEntity
+    public interface IGlobalUnitEntity
     {
         Guid Id { get; }
         Guid TypeId { get; set; }
         int Count { get; set; }
-        Guid PlayerId { get; set; }
         Guid ContainerId { get; set; }
         bool IsAlive { get; set; }
         int ContainerSlotIndex { get; set; }
     }
 
-    public class PlayerUnitEntity : IPlayerUnitEntity
+    public class GlobalUnitEntity : IGlobalUnitEntity
     {
         public Guid Id { get; set; }
         public Guid TypeId { get; set; }
         public int Count { get; set; }
-        public Guid PlayerId { get; set; }
         public Guid ContainerId { get; set; }
         public bool IsAlive { get; set; }
         public int ContainerSlotIndex { get; set; }
 
-        public PlayerUnitEntity()
+        public GlobalUnitEntity()
         {
             
         }
 
-        public void UpdateFrom(IPlayerUnitEntity playerUnit)
+        public void UpdateFrom(IGlobalUnitEntity globalUnit)
         {
-            Id = playerUnit.Id;
-            TypeId = playerUnit.TypeId;
-            Count = playerUnit.Count;
-            PlayerId = playerUnit.PlayerId;
-            ContainerId = playerUnit.ContainerId;
-            IsAlive = playerUnit.IsAlive;
-            ContainerSlotIndex = playerUnit.ContainerSlotIndex;
+            Id = globalUnit.Id;
+            TypeId = globalUnit.TypeId;
+            Count = globalUnit.Count;
+            ContainerId = globalUnit.ContainerId;
+            IsAlive = globalUnit.IsAlive;
+            ContainerSlotIndex = globalUnit.ContainerSlotIndex;
         }
     }
 }

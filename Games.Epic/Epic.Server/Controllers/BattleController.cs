@@ -28,7 +28,7 @@ namespace Epic.Server.Controllers
         public IBattleConnectionsService BattleConnectionsService { get; }
         public ILogger<BattleController> Logger { get; }
         public IPlayersService PlayersService { get; }
-        public IPlayerUnitsService PlayerUnitsService { get; }
+        public IGlobalUnitsService GlobalUnitsService { get; }
 
         public BattleController(
             [NotNull] IBattlesService battlesService,
@@ -37,7 +37,7 @@ namespace Epic.Server.Controllers
             [NotNull] IBattleConnectionsService battleConnectionsService,
             [NotNull] ILogger<BattleController> logger,
             [NotNull] IPlayersService playersService,
-            [NotNull] IPlayerUnitsService playerUnitsService)
+            [NotNull] IGlobalUnitsService globalUnitsService)
         {
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             ClientConnectionService = clientConnectionService ?? throw new ArgumentNullException(nameof(clientConnectionService));
@@ -45,7 +45,7 @@ namespace Epic.Server.Controllers
             BattleConnectionsService = battleConnectionsService ?? throw new ArgumentNullException(nameof(battleConnectionsService));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
-            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
         }
         
         [HttpGet]
@@ -67,24 +67,13 @@ namespace Epic.Server.Controllers
             if (!User.TryGetPlayerId(out var playerId))
                 return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
             
-            Guid battleDefinitionId;
-            try
-            {
-                battleDefinitionId = Guid.Parse(battleRequestBody.BattleDefinitionId);
-            }
-            catch (FormatException)
-            {
-                return BadRequest($"Invalid ID format for {battleRequestBody.BattleDefinitionId}.");
-            }
-            
             var player = await PlayersService.GetById(playerId);
-            var hasUnits = await PlayerUnitsService.HasAliveUnits(player.ArmyContainerId);
-            if (!hasUnits)
+            if (player.ActiveHero?.HasAliveUnits != true)
                 return BadRequest("This player does not have any units.");
 
             try
             {
-                var battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleDefinitionId);
+                var battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleRequestBody.BattleDefinitionId);
                 battleObject = await BattlesService.BeginBattle(playerId, battleObject);
                 return Ok(new BattleResource(battleObject));
             }

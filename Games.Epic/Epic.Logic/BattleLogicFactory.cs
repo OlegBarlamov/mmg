@@ -14,7 +14,7 @@ namespace Epic.Logic
     public class BattleLogicFactory : IBattleLogicFactory
     {
         [NotNull] public IBattleUnitsService BattleUnitsService { get; }
-        [NotNull] public IPlayerUnitsService PlayerUnitsService { get; }
+        [NotNull] public IGlobalUnitsService GlobalUnitsService { get; }
         [NotNull] public IBattlesService BattlesService { get; }
         [NotNull] public IRewardsService RewardsService { get; }
         public IDaysProcessor DaysProcessor { get; }
@@ -24,7 +24,7 @@ namespace Epic.Logic
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
-            [NotNull] IPlayerUnitsService playerUnitsService,
+            [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IBattlesService battlesService,
             [NotNull] IRewardsService rewardsService,
             [NotNull] IDaysProcessor daysProcessor,
@@ -33,7 +33,7 @@ namespace Epic.Logic
             [NotNull] IRandomProvider randomProvider)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
-            PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             DaysProcessor = daysProcessor ?? throw new ArgumentNullException(nameof(daysProcessor));
@@ -46,7 +46,7 @@ namespace Epic.Logic
         {
             return new BattleLogic(battleObject,
                 BattleUnitsService,
-                PlayerUnitsService,
+                GlobalUnitsService,
                 BattlesService,
                 RewardsService,
                 broadcaster,
