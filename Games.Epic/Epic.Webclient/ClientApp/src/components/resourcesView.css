@@ -1,0 +1,78 @@
+/* Resources Display Styles */
+.resources-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border: 1px solid #34495e;
+}
+
+.resources-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(52, 152, 219, 0.2);
+    border: 1px solid #3498db;
+    border-radius: 6px;
+    cursor: help;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.resource-item:hover {
+    background: rgba(52, 152, 219, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.resource-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #2980b9;
+    flex-shrink: 0;
+}
+
+.resource-amount {
+    color: #f39c12;
+    font-weight: bold;
+    font-size: 0.9rem;
+    min-width: 30px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #e67e22;
+}
+
+/* Responsive adjustments for resources */
+@media (max-width: 768px) {
+    .resources-container {
+        gap: 8px;
+    }
+    
+    .resource-item {
+        padding: 6px 8px;
+    }
+    
+    .resource-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .resource-amount {
+        font-size: 0.8rem;
+        min-width: 25px;
+        padding: 3px 5px;
+    }
+} 

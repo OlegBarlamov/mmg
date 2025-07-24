@@ -1,3 +1,4 @@
+import { IResourceInfo } from "../services/serverAPI";
 import { IUnitRewardResource } from "./IUnitRewardResource";
 import { RewardType } from "./RewardType";
 
@@ -6,5 +7,7 @@ export interface IRewardToAccept {
     battleDefinitionId: string,
     type: RewardType,
     message: string,
-    unitRewardResources: IUnitRewardResource[]
+    amounts: number[],
+    unitsRewards: IUnitRewardResource[],
+    resourcesRewards: IResourceInfo[],
 }

@@ -109,6 +109,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
         if (this.menuComponentRef.current) {
             this.menuComponentRef.current.refreshBattles()
             this.menuComponentRef.current.refreshArmy()
+            this.menuComponentRef.current.refreshResources()
         }
 
         if (this.state.playerInfo!.battlesGenerationInProgress) {

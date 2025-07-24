@@ -1,9 +1,10 @@
 import React, {PureComponent} from "react";
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
-import {IPlayerInfo, IUserUnit} from "../services/serverAPI";
+import {IPlayerInfo, IUserUnit, IResourceInfo} from "../services/serverAPI";
 import {ArmyDisplay} from "./armyDisplay";
 import {SupplyComponent} from "./supplyComponent";
+import {ResourcesView} from "./resourcesView";
 import "./menuComponent.css";
 
 export interface IMenuComponentProps {
@@ -19,6 +20,7 @@ interface IMenuComponentState {
     showSupply: boolean
     armyUnits: IUserUnit[] | null
     armyCapacity: number
+    resources: IResourceInfo[] | null
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -35,14 +37,16 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             battlesGenerationInProgress: false,
             showSupply: false,
             armyUnits: null,
-            armyCapacity: 7
+            armyCapacity: 7,
+            resources: null
         }
     }
     
     async componentDidMount() {
         await Promise.all([
             this.fetchBattles(),
-            this.fetchArmyUnits()
+            this.fetchArmyUnits(),
+            this.fetchResources()
         ])
     }
 
@@ -88,6 +92,11 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         await this.fetchArmyUnits()
     }
 
+    // Method to refresh resources display
+    public async refreshResources() {
+        await this.fetchResources()
+    }
+
     // Method to check if there are any army units
     private hasArmyUnits(): boolean {
         const { armyUnits } = this.state
@@ -124,6 +133,17 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             this.retryTimeoutId = window.setTimeout(() => {
                 this.fetchBattles()
             }, this.RETRY_DELAY_MS)
+        }
+    }
+
+    // Method to fetch resources
+    private async fetchResources() {
+        try {
+            const serverAPI = this.props.serviceLocator.serverAPI()
+            const resources = await serverAPI.getResources()
+            this.setState({ resources })
+        } catch (error) {
+            console.error('Failed to fetch resources:', error)
         }
     }
     
@@ -224,6 +244,9 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                         onRefreshArmy={this.refreshArmyFromServer}
                     />
                 )}
+
+                {/* Resources Display */}
+                <ResourcesView resources={this.state.resources} />
             </div>
         )
     }

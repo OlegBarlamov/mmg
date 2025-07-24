@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IPlayerInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IPlayerInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -17,6 +17,9 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
     }    
+    getResources(): Promise<IResourceInfo[]> {
+        return this.fetchResource("api/resources", "GET", "resources")
+    }
     moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo> {
         return this.fetchResource(`api/units/move/${unitId}`, "POST", "move_units", {
             containerId: containerId,

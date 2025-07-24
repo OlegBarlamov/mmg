@@ -35,6 +35,13 @@ export interface IUnitsContainerInfo {
     readonly capacity: number
 }
 
+export interface IResourceInfo {
+    readonly id: string
+    readonly name: string
+    readonly iconUrl: string
+    readonly amount: number
+}
+
 export interface IServerAPI {
     login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
@@ -53,4 +60,6 @@ export interface IServerAPI {
     acceptReward(id: string, body: AcceptRewardBody): Promise<void>
     
     moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo>
+
+    getResources(): Promise<IResourceInfo[]>
 }

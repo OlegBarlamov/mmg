@@ -7,6 +7,7 @@ using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
+using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
@@ -27,6 +28,7 @@ namespace Epic.Server
         public IUnitsContainersService UnitsContainersService { get; }
         public IBattleDefinitionsService BattleDefinitionsService { get; }
         public IHeroesService HeroesService { get; }
+        public IGameResourcesRepository ResourcesRepository { get; }
         [NotNull] public IUsersRepository UsersRepository { get; }
         [NotNull] public ISessionsRepository SessionsRepository { get; }
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
@@ -43,7 +45,8 @@ namespace Epic.Server
             [NotNull] IPlayersService playersService,
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
-            [NotNull] IHeroesService heroesService)
+            [NotNull] IHeroesService heroesService,
+            [NotNull] IGameResourcesRepository resourcesRepository)
         {
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -52,6 +55,7 @@ namespace Epic.Server
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
+            ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
             UsersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
             SessionsRepository = sessionsRepository ?? throw new ArgumentNullException(nameof(sessionsRepository));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
@@ -137,6 +141,8 @@ namespace Epic.Server
 
             await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
                 new[] { unitTypeId }, new[] { 10 }, "Reward!");
+            await RewardsRepository.CreateRewardAsync(bd1.Id, RewardType.ResourcesGain,
+                new[] { ResourcesRepository.GoldResourceId }, new[] { 1000 }, "Reward!");
         }
 
         private class SessionData : ISessionData

@@ -7,6 +7,7 @@ using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
+using Epic.Data.GameResources;
 using Epic.Data.Reward;
 using JetBrains.Annotations;
 
@@ -21,6 +22,7 @@ namespace Epic.Core.Services.Rewards
         public IUnitsContainersService ContainersService { get; }
         public IPlayersService PlayersService { get; }
         public IContainersManipulator ContainersManipulator { get; }
+        public IGameResourcesRepository GameResourcesRepository { get; }
 
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
@@ -28,7 +30,8 @@ namespace Epic.Core.Services.Rewards
             [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IUnitsContainersService containersService,
             [NotNull] IPlayersService playersService,
-            [NotNull] IContainersManipulator containersManipulator)
+            [NotNull] IContainersManipulator containersManipulator,
+            [NotNull] IGameResourcesRepository gameResourcesRepository)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
@@ -36,6 +39,7 @@ namespace Epic.Core.Services.Rewards
             ContainersService = containersService ?? throw new ArgumentNullException(nameof(containersService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             ContainersManipulator = containersManipulator ?? throw new ArgumentNullException(nameof(containersManipulator));
+            GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
         }
         public async Task<IRewardObject[]> GetNotAcceptedPlayerRewards(Guid playerId)
         {
@@ -72,19 +76,34 @@ namespace Epic.Core.Services.Rewards
             var rewardEntity = await RewardsRepository.RemoveRewardFromPlayer(playerId, rewardId);
             var rewardObject = await ToRewardObject(rewardEntity);
 
-            var unitTypes = rewardObject.GetUnitTypes();
-            var unitTypesAndAmounts = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
-            var units = await GlobalUnitsService.CreateUnits(unitTypesAndAmounts);
-            var unitsArray = units.ToArray();
+            var unitsGiven = Array.Empty<IGlobalUnitObject>();
+            var resourcesGiven = Array.Empty<ResourceAmount>();
             
-            // TODO use supply, if can not place
-            await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId, unitsArray);
-            
+            var unitTypes = rewardObject.UnitTypes;
+            if (unitTypes.Count > 0)
+            {
+                var unitTypesAndAmounts =
+                    amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
+                var units = await GlobalUnitsService.CreateUnits(unitTypesAndAmounts);
+                unitsGiven = units.ToArray();
+
+                // TODO use supply, if can not place
+                await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId, unitsGiven);
+            }
+
+            var resources = rewardObject.Resources;
+            if (resources.Count > 0)
+            {
+                resourcesGiven = resources.Select((x, i) => ResourceAmount.Create(x, amounts[i])).ToArray();
+                await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
+            }
+
             return new AcceptedRewardData
             {
                 RewardId = rewardId,
                 PlayerId = playerId,
-                UnitsGiven = unitsArray,
+                UnitsGiven = unitsGiven,
+                ResourcesGiven = resourcesGiven, 
             };
         }
 
@@ -96,19 +115,24 @@ namespace Epic.Core.Services.Rewards
 
         private async Task<IRewardObject> ToRewardObject(IRewardEntity entity)
         {
+            var rewardObject = new CompositeRewardObject(entity);
             switch (entity.RewardType)
             {
                 case RewardType.None:
-                    return EmptyRewardObject.FromEntity(entity);
+                    break;
                 case RewardType.UnitsGain:
-                    var units = await UnitTypesService.GetUnitTypesByIdsAsync(entity.TypeIds);
-                    return UnitsGainRewardObject.FromEntity(entity, units);
+                    rewardObject.UnitTypes = (await UnitTypesService.GetUnitTypesByIdsAsync(entity.Ids)).ToArray();
+                    break;
                 case RewardType.ResourcesGain:
+                    rewardObject.Resources = await GameResourcesRepository.GetByIds(entity.Ids);
+                    break;
                 case RewardType.UnitToBuy:
                     throw new NotImplementedException();
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            return rewardObject;
         }
     }
 }

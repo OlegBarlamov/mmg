@@ -7,7 +7,7 @@ namespace Epic.Data.Reward
         Guid Id { get; }
         Guid BattleDefinitionId { get; }
         RewardType RewardType { get; }
-        Guid[] TypeIds { get; }
+        Guid[] Ids { get; }
         int[] Amounts { get; }
         string Message { get; }
     }
@@ -17,7 +17,7 @@ namespace Epic.Data.Reward
         public Guid Id { get; set; }
         public Guid BattleDefinitionId { get; set; }
         public RewardType RewardType { get; set; }
-        public Guid[] TypeIds { get; set; }
+        public Guid[] Ids { get; set; }
         public int[] Amounts { get; set; }
         public string Message { get; set; }
     }

@@ -15,7 +15,7 @@ namespace Epic.Data.Reward
         private readonly List<MutableRewardEntity> _rewards = new List<MutableRewardEntity>();
         private readonly List<PlayerRewardEntity> _playerRewards = new List<PlayerRewardEntity>();
         
-        public Task<IRewardEntity[]> GetRewardsByIdAsync(Guid[] ids)
+        public Task<IRewardEntity[]> GetRewardsByIdAsync(IReadOnlyList<Guid> ids)
         {
             return Task.FromResult(_rewards.Where(x => ids.Contains(x.Id)).ToArray<IRewardEntity>());
         }
@@ -40,14 +40,14 @@ namespace Epic.Data.Reward
             return Task.FromResult<IRewardEntity>(_rewards.First(x => x.Id == rewardId));
         }
 
-        public Task<IRewardEntity> CreateRewardAsync(Guid battleDefinitionId, RewardType rewardType, Guid[] typeIds, int[] amounts, string message)
+        public Task<IRewardEntity> CreateRewardAsync(Guid battleDefinitionId, RewardType rewardType, IReadOnlyList<Guid> typeIds, int[] amounts, string message)
         {
             var newReward = new MutableRewardEntity
             {
                 Id = Guid.NewGuid(),
                 BattleDefinitionId = battleDefinitionId,
                 RewardType = rewardType,
-                TypeIds = typeIds,
+                Ids = typeIds.ToArray(),
                 Amounts = amounts,
                 Message = message,
             };
@@ -56,7 +56,7 @@ namespace Epic.Data.Reward
             return Task.FromResult<IRewardEntity>(newReward);
         }
 
-        public Task GiveRewardsToPlayerAsync(Guid[] rewardIds, Guid playerId)
+        public Task GiveRewardsToPlayerAsync(IReadOnlyList<Guid> rewardIds, Guid playerId)
         {
             var records = rewardIds.Select(id => new PlayerRewardEntity
             {

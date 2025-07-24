@@ -1,14 +1,14 @@
 using System;
 using Epic.Data.Reward;
 
-namespace Epic.Core.Objects.Rewards
+namespace Epic.Core.Services.Rewards
 {
     public abstract class BaseRewardObject
     {
         public Guid Id { get; protected set; }
         public Guid BattleDefinitionId { get; protected set; }
         public RewardType RewardType { get; protected set; }
-        public Guid[] TypeIds { get; protected set; }
+        public Guid[] Ids { get; protected set; }
         public int[] Amounts { get; protected set; }
         public string Message { get; protected set; }
         
@@ -19,7 +19,12 @@ namespace Epic.Core.Objects.Rewards
             BattleDefinitionId = entity.BattleDefinitionId;
             Message = entity.Message;
             RewardType = entity.RewardType;
-            TypeIds = entity.TypeIds;
+            Ids = entity.Ids;
+        }
+        
+        public IRewardEntity ToEntity()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

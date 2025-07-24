@@ -54,14 +54,15 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
             await Promise.all(rewards.map(async reward => {
                 const message = `${reward.message}\n
-                    ${reward.unitRewardResources.map(resource => `${resource.name}: ${resource.amount}`).join('\n')}
+                    ${reward.unitsRewards?.map(resource => `${resource.name}: ${resource.amount}`).join('\n') ?? ''}
+                    ${reward.resourcesRewards?.map(resource => `${resource.name}: ${resource.amount}`).join('\n') ?? ''}
                     \n\nAccept?`
 
                 // eslint-disable-next-line no-restricted-globals
                 if (confirm(message)) {
                     await serverAPI.acceptReward(reward.id, {
                         accepted: true,
-                        amounts: reward.unitRewardResources.map(resource => resource.amount),
+                        amounts: reward.amounts,
                     })
                 } else {
                     await serverAPI.acceptReward(reward.id, {
