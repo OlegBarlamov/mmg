@@ -5,7 +5,7 @@ namespace Epic.Server.Resources
 {
     public class PriceResource
     {
-        public ResourceDashboardResource[] Resources { get; set; }
+        public ResourceDashboardResource[] Resources { get; }
 
         public PriceResource(ResourceAmount[] resourceAmount)
         {

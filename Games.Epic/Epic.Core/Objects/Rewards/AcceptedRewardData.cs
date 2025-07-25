@@ -19,6 +19,8 @@ namespace Epic.Core.Objects.Rewards
                 RewardId = rewardId,
                 PlayerId = playerId,
                 UnitsGiven = Array.Empty<IGlobalUnitObject>(),
+                ResourcesGiven = Array.Empty<ResourceAmount>(),
+                PricePayed = Price.Empty(),
             };
         }
     }

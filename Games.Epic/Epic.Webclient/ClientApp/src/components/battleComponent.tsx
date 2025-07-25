@@ -7,6 +7,8 @@ import { HexagonStyle } from "../services/canvasService";
 import { EvenQGrid } from "../hexogrid/evenQGrid";
 import { OddRGrid } from "../hexogrid/oddRGrid";
 import { BattlePlayerNumber } from '../player/playerNumber';
+import { RewardDialog } from './rewardDialog';
+import { IRewardToAccept } from '../rewards/IRewardToAccept';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -19,6 +21,9 @@ export interface IBattleComponentProps {
 
 interface IBattleComponentState {
     battleLoaded: boolean
+    currentReward: IRewardToAccept | null
+    rewards: IRewardToAccept[]
+    currentRewardIndex: number
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
@@ -27,7 +32,12 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     constructor(props: IBattleComponentProps) {
         super(props)
 
-        this.state = { battleLoaded: false }
+        this.state = { 
+            battleLoaded: false,
+            currentReward: null,
+            rewards: [],
+            currentRewardIndex: 0
+        }
     }
 
     async componentDidMount() {
@@ -52,28 +62,65 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             const serverAPI = this.props.serviceLocator.serverAPI()
             const rewards = await serverAPI.getMyRewards()
 
-            await Promise.all(rewards.map(async reward => {
-                const message = `${reward.message}\n
-                    ${reward.unitsRewards?.map(resource => `${resource.name}: ${resource.amount}`).join('\n') ?? ''}
-                    ${reward.resourcesRewards?.map(resource => `${resource.name}: ${resource.amount}`).join('\n') ?? ''}
-                    \n\nAccept?`
-
-                // eslint-disable-next-line no-restricted-globals
-                if (confirm(message)) {
-                    await serverAPI.acceptReward(reward.id, {
-                        accepted: true,
-                        amounts: reward.amounts,
-                    })
-                } else {
-                    await serverAPI.acceptReward(reward.id, {
-                        accepted: false,
-                        amounts: [],
-                    })
-                }
-            }))
+            if (rewards.length > 0) {
+                this.setState({
+                    rewards: rewards,
+                    currentReward: rewards[0],
+                    currentRewardIndex: 0
+                })
+            } else {
+                this.props.onBattleFinished()
+            }
+        } else {
+            this.props.onBattleFinished()
         }
+    }
 
-        this.props.onBattleFinished()
+    private handleRewardAccept = async () => {
+        const { currentReward } = this.state
+        if (!currentReward) return
+
+        const serverAPI = this.props.serviceLocator.serverAPI()
+        await serverAPI.acceptReward(currentReward.id, {
+            accepted: true,
+            amounts: currentReward.amounts,
+        })
+
+        this.showNextReward()
+    }
+
+    private handleRewardDecline = async () => {
+        const { currentReward } = this.state
+        if (!currentReward) return
+
+        const serverAPI = this.props.serviceLocator.serverAPI()
+        await serverAPI.acceptReward(currentReward.id, {
+            accepted: false,
+            amounts: [],
+        })
+
+        this.showNextReward()
+    }
+
+
+
+    private showNextReward = () => {
+        const { rewards, currentRewardIndex } = this.state
+        const nextIndex = currentRewardIndex + 1
+
+        if (nextIndex < rewards.length) {
+            this.setState({
+                currentReward: rewards[nextIndex],
+                currentRewardIndex: nextIndex
+            })
+        } else {
+            this.setState({
+                currentReward: null,
+                rewards: [],
+                currentRewardIndex: 0
+            })
+            this.props.onBattleFinished()
+        }
     }
 
     async componentWillUnmount() {
@@ -102,6 +149,14 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                 )}
 
                 <div id={CanvasContainerId} style={canvasStyle}></div>
+
+                {this.state.currentReward && (
+                    <RewardDialog
+                        reward={this.state.currentReward}
+                        onAccept={this.handleRewardAccept}
+                        onDecline={this.handleRewardDecline}
+                    />
+                )}
             </div>
         )
     }

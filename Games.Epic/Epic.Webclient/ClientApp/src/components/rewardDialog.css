@@ -1,0 +1,224 @@
+.reward-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.reward-dialog {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border: 2px solid #1f4e79;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    min-width: 400px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: white;
+}
+
+.reward-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 2px solid #1f4e79;
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+}
+
+.reward-dialog-header h3 {
+    margin: 0;
+    color: #ecf0f1;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+
+
+.reward-content {
+    padding: 20px;
+}
+
+.reward-message {
+    margin-bottom: 16px;
+    line-height: 1.5;
+    color: #ecf0f1;
+    font-size: 0.95rem;
+}
+
+.reward-resources h4,
+.reward-units h4 {
+    margin: 0 0 12px 0;
+    color: #f39c12;
+    font-size: 1rem;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.resources-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(46, 204, 113, 0.2);
+    border: 1px solid #27ae60;
+    border-radius: 4px;
+}
+
+.resource-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #27ae60;
+    flex-shrink: 0;
+}
+
+.resource-name {
+    flex: 1;
+    color: #2ecc71;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.resource-amount {
+    color: #f39c12;
+    font-weight: bold;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.units-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.unit-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(139, 69, 19, 0.3);
+    border: 1px solid #654321;
+    border-radius: 4px;
+}
+
+.unit-thumbnail {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #654321;
+    flex-shrink: 0;
+}
+
+.unit-name {
+    flex: 1;
+    color: #f1c40f;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.unit-amount {
+    color: #f39c12;
+    font-weight: bold;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.reward-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.reward-button {
+    padding: 10px 20px;
+    border: 2px solid;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    min-width: 80px;
+}
+
+.reward-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.reward-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ok-button {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    border-color: #1f4e79;
+    color: white;
+}
+
+.ok-button:hover {
+    background: linear-gradient(145deg, #5dade2, #3498db);
+}
+
+.accept-button {
+    background: linear-gradient(145deg, #27ae60, #229954);
+    border-color: #1e8449;
+    color: white;
+}
+
+.accept-button:hover {
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+}
+
+.decline-button {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    border-color: #a93226;
+    color: white;
+}
+
+.decline-button:hover {
+    background: linear-gradient(145deg, #ec7063, #e74c3c);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .reward-dialog {
+        min-width: 90vw;
+        max-width: 90vw;
+        margin: 20px;
+    }
+    
+    .reward-actions {
+        flex-direction: column;
+    }
+    
+    .reward-button {
+        width: 100%;
+    }
+} 

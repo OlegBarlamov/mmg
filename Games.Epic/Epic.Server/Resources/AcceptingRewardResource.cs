@@ -12,18 +12,18 @@ namespace Epic.Server.Resources
     {
         public Guid Id { get; }
         public Guid BattleDefinitionId { get; }
-        public RewardType RewardType { get; }
-        public UnitRewardResource[] UnitsRewards { get; }
-        public ResourceDashboardResource[] ResourcesRewards { get; }
-        public PriceResource[] Prices { get; set; }
+        public string RewardType { get; }
         public int[] Amounts { get; }
         public string Message { get; }
+        public UnitRewardResource[] UnitsRewards { get; }
+        public ResourceDashboardResource[] ResourcesRewards { get; }
+        public PriceResource[] Prices { get; }
 
         public AcceptingRewardResource(IRewardObject reward, IReadOnlyList<ResourceAmount[]> prices)
         {
             Id = reward.Id;
             BattleDefinitionId = reward.BattleDefinitionId;
-            RewardType = reward.RewardType;
+            RewardType = reward.RewardType.ToString();
             Message = reward.Message;
             Amounts = reward.Amounts;
 
