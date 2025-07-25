@@ -81,64 +81,73 @@ namespace Epic.Core.Services.Rewards
             var priceToPay = Price.Empty();
             var unitsGiven = Array.Empty<IGlobalUnitObject>();
             var resourcesGiven = Array.Empty<ResourceAmount>();
-            
-            var unitTypes = rewardObject.UnitTypes;
-            if (unitTypes.Count > 0)
-            {
-                if (rewardObject.RewardType == RewardType.UnitToBuy)
-                {
-                    var prices = await Task.WhenAll(unitTypes.Select(async (unitType, i) =>
-                    {
-                        var price = await UnitTypesService.GetPrice(unitType);
-                        price.MultiplyBy(amounts[i]);
-                        return price;
-                    }));
-                    priceToPay = Price.Combine(prices);
-                    
-                    var enoughResources = await GameResourcesRepository.IsEnoughToPay(priceToPay, playerId);
-                    if (!enoughResources)
-                        throw new NotEnoughResourcesToPayException();
-                }
-             
-                var createData = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
-                var units = await GlobalUnitsService.CreateUnits(createData);
-                unitsGiven = units.ToArray();
 
-                if (!priceToPay.IsEmpty())
+            try
+            {
+                var unitTypes = rewardObject.UnitTypes;
+                if (unitTypes.Count > 0)
                 {
-                    var payed = await GameResourcesRepository.PayIfEnough(priceToPay, playerId);
-                    if (!payed)
+                    if (rewardObject.RewardType == RewardType.UnitToBuy)
                     {
-                        await GlobalUnitsService.RemoveUnits(units);
-                        throw new NotEnoughResourcesToPayException();
+                        var prices = await Task.WhenAll(unitTypes.Select(async (unitType, i) =>
+                        {
+                            var price = await UnitTypesService.GetPrice(unitType);
+                            price.MultiplyBy(amounts[i]);
+                            return price;
+                        }));
+                        priceToPay = Price.Combine(prices);
+
+                        var enoughResources = await GameResourcesRepository.IsEnoughToPay(priceToPay, playerId);
+                        if (!enoughResources)
+                            throw new NotEnoughResourcesToPayException();
+                    }
+
+                    var createData = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
+                    var units = await GlobalUnitsService.CreateUnits(createData);
+                    unitsGiven = units.ToArray();
+
+                    if (!priceToPay.IsEmpty())
+                    {
+                        var payed = await GameResourcesRepository.PayIfEnough(priceToPay, playerId);
+                        if (!payed)
+                        {
+                            await GlobalUnitsService.RemoveUnits(units);
+                            throw new NotEnoughResourcesToPayException();
+                        }
+                    }
+
+                    try
+                    {
+                        await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId,
+                            unitsGiven);
+                    }
+                    catch (InvalidUnitSlotsOperationException e)
+                    {
+                        await ContainersManipulator.PlaceUnitsToContainer(player.SupplyContainerId, unitsGiven);
                     }
                 }
 
-                try
+                var resources = rewardObject.Resources;
+                if (resources.Count > 0)
                 {
-                    await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId, unitsGiven);
+                    resourcesGiven = resources.Select((x, i) => ResourceAmount.Create(x, amounts[i])).ToArray();
+                    await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
                 }
-                catch (InvalidUnitSlotsOperationException e)
+
+                return new AcceptedRewardData
                 {
-                    await ContainersManipulator.PlaceUnitsToContainer(player.SupplyContainerId, unitsGiven);
-                }
+                    RewardId = rewardId,
+                    PlayerId = playerId,
+                    UnitsGiven = unitsGiven,
+                    ResourcesGiven = resourcesGiven,
+                    PricePayed = priceToPay,
+                };
             }
-
-            var resources = rewardObject.Resources;
-            if (resources.Count > 0)
+            catch (NotEnoughResourcesToPayException)
             {
-                resourcesGiven = resources.Select((x, i) => ResourceAmount.Create(x, amounts[i])).ToArray();
-                await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
+                await RewardsRepository.GiveRewardsToPlayerAsync(new[] { rewardId }, playerId);
+                throw;
             }
-
-            return new AcceptedRewardData
-            {
-                RewardId = rewardId,
-                PlayerId = playerId,
-                UnitsGiven = unitsGiven,
-                ResourcesGiven = resourcesGiven,
-                PricePayed = priceToPay,
-            };
         }
 
         public async Task<AcceptedRewardData> RejectRewardAsync(Guid rewardId, Guid playerId)
@@ -155,13 +164,12 @@ namespace Epic.Core.Services.Rewards
                 case RewardType.None:
                     break;
                 case RewardType.UnitsGain:
+                case RewardType.UnitToBuy:
                     rewardObject.UnitTypes = (await UnitTypesService.GetUnitTypesByIdsAsync(entity.Ids)).ToArray();
                     break;
                 case RewardType.ResourcesGain:
                     rewardObject.Resources = await GameResourcesRepository.GetByIds(entity.Ids);
                     break;
-                case RewardType.UnitToBuy:
-                    throw new NotImplementedException();
                 default:
                     throw new ArgumentOutOfRangeException();
             }

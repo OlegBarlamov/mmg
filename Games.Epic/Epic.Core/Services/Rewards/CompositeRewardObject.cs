@@ -44,6 +44,16 @@ namespace Epic.Core.Services.Rewards
                 };
             }
 
+            if (RewardType == RewardType.UnitToBuy)
+            {
+                return new RewardDescription
+                {
+                    Name = "Buy: " + string.Join(',', UnitTypes.Select(x => x.Name)),
+                    Amount = Amounts.Sum().ToString(),
+                    IconUrl = UnitTypes.FirstOrDefault()?.DashboardImgUrl ?? string.Empty,
+                };
+            }
+            
             throw new NotImplementedException();
         }
     }

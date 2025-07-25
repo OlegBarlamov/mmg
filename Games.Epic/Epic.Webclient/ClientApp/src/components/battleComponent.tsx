@@ -155,6 +155,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         reward={this.state.currentReward}
                         onAccept={this.handleRewardAccept}
                         onDecline={this.handleRewardDecline}
+                        serviceLocator={this.props.serviceLocator}
                     />
                 )}
             </div>

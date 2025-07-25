@@ -125,6 +125,8 @@ namespace Epic.Server
             
             var userPlayer = await PlayersService.CreatePlayer(user.Id, "admin_player", PlayerObjectType.Human);
 
+            await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, userPlayer.Id, 5000);
+            
             var hero = await HeroesService.CreateNew(userPlayer.Name, userPlayer.Id);
             await PlayersService.SetActiveHero(userPlayer.Id, hero.Id);
             
@@ -137,14 +139,18 @@ namespace Epic.Server
             
             var bd1 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 10, 8);
             var bd2 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 6, 6);
+            var bd3 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 7, 7);
             
             await GlobalUnitsRepository.Create(unitTypeId, 10, bd1.ContainerId, true, 0);
             await GlobalUnitsRepository.Create(unitTypeId, 20, bd2.ContainerId, true, 0);
+            await GlobalUnitsRepository.Create(archerTypeId, 30, bd3.ContainerId, true, 0);
 
             await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
                 new[] { unitTypeId }, new[] { 10 }, "Reward!");
             await RewardsRepository.CreateRewardAsync(bd1.Id, RewardType.ResourcesGain,
-                new[] { ResourcesRepository.GoldResourceId }, new[] { 1000 }, "Reward!");
+                new[] { ResourcesRepository.GoldResourceId }, new[] { 5000 }, "Reward!");
+            await RewardsRepository.CreateRewardAsync(bd3.Id, RewardType.UnitToBuy,
+                new[] { unitTypeId, archerTypeId }, new[] { 100, 50 }, "Dwelling");
         }
 
         private class SessionData : ISessionData
