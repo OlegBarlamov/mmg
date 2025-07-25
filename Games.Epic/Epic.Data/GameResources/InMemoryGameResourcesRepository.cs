@@ -34,7 +34,7 @@ namespace Epic.Data.GameResources
             return Task.FromResult<IGameResourceEntity>(_resources.First(x => x.Id == id));
         }
 
-        public Task<IReadOnlyList<IGameResourceEntity>> GetByIds(IReadOnlyList<Guid> ids)
+        public Task<IReadOnlyList<IGameResourceEntity>> GetByIds(IEnumerable<Guid> ids)
         {
             return Task.FromResult<IReadOnlyList<IGameResourceEntity>>(
                 _resources.Where(x => ids.Contains(x.Id))

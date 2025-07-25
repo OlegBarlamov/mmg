@@ -1,7 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Rewards;
+using Epic.Core.Services.UnitTypes;
+using Epic.Data.GameResources;
+using Epic.Data.Reward;
 using Epic.Server.Authentication;
 using Epic.Server.RequestBodies;
 using Epic.Server.Resources;
@@ -15,10 +20,17 @@ namespace Epic.Server.Controllers
     public class RewardsController : ControllerBase
     {
         private IRewardsService RewardsService { get; }
+        public IUnitTypesService UnitTypesService { get; }
+        public IGameResourcesService GameResourcesService { get; }
 
-        public RewardsController([NotNull] IRewardsService rewardsService)
+        public RewardsController(
+            [NotNull] IRewardsService rewardsService,
+            [NotNull] IUnitTypesService unitTypesService,
+            [NotNull] IGameResourcesService gameResourcesService)
         {
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
+            UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
+            GameResourcesService = gameResourcesService ?? throw new ArgumentNullException(nameof(gameResourcesService));
         }
         
         [HttpGet]
@@ -28,7 +40,18 @@ namespace Epic.Server.Controllers
                 return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
             
             var rewards = await RewardsService.GetNotAcceptedPlayerRewards(playerId);
-            var rewardResources = rewards.Select(x => new AcceptingRewardResource(x));
+            var rewardResources = await Task.WhenAll(rewards.Select(async reward =>
+            {
+                var resourcesAmounts = new List<ResourceAmount[]>();
+                if (reward.RewardType == RewardType.UnitToBuy)
+                {
+                    var prices = await UnitTypesService.GetPrices(reward.UnitTypes);
+                    var amounts = await GameResourcesService.GetResourcesAmountsFromPrices(prices);
+                    resourcesAmounts.AddRange(amounts);
+                }
+
+                return new AcceptingRewardResource(reward, resourcesAmounts);
+            }));
             return Ok(rewardResources);
         }
 

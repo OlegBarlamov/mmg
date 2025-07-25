@@ -10,7 +10,7 @@ namespace Epic.Server.Resources
         public Guid RewardId { get; }
         public Guid PlayerId { get; }
         public UnitInDashboardResource[] UnitsGiven { get; }
-        public ResourceDashboardResource[] ResourcesGiven { get; } 
+        public ResourceDashboardResource[] ResourcesGiven { get; }
         
         public AcceptedRewardResource(AcceptedRewardData acceptedRewardData)
         {

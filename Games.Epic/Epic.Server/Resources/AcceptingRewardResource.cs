@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Objects.Rewards;
 using Epic.Core.Services.Rewards;
@@ -14,10 +15,11 @@ namespace Epic.Server.Resources
         public RewardType RewardType { get; }
         public UnitRewardResource[] UnitsRewards { get; }
         public ResourceDashboardResource[] ResourcesRewards { get; }
+        public PriceResource[] Prices { get; set; }
         public int[] Amounts { get; }
         public string Message { get; }
 
-        public AcceptingRewardResource(IRewardObject reward)
+        public AcceptingRewardResource(IRewardObject reward, IReadOnlyList<ResourceAmount[]> prices)
         {
             Id = reward.Id;
             BattleDefinitionId = reward.BattleDefinitionId;
@@ -32,6 +34,8 @@ namespace Epic.Server.Resources
             ResourcesRewards = reward.Resources
                 .Select((x, i) => new ResourceDashboardResource(ResourceAmount.Create(x, reward.Amounts[i])))
                 .ToArray();
+
+            Prices = prices.Select(x => new PriceResource(x)).ToArray();
         }
     }
 }

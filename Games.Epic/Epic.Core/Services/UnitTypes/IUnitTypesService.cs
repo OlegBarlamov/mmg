@@ -10,5 +10,6 @@ namespace Epic.Core.Services.UnitTypes
         Task<IUnitTypeObject> GetUnitTypeByIdAsync(Guid id);
         Task<IReadOnlyCollection<IUnitTypeObject>> GetUnitTypesByIdsAsync(IReadOnlyCollection<Guid> ids);
         Task<Price> GetPrice(IUnitTypeObject unitType);
+        Task<Price[]> GetPrices(IReadOnlyList<IUnitTypeObject> unitTypes);
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using Epic.Core.Objects;
 using Epic.Core.Services.Users;
 
 namespace Epic.Server.Resources

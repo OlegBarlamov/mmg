@@ -8,7 +8,7 @@ namespace Epic.Data.GameResources
     {
         Guid GoldResourceId { get; }
         Task<IGameResourceEntity> GetById(Guid id);
-        Task<IReadOnlyList<IGameResourceEntity>> GetByIds(IReadOnlyList<Guid> ids);
+        Task<IReadOnlyList<IGameResourceEntity>> GetByIds(IEnumerable<Guid> ids);
         Task<IReadOnlyDictionary<string, IGameResourceEntity>> GetAllResourcesByKeys();
         Task<IGameResourceEntity> Create(string key, string name, string iconUrl, int price);
         Task<IReadOnlyList<ResourceAmount>> GetAllResourcesByPlayer(Guid playerId);

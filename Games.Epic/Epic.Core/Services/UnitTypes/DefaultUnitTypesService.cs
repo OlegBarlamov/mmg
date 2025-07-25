@@ -89,5 +89,9 @@ namespace Epic.Core.Services.UnitTypes
             return Price.Create(resourceValues);
         }
 
+        public Task<Price[]> GetPrices(IReadOnlyList<IUnitTypeObject> unitTypes)
+        {
+            return Task.WhenAll(unitTypes.Select(GetPrice));
+        }
     }
 }
