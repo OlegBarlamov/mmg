@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Epic.Data.GlobalUnits;
+using Epic.Data.PlayerUnits;
 using JetBrains.Annotations;
 using NetExtensions.Collections;
 
-namespace Epic.Data.PlayerUnits
+namespace Epic.Data.GlobalUnits
 {
     [UsedImplicitly]
     public class InMemoryGlobalUnitsRepository : IGlobalUnitsRepository
@@ -14,17 +14,17 @@ namespace Epic.Data.PlayerUnits
         public string Name => nameof(InMemoryGlobalUnitsRepository);
         public string EntityName => "PlayerUnit";
         
-        private readonly List<GlobalUnitEntity> _playerUnits = new List<GlobalUnitEntity>();
+        private readonly List<GlobalUnitEntity> _units = new List<GlobalUnitEntity>();
         
         public Task<IGlobalUnitEntity[]> GetByContainerId(Guid containerId)
         {
-            var units = _playerUnits.Where(unit => unit.ContainerId == containerId).ToArray<IGlobalUnitEntity>();
+            var units = _units.Where(unit => unit.ContainerId == containerId).ToArray<IGlobalUnitEntity>();
             return Task.FromResult(units);
         }
         
         public Task<IGlobalUnitEntity[]> GetAliveByContainerId(Guid containerId)
         {
-            var aliveUnits = _playerUnits
+            var aliveUnits = _units
                 .Where(unit => unit.ContainerId == containerId && unit.IsAlive)
                 .ToArray<IGlobalUnitEntity>();
             return Task.FromResult(aliveUnits);
@@ -32,7 +32,16 @@ namespace Epic.Data.PlayerUnits
 
         public Task<IGlobalUnitEntity[]> FetchUnitsByIds(IReadOnlyCollection<Guid> ids)
         {
-            return Task.FromResult(_playerUnits.Where(unit => ids.Contains(unit.Id)).ToArray<IGlobalUnitEntity>());
+            return Task.FromResult(_units.Where(unit => ids.Contains(unit.Id)).ToArray<IGlobalUnitEntity>());
+        }
+
+        public Task RemoveByIds(IEnumerable<Guid> ids)
+        {
+            foreach (var id in ids)
+            {
+                _units.Remove(_units.Single(unit => unit.Id == id));
+            }
+            return Task.CompletedTask;
         }
 
         public Task<IGlobalUnitEntity> Create(Guid typeId, int count, Guid containerId, bool isAlive, int containerSlotIndex)
@@ -47,7 +56,7 @@ namespace Epic.Data.PlayerUnits
                 ContainerSlotIndex = containerSlotIndex,
             };
             
-            _playerUnits.Add(entity);
+            _units.Add(entity);
             
             return Task.FromResult((IGlobalUnitEntity)entity);
         }
@@ -56,7 +65,7 @@ namespace Epic.Data.PlayerUnits
         {
             entities.ForEach(entity =>
             {
-                var target = _playerUnits.First(x => x.Id == entity.Id);
+                var target = _units.First(x => x.Id == entity.Id);
                 target.UpdateFrom(entity);
             });
             return Task.CompletedTask;
@@ -64,7 +73,7 @@ namespace Epic.Data.PlayerUnits
 
         public Task<IGlobalUnitEntity> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex)
         {
-            return Task.FromResult<IGlobalUnitEntity>(_playerUnits.First(unit => unit.ContainerId == containerId && unit.ContainerSlotIndex == slotIndex));
+            return Task.FromResult<IGlobalUnitEntity>(_units.First(unit => unit.ContainerId == containerId && unit.ContainerSlotIndex == slotIndex));
         }
     }
 }

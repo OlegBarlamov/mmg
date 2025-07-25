@@ -12,6 +12,7 @@ namespace Epic.Data.GlobalUnits
         Task<IGlobalUnitEntity[]> GetAliveByContainerId(Guid containerId);
         
         Task<IGlobalUnitEntity[]> FetchUnitsByIds(IReadOnlyCollection<Guid> ids);
+        Task RemoveByIds(IEnumerable<Guid> ids);
         
         Task<IGlobalUnitEntity> Create(Guid typeId, int count, Guid containerId, bool isAlive, int containerSlotIndex);
         

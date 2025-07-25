@@ -17,6 +17,8 @@ namespace Epic.Data.UnitTypes
         string Name { get; }
         string BattleImgUrl { get; }
         public string DashboardImgUrl { get; }
+        public int Value { get; }
+        IReadOnlyDictionary<string, int> ResourcesDistribution { get; } 
     }
 
     public abstract class UnitTypeProps : IUnitProps
@@ -34,6 +36,8 @@ namespace Epic.Data.UnitTypes
         public string Name { get; set; }
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
+        public int Value { get; set; } = 1;
+        public IReadOnlyDictionary<string, int> ResourcesDistribution { get; set; } = new Dictionary<string, int>();
 
         public UnitTypeProperties() { }
     }
@@ -62,6 +66,8 @@ namespace Epic.Data.UnitTypes
                 Speed = properties.Speed,
                 Health = properties.Health,
                 Attacks = properties.Attacks.ToList(),
+                Value = properties.Value,
+                ResourcesDistribution = properties.ResourcesDistribution,
             };
         }
     }

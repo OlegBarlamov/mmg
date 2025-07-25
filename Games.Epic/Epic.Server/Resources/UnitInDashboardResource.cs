@@ -3,7 +3,7 @@ using Epic.Core.Services.Units;
 
 namespace Epic.Server.Resources
 {
-    public class UserUnitInDashboardResource
+    public class UnitInDashboardResource
     {
         public string Id { get; }
         public string TypeId { get; }
@@ -11,7 +11,7 @@ namespace Epic.Server.Resources
         public int Count { get; }
         public int SlotIndex { get; }
         
-        public UserUnitInDashboardResource(IGlobalUnitObject globalUnit)
+        public UnitInDashboardResource(IGlobalUnitObject globalUnit)
         {
             Id = globalUnit.Id.ToString();
             ThumbnailUrl = globalUnit.UnitType.DashboardImgUrl;

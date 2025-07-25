@@ -16,5 +16,7 @@ namespace Epic.Core.Services.Units
         
         Task<IReadOnlyCollection<IGlobalUnitObject>> CreateUnits(IReadOnlyCollection<CreateUnitData> unitsToCreate);
         Task<IGlobalUnitObject> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex);
+
+        Task RemoveUnits(IReadOnlyCollection<IGlobalUnitObject> units);
     }
 }

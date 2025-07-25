@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.GlobalUnits;
-using Epic.Data.PlayerUnits;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -84,6 +83,11 @@ namespace Epic.Core.Services.Units
             
             var filledUnits = await FillUserObjects(new [] { unit });
             return filledUnits.First();
+        }
+
+        public Task RemoveUnits(IReadOnlyCollection<IGlobalUnitObject> units)
+        {
+            return GlobalUnitsRepository.RemoveByIds(units.Select(u => u.Id));
         }
 
         private async Task<IReadOnlyCollection<MutableGlobalUnitObject>> FillUserObjects(

@@ -22,6 +22,7 @@ namespace Epic.Data.GameResources
             _resources.Add(new MutableGameResourceEntity
             {
                 Id = GoldResourceId,
+                Key = PredefinedResourcesKeys.Gold,
                 IconUrl = "https://heroes.thelazy.net//images/9/9f/Gold_%28leather%29.gif",
                 Name = "Gold",
                 Price = 1,
@@ -40,12 +41,19 @@ namespace Epic.Data.GameResources
                 .ToArray());
         }
 
-        public Task<IGameResourceEntity> Create(string name, string iconUrl, int price)
+        public Task<IReadOnlyDictionary<string, IGameResourceEntity>> GetAllResourcesByKeys()
+        {
+            return Task.FromResult<IReadOnlyDictionary<string, IGameResourceEntity>>(
+                _resources.ToDictionary(x => x.Key, x => (IGameResourceEntity)x));
+        }
+
+        public Task<IGameResourceEntity> Create(string key, string name, string iconUrl, int price)
         {
             var entity = new MutableGameResourceEntity
             {
                 Id = Guid.NewGuid(),
                 Name = name,
+                Key = key,
                 IconUrl = iconUrl,
                 Price = price,
             };
@@ -97,6 +105,16 @@ namespace Epic.Data.GameResources
 
             await Pay(price, playerId);
             return true;
+        }
+
+        public Task<bool> IsEnoughToPay(Price price, Guid playerId)
+        {
+            var result = price.PerResourcePrice.All(x =>
+            {
+                var resource = GetResourceByPlayerInternal(x.Key, playerId);
+                return resource.Amount >= x.Value;
+            });
+            return Task.FromResult(result);
         }
 
         public Task Pay(Price price, Guid playerId)

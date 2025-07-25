@@ -74,6 +74,7 @@ namespace Epic.Server
                 Name = "Unit",
                 Health = 10,
                 Speed = 5,
+                Value = 100,
                 Attacks = new List<AttackFunctionType>
                 {
                     new MeleeAttackType
@@ -93,6 +94,7 @@ namespace Epic.Server
                 Name = "Archer",
                 Health = 7,
                 Speed = 4,
+                Value = 70,
                 Attacks = new List<AttackFunctionType>
                 {
                     new RangeAttackType

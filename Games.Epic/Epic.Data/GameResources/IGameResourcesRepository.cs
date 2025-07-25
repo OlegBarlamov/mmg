@@ -9,7 +9,8 @@ namespace Epic.Data.GameResources
         Guid GoldResourceId { get; }
         Task<IGameResourceEntity> GetById(Guid id);
         Task<IReadOnlyList<IGameResourceEntity>> GetByIds(IReadOnlyList<Guid> ids);
-        Task<IGameResourceEntity> Create(string name, string iconUrl, int price);
+        Task<IReadOnlyDictionary<string, IGameResourceEntity>> GetAllResourcesByKeys();
+        Task<IGameResourceEntity> Create(string key, string name, string iconUrl, int price);
         Task<IReadOnlyList<ResourceAmount>> GetAllResourcesByPlayer(Guid playerId);
         Task<ResourceAmount> GetResourceByPlayer(Guid resourceId, Guid playerId);
         
@@ -17,6 +18,8 @@ namespace Epic.Data.GameResources
         Task<IReadOnlyDictionary<Guid, int>> GetResourcesAmount(Guid playerId);
         
         Task<bool> PayIfEnough(Price price, Guid playerId);
+        
+        Task<bool> IsEnoughToPay(Price price, Guid playerId);
         
         Task Pay(Price price, Guid playerId);
         Task GiveResources(ResourceAmount[] resourceAmounts, Guid playerId);

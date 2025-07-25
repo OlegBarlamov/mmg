@@ -9,13 +9,14 @@ namespace Epic.Server.Resources
     {
         public Guid RewardId { get; }
         public Guid PlayerId { get; }
-        public UserUnitInDashboardResource[] UsersGiven { get; }
+        public UnitInDashboardResource[] UnitsGiven { get; }
         public ResourceDashboardResource[] ResourcesGiven { get; } 
+        
         public AcceptedRewardResource(AcceptedRewardData acceptedRewardData)
         {
             RewardId = acceptedRewardData.RewardId;
             PlayerId = acceptedRewardData.PlayerId;
-            UsersGiven = acceptedRewardData.UnitsGiven.Select(x => new UserUnitInDashboardResource(x)).ToArray();
+            UnitsGiven = acceptedRewardData.UnitsGiven.Select(x => new UnitInDashboardResource(x)).ToArray();
             ResourcesGiven = acceptedRewardData.ResourcesGiven.Select(x => new ResourceDashboardResource(x)).ToArray();
         }
     }

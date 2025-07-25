@@ -7,13 +7,13 @@ namespace Epic.Server.Resources
     {
         public string Id { get; }
         public int Capacity { get; }
-        public UserUnitInDashboardResource[] Units { get; }
+        public UnitInDashboardResource[] Units { get; }
         
         public UnitsContainerWithUnitsResource(IUnitsContainerWithUnits containerWithUnits)
         {
             Id = containerWithUnits.Id.ToString();
             Capacity = containerWithUnits.Capacity;
-            Units = containerWithUnits.Units.Select(x => new UserUnitInDashboardResource(x)).ToArray();
+            Units = containerWithUnits.Units.Select(x => new UnitInDashboardResource(x)).ToArray();
         }
     }
 }

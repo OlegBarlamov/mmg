@@ -10,6 +10,7 @@ namespace Epic.Core.Objects.Rewards
         public Guid PlayerId { get; set; }
         public IGlobalUnitObject[] UnitsGiven { get; set; }
         public ResourceAmount[] ResourcesGiven { get; set; }
+        public Price PricePayed { get; set; }
 
         public static AcceptedRewardData Empty(Guid rewardId, Guid playerId)
         {

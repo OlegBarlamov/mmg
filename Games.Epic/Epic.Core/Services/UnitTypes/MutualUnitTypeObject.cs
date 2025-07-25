@@ -16,6 +16,8 @@ namespace Epic.Core.Services.UnitTypes
         IReadOnlyList<IAttackFunctionType> IUnitProps.Attacks => Attacks;
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
+        public int Value { get; set; }
+        public IReadOnlyDictionary<string, int> ResourcesDistribution { get; set; }
 
         private MutualUnitTypeObject()
         {
@@ -33,6 +35,8 @@ namespace Epic.Core.Services.UnitTypes
                 Speed = entity.Speed,
                 Health = entity.Health,
                 Attacks = entity.Attacks.Cast<AttackFunctionType>().ToList(),
+                Value = entity.Value,
+                ResourcesDistribution = entity.ResourcesDistribution
             };
         }
 
