@@ -12,5 +12,7 @@ namespace Epic.Core.Services.Battles
         IGlobalUnitObject GlobalUnit { get; }
         int PlayerIndex { get; }
         int CurrentHealth { get; }
+        int InitialCount { get; }
+        int CurrentCount { get; }
     }
 }

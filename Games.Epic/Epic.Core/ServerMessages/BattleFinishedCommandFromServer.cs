@@ -7,6 +7,7 @@ namespace Epic.Core.ServerMessages
         }
 
         public string Winner { get; set; }
+        public string ReportId { get; set; }
         public override string Command { get; } = "BATTLE_FINISHED";
     }
 }

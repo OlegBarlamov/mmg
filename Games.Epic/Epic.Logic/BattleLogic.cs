@@ -159,19 +159,19 @@ namespace Epic.Logic
             }
             
             var defeatedPlayers = BattleObject.PlayerIds.Where(x => x != winnerPlayerId).ToArray();
-            
             // TODO kill the heroes
 
             if (BattleObject.ProgressDays)
                 await DaysProcessor.ProcessNewDay(BattleObject.PlayerIds.ToArray());
 
+            var reportEntity = await BattlesService.FinishBattle(BattleObject, battleResult);
+            
             var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnNumber)
             {
                 Winner = battleResult.Winner?.ToString() ?? string.Empty,
+                ReportId = reportEntity.Id.ToString(),
             };
             await BroadcastMessageToClientAndSaveAsync(battleFinishedCommand);
-
-            await BattlesService.FinishBattle(BattleObject, battleResult);
         }
 
         private Task BroadcastMessageToClientAndSaveAsync(IServerBattleMessage message)
@@ -301,6 +301,7 @@ namespace Epic.Logic
 
             await GlobalUnitsService.UpdateUnits(new [] { targetTarget.GlobalUnit });
 
+            targetTarget.CurrentCount = unitTakesDamageData.RemainingCount;
             targetTarget.CurrentHealth = unitTakesDamageData.RemainingHealth;
             
             await BattleUnitsService.UpdateUnits(new[] { targetTarget });

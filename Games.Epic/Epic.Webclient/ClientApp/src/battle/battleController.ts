@@ -11,7 +11,7 @@ import { ITurnAwaiter } from "./battleServerMessagesHandler";
 import { SignalBasedCancellationToken, TaskCancelledError } from "../common/cancellationToken";
 
 export interface IBattleController {
-    startBattle(): Promise<BattlePlayerNumber | null>
+    startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }>
     dispose(): void
 }
 
@@ -48,12 +48,14 @@ export class BattleController implements IBattleController {
         this.turnAwaiter.dispose()
     }
 
-    async startBattle(): Promise<BattlePlayerNumber | null> {
+    async startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }> {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
         this.currentTurnIndex = this.turnAwaiter.currentTurnIndex
 
         await this.battleActionProcessor.onClientConnected()
+
+        let reportId: string | null = null;
 
         while (!this.battleFinished) {
             try {
@@ -71,15 +73,20 @@ export class BattleController implements IBattleController {
                 this.currentTurnIndex = turnInfo.index
                 this.battleFinished = turnInfo.result?.finished ?? false
                 this.winnerPlayer = turnInfo.result?.winner ?? null
+                
+                // Capture the report ID when battle finishes
+                if (this.battleFinished && turnInfo.result?.reportId) {
+                    reportId = turnInfo.result.reportId;
+                }
 
             } catch (e) {
                 console.error('Error while processing the battle action: ' + e)
             }
         }
 
-        await wait(2000)
+        await wait(1000)
 
-        return this.winnerPlayer
+        return { winner: this.winnerPlayer, reportId: reportId }
     }
 
     private isPlayerControlled(player: BattlePlayerNumber): boolean {

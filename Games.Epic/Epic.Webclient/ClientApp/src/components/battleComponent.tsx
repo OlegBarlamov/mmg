@@ -10,6 +10,8 @@ import { BattlePlayerNumber } from '../player/playerNumber';
 import { RewardDialog } from './rewardDialog';
 import { IRewardToAccept } from '../rewards/IRewardToAccept';
 import { RewardType } from '../rewards/RewardType';
+import { BattleResultsModal } from './battleResultsModal';
+import { IReportInfo } from '../services/serverAPI';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -25,6 +27,7 @@ interface IBattleComponentState {
     currentReward: IRewardToAccept | null
     rewards: IRewardToAccept[]
     currentRewardIndex: number
+    battleReport: IReportInfo | null
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
@@ -37,7 +40,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             battleLoaded: false,
             currentReward: null,
             rewards: [],
-            currentRewardIndex: 0
+            currentRewardIndex: 0,
+            battleReport: null
         }
     }
 
@@ -57,21 +61,50 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
 
     private async startBattle() {
-        const winner = await this.battleController!.startBattle()
+        const battleResult = await this.battleController!.startBattle()
 
-        if (winner === BattlePlayerNumber.Player1) {
-            const serverAPI = this.props.serviceLocator.serverAPI()
-            const rewards = await serverAPI.getMyRewards()
-
-            if (rewards.length > 0) {
-                this.setState({
-                    rewards: rewards,
-                    currentReward: rewards[0],
-                    currentRewardIndex: 0
-                })
-            } else {
-                this.props.onBattleFinished()
+        // If we have a report ID, fetch and show the battle results first (for both wins and losses)
+        if (battleResult.reportId) {
+            try {
+                const serverAPI = this.props.serviceLocator.serverAPI()
+                const report = await serverAPI.getReport(battleResult.reportId)
+                this.setState({ battleReport: report })
+                return // Don't proceed yet, wait for modal to close
+            } catch (error) {
+                console.error('Failed to fetch battle report:', error)
+                // Continue even if report fetch fails
             }
+        }
+
+        // If no report or report fetch failed, proceed based on winner
+        if (battleResult.winner === BattlePlayerNumber.Player1) {
+            await this.proceedToRewards()
+        } else {
+            this.props.onBattleFinished()
+        }
+    }
+
+    private async proceedToRewards() {
+        const serverAPI = this.props.serviceLocator.serverAPI()
+        const rewards = await serverAPI.getMyRewards()
+
+        if (rewards.length > 0) {
+            this.setState({
+                rewards: rewards,
+                currentReward: rewards[0],
+                currentRewardIndex: 0
+            })
+        } else {
+            this.props.onBattleFinished()
+        }
+    }
+
+    private handleBattleResultsOk = () => {
+        this.setState({ battleReport: null })
+        
+        // Check if the player won to determine next action
+        if (this.state.battleReport?.isWinner) {
+            this.proceedToRewards()
         } else {
             this.props.onBattleFinished()
         }
@@ -172,6 +205,13 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                 )}
 
                 <div id={CanvasContainerId} style={canvasStyle}></div>
+
+                {this.state.battleReport && (
+                    <BattleResultsModal
+                        report={this.state.battleReport}
+                        onOk={this.handleBattleResultsOk}
+                    />
+                )}
 
                 {this.state.currentReward && (
                     <RewardDialog

@@ -70,6 +70,12 @@ namespace Epic.Core.Services.Players
             return await Task.WhenAll(entities.Select(x => FromEntity(x)));
         }
 
+        public async Task<IPlayerObject[]> GetByIds(Guid[] playerIds)
+        {
+            var entities = await PlayersRepository.GetByIds(playerIds);
+            return await Task.WhenAll(entities.Select(x => FromEntity(x)));
+        }
+
         public Task DayIncrement(Guid[] playerIds)
         {
            return PlayersRepository.DayIncrement(playerIds);

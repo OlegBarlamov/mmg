@@ -1,0 +1,200 @@
+.battle-results-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.battle-results-modal {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border: 2px solid #3498db;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: #ecf0f1;
+}
+
+.battle-results-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #3498db;
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    border-radius: 10px 10px 0 0;
+}
+
+.battle-results-header h2 {
+    margin: 0 0 10px 0;
+    color: #ecf0f1;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.battle-result {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.battle-result.victory {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.battle-result.defeat {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.battle-results-content {
+    padding: 20px;
+}
+
+.player-losses,
+.enemy-losses {
+    margin-bottom: 20px;
+}
+
+.player-losses h3,
+.enemy-losses h3 {
+    margin: 0 0 15px 0;
+    color: #ecf0f1;
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #3498db;
+}
+
+.player-losses h3 {
+    color: #3498db;
+}
+
+.enemy-losses h3 {
+    color: #e74c3c;
+}
+
+.units-horizontal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.unit-horizontal-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(26, 188, 156, 0.2);
+    border: 1px solid #1abc9c;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.unit-horizontal-item:hover {
+    background: rgba(26, 188, 156, 0.3);
+    border-color: #16a085;
+}
+
+.unit-thumbnail {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #34495e;
+    object-fit: cover;
+}
+
+.unit-losses-count {
+    color: #e74c3c;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.no-losses {
+    text-align: center;
+    color: #95a5a6;
+    font-style: italic;
+    padding: 20px;
+    background: rgba(52, 73, 94, 0.3);
+    border-radius: 8px;
+    border: 1px dashed #34495e;
+}
+
+.battle-results-footer {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #3498db;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-radius: 0 0 10px 10px;
+}
+
+.ok-button {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.ok-button:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.ok-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .battle-results-modal {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .battle-results-header h2 {
+        font-size: 20px;
+    }
+    
+    .battle-result {
+        font-size: 16px;
+    }
+    
+    .unit-item {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .unit-thumbnail {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .unit-name {
+        font-size: 13px;
+    }
+    
+    .unit-losses {
+        font-size: 11px;
+    }
+} 

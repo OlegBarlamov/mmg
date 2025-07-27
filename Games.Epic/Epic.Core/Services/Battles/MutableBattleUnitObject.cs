@@ -14,7 +14,9 @@ namespace Epic.Core.Services.Battles
         public int Row { get; set; }
         public int PlayerIndex { get; set; }
         public int CurrentHealth { get; set; }
-        
+        public int InitialCount { get; set; }
+        public int CurrentCount { get; set; }
+
         IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
 
         private MutableBattleUnitObject(Guid id)
@@ -32,6 +34,8 @@ namespace Epic.Core.Services.Battles
                 Row = entity.Row,
                 PlayerIndex = entity.PlayerIndex,
                 CurrentHealth = entity.CurrentHealth,
+                InitialCount = entity.InitialCount,
+                CurrentCount = entity.CurrentCount,
             };
         }
         

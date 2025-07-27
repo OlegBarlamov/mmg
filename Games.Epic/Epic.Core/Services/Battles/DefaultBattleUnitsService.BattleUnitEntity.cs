@@ -14,7 +14,10 @@ namespace Epic.Core.Services.Battles
             public int Row { get; set; }
             public int PlayerIndex { get; set; }
             public int CurrentHealth { get; set; }
-            
+            public int InitialCount { get; set; }
+            public int CurrentCount { get; set; }
+
+
             protected BattleUnitEntityFields() {}
             
             public static BattleUnitEntityFields FromUserUnit(IGlobalUnitObject globalUnit, Guid battleId, InBattlePlayerNumber playerNumber)
@@ -27,6 +30,8 @@ namespace Epic.Core.Services.Battles
                     Row = globalUnit.ContainerSlotIndex,
                     PlayerIndex = (int)playerNumber,
                     CurrentHealth = globalUnit.UnitType.Health,
+                    InitialCount = globalUnit.Count,
+                    CurrentCount = globalUnit.Count,
                 };
             }
         }
@@ -50,6 +55,8 @@ namespace Epic.Core.Services.Battles
                     Row = battleUnit.Row,
                     PlayerIndex = battleUnit.PlayerIndex,
                     CurrentHealth = battleUnit.CurrentHealth,
+                    InitialCount = battleUnit.InitialCount,
+                    CurrentCount = battleUnit.CurrentCount,
                 };
             }
         }

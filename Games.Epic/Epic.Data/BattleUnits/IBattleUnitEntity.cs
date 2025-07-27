@@ -18,6 +18,10 @@ namespace Epic.Data.BattleUnits
         int PlayerIndex { get; }
         
         int CurrentHealth { get; }
+        
+        int InitialCount { get; }
+        
+        int CurrentCount { get; }
     }
 
     internal class BattleUnitEntity : IBattleUnitEntity
@@ -30,6 +34,8 @@ namespace Epic.Data.BattleUnits
         public int PlayerIndex { get; set; }
         
         public int CurrentHealth { get; set; }
+        public int InitialCount { get; set; }
+        public int CurrentCount { get; set; }
 
         public BattleUnitEntity(IBattleUnitEntityFields fields)
         {
@@ -44,6 +50,8 @@ namespace Epic.Data.BattleUnits
             PlayerIndex = fields.PlayerIndex;
             PlayerUnitId = fields.PlayerUnitId;
             CurrentHealth = fields.CurrentHealth;
+            InitialCount = fields.InitialCount;
+            CurrentCount = fields.CurrentCount;
         }
     }
 }

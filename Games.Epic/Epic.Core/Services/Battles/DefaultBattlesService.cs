@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.BattleReports;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
+using Epic.Data.BattleReports;
 using Epic.Data.Battles;
 using JetBrains.Annotations;
 
@@ -20,6 +22,7 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IBattlesCacheService BattlesCacheService { get; }
         [NotNull] private IGlobalUnitsService GlobalUnitsService { get; }
         [NotNull] private IPlayersService PlayersService { get; }
+        public IBattleReportsRepository BattleReportsRepository { get; }
 
         public DefaultBattlesService(
             [NotNull] IBattlesRepository battlesRepository,
@@ -27,7 +30,8 @@ namespace Epic.Core.Services.Battles
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IBattlesCacheService battlesCacheService,
             [NotNull] IGlobalUnitsService globalUnitsService,
-            [NotNull] IPlayersService playersService)
+            [NotNull] IPlayersService playersService,
+            [NotNull] IBattleReportsRepository battleReportsRepository)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -35,6 +39,7 @@ namespace Epic.Core.Services.Battles
             BattlesCacheService = battlesCacheService ?? throw new ArgumentNullException(nameof(battlesCacheService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            BattleReportsRepository = battleReportsRepository ?? throw new ArgumentNullException(nameof(battleReportsRepository));
         }
 
         public async Task<IBattleObject> GetBattleById(Guid battleId)
@@ -122,13 +127,20 @@ namespace Epic.Core.Services.Battles
             return BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(battleObject));
         }
 
-        public async Task FinishBattle(IBattleObject battleObject, BattleResult result)
+        public async Task<IBattleReportEntity> FinishBattle(IBattleObject battleObject, BattleResult result)
         {
             var mutableObject = ToMutableObject(battleObject);
             mutableObject.IsActive = false;
             await UpdateBattle(mutableObject);
 
             await BattleDefinitionsService.SetFinished(battleObject.BattleDefinitionId);
+
+            return await BattleReportsRepository.Create(new MutableBattleReportFields(
+                battleObject.Id, 
+                result.Winner.HasValue ? (int?)result.Winner.Value : null,
+                battleObject.PlayersIds.ToArray(),
+                result.Winner.HasValue ? battleObject.GetPlayerId(result.Winner.Value) : null)
+            );
         }
 
         private void PlaceBattleUnits(MutableBattleObject battleObject)

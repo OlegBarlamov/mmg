@@ -41,6 +41,7 @@ export interface NextTurnCommandFromServer extends PlayerCommandFromServer {
 export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {
     command: 'BATTLE_FINISHED'
     winner?: BattlePlayerNumber
+    reportId: string
 }
 
 export type BattleCommandFromServer = 

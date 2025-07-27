@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.BattleReports;
+using Epic.Data.BattleReports;
 
 namespace Epic.Core.Services.Battles
 {
@@ -16,6 +18,6 @@ namespace Epic.Core.Services.Battles
         Task<IBattleObject> BeginBattle(Guid playerId, IBattleObject battleObject);
         Task UpdateBattle(IBattleObject battleObject);
         
-        Task FinishBattle(IBattleObject battleObject, BattleResult result);
+        Task<IBattleReportEntity> FinishBattle(IBattleObject battleObject, BattleResult result);
     }
 }

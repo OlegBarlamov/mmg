@@ -10,6 +10,7 @@ export type BattleMapCell = {
 export type BattleResult = {
     finished: boolean
     winner?: BattlePlayerNumber
+    reportId?: string
 }
 
 export type BattleTurnInfo = {

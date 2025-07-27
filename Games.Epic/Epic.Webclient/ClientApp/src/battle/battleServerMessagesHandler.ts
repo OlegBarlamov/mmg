@@ -126,7 +126,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 player: BattlePlayerNumber.Player1,
                 result: {
                     finished: true,
-                    winner: message.winner
+                    winner: message.winner,
+                    reportId: message.reportId
                 },
                 nextTurnUnitId: undefined,
             }

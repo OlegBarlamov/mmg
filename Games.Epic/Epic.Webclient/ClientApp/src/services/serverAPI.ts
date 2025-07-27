@@ -47,6 +47,20 @@ export interface IAcceptedReward {
     readonly nextBattle: BattleMap | null
 }
 
+export interface IReportInfo {
+    readonly id: string
+    readonly isWinner: boolean
+    playerUnits: IReportUnit[]
+    enemyUnits: IReportUnit[]
+}
+
+export interface IReportUnit { 
+    readonly thumbnailUrl: string
+    readonly startCount: number
+    readonly finalCount: number
+    readonly name: string
+}
+
 export interface IServerAPI {
     login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
@@ -67,4 +81,6 @@ export interface IServerAPI {
     moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo>
 
     getResources(): Promise<IResourceInfo[]>
+
+    getReport(reportId: string): Promise<IReportInfo>
 }
