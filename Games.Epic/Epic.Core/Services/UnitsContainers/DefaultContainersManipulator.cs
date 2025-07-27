@@ -78,6 +78,9 @@ namespace Epic.Core.Services.UnitsContainers
             if (specificSlotIndex.HasValue && !emptySlots.Contains(specificSlotIndex.Value))
             {
                 var targetUnit = await GlobalUnitsService.GetAliveUnitFromContainerInSlot(targetContainerId, specificSlotIndex.Value);
+                if (originalUnit.Id == targetUnit.Id)
+                    throw new InvalidUnitSlotsOperationException("Target slot contains exact same unit object.");
+                    
                 if (originalUnit.UnitType.Id != targetUnit.UnitType.Id)
                 {
                     if (!moveAllUnits)

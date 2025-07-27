@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Epic.Core.Objects.Rewards;
 using Epic.Core.Services.Rewards;
 using Epic.Data.GameResources;
-using Epic.Data.Reward;
 
 namespace Epic.Server.Resources
 {
@@ -15,9 +13,13 @@ namespace Epic.Server.Resources
         public string RewardType { get; }
         public int[] Amounts { get; }
         public string Message { get; }
+        public string IconUrl { get; }
+        public string Title { get; }
         public UnitRewardResource[] UnitsRewards { get; }
         public ResourceDashboardResource[] ResourcesRewards { get; }
         public PriceResource[] Prices { get; }
+        public BattleDefinitionResource NextBattle { get; }
+        public bool CanDecline { get; }
 
         public AcceptingRewardResource(IRewardObject reward, IReadOnlyList<ResourceAmount[]> prices)
         {
@@ -26,6 +28,9 @@ namespace Epic.Server.Resources
             RewardType = reward.RewardType.ToString();
             Message = reward.Message;
             Amounts = reward.Amounts;
+            CanDecline = reward.CanDecline;
+            IconUrl = reward.CustomIconUrl;
+            Title = reward.CustomTitle;
 
             UnitsRewards = reward.UnitTypes
                 .Select((x, i) => new UnitRewardResource(x, reward.Amounts[i]))
@@ -34,6 +39,9 @@ namespace Epic.Server.Resources
             ResourcesRewards = reward.Resources
                 .Select((x, i) => new ResourceDashboardResource(ResourceAmount.Create(x, reward.Amounts[i])))
                 .ToArray();
+
+            if (reward.NextBattleDefinition != null)
+                NextBattle = new BattleDefinitionResource(reward.NextBattleDefinition, Array.Empty<IRewardObject>());
 
             Prices = prices.Select(x => new PriceResource(x)).ToArray();
         }

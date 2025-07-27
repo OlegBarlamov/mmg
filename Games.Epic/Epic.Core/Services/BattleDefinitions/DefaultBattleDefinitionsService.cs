@@ -39,6 +39,14 @@ namespace Epic.Core.Services.BattleDefinitions
             return battleDefinitions;
         }
 
+        public async Task<IBattleDefinitionObject> GetBattleDefinitionById(Guid battleDefinitionId)
+        {
+            var entity = await BattleDefinitionsRepository.GetById(battleDefinitionId);
+            var battleDefinition = MutableBattleDefinitionObject.FromEntity(entity);
+            await FillBattleDefinitionObject(battleDefinition);
+            return battleDefinition;
+        }
+
         public async Task<IBattleDefinitionObject> GetBattleDefinitionByPlayerAndId(Guid playerId, Guid battleDefinitionId)
         {
             var battleDefinition =
@@ -50,8 +58,17 @@ namespace Epic.Core.Services.BattleDefinitions
 
         public async Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height)
         {
-            var container = await UnitsContainersService.Create(height, playerId);
+            var container = await UnitsContainersService.Create(height, Guid.Empty);
             var entity = await BattleDefinitionsRepository.Create(playerId, width, height, container.Id);
+            var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(entity);
+            await FillBattleDefinitionObject(battleDefinitionObject, container);
+            return battleDefinitionObject;
+        }
+
+        public async Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height)
+        {
+            var container = await UnitsContainersService.Create(height, Guid.Empty);
+            var entity = await BattleDefinitionsRepository.Create(width, height, container.Id);
             var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(entity);
             await FillBattleDefinitionObject(battleDefinitionObject, container);
             return battleDefinitionObject;

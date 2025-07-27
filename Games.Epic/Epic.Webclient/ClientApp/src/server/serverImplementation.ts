@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IPlayerInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -67,8 +67,12 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         const webSocket = await this.establishWS(`api/battle/${battleId}`)
         return new BattleServerConnection(webSocket, handler)
     }
-    async acceptReward(id: string, body: AcceptRewardBody): Promise<void> {
-        await this.fetchResource(`api/rewards/${id}`, "POST", 'accept_reward', body)
+    async acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward> {
+        const result = await this.fetchResource<IAcceptedReward>(`api/rewards/${id}`, "POST", 'accept_reward', body)
+        if (result.nextBattle) {
+            this.fillMapCells(result.nextBattle)
+        }
+        return result
     }
 
     getMyRewards(): Promise<IRewardToAccept[]> {

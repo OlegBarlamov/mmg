@@ -10,7 +10,6 @@ namespace Epic.Core.Services.Players
         Task<IPlayerObject> CreatePlayer(Guid userId, string name, PlayerObjectType playerObjectType);
         Task<IPlayerObject> GetById(Guid playerId);
         Task<IPlayerObject[]> GetAllByUserId(Guid userId);
-        Task SetDefeated(Guid[] playerIds);
         Task DayIncrement(Guid[] playerIds);
         Task SetGenerationInProgress(Guid playerId, bool generationInProgress);
         Task SetActiveHero(Guid playerId, Guid heroId);

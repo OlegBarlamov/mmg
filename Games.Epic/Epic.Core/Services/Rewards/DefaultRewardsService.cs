@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects.Rewards;
+using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameResources.Errors;
 using Epic.Core.Services.Players;
+using Epic.Core.Services.Rewards.Errors;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitsContainers.Errors;
@@ -25,6 +28,8 @@ namespace Epic.Core.Services.Rewards
         public IPlayersService PlayersService { get; }
         public IContainersManipulator ContainersManipulator { get; }
         public IGameResourcesRepository GameResourcesRepository { get; }
+        public IBattleDefinitionsService BattleDefinitionsService { get; }
+        public IBattlesService BattlesService { get; }
 
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
@@ -33,7 +38,9 @@ namespace Epic.Core.Services.Rewards
             [NotNull] IUnitsContainersService containersService,
             [NotNull] IPlayersService playersService,
             [NotNull] IContainersManipulator containersManipulator,
-            [NotNull] IGameResourcesRepository gameResourcesRepository)
+            [NotNull] IGameResourcesRepository gameResourcesRepository,
+            [NotNull] IBattleDefinitionsService battleDefinitionsService,
+            [NotNull] IBattlesService battlesService)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
@@ -42,6 +49,8 @@ namespace Epic.Core.Services.Rewards
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             ContainersManipulator = containersManipulator ?? throw new ArgumentNullException(nameof(containersManipulator));
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
+            BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
+            BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
         }
         public async Task<IRewardObject[]> GetNotAcceptedPlayerRewards(Guid playerId)
         {
@@ -134,6 +143,14 @@ namespace Epic.Core.Services.Rewards
                     await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
                 }
 
+                IBattleObject battleObject = null;
+                if (rewardObject.NextBattleDefinition != null)
+                {
+                    var battleDefinition = await BattleDefinitionsService.GetBattleDefinitionById(rewardObject.NextBattleDefinition.Id);
+                    battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleDefinition, false);
+                    battleObject = await BattlesService.BeginBattle(playerId, battleObject);
+                }
+
                 return new AcceptedRewardData
                 {
                     RewardId = rewardId,
@@ -141,6 +158,7 @@ namespace Epic.Core.Services.Rewards
                     UnitsGiven = unitsGiven,
                     ResourcesGiven = resourcesGiven,
                     PricePayed = priceToPay,
+                    NextBattle = battleObject,
                 };
             }
             catch (NotEnoughResourcesToPayException)
@@ -152,6 +170,10 @@ namespace Epic.Core.Services.Rewards
 
         public async Task<AcceptedRewardData> RejectRewardAsync(Guid rewardId, Guid playerId)
         {
+            var reward = (await RewardsRepository.GetRewardsByIdAsync(new[] { rewardId }))[0];
+            if (!reward.CanDecline)
+                throw new RewardCanNotBeDeclineException();
+            
             await RewardsRepository.RemoveRewardFromPlayer(playerId, rewardId);
             return AcceptedRewardData.Empty(rewardId, playerId);
         }
@@ -169,6 +191,9 @@ namespace Epic.Core.Services.Rewards
                     break;
                 case RewardType.ResourcesGain:
                     rewardObject.Resources = await GameResourcesRepository.GetByIds(entity.Ids);
+                    break;
+                case RewardType.Battle:
+                    rewardObject.NextBattleDefinition = await BattleDefinitionsService.GetBattleDefinitionById(rewardObject.NextBattleDefinitionId.Value);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -47,7 +47,6 @@ namespace Epic.Core.Services.Players
             var entity = await PlayersRepository.Create(new MutablePlayerEntityFields
             {
                 Day = 0,
-                IsDefeated = false,
                 Name = name,
                 PlayerType = playerObjectType.ToEntity(),
                 UserId = user.Id,
@@ -69,11 +68,6 @@ namespace Epic.Core.Services.Players
         {
             var entities = await PlayersRepository.GetByUserId(userId);
             return await Task.WhenAll(entities.Select(x => FromEntity(x)));
-        }
-
-        public Task SetDefeated(Guid[] playerIds)
-        {
-            return PlayersRepository.SetDefeated(playerIds);
         }
 
         public Task DayIncrement(Guid[] playerIds)

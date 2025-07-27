@@ -7,7 +7,9 @@ namespace Epic.Data.BattleDefinitions
     {
         Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByPlayer(Guid playerId);
         Task<IBattleDefinitionEntity> Create(Guid playerId, int width, int height, Guid containerId);
+        Task<IBattleDefinitionEntity> Create(int width, int height, Guid containerId);
         Task<IBattleDefinitionEntity> GetByPlayerAndId(Guid playerId, Guid battleDefinitionId);
+        Task<IBattleDefinitionEntity> GetById(Guid battleDefinitionId);
         Task SetFinished(Guid battleDefinitionId);
         Task<int> CountBattles(Guid playerId);
     }

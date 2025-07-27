@@ -72,20 +72,26 @@ namespace Epic.Core.Services.Battles
         {
             var battleDefinition =
                 await BattleDefinitionsService.GetBattleDefinitionByPlayerAndId(playerId, battleDefinitionId);
-            
-            if (battleDefinition.IsFinished)
+            return await CreateBattleFromDefinition(playerId, battleDefinition, true);
+        }
+
+        public async Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, IBattleDefinitionObject battleDefinitionObject, bool progressDays)
+        {
+            if (battleDefinitionObject.IsFinished)
                 throw new InvalidOperationException("Battle definition is finished");
-            
+
             var battleEntity = await BattlesRepository.CreateBattleAsync(
-                battleDefinitionId,
+                battleDefinitionObject.Id,
                 new[] { playerId },
-                battleDefinition.Width,
-                battleDefinition.Height,
-                false);
+                battleDefinitionObject.Width,
+                battleDefinitionObject.Height,
+                false,
+                progressDays
+                );
             
             var battleObject = MutableBattleObject.FromEntity(battleEntity);
             
-            var battleInitialUnits = await BattleUnitsService.CreateUnitsFromBattleDefinition(battleDefinition, battleObject.Id);
+            var battleInitialUnits = await BattleUnitsService.CreateUnitsFromBattleDefinition(battleDefinitionObject, battleObject.Id);
             battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
             
             await FillUsers(battleObject);
@@ -129,13 +135,15 @@ namespace Epic.Core.Services.Battles
         {
             battleObject.Units.ForEach(u =>
             {
+                var columnAddition = u.Row / battleObject.Height;
+                u.Row = u.Row - columnAddition * battleObject.Height;
                 if (u.PlayerIndex == (int)InBattlePlayerNumber.Player1)
                 {
-                    u.Column = 0;
+                    u.Column = 0 + columnAddition;
                 }
                 else if (u.PlayerIndex == (int)InBattlePlayerNumber.Player2)
                 {
-                    u.Column = battleObject.Width - 1;
+                    u.Column = battleObject.Width - 1 - columnAddition;
                 }
                 else
                 {

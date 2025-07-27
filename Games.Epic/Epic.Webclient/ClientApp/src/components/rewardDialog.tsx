@@ -6,7 +6,7 @@ import { IResourceInfo } from "../services/serverAPI";
 
 export interface IRewardDialogProps {
     reward: IRewardToAccept
-    onAccept: () => Promise<void>
+    onAccept: (result?: any) => Promise<void>
     onDecline: () => Promise<void>
     serviceLocator?: any
 }
@@ -43,7 +43,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                 this.props.reward.amounts = amounts
             }
             
-            await this.props.onAccept()
+            const result = await this.props.onAccept()
             
             // Only close dialog if no error occurred
             this.setState({ isVisible: false })
@@ -320,6 +320,15 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                             >
                                 {this.state.isSubmitting ? 'Processing...' : 'OK'}
                             </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )
@@ -360,13 +369,15 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                             >
                                 {this.state.isSubmitting ? 'Accepting...' : 'Accept'}
                             </button>
-                            <button 
-                                className="reward-button decline-button" 
-                                onClick={this.handleDecline}
-                                disabled={this.state.isSubmitting}
-                            >
-                                {this.state.isSubmitting ? 'Declining...' : 'Decline'}
-                            </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )
@@ -378,15 +389,14 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                         {reward.unitsRewards && reward.unitsRewards.length > 0 && (
                             <div className="reward-units">
                                 <h4>Units to gain:</h4>
-                                <div className="units-list">
+                                <div className="units-horizontal">
                                     {reward.unitsRewards.map((unit, index) => (
-                                        <div key={index} className="unit-item">
+                                        <div key={index} className="unit-horizontal-item">
                                             <img 
                                                 src={unit.dashboardImgUrl} 
                                                 alt={unit.name}
                                                 className="unit-thumbnail"
                                             />
-                                            <span className="unit-name">{unit.name}</span>
                                             <span className="unit-amount">+{unit.amount}</span>
                                         </div>
                                     ))}
@@ -407,13 +417,15 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                             >
                                 {this.state.isSubmitting ? 'Accepting...' : 'Accept'}
                             </button>
-                            <button 
-                                className="reward-button decline-button" 
-                                onClick={this.handleDecline}
-                                disabled={this.state.isSubmitting}
-                            >
-                                {this.state.isSubmitting ? 'Declining...' : 'Decline'}
-                            </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )
@@ -551,13 +563,65 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                             >
                                 {this.state.isSubmitting ? 'Buying...' : 'Buy'}
                             </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Cancelling...' : 'Cancel'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )
+
+            case RewardType.Battle:
+                return (
+                    <div className="reward-content">
+                        <div className="reward-message">{reward.message}</div>
+                        
+                        {reward.nextBattle && reward.nextBattle.units && reward.nextBattle.units.length > 0 && (
+                            <div className="battle-units">
+                                <h4>Battle Units:</h4>
+                                <div className="units-horizontal">
+                                    {reward.nextBattle.units.map((unit, index) => (
+                                        <div key={index} className="unit-horizontal-item">
+                                            <img 
+                                                src={unit.thumbnailUrl} 
+                                                alt={unit.name}
+                                                className="unit-thumbnail"
+                                            />
+                                            <span className="unit-amount">x{unit.count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+                        
+                        <div className="reward-actions">
                             <button 
-                                className="reward-button decline-button" 
-                                onClick={this.handleDecline}
+                                className="reward-button accept-button" 
+                                onClick={this.handleAccept}
                                 disabled={this.state.isSubmitting}
                             >
-                                {this.state.isSubmitting ? 'Cancelling...' : 'Cancel'}
+                                {this.state.isSubmitting ? 'Starting Battle...' : 'Start Battle'}
                             </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )
@@ -566,10 +630,29 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                 return (
                     <div className="reward-content">
                         <div className="reward-message">{reward.message}</div>
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+                        
                         <div className="reward-actions">
-                            <button className="reward-button ok-button" onClick={this.handleAccept}>
-                                OK
+                            <button 
+                                className="reward-button ok-button" 
+                                onClick={this.handleAccept}
+                                disabled={this.state.isSubmitting}
+                            >
+                                {this.state.isSubmitting ? 'Processing...' : 'OK'}
                             </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )
@@ -585,7 +668,14 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
             <div className="reward-dialog-overlay">
                 <div className="reward-dialog">
                     <div className="reward-dialog-header">
-                        <h3>Reward</h3>
+                        {this.props.reward.iconUrl && (
+                            <img 
+                                src={this.props.reward.iconUrl} 
+                                alt="Reward Icon"
+                                className="reward-header-icon"
+                            />
+                        )}
+                        <h3>{this.props.reward.title || 'Reward'}</h3>
                     </div>
                     {this.renderRewardContent()}
                 </div>

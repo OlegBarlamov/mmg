@@ -42,6 +42,11 @@ export interface IResourceInfo {
     readonly amount: number
 }
 
+export interface IAcceptedReward {
+    readonly rewardId: string
+    readonly nextBattle: BattleMap | null
+}
+
 export interface IServerAPI {
     login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
@@ -57,7 +62,7 @@ export interface IServerAPI {
     establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
 
     getMyRewards(): Promise<IRewardToAccept[]>
-    acceptReward(id: string, body: AcceptRewardBody): Promise<void>
+    acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward>
     
     moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo>
 

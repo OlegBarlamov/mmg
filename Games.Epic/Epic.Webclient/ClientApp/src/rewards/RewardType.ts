@@ -3,4 +3,5 @@ export enum RewardType {
     ResourcesGain = 'ResourcesGain',
     UnitsGain = 'UnitsGain',
     UnitToBuy = 'UnitToBuy',
+    Battle = 'Battle',
 }

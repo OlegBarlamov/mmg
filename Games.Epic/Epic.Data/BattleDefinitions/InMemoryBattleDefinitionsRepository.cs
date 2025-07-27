@@ -53,6 +53,21 @@ namespace Epic.Data.BattleDefinitions
             return Task.FromResult((IBattleDefinitionEntity)battleDefinition);
         }
 
+        public Task<IBattleDefinitionEntity> Create(int width, int height, Guid containerId)
+        {
+            var battleDefinition = new BattleDefinitionEntity
+            {
+                Id = Guid.NewGuid(),
+                Height = height,
+                Width = width,
+                ContainerId = containerId,
+                Finished = false,
+            };
+            _battleDefinitions.Add(battleDefinition);
+            
+            return Task.FromResult((IBattleDefinitionEntity)battleDefinition);
+        }
+
         public Task<IBattleDefinitionEntity> GetByPlayerAndId(Guid playerId, Guid battleDefinitionId)
         {
             var userBattleDefinition = _playerBattleDefinitions.FirstOrDefault(x =>
@@ -60,6 +75,11 @@ namespace Epic.Data.BattleDefinitions
             if (userBattleDefinition == null)
                 throw new EntityNotFoundException(this, $"PlayerId: {playerId}; BattleDefinitionId: {battleDefinitionId}");
 
+            return Task.FromResult<IBattleDefinitionEntity>(_battleDefinitions.First(x => x.Id == battleDefinitionId));
+        }
+
+        public Task<IBattleDefinitionEntity> GetById(Guid battleDefinitionId)
+        {
             return Task.FromResult<IBattleDefinitionEntity>(_battleDefinitions.First(x => x.Id == battleDefinitionId));
         }
 

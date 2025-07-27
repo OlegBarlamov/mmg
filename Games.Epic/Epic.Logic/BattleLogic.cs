@@ -31,7 +31,7 @@ namespace Epic.Logic
         private IDaysProcessor DaysProcessor { get; }
         private IPlayersService PlayersService { get; }
         private ILogger<BattleLogic> Logger { get; }
-        public IRandomProvider RandomProvider { get; }
+        private IRandomProvider RandomProvider { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
 
@@ -81,32 +81,30 @@ namespace Epic.Logic
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(BattleLogic));
-                
+            
             var battleResult = GetBattleResult();
+
+            if (!battleResult.Finished && BattleObject.TurnNumber < 0)
+            {
+                // Initialize the battle
+                BattleObject.TurnNumber = 0;
+                await BattlesService.UpdateBattle(BattleObject);
+                
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
             try
             {
                 while (!battleResult.Finished)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    BattleObject.TurnNumber++;
-                    await BattlesService.UpdateBattle(BattleObject);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
                     _activeUnit = GetActiveUnit(BattleObject.LastTurnUnitIndex, out var activeUnitIndex);
-                    BattleObject.LastTurnUnitIndex = activeUnitIndex;
-                    await BattlesService.UpdateBattle(BattleObject);
-                    
-                    cancellationToken.ThrowIfCancellationRequested();
-                    
                     await BroadcastMessageToClientAndSaveAsync(new NextTurnCommandFromServer(
                         BattleObject.TurnNumber,
                         (InBattlePlayerNumber)_activeUnit.PlayerIndex,
                         _activeUnit.Id));
-
+                    
                     cancellationToken.ThrowIfCancellationRequested();
-
+                    
                     if (IsHumanControlled(_activeUnit))
                     {
                         await WaitForClientTurn(_activeUnit.PlayerIndex, BattleObject.TurnNumber);
@@ -115,9 +113,18 @@ namespace Epic.Logic
                     {
                         // TODO AI
                     }
+                    
+                    BattleObject.LastTurnUnitIndex = activeUnitIndex;
+                    BattleObject.TurnNumber++;
+                    await BattlesService.UpdateBattle(BattleObject);
+                    
+                    await BroadcastMessageToClientAndSaveAsync(new NextTurnCommandFromServer(
+                        BattleObject.TurnNumber,
+                        (InBattlePlayerNumber)_activeUnit.PlayerIndex,
+                        _activeUnit.Id));
 
                     cancellationToken.ThrowIfCancellationRequested();
-
+                    
                     battleResult = GetBattleResult();
                 }
             }
@@ -152,9 +159,11 @@ namespace Epic.Logic
             }
             
             var defeatedPlayers = BattleObject.PlayerIds.Where(x => x != winnerPlayerId).ToArray();
-            await PlayersService.SetDefeated(defeatedPlayers);
+            
+            // TODO kill the heroes
 
-            await DaysProcessor.ProcessNewDay(BattleObject.PlayerIds.ToArray());
+            if (BattleObject.ProgressDays)
+                await DaysProcessor.ProcessNewDay(BattleObject.PlayerIds.ToArray());
 
             var battleFinishedCommand = new BattleFinishedCommandFromServer(BattleObject.TurnNumber)
             {
@@ -341,7 +350,7 @@ namespace Epic.Logic
         {
             await connection.SendMessageAsync(new CommandApproved(message));
             
-            for (int i = message.TurnIndex; i <= BattleObject.TurnNumber; i++)
+            for (int i = message.TurnIndex; i < BattleObject.TurnNumber; i++)
             {
                 if (_passedServerBattleMessages.TryGetValue(i, out var messagesFromTurn))
                 {

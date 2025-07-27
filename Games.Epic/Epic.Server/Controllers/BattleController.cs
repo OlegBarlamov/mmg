@@ -61,6 +61,24 @@ namespace Epic.Server.Controllers
             return Ok(new [] { new BattleResource(battleObject) });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBattle(Guid id) 
+        {
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+
+            var battleObject = await BattlesService.GetBattleById(id);
+            if (!battleObject.PlayersIds.Contains(playerId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = "You are not authorized to see this battle."
+                });
+            }
+
+            return Ok(new BattleResource(battleObject));
+        }
+
         [HttpPost]
         public async Task<IActionResult> StartBattle([FromBody] StartBattleRequestBody battleRequestBody)
         {
@@ -73,6 +91,7 @@ namespace Epic.Server.Controllers
 
             try
             {
+                // TODO check that battle can be created by the player
                 var battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleRequestBody.BattleDefinitionId);
                 battleObject = await BattlesService.BeginBattle(playerId, battleObject);
                 return Ok(new BattleResource(battleObject));

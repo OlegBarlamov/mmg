@@ -27,7 +27,6 @@ namespace Epic.Data.Players
         public int Day { get; set; }
         public string Name { get; set; }
         public PlayerEntityType PlayerType { get; set; }
-        public bool IsDefeated { get; set; }
         public bool GenerationInProgress { get; set; }
 
         public MutablePlayerEntityFields() { }

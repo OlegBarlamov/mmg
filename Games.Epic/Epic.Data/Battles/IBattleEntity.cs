@@ -11,6 +11,7 @@ namespace Epic.Data.Battles
         int Height { get; }
         bool IsActive { get; }
         int LastTurnUnitIndex { get; }
+        bool ProgressDays { get; }
     }
 
     public class MutableBattleEntity : IBattleEntity
@@ -23,6 +24,7 @@ namespace Epic.Data.Battles
         public bool IsActive { get; set; }
         
         public int LastTurnUnitIndex { get; set; }
+        public bool ProgressDays { get; set; }
 
         public MutableBattleEntity()
         {

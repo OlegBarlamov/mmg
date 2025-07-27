@@ -145,12 +145,54 @@ namespace Epic.Server
             await GlobalUnitsRepository.Create(unitTypeId, 20, bd2.ContainerId, true, 0);
             await GlobalUnitsRepository.Create(archerTypeId, 30, bd3.ContainerId, true, 0);
 
-            await RewardsRepository.CreateRewardAsync(bd2.Id, RewardType.UnitsGain,
-                new[] { unitTypeId }, new[] { 10 }, "Reward!");
-            await RewardsRepository.CreateRewardAsync(bd1.Id, RewardType.ResourcesGain,
-                new[] { ResourcesRepository.GoldResourceId }, new[] { 5000 }, "Reward!");
-            await RewardsRepository.CreateRewardAsync(bd3.Id, RewardType.UnitToBuy,
-                new[] { unitTypeId, archerTypeId }, new[] { 100, 50 }, "Dwelling");
+            await RewardsRepository.CreateRewardAsync(bd1.Id, new MutableRewardFields
+                {
+                    Amounts  = new[] { 5000 },
+                    CanDecline = true,
+                    Ids = new[] { ResourcesRepository.GoldResourceId },
+                    RewardType = RewardType.ResourcesGain,
+                    Message = "Reward!", 
+                }
+            );
+            await RewardsRepository.CreateRewardAsync(bd2.Id, new MutableRewardFields
+                {
+                  Amounts  = new[] { 10 },
+                  CanDecline = true,
+                  Ids = new[] { unitTypeId },
+                  RewardType = RewardType.UnitsGain,
+                  Message = "Reward!", 
+                }
+            );
+            
+            var bd3_1 = await BattleDefinitionsService.CreateBattleDefinition(6, 6);
+            await GlobalUnitsRepository.Create(archerTypeId, 15, bd3_1.ContainerId, true, 0);
+            await GlobalUnitsRepository.Create(unitTypeId, 20, bd3_1.ContainerId, true, 1);
+            await GlobalUnitsRepository.Create(archerTypeId, 15, bd3_1.ContainerId, true, 2);
+            await RewardsRepository.CreateRewardAsync(bd3_1.Id, new MutableRewardFields
+                {
+                    Amounts  = new []{ 100, 50 },
+                    CanDecline = true,
+                    Ids = new []{unitTypeId, archerTypeId},
+                    RewardType = RewardType.UnitToBuy,
+                    Message = "Now you can train units",
+                    CustomIconUrl = "https://heroes.thelazy.net/images/6/63/Adventure_Map_Castle_capitol.gif",
+                    CustomTitle = "Units dwelling",
+                }
+            );
+            
+            await RewardsRepository.CreateRewardAsync(bd3.Id, new MutableRewardFields
+                {
+                    Amounts  = Array.Empty<int>(),
+                    CanDecline = false,
+                    Ids = Array.Empty<Guid>(),
+                    RewardType = RewardType.Battle,
+                    Message = "You need to defeat the guard.",
+                    CustomIconUrl = "https://heroes.thelazy.net/images/6/63/Adventure_Map_Castle_capitol.gif",
+                    CustomTitle = "Units dwelling",
+                    NextBattleDefinitionId = bd3_1.Id,
+                }
+            );
+            
         }
 
         private class SessionData : ISessionData

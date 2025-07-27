@@ -9,6 +9,7 @@ import { OddRGrid } from "../hexogrid/oddRGrid";
 import { BattlePlayerNumber } from '../player/playerNumber';
 import { RewardDialog } from './rewardDialog';
 import { IRewardToAccept } from '../rewards/IRewardToAccept';
+import { RewardType } from '../rewards/RewardType';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -81,12 +82,34 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         if (!currentReward) return
 
         const serverAPI = this.props.serviceLocator.serverAPI()
-        await serverAPI.acceptReward(currentReward.id, {
+        const result = await serverAPI.acceptReward(currentReward.id, {
             accepted: true,
             amounts: currentReward.amounts,
         })
 
-        this.showNextReward()
+        // If this was a Battle reward and we got a new battle map, start the new battle
+        if (currentReward.rewardType === RewardType.Battle && result.nextBattle) {
+            // Start the new battle immediately
+            await this.startNewBattle(result.nextBattle)
+        } else {
+            this.showNextReward()
+        }
+    }
+
+    private startNewBattle = async (battleMap: BattleMap) => {
+        // Dispose of current battle controller
+        this.battleController?.dispose()
+        
+        // Initialize new battle
+        const canvasContainer = document.getElementById(CanvasContainerId)!
+        const canvasService = this.props.serviceLocator.canvasService()
+        await canvasService.init(canvasContainer, this.getMapHexagonStyle(battleMap))
+
+        const battlesService = this.props.serviceLocator.battlesService()
+        this.battleController = await battlesService.createBattle(battleMap)
+
+        // Start the new battle
+        this.startBattle()
     }
 
     private handleRewardDecline = async () => {

@@ -1,6 +1,6 @@
 import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IPlayerInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -383,7 +383,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     getMyRewards(): Promise<IRewardToAccept[]> {
         throw new Error("Method not implemented.");
     }
-    acceptReward(id: string, body: AcceptRewardBody): Promise<void> {
+    acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward> {
         throw new Error("Method not implemented.");
     }
 

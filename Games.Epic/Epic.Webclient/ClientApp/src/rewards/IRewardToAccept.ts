@@ -1,3 +1,4 @@
+import { IBattleDefinition } from "../battle/IBattleDefinition";
 import { IResourceInfo } from "../services/serverAPI";
 import { IUnitRewardResource } from "./IUnitRewardResource";
 import { RewardType } from "./RewardType";
@@ -15,4 +16,8 @@ export interface IRewardToAccept {
     unitsRewards: IUnitRewardResource[],
     resourcesRewards: IResourceInfo[],
     prices: IPriceResource[],
+    nextBattle: IBattleDefinition | null,
+    canDecline: boolean,
+    iconUrl: string | null,
+    title: string | null,
 }

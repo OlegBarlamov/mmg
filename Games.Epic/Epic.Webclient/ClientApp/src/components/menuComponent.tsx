@@ -171,30 +171,28 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                             <tr key={index} className="battle-row">
                                                 <td className="battle-size">{battle.width}x{battle.height}</td>
                                                 <td className="battle-units">
-                                                    <div className="units-list">
+                                                    <div className="units-horizontal">
                                                         {battle.units.map((unit, unitIndex) => (
-                                                            <div key={unitIndex} className="unit-item">
+                                                            <div key={unitIndex} className="unit-horizontal-item">
                                                                 <img 
                                                                     src={unit.thumbnailUrl} 
                                                                     alt={unit.name}
                                                                     className="unit-thumbnail"
                                                                 />
-                                                                <span className="unit-name">{unit.name}</span>
                                                                 <span className="unit-count">x{unit.count}</span>
                                                             </div>
                                                         ))}
                                                     </div>
                                                 </td>
                                                 <td className="battle-rewards">
-                                                    <div className="rewards-list">
+                                                    <div className="rewards-horizontal">
                                                         {battle.rewards.map((reward, rewardIndex) => (
-                                                            <div key={rewardIndex} className="reward-item">
+                                                            <div key={rewardIndex} className="reward-horizontal-item">
                                                                 <img 
                                                                     src={reward.thumbnailUrl} 
                                                                     alt={reward.name}
                                                                     className="reward-thumbnail"
                                                                 />
-                                                                <span className="reward-name">{reward.name}</span>
                                                                 <span className="reward-amount">{reward.amount}</span>
                                                             </div>
                                                         ))}

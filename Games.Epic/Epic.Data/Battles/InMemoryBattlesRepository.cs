@@ -39,7 +39,7 @@ namespace Epic.Data.Battles
             return Task.FromResult<IBattleEntity>(null);
         }
 
-        public Task<IBattleEntity> CreateBattleAsync(Guid battleDefinitionId, Guid[] playerIds, int width, int height, bool isActive)
+        public Task<IBattleEntity> CreateBattleAsync(Guid battleDefinitionId, Guid[] playerIds, int width, int height, bool isActive, bool progressDays)
         {
             if (_battleDefinitionToBattleEntities.Any(x => x.BattleDefinitionId == battleDefinitionId))
                 throw new InvalidOperationException($"Battle with definition {battleDefinitionId} already exists");
@@ -62,6 +62,7 @@ namespace Epic.Data.Battles
                 IsActive = isActive,
                 TurnNumber = -1,
                 LastTurnUnitIndex = -1,
+                ProgressDays = progressDays,
             };
             _battles.Add(battleEntity);
 

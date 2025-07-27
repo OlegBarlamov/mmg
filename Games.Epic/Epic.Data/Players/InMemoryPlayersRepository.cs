@@ -41,12 +41,6 @@ namespace Epic.Data.Players
             return Task.FromResult<IPlayerEntity>(newPlayer);
         }
 
-        public Task SetDefeated(Guid[] playerIds)
-        {
-            _playerEntities.Where(x => playerIds.Contains(x.Id)).ToList().ForEach(x => x.IsDefeated = true);
-            return Task.CompletedTask;
-        }
-
         public Task DayIncrement(Guid[] playerIds)
         {
             _playerEntities.Where(x => playerIds.Contains(x.Id)).ToList().ForEach(x => x.Day++);
