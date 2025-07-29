@@ -14,6 +14,7 @@ export type BattleMapUnit = {
     
     count: number
     isAlive: boolean
+    waited: boolean
 }
 
 export function getTestUnit(r: number, c: number, count: number, player: BattlePlayerNumber): BattleMapUnit {
@@ -49,5 +50,6 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
         props,
         currentProps: props,
         count: count,
+        waited: false
     }
 }

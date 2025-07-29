@@ -7,8 +7,10 @@ namespace Epic.Data.UnitTypes.Subtypes
         int AttackMaxRange { get; }
         int AttackMinRange { get; }
         bool StayOnly { get; }
-        bool CounterattackAllowed { get; }
-        int CounterattackPenaltyPercentage { get; }
+        int CounterattacksCount { get; }
+        int CounterattacksPenaltyPercentage { get; }
+        int BulletsCount { get; }
+        bool CanTargetCounterattack { get; }
         bool RangePenalty { get; }
         /**
          * 1 - splits the range in two and applies 50% penalty for the furthest zone
@@ -21,17 +23,24 @@ namespace Epic.Data.UnitTypes.Subtypes
     
     public class AttackFunctionType : IAttackFunctionType
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "Unknown";
         public string ThumbnailUrl { get; set; }
-        public int AttackMaxRange { get; set; }
-        public int AttackMinRange { get; set; }
+        public int AttackMaxRange { get; set; } = 1;
+        public int AttackMinRange { get; set; } = 1;
         public bool StayOnly { get; set; }
-        public bool CounterattackAllowed { get; set; }
-        public int CounterattackPenaltyPercentage { get; set; }
-        public bool RangePenalty { get; set; }
+        public int CounterattacksCount { get; set; } = 1;
+        public int CounterattacksPenaltyPercentage { get; set; }
+        public int BulletsCount { get; set; } = int.MaxValue;
+        public bool CanTargetCounterattack { get; set; } = true;
+        public bool RangePenalty { get; set; } = false;
         public int RangePenaltyZonesCount { get; set; }
         public int EnemyInRangeDisablesAttack { get; set; }
-        public int MinDamage { get; set; }
-        public int MaxDamage { get; set; }
+        public int MinDamage { get; set; } = 1;
+        public int MaxDamage { get; set; } = 1;
+
+        internal AttackFunctionType()
+        {
+            
+        }
     }
 }

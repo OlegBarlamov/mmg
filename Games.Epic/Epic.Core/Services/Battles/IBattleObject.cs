@@ -16,6 +16,7 @@ namespace Epic.Core.Services.Battles
         int TurnPlayerIndex { get; }
         int LastTurnUnitIndex { get; }
         bool ProgressDays { get; }
+        int RoundNumber { get; }
         
         IReadOnlyList<Guid> PlayersIds { get; }
         

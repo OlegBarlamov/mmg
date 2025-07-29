@@ -28,4 +28,12 @@ interface UnitAttackCommandToServer extends UnitCommandToServer {
     attackIndex: number
 }
 
-export type BattleCommandToServer = UnitMoveCommandToServer | UnitAttackCommandToServer | ClientConnectedCommandToServer
+interface UnitPassCommandToServer extends UnitCommandToServer {
+    command: 'UNIT_PASS'
+}
+
+interface UnitWaitCommandToServer extends UnitCommandToServer {
+    command: 'UNIT_WAIT'
+}
+
+export type BattleCommandToServer = UnitMoveCommandToServer | UnitAttackCommandToServer | UnitPassCommandToServer | UnitWaitCommandToServer | ClientConnectedCommandToServer

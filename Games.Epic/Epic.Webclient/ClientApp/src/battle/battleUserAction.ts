@@ -23,4 +23,12 @@ interface UnitAttackAction extends UnitAction {
     attackTypeIndex: number
 }
 
-export type BattleUserAction = UnitMoveAction | UnitAttackAction
+interface UnitPassAction extends UnitAction {
+    command: 'UNIT_PASS'
+}
+
+interface UnitWaitAction extends UnitAction {
+    command: 'UNIT_WAIT'
+}
+
+export type BattleUserAction = UnitMoveAction | UnitAttackAction | UnitPassAction | UnitWaitAction

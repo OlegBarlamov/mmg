@@ -11,11 +11,12 @@ namespace Epic.Data.UnitTypes.Subtypes.Presets
             AttackMaxRange = 1;
             AttackMinRange = 1;
             StayOnly = false;
-            CounterattackAllowed = true;
-            CounterattackPenaltyPercentage = 50;
+            CounterattacksCount = 1;
+            CounterattacksPenaltyPercentage = 50;
             RangePenalty = false;
             RangePenaltyZonesCount = 0;
             EnemyInRangeDisablesAttack = 0;
+            
         }
     }
 }

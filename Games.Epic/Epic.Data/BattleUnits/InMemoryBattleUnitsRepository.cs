@@ -12,7 +12,9 @@ namespace Epic.Data.BattleUnits
     {
         public string Name => nameof(InMemoryBattleUnitsRepository);
         public string EntityName => "BattleUnit";
-        
+
+        private readonly List<AttackFunctionStateEntity> _attackFunctionStateEntities =
+            new List<AttackFunctionStateEntity>();
         private readonly List<BattleUnitEntity> _battleUnits = new List<BattleUnitEntity>();
 
         public Task<IBattleUnitEntity[]> GetByBattleId(Guid battleId)
@@ -39,6 +41,29 @@ namespace Epic.Data.BattleUnits
                 var targetUnit = _battleUnits.First(x => x.Id == entity.Id);
                 targetUnit.UpdateFrom(entity);
             });
+            return Task.CompletedTask;
+        }
+
+        public Task<AttackFunctionStateEntity[]> GetAttacksData(Guid battleUnitId)
+        {
+            return Task.FromResult(_attackFunctionStateEntities
+                .Where(x => x.BattleUnitId == battleUnitId)
+                .ToArray());
+        }
+
+        public Task UpdateAttacksData(IReadOnlyCollection<AttackFunctionStateEntity> attacksData)
+        {
+            attacksData.ForEach(x =>
+            {
+                _attackFunctionStateEntities.First(t => t.BattleUnitId == x.BattleUnitId && t.AttackIndex == x.AttackIndex)
+                    .UpdateFrom(x);
+            });
+            return Task.CompletedTask;
+        }
+
+        public Task InsertAttacksData(IReadOnlyCollection<AttackFunctionStateEntity> attacksDataPerUnitId)
+        {
+            _attackFunctionStateEntities.AddRange(attacksDataPerUnitId);
             return Task.CompletedTask;
         }
     }

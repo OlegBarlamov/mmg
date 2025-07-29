@@ -7,7 +7,12 @@ namespace Epic.Data.BattleUnits
         Guid Id { get; }
     }
 
-    public interface IBattleUnitEntityFields
+    public interface IBattleUnitState
+    {
+        bool Waited { get; }
+    }
+
+    public interface IBattleUnitEntityFields : IBattleUnitState
     {
         Guid BattleId { get; }
         Guid PlayerUnitId { get; }
@@ -36,6 +41,9 @@ namespace Epic.Data.BattleUnits
         public int CurrentHealth { get; set; }
         public int InitialCount { get; set; }
         public int CurrentCount { get; set; }
+        
+        public bool Waited { get; set; }
+
 
         public BattleUnitEntity(IBattleUnitEntityFields fields)
         {
@@ -52,6 +60,7 @@ namespace Epic.Data.BattleUnits
             CurrentHealth = fields.CurrentHealth;
             InitialCount = fields.InitialCount;
             CurrentCount = fields.CurrentCount;
+            Waited = fields.Waited;
         }
     }
 }

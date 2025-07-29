@@ -16,9 +16,9 @@ namespace Epic.Data.UnitTypes
     {
         string Name { get; }
         string BattleImgUrl { get; }
-        public string DashboardImgUrl { get; }
-        public int Value { get; }
-        IReadOnlyDictionary<string, int> ResourcesDistribution { get; } 
+        string DashboardImgUrl { get; }
+        int Value { get; }
+        IReadOnlyDictionary<string, int> ResourcesDistribution { get; }
     }
 
     public abstract class UnitTypeProps : IUnitProps

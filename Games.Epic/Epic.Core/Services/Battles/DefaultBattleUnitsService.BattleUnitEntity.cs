@@ -16,6 +16,7 @@ namespace Epic.Core.Services.Battles
             public int CurrentHealth { get; set; }
             public int InitialCount { get; set; }
             public int CurrentCount { get; set; }
+            public bool Waited { get; set; }
 
 
             protected BattleUnitEntityFields() {}
@@ -32,6 +33,7 @@ namespace Epic.Core.Services.Battles
                     CurrentHealth = globalUnit.UnitType.Health,
                     InitialCount = globalUnit.Count,
                     CurrentCount = globalUnit.Count,
+                    Waited = false,
                 };
             }
         }
@@ -57,6 +59,7 @@ namespace Epic.Core.Services.Battles
                     CurrentHealth = battleUnit.CurrentHealth,
                     InitialCount = battleUnit.InitialCount,
                     CurrentCount = battleUnit.CurrentCount,
+                    Waited = battleUnit.Waited,
                 };
             }
         }

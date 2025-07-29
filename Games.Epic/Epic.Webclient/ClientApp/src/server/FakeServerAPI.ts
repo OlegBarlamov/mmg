@@ -428,6 +428,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             turnInfo: {
                 player: BattlePlayerNumber.Player1,
                 index: 0,
+                roundNumber: 0,
             }
         })
     }
@@ -440,10 +441,11 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 id: unit.id,
                 player: playerNumber,
                 props: {...unitType!},
-                currentProps: {...unitType!},
+                currentProps:    {...unitType!},
                 count: unit.count,
                 isAlive: true,
                 position: unitPosition,
+                waited: false,
             }
         })
     }
@@ -646,6 +648,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             commandId: getRandomStringKey(10),
             turnNumber: map.turnInfo.index,
             nextTurnUnitId: targetUnit.id,
+            roundNumber: map.turnInfo.roundNumber,
         })
     }
     

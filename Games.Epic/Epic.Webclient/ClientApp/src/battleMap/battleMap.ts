@@ -18,6 +18,7 @@ export type BattleTurnInfo = {
     player: BattlePlayerNumber
     result?: BattleResult
     nextTurnUnitId?: string
+    roundNumber: number
 }
 
 export type BattleMap = {

@@ -17,6 +17,7 @@ using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NetExtensions.Collections;
 
 namespace Epic.Logic
 {
@@ -39,7 +40,7 @@ namespace Epic.Logic
 
         private IBattleUnitObject _activeUnit;
         [CanBeNull] private TurnInfo _expectedTurn;
-        [CanBeNull] private TaskCompletionSource<Task> _awaitPlayerTurnTaskCompletionSource;
+        [CanBeNull] private TaskCompletionSource<ClientUserAction> _awaitPlayerTurnTaskCompletionSource;
         private bool _isDisposed;
         
         public BattleLogic(
@@ -66,7 +67,7 @@ namespace Epic.Logic
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
-            _sortedBattleUnitObjects.Sort((x, y) => y.GlobalUnit.UnitType.Speed.CompareTo(x.GlobalUnit.UnitType.Speed));
+            SortByInitiative(_sortedBattleUnitObjects);
         }
         
         public void Dispose()
@@ -101,28 +102,38 @@ namespace Epic.Logic
                     await BroadcastMessageToClientAndSaveAsync(new NextTurnCommandFromServer(
                         BattleObject.TurnNumber,
                         (InBattlePlayerNumber)_activeUnit.PlayerIndex,
-                        _activeUnit.Id));
+                        _activeUnit.Id,
+                        BattleObject.RoundNumber));
                     
                     cancellationToken.ThrowIfCancellationRequested();
                     
                     if (IsHumanControlled(_activeUnit))
                     {
-                        await WaitForClientTurn(_activeUnit.PlayerIndex, BattleObject.TurnNumber);
+                        var userAction = await WaitForClientTurn(_activeUnit.PlayerIndex, BattleObject.TurnNumber);
+                        if (userAction.CommandName == ClientBattleCommands.UNIT_WAIT)
+                            activeUnitIndex--;
                     }
                     else
                     {
                         // TODO AI
                     }
-                    
+
+                    var isNextRound = activeUnitIndex + 1 >= _sortedBattleUnitObjects.Count;
+                    if (isNextRound)
+                    {
+                        BattleObject.RoundNumber++;
+                        _sortedBattleUnitObjects.ForEach(unit =>
+                        {
+                            unit.Waited = false;
+                            unit.AttackFunctionsData.ForEach(x => x.CounterattacksUsed = 0);
+                        });
+                        await BattleUnitsService.UpdateUnits(_sortedBattleUnitObjects);
+                        SortByInitiative(_sortedBattleUnitObjects);
+                    }
                     BattleObject.LastTurnUnitIndex = activeUnitIndex;
                     BattleObject.TurnNumber++;
                     await BattlesService.UpdateBattle(BattleObject);
                     
-                    await BroadcastMessageToClientAndSaveAsync(new NextTurnCommandFromServer(
-                        BattleObject.TurnNumber,
-                        (InBattlePlayerNumber)_activeUnit.PlayerIndex,
-                        _activeUnit.Id));
-
                     cancellationToken.ThrowIfCancellationRequested();
                     
                     battleResult = GetBattleResult();
@@ -215,10 +226,10 @@ namespace Epic.Logic
             return true;
         }
 
-        private Task WaitForClientTurn(int playerIndex, int turnIndex)
+        private Task<ClientUserAction> WaitForClientTurn(int playerIndex, int turnIndex)
         {
             _expectedTurn = new TurnInfo(turnIndex, playerIndex);
-            _awaitPlayerTurnTaskCompletionSource = new TaskCompletionSource<Task>();
+            _awaitPlayerTurnTaskCompletionSource = new TaskCompletionSource<ClientUserAction>();
             return _awaitPlayerTurnTaskCompletionSource.Task;
         }
 
@@ -235,6 +246,10 @@ namespace Epic.Logic
                     return OnClientUnitMove(connection, (UnitMoveClientBattleMessage)clientBattleMessage);
                 case ClientBattleCommands.UNIT_ATTACK:
                     return OnClientUnitAttack(connection, (UnitAttackClientBattleMessage)clientBattleMessage);
+                case ClientBattleCommands.UNIT_PASS:
+                    return OnClientUnitPasses(connection, (UnitPassClientBattleMessage)clientBattleMessage);
+                case ClientBattleCommands.UNIT_WAIT:
+                    return OnClientUnitWaits(connection, (UnitWaitClientBattleMessage)clientBattleMessage);
                 default:
                     throw new ClientCommandRejected("Unknown client command");
             }
@@ -268,12 +283,15 @@ namespace Epic.Logic
             if (attackFunction.EnemyInRangeDisablesAttack > 0 && Utils.IsEnemyInRange(targetActor, attackFunction.EnemyInRangeDisablesAttack,
                     _sortedBattleUnitObjects))
                 throw new BattleLogicException($"The attack is blocked by an enemy in range {attackFunction.EnemyInRangeDisablesAttack}");
+            if (targetActor.AttackFunctionsData[command.AttackIndex].BulletsCount < 1)
+                throw new BattleLogicException($"The attack does not have enough bullets {attackFunction.EnemyInRangeDisablesAttack}");
                 
                 
             var mutableActor = targetActor;
             mutableActor.Column = command.MoveToCell.C;
             mutableActor.Row = command.MoveToCell.R;
-
+            mutableActor.AttackFunctionsData[command.AttackIndex].BulletsCount -= 1;
+            
             //TODO Check if it is reachable 
             
             await connection.SendMessageAsync(new CommandApproved(command));
@@ -314,8 +332,113 @@ namespace Epic.Logic
                 RemainingHealth = unitTakesDamageData.RemainingHealth,
             };
             await BroadcastMessageToClientAndSaveAsync(serverUnitTakesDamage);
+
+            if (attackFunction.CanTargetCounterattack && targetTarget.GlobalUnit.IsAlive)
+            {
+                var attackFunctionForCounterattack = targetTarget.AttackFunctionsData.FirstOrDefault(x =>
+                    {
+                        var counterattackFunctionType = targetTarget.GlobalUnit.UnitType.Attacks[x.AttackIndex];
+                        var enoughAttacks = counterattackFunctionType.CounterattacksCount - x.CounterattacksUsed > 0;
+                        return enoughAttacks && x.BulletsCount > 0 &&
+                               range >= counterattackFunctionType.AttackMinRange &&
+                               range <= counterattackFunctionType.AttackMaxRange &&
+                               (counterattackFunctionType.EnemyInRangeDisablesAttack <= 0 ||
+                                !Utils.IsEnemyInRange(targetTarget,
+                                    counterattackFunctionType.EnemyInRangeDisablesAttack,
+                                    _sortedBattleUnitObjects));
+                    });
+
+                if (attackFunctionForCounterattack != null)
+                {
+                    await BroadcastMessageToClientAndSaveAsync(
+                        new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.TargetId, command.ActorId)
+                    );
+
+                    attackFunctionForCounterattack.CounterattacksUsed++;
+                    attackFunctionForCounterattack.BulletsCount--;
+                    await BattleUnitsService.UpdateUnits(new [] { targetTarget });
+                
+                    unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
+                        targetTarget,
+                        targetActor, 
+                        targetTarget.GlobalUnit.UnitType.Attacks[attackFunctionForCounterattack.AttackIndex],
+                        range,
+                        true,
+                        RandomProvider.Random);
             
-            _awaitPlayerTurnTaskCompletionSource?.SetResult(null);
+                    targetActor.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
+                    targetActor.GlobalUnit.IsAlive = targetActor.GlobalUnit.Count > 0;
+
+                    await GlobalUnitsService.UpdateUnits(new [] { targetActor.GlobalUnit });
+
+                    targetActor.CurrentCount = unitTakesDamageData.RemainingCount;
+                    targetActor.CurrentHealth = unitTakesDamageData.RemainingHealth;
+            
+                    await BattleUnitsService.UpdateUnits(new[] { targetActor });
+                
+                    serverUnitTakesDamage = new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, command.ActorId)
+                    {
+                        DamageTaken = unitTakesDamageData.DamageTaken,
+                        KilledCount = unitTakesDamageData.KilledCount,
+                        RemainingCount = unitTakesDamageData.RemainingCount,
+                        RemainingHealth = unitTakesDamageData.RemainingHealth,
+                    };
+                    await BroadcastMessageToClientAndSaveAsync(serverUnitTakesDamage);
+                }
+            }
+            
+            _awaitPlayerTurnTaskCompletionSource?.SetResult(new ClientUserAction(command.Command));
+        }
+
+        private async Task OnClientUnitPasses(IBattleClientConnection connection, UnitPassClientBattleMessage command)
+        {
+            var targetActor =
+                BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
+            if (targetActor == null)
+                throw new BattleLogicException("Not found target actor for client command");
+            if (targetActor != _activeUnit)
+                throw new BattleLogicException("Wrong target actor for client command");
+            
+            if (command.TurnIndex != _expectedTurn?.TurnIndex || (int)command.Player != _expectedTurn?.PlayerIndex) 
+                throw new BattleLogicException("Wrong turn index or player index");
+            
+            await connection.SendMessageAsync(new CommandApproved(command));
+            
+            var serverCommand = new UnitPassCommandFromServer(command.TurnIndex, command.Player, command.ActorId);
+            await BroadcastMessageToClientAndSaveAsync(serverCommand);
+            
+            _awaitPlayerTurnTaskCompletionSource?.SetResult(new ClientUserAction(command.Command));
+        }
+
+        private async Task OnClientUnitWaits(IBattleClientConnection connection, UnitWaitClientBattleMessage command)
+        {
+            var targetActor =
+                BattleObject.Units.FirstOrDefault(x => x.Id.ToString() == command.ActorId);
+            if (targetActor == null)
+                throw new BattleLogicException("Not found target actor for client command");
+            if (targetActor != _activeUnit)
+                throw new BattleLogicException("Wrong target actor for client command");
+            
+            if (command.TurnIndex != _expectedTurn?.TurnIndex || (int)command.Player != _expectedTurn?.PlayerIndex) 
+                throw new BattleLogicException("Wrong turn index or player index");
+            
+            if (targetActor.Waited)
+                throw new BattleLogicException("Unit already performed wait command in the current round");
+            
+            if (_sortedBattleUnitObjects.Remove(targetActor))
+                _sortedBattleUnitObjects.Add(targetActor);
+            
+            var mutableActor = targetActor;
+            mutableActor.Waited = true;
+            
+            await connection.SendMessageAsync(new CommandApproved(command));
+            
+            var serverCommand = new UnitWaitCommandFromServer(command.TurnIndex, command.Player, command.ActorId);
+            await BroadcastMessageToClientAndSaveAsync(serverCommand);
+            
+            await BattleUnitsService.UpdateUnits(new[] { mutableActor });
+            
+            _awaitPlayerTurnTaskCompletionSource?.SetResult(new ClientUserAction(command.Command));
         }
 
         private async Task OnClientUnitMove(IBattleClientConnection connection, UnitMoveClientBattleMessage command)
@@ -344,7 +467,7 @@ namespace Epic.Logic
                 command.MoveToCell);
             await BroadcastMessageToClientAndSaveAsync(serverCommand);
             
-            _awaitPlayerTurnTaskCompletionSource?.SetResult(null);
+            _awaitPlayerTurnTaskCompletionSource?.SetResult(new ClientUserAction(command.Command));
         }
 
         private async Task OnClientConnected(IBattleClientConnection connection, ClientConnectedBattleMessage message)
@@ -359,14 +482,38 @@ namespace Epic.Logic
                 }
             }
         }
+        
+        private void SortByInitiative(List<MutableBattleUnitObject> units)
+        {
+            units.Sort((x, y) =>
+            {
+                // 1. Compare Waited status: false comes before true
+                int waitedCompare = x.Waited.CompareTo(y.Waited);
+                if (waitedCompare != 0)
+                    return waitedCompare;
 
+                // 2. Compare Speed: higher speed comes first
+                int speedCompare = y.GlobalUnit.UnitType.Speed.CompareTo(x.GlobalUnit.UnitType.Speed);
+                if (speedCompare != 0)
+                    return speedCompare;
+
+                // 3. Compare Row: lower slot number comes first
+                var slotCompare = x.GlobalUnit.ContainerSlotIndex.CompareTo(y.GlobalUnit.ContainerSlotIndex);
+                if (slotCompare != 0)
+                    return slotCompare;
+                
+                // 3. Compare Side: lower player index comes first
+                return x.PlayerIndex.CompareTo(y.PlayerIndex);
+            });
+        }
+        
         private IBattleUnitObject GetActiveUnit(int lastTurnUnitIndex, out int activeUnitIndex)
         {
             int count = _sortedBattleUnitObjects.Count;
 
             for (int i = 1; i <= count; i++)
             {
-                int nextIndex = (lastTurnUnitIndex + i) % count;
+                var nextIndex = (lastTurnUnitIndex + i) % count;
                 var unit = _sortedBattleUnitObjects[nextIndex];
 
                 if (unit.GlobalUnit.IsAlive)

@@ -1,6 +1,6 @@
 import { IBattleMapController } from "../battleMap/battleMapController";
 import { BattleMapUnit } from "../battleMap/battleMapUnit";
-import { BattleMap } from "../battleMap/battleMap";
+import { BattleMap, BattleTurnInfo } from "../battleMap/battleMap";
 import { BattleUserAction } from "./battleUserAction";
 import { wait } from "../common/wait";
 import { BattlePlayerNumber } from "../player/playerNumber";
@@ -9,13 +9,19 @@ import { getAttackTargets, getCellsForUnitMove } from "./battleLogic";
 import { IBattleActionsProcessor } from "./battleActionsProcessor";
 import { ITurnAwaiter } from "./battleServerMessagesHandler";
 import { SignalBasedCancellationToken, TaskCancelledError } from "../common/cancellationToken";
+import { Signal } from "typed-signals";
+import { IBattlePanelActionsController } from "./IBattlePanelActionsController";
 
 export interface IBattleController {
+    readonly onNextTurn: Signal<(turnInfo: BattleTurnInfo) => void>
+    isPlayerControlled(player: BattlePlayerNumber): boolean
     startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }>
     dispose(): void
 }
 
 export class BattleController implements IBattleController {
+    onNextTurn: Signal<(turnInfo: BattleTurnInfo) => void> = new Signal()
+    
     mapController: IBattleMapController
 
     private battleStarted: boolean = false
@@ -32,7 +38,8 @@ export class BattleController implements IBattleController {
     constructor(
         mapController: IBattleMapController,
         battleActionProcessor: IBattleActionsProcessor,
-        turnAwaiter: ITurnAwaiter) {
+        turnAwaiter: ITurnAwaiter,
+        panelController: IBattlePanelActionsController) {
 
         this.mapController = mapController
         this.battleActionProcessor = battleActionProcessor
@@ -40,11 +47,13 @@ export class BattleController implements IBattleController {
 
         this.map = mapController.map
 
-        this.battleUserInputController = new BattleUserInputController(mapController)
+        this.battleUserInputController = new BattleUserInputController(mapController, panelController)
     }
 
     dispose(): void {
+        this.onNextTurn.disconnectAll()
         this.mapController.destroy()
+        this.battleUserInputController.dispose()
         this.turnAwaiter.dispose()
     }
 
@@ -59,6 +68,8 @@ export class BattleController implements IBattleController {
 
         while (!this.battleFinished) {
             try {
+                this.onNextTurn.emit(this.map.turnInfo)
+                
                 if (this.isPlayerControlled(this.map.turnInfo.player)) {
                     const currentUnit = this.getActiveUnit(this.map.turnInfo.nextTurnUnitId!)
                     if (currentUnit) {
@@ -89,7 +100,7 @@ export class BattleController implements IBattleController {
         return { winner: this.winnerPlayer, reportId: reportId }
     }
 
-    private isPlayerControlled(player: BattlePlayerNumber): boolean {
+    isPlayerControlled(player: BattlePlayerNumber): boolean {
         return player == BattlePlayerNumber.Player1 || player == BattlePlayerNumber.Player2
     }
 

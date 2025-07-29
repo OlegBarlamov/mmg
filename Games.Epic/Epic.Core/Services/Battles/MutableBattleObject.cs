@@ -15,6 +15,7 @@ namespace Epic.Core.Services.Battles
         public int TurnPlayerIndex { get; set; }
         public int LastTurnUnitIndex { get; set; }
         public bool ProgressDays { get; set; }
+        public int RoundNumber { get; set; }
 
         public List<Guid> PlayerIds { get; set; }
         public List<MutableBattleUnitObject> Units { get; set; }
@@ -50,6 +51,7 @@ namespace Epic.Core.Services.Battles
                 TurnPlayerIndex = 0,
                 LastTurnUnitIndex = entity.LastTurnUnitIndex,
                 ProgressDays = entity.ProgressDays,
+                RoundNumber = entity.RoundNumber,
             };
         }
         
@@ -65,6 +67,7 @@ namespace Epic.Core.Services.Battles
                 IsActive = battleObject.IsActive,
                 LastTurnUnitIndex = battleObject.LastTurnUnitIndex,
                 ProgressDays = battleObject.ProgressDays,
+                RoundNumber = battleObject.RoundNumber,
             };
         }
 

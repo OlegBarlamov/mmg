@@ -4,13 +4,13 @@ import {IAttackTarget} from "./attackTarget";
 import {BattleUserAction} from "./battleUserAction";
 import {IBattleMapController} from "../battleMap/battleMapController";
 import { CancellationToken, TaskCancelledError } from "../common/cancellationToken";
+import { IBattlePanelActionsController } from "./IBattlePanelActionsController";
 
 export class BattleUserInputController {
-    private mapController: IBattleMapController
-
-    constructor(mapController: IBattleMapController) {
-        this.mapController = mapController
-    }
+    constructor(
+        private readonly mapController: IBattleMapController,
+        private readonly panelController: IBattlePanelActionsController
+    ) {}
     
     getUserInputAction(
         originalUnit: BattleMapUnit, 
@@ -20,12 +20,13 @@ export class BattleUserInputController {
         ): Promise<BattleUserAction> {
         return new Promise((resolve, reject) => {
             cancellationToken.onCancel(() => {
+                this.dispose()
                 reject(new TaskCancelledError())
             })
 
             this.mapController.onCellMouseClick = (cell) => {
                 if (cellsToMove.indexOf(cell) >= 0) {
-                    this.mapController.onCellMouseClick = null
+                    this.dispose()
                     resolve({
                         command: 'UNIT_MOVE',
                         player: originalUnit.player,
@@ -37,7 +38,7 @@ export class BattleUserInputController {
             this.mapController.onUnitMouseClick = (unit, event) => {
                 const target = attackTargets.find(x => x.target === unit)
                 if (target) {
-                    this.mapController.onUnitMouseClick = null
+                    this.dispose()
                     const mouseCoordinates = {x: event.x, y: event.y}
                     const closestCell = this.mapController.getClosestCellToPoint(target.cells, mouseCoordinates)
                     resolve({
@@ -50,6 +51,32 @@ export class BattleUserInputController {
                     })
                 }
             }
+
+            // Set up panel controller callbacks
+            this.panelController.onPassPressed = () => {
+                    this.dispose()
+                    resolve({
+                        command: 'UNIT_PASS',
+                        player: originalUnit.player,
+                        actor: originalUnit,
+                    })
+            }
+
+            this.panelController.onWaitPressed = () => {
+                    this.dispose()
+                    resolve({
+                        command: 'UNIT_WAIT',
+                        player: originalUnit.player,
+                        actor: originalUnit,
+                    })
+            }
         })
+    }
+
+    dispose() {
+        this.mapController.onCellMouseClick = null
+        this.mapController.onUnitMouseClick = null
+        this.panelController.onWaitPressed = null
+        this.panelController.onPassPressed = null
     }
 }

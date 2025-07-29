@@ -63,6 +63,7 @@ namespace Epic.Data.Battles
                 TurnNumber = -1,
                 LastTurnUnitIndex = -1,
                 ProgressDays = progressDays,
+                RoundNumber = 0,
             };
             _battles.Add(battleEntity);
 

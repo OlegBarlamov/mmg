@@ -101,8 +101,10 @@ namespace Epic.Server
                     {
                         MinDamage = 1,
                         MaxDamage = 5,
-                        AttackMaxRange = 7,
+                        AttackMaxRange = 8,
                         AttackMinRange = 3,
+                        CounterattacksCount = 1,
+                        BulletsCount = 5,
                     },
                     new MeleeAttackType
                     {

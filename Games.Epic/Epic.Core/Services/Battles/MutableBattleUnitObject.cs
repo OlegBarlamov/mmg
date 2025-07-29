@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
 
@@ -16,6 +17,9 @@ namespace Epic.Core.Services.Battles
         public int CurrentHealth { get; set; }
         public int InitialCount { get; set; }
         public int CurrentCount { get; set; }
+        public bool Waited { get; set; }
+        
+        public IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; set; }
 
         IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
 
@@ -36,6 +40,7 @@ namespace Epic.Core.Services.Battles
                 CurrentHealth = entity.CurrentHealth,
                 InitialCount = entity.InitialCount,
                 CurrentCount = entity.CurrentCount,
+                Waited = entity.Waited,
             };
         }
         
@@ -44,6 +49,7 @@ namespace Epic.Core.Services.Battles
             var entity = x.ToEntity();
             var battleUnitObject = FromEntity(entity);
             battleUnitObject.GlobalUnit = MutableGlobalUnitObject.CopyFrom(x.GlobalUnit);
+            battleUnitObject.AttackFunctionsData = x.AttackFunctionsData;
             return battleUnitObject;
         }
 

@@ -14,6 +14,7 @@ export enum HexagonStyle {
 export interface ICanvasService {
     size(): Size
     init(container: HTMLElement, hexagonStyle: HexagonStyle): Promise<void>
+    clear(): void
     createHexagon(props: IHexagonProps): IHexagon
     changeHexagon(hex: IHexagon, newProps: IHexagonProps): IHexagon
     destroyHexagon(hex: IHexagon): void
@@ -52,6 +53,13 @@ export class CanvasService implements ICanvasService {
         this.app = new PIXI.Application()
         await this.app.init({ background: '#1099bb', resizeTo: container})
         container.appendChild(this.app.canvas)
+    }
+
+    clear(): void {
+        if (this.app) {
+            this.app.destroy(true, { children: true })
+            this.app = new PIXI.Application()
+        }
     }
 
     changeUnit(unit: IUnitTile, newProps: IUnitTileProps): Promise<IUnitTile> {

@@ -25,6 +25,14 @@ export interface UnitAttackCommandFromServer extends UnitCommandFromServer {
     targetId: string
 }
 
+export interface UnitPassCommandFromServer extends UnitCommandFromServer {
+    command: 'UNIT_PASS'
+}
+
+export interface UnitWaitCommandFromServer extends UnitCommandFromServer {
+    command: 'UNIT_WAIT'
+}
+
 export interface UnitTakeDamageCommandFromServer extends UnitCommandFromServer {
     command: 'TAKE_DAMAGE'
     damageTaken: number
@@ -36,6 +44,7 @@ export interface UnitTakeDamageCommandFromServer extends UnitCommandFromServer {
 export interface NextTurnCommandFromServer extends PlayerCommandFromServer {
     command: 'NEXT_TURN'
     nextTurnUnitId: string
+    roundNumber: number
 }
 
 export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {
@@ -47,6 +56,8 @@ export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {
 export type BattleCommandFromServer = 
     UnitMoveCommandFromServer
     | UnitAttackCommandFromServer
+    | UnitPassCommandFromServer
+    | UnitWaitCommandFromServer
     | UnitTakeDamageCommandFromServer
     | NextTurnCommandFromServer
     | BattleFinishedCommandFromServer

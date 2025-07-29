@@ -19,9 +19,6 @@ namespace Epic.Logic
             bool counterAttack,
             Random random)
         {
-            if (counterAttack)
-                throw new NotImplementedException();
-            
             var randomDamage = random.Next(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1);
             var damage = randomDamage * attacker.GlobalUnit.Count;
             if (attackFunctionType.RangePenalty)
@@ -33,6 +30,9 @@ namespace Epic.Logic
                     attackFunctionType.AttackMaxRange,
                     attackFunctionType.RangePenaltyZonesCount);
             }
+
+            if (counterAttack)
+                damage = (int)(damage * 0.01 * (100 - attackFunctionType.CounterattacksPenaltyPercentage));
 
             var finalHealth = target.CurrentHealth - damage;
             var newCount = target.GlobalUnit.Count;

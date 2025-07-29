@@ -47,6 +47,7 @@ export class BattleMapsService implements IBattleMapsService {
             turnInfo: {
                 player: BattlePlayerNumber.Player1,
                 index: 0,
+                roundNumber: 0,
             }
         }
     }

@@ -9,6 +9,7 @@ import { Signal } from "typed-signals";
 export interface ITurnAwaiter {
     onCurrentPlayerActionReceived: Signal<() => void>
     readonly currentTurnIndex: number
+    readonly currentRoundNumber: number
     getCurrentTurnInfo(): BattleTurnInfo 
     waitForTurn(turnIndex: number): Promise<BattleTurnInfo>
     dispose(): void
@@ -17,6 +18,7 @@ export interface ITurnAwaiter {
 export class BattleServerMessagesHandler implements IBattleConnectionMessagesHandler, ITurnAwaiter {
     onCurrentPlayerActionReceived: Signal<() => void> = new Signal()
     currentTurnIndex: number
+    currentRoundNumber: number
     
     private disposed = false
 
@@ -27,6 +29,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     
     constructor(private mapController: IBattleMapController, currentTurnInfo: BattleTurnInfo) {
         this.currentTurnIndex = currentTurnInfo.index
+        this.currentRoundNumber = currentTurnInfo.roundNumber
         this.previousTurnInfos.set(currentTurnInfo.index, currentTurnInfo)
     }
     
@@ -106,6 +109,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 player: message.player,
                 result: undefined,
                 nextTurnUnitId: message.nextTurnUnitId,
+                roundNumber: message.roundNumber,
             }
             this.onNextTurnInfo(turnInfo)
             return
@@ -130,8 +134,17 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                     reportId: message.reportId
                 },
                 nextTurnUnitId: undefined,
+                roundNumber: this.currentRoundNumber,
             }
             this.onNextTurnInfo(turnInfo)
+            return
+        } else if (message.command === 'UNIT_PASS') {
+            this.cancelCurrentUserActionPending(message)
+            // No specific action needed for pass - just acknowledge receipt
+            return
+        } else if (message.command === 'UNIT_WAIT') {
+            this.cancelCurrentUserActionPending(message)
+            // No specific action needed for wait - just acknowledge receipt
             return
         }
 
@@ -146,6 +159,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
 
     private onNextTurnInfo(turnInfo: BattleTurnInfo) {
         this.currentTurnIndex = turnInfo.index
+        this.currentRoundNumber = turnInfo.roundNumber
         this.mapController.map.turnInfo = turnInfo
         this.previousTurnInfos.set(turnInfo.index, turnInfo)
         this.triggerAwaitingPromiseForTurn(turnInfo.index, turnInfo)

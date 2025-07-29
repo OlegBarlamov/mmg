@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Epic.Core.Objects;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
@@ -14,5 +15,7 @@ namespace Epic.Core.Services.Battles
         int CurrentHealth { get; }
         int InitialCount { get; }
         int CurrentCount { get; }
+        bool Waited { get; }
+        IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; }
     }
 }

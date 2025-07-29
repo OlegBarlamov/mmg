@@ -2,7 +2,7 @@ import './battleComponent.css'
 import React, { PureComponent } from "react";
 import { IServiceLocator } from "../services/serviceLocator";
 import { IBattleController } from "../battle/battleController";
-import { BattleMap, BattleMapCell } from "../battleMap/battleMap";
+import { BattleMap, BattleMapCell, BattleTurnInfo } from "../battleMap/battleMap";
 import { HexagonStyle } from "../services/canvasService";
 import { EvenQGrid } from "../hexogrid/evenQGrid";
 import { OddRGrid } from "../hexogrid/oddRGrid";
@@ -12,6 +12,7 @@ import { IRewardToAccept } from '../rewards/IRewardToAccept';
 import { RewardType } from '../rewards/RewardType';
 import { BattleResultsModal } from './battleResultsModal';
 import { IReportInfo } from '../services/serverAPI';
+import { BattleControlPanel } from './battleControlPanel';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -28,10 +29,14 @@ interface IBattleComponentState {
     rewards: IRewardToAccept[]
     currentRewardIndex: number
     battleReport: IReportInfo | null
+    currentRoundNumber: number
+    isPlayerTurn: boolean
+    hasActiveUnit: boolean
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
     private battleController: IBattleController | null = null
+    private controlPanelRef: React.RefObject<BattleControlPanel> = React.createRef()
 
     constructor(props: IBattleComponentProps) {
         super(props)
@@ -41,7 +46,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             currentReward: null,
             rewards: [],
             currentRewardIndex: 0,
-            battleReport: null
+            battleReport: null,
+            currentRoundNumber: 0,
+            isPlayerTurn: false,
+            hasActiveUnit: false
         }
     }
 
@@ -52,12 +60,37 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         await canvasService.init(canvasContainer, this.getMapHexagonStyle(this.props.battleMap))
 
         const battlesService = this.props.serviceLocator.battlesService()
-        this.battleController = await battlesService.createBattle(this.props.battleMap)
+        const panelController = this.controlPanelRef.current!
+        this.battleController = await battlesService.createBattle(this.props.battleMap, panelController)
+
+        // Subscribe to turn changes
+        this.battleController.onNextTurn.connect(this.handleNextTurn)
 
         // Do not wait
         this.startBattle()
 
-        this.setState({ ...this.state, battleLoaded: true })
+        // Initialize the turn state based on the initial battle state
+        const initialTurnInfo = this.props.battleMap.turnInfo
+        const isPlayerTurn = this.battleController!.isPlayerControlled(initialTurnInfo.player)
+        const hasActiveUnit = !!initialTurnInfo.nextTurnUnitId
+        
+        this.setState({ 
+            ...this.state, 
+            battleLoaded: true,
+            isPlayerTurn: isPlayerTurn,
+            hasActiveUnit: hasActiveUnit
+        })
+    }
+
+    private handleNextTurn = (turnInfo: BattleTurnInfo) => {
+        const isPlayerTurn = this.battleController!.isPlayerControlled(turnInfo.player)
+        const hasActiveUnit = !!turnInfo.nextTurnUnitId
+        
+        this.setState({ 
+            currentRoundNumber: turnInfo.roundNumber,
+            isPlayerTurn: isPlayerTurn,
+            hasActiveUnit: hasActiveUnit
+        })
     }
 
     private async startBattle() {
@@ -100,10 +133,13 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
 
     private handleBattleResultsOk = () => {
+        // Capture the isWinner value before clearing the state
+        const isWinner = this.state.battleReport?.isWinner
+        
         this.setState({ battleReport: null })
         
         // Check if the player won to determine next action
-        if (this.state.battleReport?.isWinner) {
+        if (isWinner) {
             this.proceedToRewards()
         } else {
             this.props.onBattleFinished()
@@ -131,15 +167,25 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
     private startNewBattle = async (battleMap: BattleMap) => {
         // Dispose of current battle controller
-        this.battleController?.dispose()
+        if (this.battleController) {
+            this.battleController.onNextTurn.disconnect(this.handleNextTurn)
+            this.battleController.dispose()
+        }
+        
+        // Clean up the canvas service before initializing new battle
+        const canvasService = this.props.serviceLocator.canvasService()
+        canvasService.clear()
         
         // Initialize new battle
         const canvasContainer = document.getElementById(CanvasContainerId)!
-        const canvasService = this.props.serviceLocator.canvasService()
         await canvasService.init(canvasContainer, this.getMapHexagonStyle(battleMap))
 
         const battlesService = this.props.serviceLocator.battlesService()
-        this.battleController = await battlesService.createBattle(battleMap)
+        const panelController = this.controlPanelRef.current!
+        this.battleController = await battlesService.createBattle(battleMap, panelController)
+
+        // Subscribe to turn changes for the new battle
+        this.battleController.onNextTurn.connect(this.handleNextTurn)
 
         // Start the new battle
         this.startBattle()
@@ -180,7 +226,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
 
     async componentWillUnmount() {
-        this.battleController?.dispose()
+        if (this.battleController) {
+            this.battleController.onNextTurn.disconnect(this.handleNextTurn)
+            this.battleController.dispose()
+        }
     }
 
     private getMapHexagonStyle(map: BattleMap): HexagonStyle {
@@ -204,7 +253,20 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     <div>Loading...</div>
                 )}
 
+                {this.state.battleLoaded && (
+                    <div className="battle-header">
+                        <div className="round-number">Round {this.state.currentRoundNumber + 1}</div>
+                    </div>
+                )}
+
                 <div id={CanvasContainerId} style={canvasStyle}></div>
+
+                <BattleControlPanel
+                    ref={this.controlPanelRef}
+                    isVisible={this.state.battleLoaded}
+                    isPlayerTurn={this.state.isPlayerTurn}
+                    hasActiveUnit={this.state.hasActiveUnit}
+                />
 
                 {this.state.battleReport && (
                     <BattleResultsModal

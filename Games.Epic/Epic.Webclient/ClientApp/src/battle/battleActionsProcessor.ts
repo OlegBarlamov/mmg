@@ -50,6 +50,24 @@ export class BattleActionsProcessor implements IBattleActionsProcessor {
                     attackIndex: action.attackTypeIndex,
                     turnIndex: this.mapController.map.turnInfo.index,
                 })
+        } else if (action.command === 'UNIT_PASS') {
+            response = await this.battleServerConnection.sendMessage(
+                {
+                    command: 'UNIT_PASS',
+                    actorId: action.actor.id,
+                    commandId: getRandomStringKey(10),
+                    player: action.player,
+                    turnIndex: this.mapController.map.turnInfo.index,
+                })
+        } else if (action.command === 'UNIT_WAIT') {
+            response = await this.battleServerConnection.sendMessage(
+                {
+                    command: 'UNIT_WAIT',
+                    actorId: action.actor.id,
+                    commandId: getRandomStringKey(10),
+                    player: action.player,
+                    turnIndex: this.mapController.map.turnInfo.index,
+                })
         } else {
             throw new Error("Unknown type of user action")
         }

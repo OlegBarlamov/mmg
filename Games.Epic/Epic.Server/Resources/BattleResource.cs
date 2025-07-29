@@ -19,7 +19,7 @@ namespace Epic.Server.Resources
             Width = battleObject.Width;
             Height = battleObject.Height;
             Units = battleObject.Units.Select(x => new BattleUnitResource(x)).ToList();
-            TurnInfo = new TurnInfoResource(battleObject.TurnNumber, battleObject.TurnPlayerIndex);
+            TurnInfo = new TurnInfoResource(battleObject.TurnNumber, battleObject.TurnPlayerIndex, battleObject.RoundNumber);
         }
     }
 }
