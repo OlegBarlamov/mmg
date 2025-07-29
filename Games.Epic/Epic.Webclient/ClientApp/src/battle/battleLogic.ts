@@ -16,6 +16,11 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
 
     for (let i = 0; i < unit.currentProps.attacks.length; i++) {
         const attackType = unit.currentProps.attacks[i]
+        const attackState = unit.currentProps.attacksStates.find(x => x.attackIndex === i)! 
+
+        if (attackState.bulletsCount <= 0) {
+            continue
+        }
         if (attackType.enemyInRangeDisablesAttack > 0) {
             const enemyInRange = map.units.some(x => 
                 x.player !== unit.player &&

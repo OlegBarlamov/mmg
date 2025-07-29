@@ -303,7 +303,8 @@ namespace Epic.Logic
                 );
             
             await BroadcastMessageToClientAndSaveAsync(
-                new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.ActorId, command.TargetId)
+                new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.ActorId,
+                    command.TargetId, command.AttackIndex, false)
                 );
             
             var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
@@ -351,7 +352,8 @@ namespace Epic.Logic
                 if (attackFunctionForCounterattack != null)
                 {
                     await BroadcastMessageToClientAndSaveAsync(
-                        new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.TargetId, command.ActorId)
+                        new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.TargetId,
+                            command.ActorId, attackFunctionForCounterattack.AttackIndex, true)
                     );
 
                     attackFunctionForCounterattack.CounterattacksUsed++;

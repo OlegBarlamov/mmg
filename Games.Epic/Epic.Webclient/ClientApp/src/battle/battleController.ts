@@ -27,6 +27,7 @@ export class BattleController implements IBattleController {
     private battleStarted: boolean = false
     private battleFinished: boolean = false
     private currentTurnIndex: number = -1
+    private currentRoundNumber: number = 0
     private winnerPlayer: BattlePlayerNumber | null = null
 
     private readonly map: BattleMap
@@ -60,6 +61,7 @@ export class BattleController implements IBattleController {
     async startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }> {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
+        this.currentRoundNumber = this.turnAwaiter.currentRoundNumber
         this.currentTurnIndex = this.turnAwaiter.currentTurnIndex
 
         await this.battleActionProcessor.onClientConnected()
@@ -69,7 +71,7 @@ export class BattleController implements IBattleController {
         while (!this.battleFinished) {
             try {
                 this.onNextTurn.emit(this.map.turnInfo)
-                
+
                 if (this.isPlayerControlled(this.map.turnInfo.player)) {
                     const currentUnit = this.getActiveUnit(this.map.turnInfo.nextTurnUnitId!)
                     if (currentUnit) {
@@ -80,8 +82,12 @@ export class BattleController implements IBattleController {
                 }
 
                 const turnInfo = await this.turnAwaiter.waitForTurn(this.currentTurnIndex + 1)
+                if (turnInfo.roundNumber > this.currentRoundNumber) {
+                    this.onNextRound()
+                }
 
                 this.currentTurnIndex = turnInfo.index
+                this.currentRoundNumber = turnInfo.roundNumber
                 this.battleFinished = turnInfo.result?.finished ?? false
                 this.winnerPlayer = turnInfo.result?.winner ?? null
                 
@@ -102,6 +108,12 @@ export class BattleController implements IBattleController {
 
     isPlayerControlled(player: BattlePlayerNumber): boolean {
         return player == BattlePlayerNumber.Player1 || player == BattlePlayerNumber.Player2
+    }
+
+    private onNextRound(): void {
+        this.map.units.forEach(unit => {
+            unit.waited = false
+        })
     }
 
     private getActiveUnit(unitId: string): BattleMapUnit | null {

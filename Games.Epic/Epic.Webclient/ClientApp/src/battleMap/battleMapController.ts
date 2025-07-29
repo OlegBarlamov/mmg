@@ -13,6 +13,9 @@ export interface IBattleMapController {
     readonly battleMapHighlighter: IBattleMapHighlighter
 
     moveUnit(unit: BattleMapUnit, row: number, col: number): Promise<void>
+    unitWaits(unit: BattleMapUnit): Promise<void>
+    unitAttacks(unit: BattleMapUnit, target: BattleMapUnit, attackIndex: number): Promise<void>
+
     removeUnit(unit: BattleMapUnit): Promise<void>
 
     getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell
@@ -90,6 +93,16 @@ export class BattleMapController implements IBattleMapController {
         }
 
         return closestHexagon.cell
+    }
+
+    unitWaits(unit: BattleMapUnit): Promise<void> {
+       unit.waited = true
+       return Promise.resolve()
+    }
+
+    unitAttacks(unit: BattleMapUnit, target: BattleMapUnit, attackIndex: number): Promise<void> {
+        unit.currentProps.attacksStates[attackIndex].bulletsCount--
+        return Promise.resolve()
     }
 
     async unitTakeDamage(target: BattleMapUnit, damageTaken: number, killedCount: number, remainingCount: number, remainingHealth: number): Promise<void> {

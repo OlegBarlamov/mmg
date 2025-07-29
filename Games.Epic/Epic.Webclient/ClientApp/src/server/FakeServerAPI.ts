@@ -177,7 +177,8 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     maxDamage: 1,
                     enemyInRangeDisablesAttack: 0,
                 }
-            ]
+            ],
+            attacksStates: [],
         }]
     ])
     private messagesHandler: IBattleConnectionMessagesHandler | undefined = undefined
@@ -547,6 +548,8 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 actorId: message.actorId,
                 targetId: message.targetId,
                 commandId: getRandomStringKey(10),
+                attackIndex: message.attackIndex,
+                isCounterattack: false,
             })
             
             const globalUnits = this.units.get(id)!

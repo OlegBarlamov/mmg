@@ -19,10 +19,11 @@ namespace Epic.Server.Resources
         {
             BattleImgUrl = battleUnitObject.GlobalUnit.UnitType.BattleImgUrl;
             Speed = battleUnitObject.GlobalUnit.UnitType.Speed;
+            Waited = battleUnitObject.Waited;
             Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.GlobalUnit.UnitType.Health;
             Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks;
-            Waited = battleUnitObject.Waited;
-            AttacksStates = battleUnitObject.AttackFunctionsData;
+            if (currentProps)
+                AttacksStates = battleUnitObject.AttackFunctionsData;
         }
     }
 }

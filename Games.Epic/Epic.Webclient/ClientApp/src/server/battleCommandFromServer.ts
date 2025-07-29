@@ -23,6 +23,8 @@ export interface UnitMoveCommandFromServer extends UnitCommandFromServer {
 export interface UnitAttackCommandFromServer extends UnitCommandFromServer {
     command: 'UNIT_ATTACK'
     targetId: string
+    attackIndex: number
+    isCounterattack: boolean
 }
 
 export interface UnitPassCommandFromServer extends UnitCommandFromServer {

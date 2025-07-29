@@ -37,7 +37,8 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
                 maxDamage: 1,
                 enemyInRangeDisablesAttack: 0,
             }
-        ]
+        ],
+        attacksStates: [],
     }
     return {
         id: getRandomStringKey(10),

@@ -13,6 +13,7 @@ import { RewardType } from '../rewards/RewardType';
 import { BattleResultsModal } from './battleResultsModal';
 import { IReportInfo } from '../services/serverAPI';
 import { BattleControlPanel } from './battleControlPanel';
+import { BattleMapUnit } from '../battleMap/battleMapUnit';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -31,7 +32,7 @@ interface IBattleComponentState {
     battleReport: IReportInfo | null
     currentRoundNumber: number
     isPlayerTurn: boolean
-    hasActiveUnit: boolean
+    activeUnit: BattleMapUnit | null
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
@@ -49,7 +50,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             battleReport: null,
             currentRoundNumber: 0,
             isPlayerTurn: false,
-            hasActiveUnit: false
+            activeUnit: null
         }
     }
 
@@ -72,24 +73,28 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         // Initialize the turn state based on the initial battle state
         const initialTurnInfo = this.props.battleMap.turnInfo
         const isPlayerTurn = this.battleController!.isPlayerControlled(initialTurnInfo.player)
-        const hasActiveUnit = !!initialTurnInfo.nextTurnUnitId
+        const activeUnit = initialTurnInfo.nextTurnUnitId ?
+            this.props.battleMap.units.find(unit => unit.id === initialTurnInfo.nextTurnUnitId) ?? null
+            : null
         
         this.setState({ 
             ...this.state, 
             battleLoaded: true,
             isPlayerTurn: isPlayerTurn,
-            hasActiveUnit: hasActiveUnit
+            activeUnit: activeUnit
         })
     }
 
     private handleNextTurn = (turnInfo: BattleTurnInfo) => {
         const isPlayerTurn = this.battleController!.isPlayerControlled(turnInfo.player)
-        const hasActiveUnit = !!turnInfo.nextTurnUnitId
+        const activeUnit = turnInfo.nextTurnUnitId ?
+            this.props.battleMap.units.find(unit => unit.id === turnInfo.nextTurnUnitId) ?? null
+            : null
         
         this.setState({ 
             currentRoundNumber: turnInfo.roundNumber,
             isPlayerTurn: isPlayerTurn,
-            hasActiveUnit: hasActiveUnit
+            activeUnit: activeUnit
         })
     }
 
@@ -265,7 +270,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     ref={this.controlPanelRef}
                     isVisible={this.state.battleLoaded}
                     isPlayerTurn={this.state.isPlayerTurn}
-                    hasActiveUnit={this.state.hasActiveUnit}
+                    activeUnit={this.state.activeUnit}
                 />
 
                 {this.state.battleReport && (

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import './battleControlPanel.css';
 import { IBattlePanelActionsController } from '../battle/IBattlePanelActionsController';
+import { BattleMapUnit } from '../battleMap/battleMapUnit';
 
 export interface IBattleControlPanelProps {
     isVisible: boolean;
     isPlayerTurn: boolean;
-    hasActiveUnit: boolean;
+    activeUnit: BattleMapUnit | null;
 }
 
 interface IBattleControlPanelState {
@@ -38,14 +39,14 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                 <button 
                     className="control-button pass-button"
                     onClick={this.handlePassClick}
-                    disabled={!this.props.isPlayerTurn || !this.props.hasActiveUnit}
+                    disabled={!this.props.isPlayerTurn || !this.props.activeUnit}
                 >
                     Pass
                 </button>
                 <button 
                     className="control-button wait-button"
                     onClick={this.handleWaitClick}
-                    disabled={!this.props.isPlayerTurn || !this.props.hasActiveUnit}
+                    disabled={!this.props.isPlayerTurn || this.props.activeUnit?.waited === true}
                 >
                     Wait
                 </button>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Epic.Core.Services.Battles;
 using Epic.Data.UnitTypes.Subtypes;
 
@@ -19,8 +20,11 @@ namespace Epic.Logic
             bool counterAttack,
             Random random)
         {
-            var randomDamage = random.Next(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1);
-            var damage = randomDamage * attacker.GlobalUnit.Count;
+            var dicesCounts = Math.Min(attacker.GlobalUnit.Count, 10);
+            var randomSum = Enumerable.Range(0, dicesCounts)
+                .Sum(x => random.Next(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
+            
+            var damage = randomSum / dicesCounts * attacker.GlobalUnit.Count;
             if (attackFunctionType.RangePenalty)
             {
                 damage = ApplyRangePenalty(

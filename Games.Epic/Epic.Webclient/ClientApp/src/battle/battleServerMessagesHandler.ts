@@ -114,7 +114,17 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             this.onNextTurnInfo(turnInfo)
             return
         } else if (message.command === 'UNIT_ATTACK') {
-            this.cancelCurrentUserActionPending(message)
+            if (!message.isCounterattack) {
+                this.cancelCurrentUserActionPending(message)
+            }
+            const unit = getUnitById(this.mapController.map, message.actorId)
+            const target = getUnitById(this.mapController.map, message.targetId)
+            if (unit && target) {
+                await this.mapController.unitAttacks(unit, target, message.attackIndex)
+                return
+            } else {
+                throw Error("Target unit from server not found: " + message.targetId + " or actor unit not found: " + message.actorId)
+            }
             return
         } else if (message.command === 'TAKE_DAMAGE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
@@ -144,8 +154,13 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             return
         } else if (message.command === 'UNIT_WAIT') {
             this.cancelCurrentUserActionPending(message)
-            // No specific action needed for wait - just acknowledge receipt
-            return
+            const unit = getUnitById(this.mapController.map, message.actorId)
+            if (unit) {
+                await this.mapController.unitWaits(unit)
+                return
+            } else {
+                throw Error("Target unit from server not found: " + message.actorId)
+            }
         }
 
         throw Error("Unknown or invalid command from server")

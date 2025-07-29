@@ -3,6 +3,13 @@ export type UnitProperties = {
     speed: number
     health: number
     attacks: AttackType[]
+    attacksStates: AttackState[]
+}
+
+export type AttackState = {
+    attackIndex: number
+    bulletsCount: number
+    counterattacksUsed: number
 }
 
 export type AttackType = {
