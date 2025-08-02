@@ -61,10 +61,11 @@ export class BattleController implements IBattleController {
     async startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }> {
         if (this.battleStarted) throw new Error("The battle already started");
         this.battleStarted = true
-        this.currentRoundNumber = this.turnAwaiter.currentRoundNumber
-        this.currentTurnIndex = this.turnAwaiter.currentTurnIndex
 
         await this.battleActionProcessor.onClientConnected()
+
+        this.currentRoundNumber = this.map.turnInfo.roundNumber
+        this.currentTurnIndex = this.map.turnInfo.index
 
         let reportId: string | null = null;
 

@@ -91,8 +91,7 @@ namespace Epic.Server.Controllers
 
             try
             {
-                // TODO check that battle can be created by the player
-                var battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleRequestBody.BattleDefinitionId);
+                var battleObject = await BattlesService.CreateBattleFromDefinition(player, battleRequestBody.BattleDefinitionId);
                 battleObject = await BattlesService.BeginBattle(playerId, battleObject);
                 return Ok(new BattleResource(battleObject));
             }

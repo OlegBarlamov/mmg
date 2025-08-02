@@ -26,7 +26,7 @@ class ServerSideBattle implements IBattleDefinition {
     readonly height: number
     readonly units: IBattleDefinitionUnit[] = []
     readonly rewards: IBattleDefinitionReward[] = []
-
+    readonly expiresAfterDays: number = 10
     readonly enemyUnits: IUserUnit[]
 
     constructor(battleId: string, mapWidth: number, mapHeight: number, enemyUnits: IUserUnit[]) {

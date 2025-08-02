@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 
@@ -15,13 +16,16 @@ namespace Epic.Server.Resources
         public BattleDefinitionRewardResource[] Rewards { get; }
         public BattleDefinitionUnitResource[] Units { get; }
         
-        public BattleDefinitionResource(IBattleDefinitionObject battleDefinitionObject, IRewardObject[] rewards)
+        public int? ExpiresAfterDays { get; }
+        
+        public BattleDefinitionResource(IBattleDefinitionObject battleDefinitionObject, IRewardObject[] rewards, IPlayerObject playerObject = null)
         {
             Id = battleDefinitionObject.Id.ToString();
             Width = battleDefinitionObject.Width;
             Height = battleDefinitionObject.Height;
             Units = battleDefinitionObject.Units.Select(x => new BattleDefinitionUnitResource(x)).ToArray();
             Rewards = rewards.Select(x => new BattleDefinitionRewardResource(x)).ToArray();
+            ExpiresAfterDays = playerObject != null ? battleDefinitionObject.ExpireAtDay - playerObject.Day : null;
         }
     }
     

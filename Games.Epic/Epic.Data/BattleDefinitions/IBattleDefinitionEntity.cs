@@ -2,22 +2,59 @@ using System;
 
 namespace Epic.Data.BattleDefinitions
 {
-    public interface IBattleDefinitionEntity
+    public interface IBattleDefinitionFields
     {
-        Guid Id { get; }
         int Width { get; }
         int Height { get; }
         
         Guid ContainerId { get; }
         public bool Finished { get; }
+        DateTime CreatedAt { get; }
+        int ExpireAtDay { get; }
+        DateTime? ExpireAt { get; }
+    }
+    
+    public interface IBattleDefinitionEntity : IBattleDefinitionFields
+    {
+        Guid Id { get; }
     }
 
-    internal class BattleDefinitionEntity : IBattleDefinitionEntity
+    public class BattleDefinitionEntityFields : IBattleDefinitionFields
     {
-        public Guid Id { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public Guid ContainerId { get; set; }
         public bool Finished { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int ExpireAtDay { get; set; }
+        public DateTime? ExpireAt { get; set; }
+
+        public BattleDefinitionEntityFields()
+        {
+        }
+    }
+
+    internal class BattleDefinitionEntity : BattleDefinitionEntityFields, IBattleDefinitionEntity
+    {
+        public Guid Id { get; }
+
+        private BattleDefinitionEntity(Guid id)
+        {
+            Id = id;
+        }
+
+        public static BattleDefinitionEntity FromFields(IBattleDefinitionFields fields)
+        {
+            return new BattleDefinitionEntity(Guid.NewGuid())
+            {
+                Width = fields.Width,
+                Height = fields.Height,
+                ContainerId = fields.ContainerId,
+                Finished = fields.Finished,
+                CreatedAt = fields.CreatedAt,
+                ExpireAtDay = fields.ExpireAtDay,
+                ExpireAt = fields.ExpireAt,
+            };
+        }
     }
 }

@@ -71,7 +71,7 @@ namespace Epic.Logic
             await PlayersService.SetGenerationInProgress(playerId, true);
             try
             {
-                await BattlesGenerator.Generate(playerId, currentDay, battlesCount);
+                await BattlesGenerator.Generate(player, currentDay, battlesCount);
             }
             finally
             {

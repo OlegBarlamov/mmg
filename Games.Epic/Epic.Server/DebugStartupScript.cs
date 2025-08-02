@@ -136,12 +136,9 @@ namespace Epic.Server
             await GlobalUnitsRepository.Create(archerTypeId, 20, hero.ArmyContainerId, true, 1);
             
             
-            
-            
-            
-            var bd1 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 10, 8);
-            var bd2 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 6, 6);
-            var bd3 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 7, 7);
+            var bd1 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 10, 8, 3);
+            var bd2 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 6, 6, 3);
+            var bd3 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 7, 7, 3);
             
             await GlobalUnitsRepository.Create(unitTypeId, 10, bd1.ContainerId, true, 0);
             await GlobalUnitsRepository.Create(unitTypeId, 20, bd2.ContainerId, true, 0);

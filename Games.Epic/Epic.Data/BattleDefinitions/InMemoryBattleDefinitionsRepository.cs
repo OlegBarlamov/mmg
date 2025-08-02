@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Data.Exceptions;
+using JetBrains.Annotations;
 
 namespace Epic.Data.BattleDefinitions
 {
+    [UsedImplicitly]
     public class InMemoryBattleDefinitionsRepository : IBattleDefinitionsRepository
     {
         public string Name => nameof(InMemoryBattleDefinitionsRepository);
@@ -14,7 +16,7 @@ namespace Epic.Data.BattleDefinitions
         private readonly List<BattleDefinitionEntity> _battleDefinitions = new List<BattleDefinitionEntity>();
         private readonly List<IPlayerToBattleDefinitionEntity> _playerBattleDefinitions = new List<IPlayerToBattleDefinitionEntity>();
 
-        public Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByPlayer(Guid playerId)
+        public Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByPlayer(Guid playerId, int day)
         {
             // Find all user-battle relations for the given user
             var userBattles = _playerBattleDefinitions
@@ -24,23 +26,15 @@ namespace Epic.Data.BattleDefinitions
 
             // Find corresponding battle definitions
             var battles = _battleDefinitions
-                .Where(bd => !bd.Finished && userBattles.Contains(bd.Id))
+                .Where(bd => !bd.Finished && bd.ExpireAtDay > day && userBattles.Contains(bd.Id))
                 .ToArray<IBattleDefinitionEntity>();
 
             return Task.FromResult(battles);
         }
 
-        public Task<IBattleDefinitionEntity> Create(Guid playerId, int width, int height, Guid containerId)
+        public async Task<IBattleDefinitionEntity> Create(Guid playerId, IBattleDefinitionFields fields)
         {
-            var battleDefinition = new BattleDefinitionEntity
-            {
-                Id = Guid.NewGuid(),
-                Height = height,
-                Width = width,
-                ContainerId = containerId,
-                Finished = false,
-            };
-            _battleDefinitions.Add(battleDefinition);
+            var battleDefinition = await Create(fields);
 
             var userBattleDefinition = new PlayerToBattleDefinitionEntity
             {
@@ -50,19 +44,12 @@ namespace Epic.Data.BattleDefinitions
             };
             _playerBattleDefinitions.Add(userBattleDefinition);
 
-            return Task.FromResult((IBattleDefinitionEntity)battleDefinition);
+            return battleDefinition;
         }
 
-        public Task<IBattleDefinitionEntity> Create(int width, int height, Guid containerId)
+        public Task<IBattleDefinitionEntity> Create(IBattleDefinitionFields fields)
         {
-            var battleDefinition = new BattleDefinitionEntity
-            {
-                Id = Guid.NewGuid(),
-                Height = height,
-                Width = width,
-                ContainerId = containerId,
-                Finished = false,
-            };
+            var battleDefinition = BattleDefinitionEntity.FromFields(fields);
             _battleDefinitions.Add(battleDefinition);
             
             return Task.FromResult((IBattleDefinitionEntity)battleDefinition);

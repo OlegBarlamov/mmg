@@ -14,6 +14,7 @@ namespace Epic.Core.Services.BattleDefinitions
         public int Height { get; set; }
         public bool IsFinished { get; set; }
         public Guid ContainerId { get; set; }
+        public int ExpireAtDay { get; set; }
         public IUnitsContainerObject UnitsContainerObject { get; set; }
         public IReadOnlyCollection<IGlobalUnitObject> Units { get; set; }
         public IReadOnlyCollection<Guid> RewardsIds { get; set; }
@@ -32,6 +33,7 @@ namespace Epic.Core.Services.BattleDefinitions
                 Height = entity.Height,
                 ContainerId = entity.ContainerId,
                 IsFinished = entity.Finished,
+                ExpireAtDay = entity.ExpireAtDay,
             };
         }
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
-using Epic.Core.Services.BattleReports;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleReports;
@@ -73,21 +72,29 @@ namespace Epic.Core.Services.Battles
             return battleObject;
         }
 
-        public async Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, Guid battleDefinitionId)
+        public async Task<IBattleObject> CreateBattleFromDefinition(IPlayerObject playerObject, Guid battleDefinitionId)
         {
             var battleDefinition =
-                await BattleDefinitionsService.GetBattleDefinitionByPlayerAndId(playerId, battleDefinitionId);
-            return await CreateBattleFromDefinition(playerId, battleDefinition, true);
+                await BattleDefinitionsService.GetBattleDefinitionByPlayerAndId(playerObject.Id, battleDefinitionId);
+            return await CreateBattleFromDefinition(playerObject, battleDefinition, true);
         }
 
         public async Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, IBattleDefinitionObject battleDefinitionObject, bool progressDays)
         {
+            var player = await PlayersService.GetById(playerId);
+            return await CreateBattleFromDefinition(player, battleDefinitionObject, progressDays);
+        }
+
+        public async Task<IBattleObject> CreateBattleFromDefinition(IPlayerObject playerObject, IBattleDefinitionObject battleDefinitionObject, bool progressDays)
+        {
             if (battleDefinitionObject.IsFinished)
                 throw new InvalidOperationException("Battle definition is finished");
+            if (battleDefinitionObject.ExpireAtDay <= playerObject.Day)
+                throw new InvalidOperationException("Battle definition is expired");
 
             var battleEntity = await BattlesRepository.CreateBattleAsync(
                 battleDefinitionObject.Id,
-                new[] { playerId },
+                new[] { playerObject.Id },
                 battleDefinitionObject.Width,
                 battleDefinitionObject.Height,
                 false,

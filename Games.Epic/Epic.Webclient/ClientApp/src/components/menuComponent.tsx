@@ -163,6 +163,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                             <th>Size</th>
                                             <th>Enemy Units</th>
                                             <th>Rewards</th>
+                                            <th>Expires In</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -197,6 +198,15 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                             </div>
                                                         ))}
                                                     </div>
+                                                </td>
+                                                <td className="battle-expires">
+                                                    {battle.expiresAfterDays === 0 ? (
+                                                        <span className="expires-soon">Expires today</span>
+                                                    ) : battle.expiresAfterDays === 1 ? (
+                                                        <span className="expires-soon">1</span>
+                                                    ) : (
+                                                        <span className="expires-days">{battle.expiresAfterDays} days</span>
+                                                    )}
                                                 </td>
                                                 <td className="battle-action">
                                                     <button 

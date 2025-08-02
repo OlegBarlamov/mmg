@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.BattleDefinitions;
+using Epic.Data.Players;
 using JetBrains.Annotations;
 
 namespace Epic.Core.Services.BattleDefinitions
@@ -15,15 +16,18 @@ namespace Epic.Core.Services.BattleDefinitions
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         public IGlobalUnitsService GlobalUnitsService { get; }
         public IUnitsContainersService UnitsContainersService { get; }
+        public IPlayersRepository PlayersRepository { get; }
 
         public DefaultBattleDefinitionsService(
             [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
             [NotNull] IGlobalUnitsService globalUnitsService,
-            [NotNull] IUnitsContainersService unitsContainersService)
+            [NotNull] IUnitsContainersService unitsContainersService,
+            [NotNull] IPlayersRepository playersRepository)
         {
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
+            PlayersRepository = playersRepository ?? throw new ArgumentNullException(nameof(playersRepository));
         }
 
         public Task<int> GetBattlesCountForPlayer(Guid playerId)
@@ -31,9 +35,10 @@ namespace Epic.Core.Services.BattleDefinitions
             return BattleDefinitionsRepository.CountBattles(playerId);
         }
 
-        public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetActiveBattleDefinitionsByPlayerAsync(Guid playerId)
+        public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetNotExpiredActiveBattleDefinitionsByPlayerAsync(Guid playerId)
         {
-            var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByPlayer(playerId);
+            var playerEntity = await PlayersRepository.GetById(playerId);
+            var entities = await BattleDefinitionsRepository.GetActiveBattleDefinitionsByPlayer(playerId, playerEntity.Day);
             var battleDefinitions = entities.Select(MutableBattleDefinitionObject.FromEntity).ToArray();
             await Task.WhenAll(battleDefinitions.Select(x => FillBattleDefinitionObject(x)));
             return battleDefinitions;
@@ -56,19 +61,36 @@ namespace Epic.Core.Services.BattleDefinitions
             return battleDefinitionObject;
         }
 
-        public async Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height)
+        public Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height, int expireAtDay, Guid? containerId = null)
         {
-            var container = await UnitsContainersService.Create(height, Guid.Empty);
-            var entity = await BattleDefinitionsRepository.Create(playerId, width, height, container.Id);
-            var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(entity);
-            await FillBattleDefinitionObject(battleDefinitionObject, container);
-            return battleDefinitionObject;
+            return CreateBattleDefinitionInternal(width, height, expireAtDay, containerId, playerId);
         }
 
-        public async Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height)
+        public Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height)
         {
-            var container = await UnitsContainersService.Create(height, Guid.Empty);
-            var entity = await BattleDefinitionsRepository.Create(width, height, container.Id);
+            return CreateBattleDefinitionInternal(width, height, Int32.MaxValue);
+        }
+
+        private async Task<IBattleDefinitionObject> CreateBattleDefinitionInternal(int width, int height, int expireAtDay, Guid? containerId = null, Guid? playerId = null)
+        {
+            var container = containerId.HasValue 
+                ? await UnitsContainersService.GetById(containerId.Value)
+                : await UnitsContainersService.Create(height, Guid.Empty);
+            
+            var fields = new BattleDefinitionEntityFields
+            {
+                Height = height,
+                Width = width,
+                ContainerId = container.Id,
+                Finished = false,
+                CreatedAt = DateTime.Now,
+                ExpireAtDay = expireAtDay,
+                ExpireAt = null,
+            };
+            var entity = playerId.HasValue
+                ? await BattleDefinitionsRepository.Create(playerId.Value, fields)
+                : await BattleDefinitionsRepository.Create(fields);
+            
             var battleDefinitionObject = MutableBattleDefinitionObject.FromEntity(entity);
             await FillBattleDefinitionObject(battleDefinitionObject, container);
             return battleDefinitionObject;

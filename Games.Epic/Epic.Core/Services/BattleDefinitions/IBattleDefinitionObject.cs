@@ -19,6 +19,8 @@ namespace Epic.Core.Services.BattleDefinitions
         
         Guid ContainerId { get; }
         
+        int ExpireAtDay { get; }
+        
         IUnitsContainerObject UnitsContainerObject { get; }
         
         IReadOnlyCollection<IRewardObject> Rewards { get; }
