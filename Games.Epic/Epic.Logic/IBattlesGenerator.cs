@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Services.BattleDefinitions;
-using Epic.Core.Services.Players;
 using Epic.Core.Services.UnitsContainers;
+using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
+using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using JetBrains.Annotations;
 
@@ -11,7 +14,9 @@ namespace Epic.Logic
 {
     public interface IBattlesGenerator
     {
-        Task Generate(IPlayerObject playerObject, int day, int currentBattlesCount);
+        Task Initialize();
+        Task Generate(Guid playerId, int day, int currentBattlesCount);
+        Task GenerateSingle(Guid playerId, int day);
     }
 
     [UsedImplicitly]
@@ -21,39 +26,212 @@ namespace Epic.Logic
         public IGlobalUnitsRepository GlobalUnitsRepository { get; }
         public IUnitTypesRepository UnitTypesRepository { get; }
         public IUnitsContainersService UnitsContainersService { get; }
+        public IRewardsRepository RewardsRepository { get; }
+        public IGameResourcesRepository GameResourcesRepository { get; }
 
         private readonly Random _random = new Random();
 
+        private readonly List<IUnitTypeEntity> _orderedUnitTypes = new List<IUnitTypeEntity>();
+        private readonly List<IGameResourceEntity> _resources = new List<IGameResourceEntity>();
+        
         public BattleGenerator(
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IGlobalUnitsRepository globalUnitsRepository,
             [NotNull] IUnitTypesRepository unitTypesRepository,
-            [NotNull] IUnitsContainersService unitsContainersService)
+            [NotNull] IUnitsContainersService unitsContainersService,
+            [NotNull] IRewardsRepository rewardsRepository,
+            [NotNull] IGameResourcesRepository gameResourcesRepository)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
             UnitTypesRepository = unitTypesRepository ?? throw new ArgumentNullException(nameof(unitTypesRepository));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
+            RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
+            GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
+        }
+
+        public async Task Initialize()
+        {
+            _orderedUnitTypes.Clear();
+
+            var allUnits = await UnitTypesRepository.GetAll();
+            _orderedUnitTypes.AddRange(allUnits);
+            
+            _orderedUnitTypes.Sort((x, y) => x.Value.CompareTo(y.Value));
+            
+            _resources.Clear();
+            var resourcesByKeys = await GameResourcesRepository.GetAllResourcesByKeys();
+            _resources.AddRange(resourcesByKeys.Values);
+        }
+
+        public async Task GenerateSingle(Guid playerId, int day)
+        {
+            var width = _random.Next(5, 14);
+            var height = _random.Next(5, 10);
+
+            var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
+            var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+                entity => entity.Value, difficulty.TargetDifficulty);
+            var targetUnit = _orderedUnitTypes[_random.Next(0, maxStrongUnitIndex + 1)];
+
+            var unitsCount = Math.Max(1, (int)Math.Ceiling((double)difficulty.TargetDifficulty / targetUnit.Value));
+
+            var container = await UnitsContainersService.Create(height, Guid.Empty);
+
+            var maxSlotsCount = Math.Min(unitsCount, height);
+            var targetSlotsCount = _random.Next(1, maxSlotsCount + 1);
+
+            // 1. Create the unit distribution
+            var slotDistributions = new List<int>();
+            var baseUnitsPerSlot = unitsCount / targetSlotsCount;
+            var extraUnits = unitsCount % targetSlotsCount;
+            for (var i = 0; i < targetSlotsCount; i++)
+            {
+                // Distribute one of the extras to the first few slots
+                var unitsInSlot = baseUnitsPerSlot + (i < extraUnits ? 1 : 0);
+                slotDistributions.Add(unitsInSlot);
+            }
+
+            // 2. Spread filled slots evenly across the container height
+            List<int> slotIndices = new List<int>();
+            for (int i = 0; i < targetSlotsCount; i++)
+            {
+                if (targetSlotsCount == 1)
+                {
+                    // Just place the single slot in the middle
+                    slotIndices.Add(height / 2);
+                }
+                else
+                {
+                    int slotIndex = (int)Math.Round(i * (height - 1.0) / (targetSlotsCount - 1));
+                    slotIndices.Add(slotIndex);
+                }
+            }
+
+            // Optional: Make sure indices are unique (in case of rounding)
+            slotIndices = slotIndices.Distinct().ToList();
+
+            for (int i = 0; i < slotIndices.Count && i < slotDistributions.Count; i++)
+            {
+                await GlobalUnitsRepository.Create(targetUnit.Id, slotDistributions[i], container.Id, true,
+                    slotIndices[i]);
+            }
+
+            double t = ((double)difficulty.TargetDifficulty - difficulty.MinDifficulty) /
+                       ((double)difficulty.MaxDifficulty - difficulty.MinDifficulty);
+            int duration = Math.Max(1, (int)Math.Round(1 + t * 9) + _random.Next(-2, 3));
+
+            var battleDefinition =
+                await BattleDefinitionsService.CreateBattleDefinition(playerId, width, height, day + duration,
+                    container.Id);
+
+
+            var rewardTypeIndex = _random.Next(0, Enum.GetValues(typeof(RewardTypes))
+                .Cast<int>()
+                .Max() + 1);
+
+            var rewardType = (RewardTypes)rewardTypeIndex;
+
+            if (rewardType == RewardTypes.Gold)
+            {
+                var goldAmount = RoundToFriendlyNumber(difficulty.TargetDifficulty);
+                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                {
+                    RewardType = RewardType.ResourcesGain,
+                    Amounts = new[] { goldAmount },
+                    CanDecline = true,
+                    NextBattleDefinitionId = null,
+                    CustomIconUrl = null,
+                    CustomTitle = null,
+                    Ids = new[] { GameResourcesRepository.GoldResourceId },
+                });
+            }
+            else if (rewardType == RewardTypes.Resource)
+            {
+                var resourceType = _resources[_random.Next(0, _resources.Count)];
+                var resourceAmount = Math.Max(1,
+                    (int)Math.Ceiling((double)difficulty.TargetDifficulty / resourceType.Price));
+                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                {
+                    RewardType = RewardType.ResourcesGain,
+                    Amounts = new[] { resourceAmount },
+                    CanDecline = true,
+                    NextBattleDefinitionId = null,
+                    CustomIconUrl = null,
+                    CustomTitle = null,
+                    Ids = new[] { resourceType.Id },
+                });
+            }
+            else if (rewardType == RewardTypes.UnitsGain)
+            {
+                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+                    entity => entity.Value, difficulty.TargetDifficulty);
+                var unitToGain = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
+                var unitsGainAmount = Math.Max(1, (int)Math.Floor((double)difficulty.TargetDifficulty / unitToGain.Value));
+                
+                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                {
+                    RewardType = RewardType.UnitsGain,
+                    Amounts = new[] { unitsGainAmount },
+                    CanDecline = true,
+                    NextBattleDefinitionId = null,
+                    CustomIconUrl = null,
+                    CustomTitle = null,
+                    Ids = new[] { unitToGain.Id },
+                });
+            } else if (rewardType == RewardTypes.UnitsToBuy)
+            {
+                var unitToBuy = _orderedUnitTypes[_random.Next(0, _orderedUnitTypes.Count)];
+                var unitsBuyAmount = Math.Max(1, (int)Math.Ceiling((double)5000 / unitToBuy.Value));
+                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                {
+                    RewardType = RewardType.UnitToBuy,
+                    Amounts = new[] { unitsBuyAmount },
+                    CanDecline = true,
+                    NextBattleDefinitionId = null,
+                    CustomIconUrl = null,
+                    CustomTitle = null,
+                    Ids = new[] { unitToBuy.Id },
+                });
+            }
+        }
+
+        public async Task Generate(Guid playerId, int day, int currentBattlesCount)
+        {
+            int count = _random.Next(1, 4);
+            for (int i = 0; i < count; i++)
+            {
+                await GenerateSingle(playerId, day);
+            }
+        }
+
+        internal enum RewardTypes
+        {
+            Gold, 
+            Resource,
+            UnitsGain,
+            UnitsToBuy,
         }
         
-        public async Task Generate(IPlayerObject playerObject, int day, int currentBattlesCount)
+        public static int RoundToFriendlyNumber(int value)
         {
-            var width = _random.Next(5, 16);
-            var height = _random.Next(5, 16);
-            
-            var unitTypes = await UnitTypesRepository.GetAll();
-            var container = await UnitsContainersService.Create(height, Guid.Empty);
-            
-            var unitsCount = _random.Next(1, 5);
-            for (var i = 0; i < unitsCount; i++)
+            if (value <= 0) return 0;
+
+            // Determine magnitude (1, 10, 100, etc.)
+            int magnitude = (int)Math.Pow(10, (int)Math.Floor(Math.Log10(value)));
+
+            // Define some rounding steps (can be adjusted)
+            double[] steps = { 1, 2, 2.5, 5, 10 };
+
+            foreach (var step in steps)
             {
-                var unitType = unitTypes[_random.Next(unitTypes.Length)];
-                var count = _random.Next(1, day * 20);
-                
-                await GlobalUnitsRepository.Create(unitType.Id, count, container.Id, true, i);
+                int rounded = (int)(Math.Round(value / (magnitude * step)) * magnitude * step);
+                if (Math.Abs(rounded - value) <= magnitude * step / 2)
+                    return rounded;
             }
-            
-            await BattleDefinitionsService.CreateBattleDefinition(playerObject.Id, width , height, playerObject.Day + 1, container.Id);
+
+            // Fallback: round to next magnitude
+            return (int)(Math.Round((double)value / magnitude) * magnitude);
         }
     }
 }

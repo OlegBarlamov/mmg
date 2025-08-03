@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Data.UnitTypes;
+using Epic.Logic;
 using FrameworkSDK;
 using JetBrains.Annotations;
 using YamlDotNet.Core;
@@ -20,10 +21,14 @@ namespace Epic.Server
     public class InitializeUnitsScript : IAppComponent
     {
         public IUnitTypesRepository UnitTypesRepository { get; }
+        public IBattlesGenerator BattlesGenerator { get; }
 
-        public InitializeUnitsScript([NotNull] IUnitTypesRepository unitTypesRepository)
+        public InitializeUnitsScript(
+            [NotNull] IUnitTypesRepository unitTypesRepository,
+            [NotNull] IBattlesGenerator battlesGenerator)
         {
             UnitTypesRepository = unitTypesRepository ?? throw new ArgumentNullException(nameof(unitTypesRepository));
+            BattlesGenerator = battlesGenerator ?? throw new ArgumentNullException(nameof(battlesGenerator));
         }
         
         public void Configure()
@@ -41,6 +46,8 @@ namespace Epic.Server
                 
             var config = deserializer.Deserialize<UnitsConfig>(new MergingParser(new Parser(file)));
             await UnitTypesRepository.CreateBatch(config.Units.Select(x => x.Value));
+
+            await BattlesGenerator.Initialize();
         }
 
         public void Dispose()

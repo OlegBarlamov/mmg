@@ -13,7 +13,7 @@ MeleeAttack: &MeleeAttack
 RangeAttack: &RangeAttack
   Name: "Range"
   ThumbnailUrl: "sword.png"
-  AttackMaxRange: 7
+  AttackMaxRange: 15
   AttackMinRange: 2
   StayOnly: true
   CounterattacksCount: 0
@@ -30,7 +30,7 @@ Units:
     Name: "Peasant"
     BattleImgUrl: "/resources/Peasant_portrait.png"
     DashboardImgUrl: "/resources/Peasant_portrait.png"
-    Value: 1
+    Value: 10
     Speed: 3
     Health: 1
     Attacks:
@@ -119,7 +119,6 @@ Units:
       gold: 4
       wood: 1
       
-      
   Angel:
     Name: "Angel"
     BattleImgUrl: "/resources/Angel_portrait.png"
@@ -134,4 +133,96 @@ Units:
     ResourcesDistribution:
       gold: 6
       gems: 1
+      
+  Skeleton:
+    Name: "Skeleton"
+    BattleImgUrl: "/resources/Skeleton_portrait.png"
+    DashboardImgUrl: "/resources/Skeleton_portrait.png"
+    Value: 60
+    Speed: 4
+    Health: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
 
+  Zombie:
+    Name: "Zombie"
+    BattleImgUrl: "/resources/Walking_Dead_portrait.png"
+    DashboardImgUrl: "/resources/Walking_Dead_portrait.png"
+    Value: 90
+    Speed: 4
+    Health: 20
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  Wight:
+    Name: "Wight"
+    BattleImgUrl: "/resources/Wight_portrait.png"
+    DashboardImgUrl: "/resources/Wight_portrait.png"
+    Value: 150
+    Speed: 5
+    Health: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  Vampire:
+    Name: "Vampire"
+    BattleImgUrl: "/resources/Vampire_portrait.png"
+    DashboardImgUrl: "/resources/Vampire_portrait.png"
+    Value: 300
+    Speed: 6
+    Health: 40
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 8
+
+  Lich:
+    Name: "Lich"
+    BattleImgUrl: "/resources/Lich_portrait.png"
+    DashboardImgUrl: "/resources/Lich_portrait.png"
+    Value: 550
+    Speed: 6
+    Health: 30
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 11
+        MaxDamage: 13
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 7
+
+  DreadKnight:
+    Name: "Dread Knight"
+    BattleImgUrl: "/resources/Black_Knight_portrait.png"
+    DashboardImgUrl: "/resources/Black_Knight_portrait.png"
+    Value: 1200
+    Speed: 9
+    Health: 120
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 15
+        MaxDamage: 30
+    ResourcesDistribution:
+      gold: 4
+      stone: 1
+
+  GhostDragon:
+    Name: "Ghost Dragon"
+    BattleImgUrl: "/resources/Bone_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Bone_Dragon_portrait.png"
+    Value: 3000
+    Speed: 14
+    Health: 200
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 50
+    ResourcesDistribution:
+      gold: 6
+      mercury: 1
