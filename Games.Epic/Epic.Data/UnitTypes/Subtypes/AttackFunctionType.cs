@@ -38,7 +38,7 @@ namespace Epic.Data.UnitTypes.Subtypes
         public int MinDamage { get; set; } = 1;
         public int MaxDamage { get; set; } = 1;
 
-        internal AttackFunctionType()
+        public AttackFunctionType()
         {
             
         }

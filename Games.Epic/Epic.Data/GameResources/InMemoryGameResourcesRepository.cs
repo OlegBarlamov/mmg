@@ -17,18 +17,6 @@ namespace Epic.Data.GameResources
         private readonly List<MutableGameResourceEntity> _resources = new List<MutableGameResourceEntity>();
         private readonly List<MutableResourceByPlayerEntity> _resourceByPlayers = new List<MutableResourceByPlayerEntity>();
 
-        public InMemoryGameResourcesRepository()
-        {
-            _resources.Add(new MutableGameResourceEntity
-            {
-                Id = GoldResourceId,
-                Key = PredefinedResourcesKeys.Gold,
-                IconUrl = "https://heroes.thelazy.net//images/9/9f/Gold_%28leather%29.gif",
-                Name = "Gold",
-                Price = 1,
-            });
-        }
-
         public Task<IGameResourceEntity> GetById(Guid id)
         {
             return Task.FromResult<IGameResourceEntity>(_resources.First(x => x.Id == id));
@@ -51,7 +39,7 @@ namespace Epic.Data.GameResources
         {
             var entity = new MutableGameResourceEntity
             {
-                Id = Guid.NewGuid(),
+                Id = key == PredefinedResourcesKeys.Gold ? GoldResourceId : Guid.NewGuid(),
                 Name = name,
                 Key = key,
                 IconUrl = iconUrl,
@@ -61,11 +49,27 @@ namespace Epic.Data.GameResources
             return Task.FromResult<IGameResourceEntity>(entity);
         }
 
+        public Task<IGameResourceEntity[]> Create(IEnumerable<IGameResourceEntity> entities)
+        {
+            var newEntities = entities.Select(x => new MutableGameResourceEntity
+            {
+                Id = Guid.NewGuid(),
+                IconUrl = x.IconUrl,
+                Key = x.Key,
+                Name = x.Name,
+                Price = x.Price,
+            }).ToArray();
+            
+            _resources.AddRange(newEntities);
+            
+            return Task.FromResult(newEntities.ToArray<IGameResourceEntity>());
+        }
+
         public Task<IReadOnlyList<ResourceAmount>> GetAllResourcesByPlayer(Guid playerId)
         {
             return Task.FromResult<IReadOnlyList<ResourceAmount>>(_resources.Select(resource =>
             {
-                var byPlayerEntity = _resourceByPlayers.FirstOrDefault(x => x.PlayerId == playerId);
+                var byPlayerEntity = _resourceByPlayers.FirstOrDefault(x => x.ResourceId == resource.Id && x.PlayerId == playerId);
                 var amount = byPlayerEntity?.Amount ?? 0;
                 return ResourceAmount.Create(resource, amount);
             }).ToArray());

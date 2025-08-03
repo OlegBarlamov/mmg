@@ -37,8 +37,10 @@ namespace Epic.Data.UnitTypes
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
         public int Value { get; set; } = 1;
-        public IReadOnlyDictionary<string, int> ResourcesDistribution { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, int> ResourcesDistribution { get; set; } = new Dictionary<string, int>();
 
+        IReadOnlyDictionary<string, int> IUnitTypeProperties.ResourcesDistribution => ResourcesDistribution; 
+        
         public UnitTypeProperties() { }
     }
     

@@ -24,6 +24,11 @@ namespace Epic.Data.UnitTypes
             return Task.FromResult(unitType);
         }
 
+        public Task<IUnitTypeEntity> GetByName(string name)
+        {
+            return Task.FromResult(_unitTypes.FirstOrDefault(u => u.Name == name));
+        }
+
         public Task<IReadOnlyCollection<IUnitTypeEntity>> FetchByIds(IEnumerable<Guid> ids)
         {
             var unitTypes = ids.Select(id => _unitTypes.FirstOrDefault(u => u.Id == id)).ToArray();
@@ -37,6 +42,16 @@ namespace Epic.Data.UnitTypes
             _unitTypes.Add(entity);
             
             return Task.FromResult((IUnitTypeEntity)entity);
+        }
+
+        public Task<IUnitTypeEntity[]> CreateBatch(IEnumerable<UnitTypeProperties> properties)
+        {
+            var entities = properties.Select(x => UnitTypeEntity.FromProperties(Guid.NewGuid(), x))
+                .ToArray();
+            
+            _unitTypes.AddRange(entities);
+            
+            return Task.FromResult(entities.ToArray<IUnitTypeEntity>());
         }
 
         public Task<IUnitTypeEntity[]> GetAll()

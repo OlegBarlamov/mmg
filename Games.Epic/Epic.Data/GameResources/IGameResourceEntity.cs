@@ -11,12 +11,16 @@ namespace Epic.Data.GameResources
         int Price { get; }
     }
 
-    internal class MutableGameResourceEntity : IGameResourceEntity
+    public class MutableGameResourceEntity : IGameResourceEntity
     {
         public Guid Id { get; set; }
         public string Key { get; set; }
         public string Name { get; set; }
         public string IconUrl { get; set; }
         public int Price { get; set; } = 1;
+
+        public MutableGameResourceEntity()
+        {
+        }
     }
 }

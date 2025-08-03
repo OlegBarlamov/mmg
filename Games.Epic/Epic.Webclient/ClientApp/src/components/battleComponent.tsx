@@ -21,7 +21,7 @@ export interface IBattleComponentProps {
     serviceLocator: IServiceLocator
     battleMap: BattleMap
 
-    onBattleFinished(): void
+    onBattleFinished(newBattleMap?: BattleMap): void
 }
 
 interface IBattleComponentState {
@@ -161,10 +161,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             amounts: currentReward.amounts,
         })
 
-        // If this was a Battle reward and we got a new battle map, start the new battle
+        // If this was a Battle reward and we got a new battle map, notify the parent component
         if (currentReward.rewardType === RewardType.Battle && result.nextBattle) {
-            // Start the new battle immediately
-            await this.startNewBattle(result.nextBattle)
+            // Pass the new battle map to the parent component
+            this.props.onBattleFinished(result.nextBattle)
         } else {
             this.showNextReward()
         }

@@ -90,10 +90,18 @@ export class App extends PureComponent<IAppProps, IAppState> {
 
     }
     
-    private onBattleFinished() : void {
-        this.setState({selectedBattle: null})
-
-        this.refreshPlayerInfoAndBattles()
+    private onBattleFinished(newBattleMap?: BattleMap) : void {
+        if (newBattleMap) {
+            // Start a new battle with the provided battle map
+            this.setState({
+                ...this.state,
+                selectedBattle: newBattleMap,
+            })
+        } else {
+            // Return to menu and refresh
+            this.setState({selectedBattle: null})
+            this.refreshPlayerInfoAndBattles()
+        }
     } 
 
     private async refreshPlayerInfoAndBattles() {

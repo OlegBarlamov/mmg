@@ -2,6 +2,6 @@ namespace Epic.Data.GameResources
 {
     public static class PredefinedResourcesKeys
     {
-        public const string Gold = "gold";
+        public const string Gold = "Gold";
     }
 }
