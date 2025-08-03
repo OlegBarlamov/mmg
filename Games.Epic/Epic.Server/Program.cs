@@ -13,29 +13,21 @@ namespace Epic.Server
          {
              var appBuilder = WebApplication.CreateBuilder(args);
              appBuilder.Services.AddControllers();
-             // appBuilder.Services.AddCors(options =>
-             // {
-             //     options.AddPolicy("AllowLocalhost3000",
-             //         policy =>
-             //         {
-             //             policy.WithOrigins("http://localhost:3000")
-             //                 .AllowAnyHeader()
-             //                 .AllowAnyMethod();
-             //         });
-             // });
  
              var app = appBuilder.UseFramework()
                  .AddServices<ConsoleCommandsExecutingServicesModule>()
                  .AddServices<ServerServicesModule>()
                  .AddComponent<TerminalConsoleSubsystem>()
+                 .AddComponent<InitializeResourcesScript>()
+                 .AddComponent<InitializeUnitsScript>()
                  .AddComponent<DebugStartupScript>()
                  .Construct()
                  .Asp();
 
              
-             //app.UseCors("AllowLocalhost3000");
              app.UseMiddleware<RequestResponseLoggingMiddleware>();
              app.UseRouting();
+             app.UseStaticFiles();
              // app.UseHttpsRedirection();
              app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/api"), a =>
              {

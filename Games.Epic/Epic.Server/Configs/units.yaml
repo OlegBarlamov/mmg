@@ -1,0 +1,137 @@
+MeleeAttack: &MeleeAttack
+  Name: "Melee"
+  ThumbnailUrl: "sword.png"
+  AttackMaxRange: 1
+  AttackMinRange: 1
+  StayOnly: false
+  CounterattacksCount: 1
+  CounterattacksPenaltyPercentage: 50
+  CanTargetCounterattack: true
+  MinDamage: 1
+  MaxDamage: 1
+
+RangeAttack: &RangeAttack
+  Name: "Range"
+  ThumbnailUrl: "sword.png"
+  AttackMaxRange: 7
+  AttackMinRange: 2
+  StayOnly: true
+  CounterattacksCount: 0
+  CounterattacksPenaltyPercentage: 0
+  RangePenalty: true
+  RangePenaltyZonesCount: 1
+  EnemyInRangeDisablesAttack: 1
+  CanTargetCounterattack: false
+  MinDamage: 1
+  MaxDamage: 1
+
+Units:
+  Peasant:
+    Name: "Peasant"
+    BattleImgUrl: "/resources/Peasant_portrait.png"
+    DashboardImgUrl: "/resources/Peasant_portrait.png"
+    Value: 1
+    Speed: 3
+    Health: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 1
+  
+  Pikeman:
+    Name: "Pikeman"
+    BattleImgUrl: "/resources/Pikeman_portrait.png"
+    DashboardImgUrl: "/resources/Pikeman_portrait.png"
+    Value: 60              # Approximate value
+    Speed: 4
+    Health: 10
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+      
+  Archer:
+    Name: "Archer"
+    BattleImgUrl: "/resources/Archer_portrait.png"
+    DashboardImgUrl: "/resources/Archer_portrait.png"
+    Value: 100              # Approximate value
+    Speed: 4
+    Health: 10
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 3
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+      
+  Griffin:
+    Name: "Griffin"
+    BattleImgUrl: "/resources/Griffin_portrait.png"
+    DashboardImgUrl: "/resources/Griffin_portrait.png"
+    Value: 200              # Approximate value
+    Speed: 6
+    Health: 25
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 6
+      
+  Swordsman:
+    Name: "Swordsman"
+    BattleImgUrl: "/resources/Swordsman_portrait.png"
+    DashboardImgUrl: "/resources/Swordsman_portrait.png"
+    Value: 300             # Approximate value
+    Speed: 5
+    Health: 35
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 9
+      
+  Monk:
+    Name: "Monk"
+    BattleImgUrl: "/resources/Monk_portrait.png"
+    DashboardImgUrl: "/resources/Monk_portrait.png"
+    Value: 400             # Approximate value
+    Speed: 5
+    Health: 30
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 10
+        MaxDamage: 12
+      - <<: *MeleeAttack
+        MinDamage: 10
+        MaxDamage: 12
+      
+  Cavalier:
+    Name: "Cavalier"
+    BattleImgUrl: "/resources/Cavalier_portrait.png"
+    DashboardImgUrl: "/resources/Cavalier_portrait.png"
+    Value: 1000             # Approximate value
+    Speed: 7
+    Health: 100
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 15
+        MaxDamage: 25
+    ResourcesDistribution:
+      gold: 4
+      wood: 1
+      
+      
+  Angel:
+    Name: "Angel"
+    BattleImgUrl: "/resources/Angel_portrait.png"
+    DashboardImgUrl: "/resources/Angel_portrait.png"
+    Value: 3500             # Approximate value
+    Speed: 12
+    Health: 200
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 50
+        MaxDamage: 50
+    ResourcesDistribution:
+      gold: 6
+      gems: 1
+

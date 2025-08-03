@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
@@ -11,8 +10,6 @@ using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
-using Epic.Data.UnitTypes.Subtypes;
-using Epic.Data.UnitTypes.Subtypes.Presets;
 using Epic.Server.Authentication;
 using FrameworkSDK;
 using JetBrains.Annotations;
@@ -68,58 +65,8 @@ namespace Epic.Server
 
         public async void Configure()
         {
-            var unitTypeId = Guid.NewGuid();
-            await UnitTypesRepository.CreateUnitType(unitTypeId, new UnitTypeProperties
-            {
-                Name = "Unit",
-                Health = 10,
-                Speed = 5,
-                Value = 100,
-                Attacks = new List<AttackFunctionType>
-                {
-                    new MeleeAttackType
-                    {
-                        MinDamage = 4,
-                        MaxDamage = 6,
-                    },
-                },
-                BattleImgUrl =
-                    "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp",
-                DashboardImgUrl =
-                    "https://blz-contentstack-images.akamaized.net/v3/assets/blt0e00eb71333df64e/blt7c29bfc026dc8ab3/6606072a2c8f660cca84835a/human_icon_default.webp"
-            });
-            var archerTypeId = Guid.NewGuid();
-            await UnitTypesRepository.CreateUnitType(archerTypeId, new UnitTypeProperties
-            {
-                Name = "Archer",
-                Health = 7,
-                Speed = 4,
-                Value = 70,
-                Attacks = new List<AttackFunctionType>
-                {
-                    new RangeAttackType
-                    {
-                        MinDamage = 1,
-                        MaxDamage = 5,
-                        AttackMaxRange = 8,
-                        AttackMinRange = 3,
-                        CounterattacksCount = 1,
-                        BulletsCount = 5,
-                    },
-                    new MeleeAttackType
-                    {
-                        MinDamage = 1,
-                        MaxDamage = 2,
-                    },
-                },
-                BattleImgUrl =
-                    "https://pbs.twimg.com/media/FkWlZU0XkAEUFdN.png",
-                DashboardImgUrl =
-                    "https://pbs.twimg.com/media/FkWlZU0XkAEUFdN.png"
-            });
-            
-            
-            
+            var pickerUnitType = await UnitTypesRepository.GetByName("Pikeman");
+            var archerUnitType = await UnitTypesRepository.GetByName("Archer");
             
             var user = await UsersRepository.CreateUserAsync("admin",
                 BasicAuthentication.GetHashFromCredentials("admin", "123"));
@@ -132,17 +79,17 @@ namespace Epic.Server
             var hero = await HeroesService.CreateNew(userPlayer.Name, userPlayer.Id);
             await PlayersService.SetActiveHero(userPlayer.Id, hero.Id);
             
-            await GlobalUnitsRepository.Create(unitTypeId, 30, hero.ArmyContainerId, true, 0);
-            await GlobalUnitsRepository.Create(archerTypeId, 20, hero.ArmyContainerId, true, 1);
+            await GlobalUnitsRepository.Create(pickerUnitType.Id, 30, hero.ArmyContainerId, true, 0);
+            await GlobalUnitsRepository.Create(archerUnitType.Id, 20, hero.ArmyContainerId, true, 1);
             
             
             var bd1 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 10, 8, 3);
             var bd2 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 6, 6, 3);
             var bd3 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 7, 7, 3);
             
-            await GlobalUnitsRepository.Create(unitTypeId, 10, bd1.ContainerId, true, 0);
-            await GlobalUnitsRepository.Create(unitTypeId, 20, bd2.ContainerId, true, 0);
-            await GlobalUnitsRepository.Create(archerTypeId, 30, bd3.ContainerId, true, 0);
+            await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, bd1.ContainerId, true, 0);
+            await GlobalUnitsRepository.Create(pickerUnitType.Id, 20, bd2.ContainerId, true, 0);
+            await GlobalUnitsRepository.Create(archerUnitType.Id, 30, bd3.ContainerId, true, 0);
 
             await RewardsRepository.CreateRewardAsync(bd1.Id, new MutableRewardFields
                 {
@@ -157,21 +104,21 @@ namespace Epic.Server
                 {
                   Amounts  = new[] { 10 },
                   CanDecline = true,
-                  Ids = new[] { unitTypeId },
+                  Ids = new[] { pickerUnitType.Id },
                   RewardType = RewardType.UnitsGain,
                   Message = "Reward!", 
                 }
             );
             
             var bd3_1 = await BattleDefinitionsService.CreateBattleDefinition(6, 6);
-            await GlobalUnitsRepository.Create(archerTypeId, 15, bd3_1.ContainerId, true, 0);
-            await GlobalUnitsRepository.Create(unitTypeId, 20, bd3_1.ContainerId, true, 1);
-            await GlobalUnitsRepository.Create(archerTypeId, 15, bd3_1.ContainerId, true, 2);
+            await GlobalUnitsRepository.Create(archerUnitType.Id, 15, bd3_1.ContainerId, true, 0);
+            await GlobalUnitsRepository.Create(pickerUnitType.Id, 20, bd3_1.ContainerId, true, 1);
+            await GlobalUnitsRepository.Create(archerUnitType.Id, 15, bd3_1.ContainerId, true, 2);
             await RewardsRepository.CreateRewardAsync(bd3_1.Id, new MutableRewardFields
                 {
                     Amounts  = new []{ 100, 50 },
                     CanDecline = true,
-                    Ids = new []{unitTypeId, archerTypeId},
+                    Ids = new []{pickerUnitType.Id, archerUnitType.Id},
                     RewardType = RewardType.UnitToBuy,
                     Message = "Now you can train units",
                     CustomIconUrl = "https://heroes.thelazy.net/images/6/63/Adventure_Map_Castle_capitol.gif",

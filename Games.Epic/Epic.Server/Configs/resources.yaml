@@ -1,0 +1,30 @@
+Wood:
+  Name: "Wood"
+  IconUrl: "https://heroes.thelazy.net//images/a/a5/Wood_%28leather%29.gif"
+  Price: 250
+  
+Stone:
+  Name: "Stone"
+  IconUrl: "https://heroes.thelazy.net//images/6/6f/Ore_%28leather%29.gif"
+  Price: 250
+  
+Mercury:
+  Name: "Mercury"
+  IconUrl: "https://heroes.thelazy.net//images/5/56/Mercury_%28leather%29.gif"
+  Price: 500
+  
+Sulfur:
+  Name: "Sulfur"
+  IconUrl: "https://heroes.thelazy.net//images/6/67/Sulfur_%28leather%29.gif"
+  Price: 500
+
+Crystal:
+  Name: "Crystal"
+  IconUrl: "https://heroes.thelazy.net//images/1/14/Crystal_%28leather%29.gif"
+  Price: 500
+  
+Gems:
+  Name: "Gems"
+  IconUrl: "https://heroes.thelazy.net//images/c/cb/Gem_%28leather%29.gif"
+  Price: 500
+  
