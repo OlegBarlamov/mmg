@@ -30,8 +30,8 @@ Units:
     Name: "Peasant"
     BattleImgUrl: "/resources/Peasant_portrait.png"
     DashboardImgUrl: "/resources/Peasant_portrait.png"
-    Value: 10
-    Speed: 3
+    Value: 8
+    Speed: 2
     Health: 1
     Attacks:
       - <<: *MeleeAttack
@@ -116,8 +116,8 @@ Units:
         MinDamage: 15
         MaxDamage: 25
     ResourcesDistribution:
-      gold: 4
-      wood: 1
+      Gold: 4
+      Wood: 1
       
   Angel:
     Name: "Angel"
@@ -131,8 +131,8 @@ Units:
         MinDamage: 50
         MaxDamage: 50
     ResourcesDistribution:
-      gold: 6
-      gems: 1
+      Gold: 6
+      Gems: 1
       
   Skeleton:
     Name: "Skeleton"
@@ -209,8 +209,8 @@ Units:
         MinDamage: 15
         MaxDamage: 30
     ResourcesDistribution:
-      gold: 4
-      stone: 1
+      Gold: 4
+      Stone: 1
 
   GhostDragon:
     Name: "Ghost Dragon"
@@ -224,5 +224,98 @@ Units:
         MinDamage: 25
         MaxDamage: 50
     ResourcesDistribution:
-      gold: 6
-      mercury: 1
+      Gold: 6
+      Mercury: 1
+
+  Centaur:
+    Name: "Centaur"
+    BattleImgUrl: "/resources/Centaur_portrait.png"
+    DashboardImgUrl: "/resources/Centaur_portrait.png"
+    Value: 70
+    Speed: 6
+    Health: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  Dwarf:
+    Name: "Dwarf"
+    BattleImgUrl: "/resources/Dwarf_portrait.png"
+    DashboardImgUrl: "/resources/Dwarf_portrait.png"
+    Value: 120
+    Speed: 3
+    Health: 20
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+
+  WoodElf:
+    Name: "Wood Elf"
+    BattleImgUrl: "/resources/Wood_Elf_portrait.png"
+    DashboardImgUrl: "/resources/Wood_Elf_portrait.png"
+    Value: 180
+    Speed: 5
+    Health: 15
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 5
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+
+  Pegasus:
+    Name: "Pegasus"
+    BattleImgUrl: "/resources/Pegasus_portrait.png"
+    DashboardImgUrl: "/resources/Pegasus_portrait.png"
+    Value: 300
+    Speed: 8
+    Health: 30
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 9
+
+  Dendroid:
+    Name: "Dendroid"
+    BattleImgUrl: "/resources/Dendroid_portrait.png"
+    DashboardImgUrl: "/resources/Dendroid_portrait.png"
+    Value: 400
+    Speed: 3
+    Health: 55
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 10
+        MaxDamage: 14
+
+  Unicorn:
+    Name: "Unicorn"
+    BattleImgUrl: "/resources/Unicorn_portrait.png"
+    DashboardImgUrl: "/resources/Unicorn_portrait.png"
+    Value: 900
+    Speed: 7
+    Health: 90
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 18
+        MaxDamage: 22
+    ResourcesDistribution:
+      Gold: 4
+      Gems: 1
+
+  GreenDragon:
+    Name: "Green Dragon"
+    BattleImgUrl: "/resources/Green_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Green_Dragon_portrait.png"
+    Value: 3000
+    Speed: 10
+    Health: 180
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Crystal: 1
