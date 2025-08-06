@@ -13,7 +13,7 @@ MeleeAttack: &MeleeAttack
 RangeAttack: &RangeAttack
   Name: "Range"
   ThumbnailUrl: "sword.png"
-  AttackMaxRange: 15
+  AttackMaxRange: 20
   AttackMinRange: 2
   StayOnly: true
   CounterattacksCount: 0
@@ -33,6 +33,7 @@ Units:
     Value: 8
     Speed: 2
     Health: 1
+    ToTrainAmount: 25
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -45,6 +46,7 @@ Units:
     Value: 60              # Approximate value
     Speed: 4
     Health: 10
+    ToTrainAmount: 14
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -57,6 +59,7 @@ Units:
     Value: 100              # Approximate value
     Speed: 4
     Health: 10
+    ToTrainAmount: 9
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -72,6 +75,7 @@ Units:
     Value: 200              # Approximate value
     Speed: 6
     Health: 25
+    ToTrainAmount: 8
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -84,6 +88,7 @@ Units:
     Value: 300             # Approximate value
     Speed: 5
     Health: 35
+    ToTrainAmount: 4
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -96,6 +101,7 @@ Units:
     Value: 400             # Approximate value
     Speed: 5
     Health: 30
+    ToTrainAmount: 3
     Attacks:
       - <<: *RangeAttack
         MinDamage: 10
@@ -111,6 +117,7 @@ Units:
     Value: 1000             # Approximate value
     Speed: 7
     Health: 100
+    ToTrainAmount: 2
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 15
@@ -126,6 +133,7 @@ Units:
     Value: 3500             # Approximate value
     Speed: 12
     Health: 200
+    ToTrainAmount: 1
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 50
@@ -141,6 +149,7 @@ Units:
     Value: 60
     Speed: 4
     Health: 6
+    ToTrainAmount: 15
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -153,6 +162,7 @@ Units:
     Value: 90
     Speed: 4
     Health: 20
+    ToTrainAmount: 8
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -165,6 +175,7 @@ Units:
     Value: 150
     Speed: 5
     Health: 18
+    ToTrainAmount: 7
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -177,6 +188,7 @@ Units:
     Value: 300
     Speed: 6
     Health: 40
+    ToTrainAmount: 4
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 5
@@ -189,6 +201,7 @@ Units:
     Value: 550
     Speed: 6
     Health: 30
+    ToTrainAmount: 3
     Attacks:
       - <<: *RangeAttack
         MinDamage: 11
@@ -204,6 +217,7 @@ Units:
     Value: 1200
     Speed: 9
     Health: 120
+    ToTrainAmount: 2
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 15
@@ -219,6 +233,7 @@ Units:
     Value: 3000
     Speed: 14
     Health: 200
+    ToTrainAmount: 1
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 25
@@ -234,6 +249,7 @@ Units:
     Value: 70
     Speed: 6
     Health: 8
+    ToTrainAmount: 14
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -246,6 +262,7 @@ Units:
     Value: 120
     Speed: 3
     Health: 20
+    ToTrainAmount: 10
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -258,6 +275,7 @@ Units:
     Value: 180
     Speed: 5
     Health: 15
+    ToTrainAmount: 7
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -273,6 +291,7 @@ Units:
     Value: 300
     Speed: 8
     Health: 30
+    ToTrainAmount: 5
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 5
@@ -285,6 +304,7 @@ Units:
     Value: 400
     Speed: 3
     Health: 55
+    ToTrainAmount: 4
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 10
@@ -297,6 +317,7 @@ Units:
     Value: 900
     Speed: 7
     Health: 90
+    ToTrainAmount: 2
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 18
@@ -312,6 +333,7 @@ Units:
     Value: 3000
     Speed: 10
     Health: 180
+    ToTrainAmount: 1
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 40

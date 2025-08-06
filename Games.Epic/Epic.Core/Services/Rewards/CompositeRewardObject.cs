@@ -27,7 +27,10 @@ namespace Epic.Core.Services.Rewards
             var description = GetRawDescription();
 
             if (!string.IsNullOrWhiteSpace(CustomTitle))
+            {
                 description.Name = CustomTitle;
+                description.Amount = string.Empty;
+            }
             if (!string.IsNullOrWhiteSpace(CustomIconUrl))
                 description.IconUrl = CustomIconUrl;
 

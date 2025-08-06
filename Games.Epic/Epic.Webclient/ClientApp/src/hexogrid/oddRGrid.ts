@@ -66,7 +66,7 @@ export class OddRGrid<T extends IHexoPoint> extends HexoGrid<T> implements IHexo
         const hexHeight = 2 * cellRadius; // Height of a single hexagon (pointy-topped)
 
         // Total grid width for odd-r grid:
-        const gridWidth = hexWidth * (this.width - 1) + hexWidth; // Accounts for staggered odd columns
+        const gridWidth = hexWidth * this.width + hexWidth / 2; // Accounts for staggered odd columns
 
         // Total grid height
         const gridHeight = (this.height - 1) * (3 / 4) * hexHeight + hexHeight;

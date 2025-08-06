@@ -13,6 +13,7 @@ import { Signal } from "typed-signals";
 import { IBattlePanelActionsController } from "./IBattlePanelActionsController";
 
 export interface IBattleController {
+    readonly mapController: IBattleMapController
     readonly onNextTurn: Signal<(turnInfo: BattleTurnInfo) => void>
     isPlayerControlled(player: BattlePlayerNumber): boolean
     startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }>

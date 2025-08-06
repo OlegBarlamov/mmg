@@ -5,6 +5,7 @@ import {Size} from "../common/Size";
 import {IUnitTile, IUnitTileProps} from "../canvas/unitTile";
 import {getTexture} from "../canvas/pixi/pixiTextures";
 import {PixiUnitTile} from "../canvas/pixi/pixiUnitTile";
+import { Point } from "pixi.js";
 
 export enum HexagonStyle {
     QStyle,
@@ -14,6 +15,8 @@ export enum HexagonStyle {
 export interface ICanvasService {
     size(): Size
     init(container: HTMLElement, hexagonStyle: HexagonStyle): Promise<void>
+    setScale(scale: number): void
+    getScale(): number
     clear(): void
     createHexagon(props: IHexagonProps): IHexagon
     changeHexagon(hex: IHexagon, newProps: IHexagonProps): IHexagon
@@ -25,6 +28,8 @@ export interface ICanvasService {
     
     setCursorForHexagon(hex: IHexagon, cursor?: string): void
     setCursorForUnit(unit: IUnitTile, cursor?: string): void
+
+    toLocal(point: Point): Point
 }
 
 export class CanvasService implements ICanvasService {
@@ -46,6 +51,23 @@ export class CanvasService implements ICanvasService {
     
     size(): Size {
         return {width: this.app.canvas.width, height: this.app.canvas.height}
+    }
+
+    setScale(scale: number): void {
+        if (this.app && this.app.stage) {
+            this.app.stage.scale.set(scale);
+        }
+    }
+
+    getScale(): number {
+        if (this.app && this.app.stage) {
+            return this.app.stage.scale.x; // Assuming uniform scaling (x and y are the same)
+        }
+        return 1.0; // Default scale if app is not initialized
+    }
+
+    toLocal(point: Point): Point {
+        return this.app.stage.toLocal(point)
     }
     
     async init(container: HTMLElement, hexagonStyle: HexagonStyle): Promise<void> {

@@ -15,6 +15,7 @@ export interface IAppState {
     userInfo: IUserInfo | null
     playerInfo: IPlayerInfo | null
     selectedBattle: BattleMap | null
+    battleKey: number
     isLoading: boolean
 }
 
@@ -24,7 +25,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
     constructor(props: IAppProps) {
         super(props)
         
-        this.state = {selectedBattle: null, userInfo: null, playerInfo: null, isLoading: true}
+        this.state = {selectedBattle: null, userInfo: null, playerInfo: null, battleKey: 0, isLoading: true}
         
         this.onBattleDefinitionSelected = this.onBattleDefinitionSelected.bind(this)
         this.onBattleFinished = this.onBattleFinished.bind(this)
@@ -78,6 +79,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
             this.setState({
                 ...this.state,
                 selectedBattle: map,
+                battleKey: this.state.battleKey + 1,
                 isLoading: false,
             })
         }).catch(() =>
@@ -96,6 +98,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
             this.setState({
                 ...this.state,
                 selectedBattle: newBattleMap,
+                battleKey: this.state.battleKey + 1,
             })
         } else {
             // Return to menu and refresh
@@ -189,9 +192,12 @@ export class App extends PureComponent<IAppProps, IAppState> {
                 { showBattleComponent
                     && (
                         <div className="BattleComponent">
-                            <BattleComponent serviceLocator={this.props.serviceLocator}
-                                             onBattleFinished={this.onBattleFinished}
-                                             battleMap={this.state.selectedBattle!} />
+                            <BattleComponent 
+                                key={this.state.battleKey}
+                                serviceLocator={this.props.serviceLocator}
+                                onBattleFinished={this.onBattleFinished}
+                                battleMap={this.state.selectedBattle!} 
+                            />
                         </div>
                     ) 
                 }

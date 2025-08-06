@@ -42,7 +42,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     constructor(props: IBattleComponentProps) {
         super(props)
 
-        this.state = { 
+        this.state = {
             battleLoaded: false,
             currentReward: null,
             rewards: [],
@@ -55,6 +55,16 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
 
     async componentDidMount() {
+        await this.initializeBattle()
+    }
+
+    async componentDidUpdate(prevProps: IBattleComponentProps) {
+        if (prevProps.battleMap !== this.props.battleMap) {
+            await this.initializeBattle()
+        }
+    }
+
+    private async initializeBattle() {
         const canvasContainer = document.getElementById(CanvasContainerId)!
 
         const canvasService = this.props.serviceLocator.canvasService()
@@ -63,6 +73,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         const battlesService = this.props.serviceLocator.battlesService()
         const panelController = this.controlPanelRef.current!
         this.battleController = await battlesService.createBattle(this.props.battleMap, panelController)
+
+        // Calculate and apply the appropriate scale to fit the map in the container
+        const targetScale = this.calculateTargetScale(canvasContainer, this.props.battleMap)
+        canvasService.setScale(targetScale)
 
         // Subscribe to turn changes
         this.battleController.onNextTurn.connect(this.handleNextTurn)
@@ -76,22 +90,23 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         const activeUnit = initialTurnInfo.nextTurnUnitId ?
             this.props.battleMap.units.find(unit => unit.id === initialTurnInfo.nextTurnUnitId) ?? null
             : null
-        
-        this.setState({ 
-            ...this.state, 
+
+        this.setState({
+            ...this.state,
             battleLoaded: true,
             isPlayerTurn: isPlayerTurn,
             activeUnit: activeUnit
         })
     }
 
+
     private handleNextTurn = (turnInfo: BattleTurnInfo) => {
         const isPlayerTurn = this.battleController!.isPlayerControlled(turnInfo.player)
         const activeUnit = turnInfo.nextTurnUnitId ?
             this.props.battleMap.units.find(unit => unit.id === turnInfo.nextTurnUnitId) ?? null
             : null
-        
-        this.setState({ 
+
+        this.setState({
             currentRoundNumber: turnInfo.roundNumber,
             isPlayerTurn: isPlayerTurn,
             activeUnit: activeUnit
@@ -140,9 +155,9 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     private handleBattleResultsOk = () => {
         // Capture the isWinner value before clearing the state
         const isWinner = this.state.battleReport?.isWinner
-        
+
         this.setState({ battleReport: null })
-        
+
         // Check if the player won to determine next action
         if (isWinner) {
             this.proceedToRewards()
@@ -170,32 +185,6 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
     }
 
-    private startNewBattle = async (battleMap: BattleMap) => {
-        // Dispose of current battle controller
-        if (this.battleController) {
-            this.battleController.onNextTurn.disconnect(this.handleNextTurn)
-            this.battleController.dispose()
-        }
-        
-        // Clean up the canvas service before initializing new battle
-        const canvasService = this.props.serviceLocator.canvasService()
-        canvasService.clear()
-        
-        // Initialize new battle
-        const canvasContainer = document.getElementById(CanvasContainerId)!
-        await canvasService.init(canvasContainer, this.getMapHexagonStyle(battleMap))
-
-        const battlesService = this.props.serviceLocator.battlesService()
-        const panelController = this.controlPanelRef.current!
-        this.battleController = await battlesService.createBattle(battleMap, panelController)
-
-        // Subscribe to turn changes for the new battle
-        this.battleController.onNextTurn.connect(this.handleNextTurn)
-
-        // Start the new battle
-        this.startBattle()
-    }
-
     private handleRewardDecline = async () => {
         const { currentReward } = this.state
         if (!currentReward) return
@@ -208,8 +197,6 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
         this.showNextReward()
     }
-
-
 
     private showNextReward = () => {
         const { rewards, currentRewardIndex } = this.state
@@ -247,6 +234,44 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         throw new Error("Unknown type of the battle map hexo grid")
     }
 
+    private calculateTargetScale(container: HTMLElement, battleMap: BattleMap): number {
+        const containerSize = {
+            width: container.clientWidth,
+            height: container.clientHeight
+        }
+
+        // Handle edge case where container has no size
+        if (containerSize.width <= 0 || containerSize.height <= 0) {
+            return 1.0
+        }
+
+        const availableWidth = containerSize.width
+        const availableHeight = containerSize.height
+
+        // Handle edge case where available space is too small
+        if (availableWidth <= 0 || availableHeight <= 0) {
+            return 1.0
+        }
+
+        const hexagonRadius = this.battleController!.mapController.cellRadius
+        // Calculate the map size using the grid's getSize method
+        const mapSize = battleMap.grid.getSize(hexagonRadius)
+
+        // Handle edge case where map has no size
+        if (mapSize.width <= 0 || mapSize.height <= 0) {
+            return 1.0
+        }
+
+        // Calculate scale factors for both width and height using available space
+        const scaleX = availableWidth / mapSize.width
+        const scaleY = availableHeight / mapSize.height
+
+        // Use the smaller scale to ensure the map fits in both dimensions
+        const targetScale = Math.min(scaleX, scaleY, 1.0) // Don't scale up beyond 1.0
+
+        return targetScale
+    }
+
     render() {
         const canvasStyle: React.CSSProperties = {
             visibility: this.state.battleLoaded ? 'visible' : 'hidden'
@@ -266,12 +291,14 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
                 <div id={CanvasContainerId} style={canvasStyle}></div>
 
-                <BattleControlPanel
-                    ref={this.controlPanelRef}
-                    isVisible={this.state.battleLoaded}
-                    isPlayerTurn={this.state.isPlayerTurn}
-                    activeUnit={this.state.activeUnit}
-                />
+                <div className="battle-control-panel-wrapper">
+                    <BattleControlPanel
+                        ref={this.controlPanelRef}
+                        isVisible={this.state.battleLoaded}
+                        isPlayerTurn={this.state.isPlayerTurn}
+                        activeUnit={this.state.activeUnit}
+                    />
+                </div>
 
                 {this.state.battleReport && (
                     <BattleResultsModal

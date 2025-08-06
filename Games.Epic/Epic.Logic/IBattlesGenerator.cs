@@ -66,8 +66,8 @@ namespace Epic.Logic
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
-            var width = _random.Next(5, 14);
-            var height = _random.Next(5, 10);
+            var width = _random.Next(5, 20);
+            var height = _random.Next(5, 14);
 
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
             var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
@@ -151,6 +151,7 @@ namespace Epic.Logic
                 var resourceType = _resources[_random.Next(0, _resources.Count)];
                 var resourceAmount = Math.Max(1,
                     (int)Math.Ceiling((double)difficulty.TargetDifficulty / resourceType.Price));
+                resourceAmount = RoundToFriendlyNumber(resourceAmount);
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.ResourcesGain,
@@ -181,16 +182,45 @@ namespace Epic.Logic
                 });
             } else if (rewardType == RewardTypes.UnitsToBuy)
             {
-                var unitToBuy = _orderedUnitTypes[_random.Next(0, _orderedUnitTypes.Count)];
-                var unitsBuyAmount = Math.Max(1, (int)Math.Ceiling((double)5000 / unitToBuy.Value));
-                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+                    entity => entity.Value, difficulty.TargetDifficulty);
+                var unitToBuy = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
+                var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
+                    ? unitToBuy.BattleImgUrl 
+                    : unitToBuy.DwellingImgUrl;
+                    
+                var isGuarded = unitToBuy.Value >= 300;
+                var rewardedBattleDefinition = battleDefinition;
+                if (isGuarded)
+                {
+                    var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(15, 11);
+                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                    {
+                        RewardType = RewardType.Battle,
+                        Ids = Array.Empty<Guid>(),
+                        Amounts = Array.Empty<int>(),
+                        Message = $"You need to defeat guards to train {unitToBuy.Name}",
+                        CanDecline = true,
+                        NextBattleDefinitionId = guardBattleDefinition.Id,
+                        CustomIconUrl = dwellingIcon,
+                        CustomTitle = $"Dwelling of {unitToBuy.Name}",
+                    });
+                    
+                    await GlobalUnitsRepository.Create(unitToBuy.Id, unitToBuy.ToTrainAmount * 3,
+                        guardBattleDefinition.ContainerId, true, guardBattleDefinition.Height / 2);
+                    
+                    rewardedBattleDefinition = guardBattleDefinition;
+                }
+                
+                await RewardsRepository.CreateRewardAsync(rewardedBattleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.UnitToBuy,
-                    Amounts = new[] { unitsBuyAmount },
+                    Amounts = new[] { unitToBuy.ToTrainAmount },
+                    Message = "You can train units now",
                     CanDecline = true,
                     NextBattleDefinitionId = null,
-                    CustomIconUrl = null,
-                    CustomTitle = null,
+                    CustomIconUrl = dwellingIcon,
+                    CustomTitle = $"Dwelling of {unitToBuy.Name}",
                     Ids = new[] { unitToBuy.Id },
                 });
             }

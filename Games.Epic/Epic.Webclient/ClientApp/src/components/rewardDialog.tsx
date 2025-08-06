@@ -12,7 +12,6 @@ export interface IRewardDialogProps {
 }
 
 interface IRewardDialogState {
-    isVisible: boolean
     unitQuantities: number[]
     availableResources: { [resourceId: string]: number }
     isSubmitting: boolean
@@ -23,7 +22,6 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
     constructor(props: IRewardDialogProps) {
         super(props)
         this.state = { 
-            isVisible: true,
             unitQuantities: [],
             availableResources: {},
             isSubmitting: false,
@@ -45,8 +43,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
             
             const result = await this.props.onAccept()
             
-            // Only close dialog if no error occurred
-            this.setState({ isVisible: false })
+            // Dialog will be closed by parent component when currentReward is set to null
         } catch (error) {
             console.error('Error accepting reward:', error)
             this.setState({ 
@@ -61,7 +58,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
         
         try {
             await this.props.onDecline()
-            this.setState({ isVisible: false })
+            // Dialog will be closed by parent component when currentReward is set to null
         } catch (error) {
             console.error('Error declining reward:', error)
             this.setState({ 
@@ -660,10 +657,6 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
     }
 
     render() {
-        if (!this.state.isVisible) {
-            return null
-        }
-
         return (
             <div className="reward-dialog-overlay">
                 <div className="reward-dialog">

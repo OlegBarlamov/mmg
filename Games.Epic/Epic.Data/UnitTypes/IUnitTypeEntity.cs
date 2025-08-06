@@ -17,7 +17,9 @@ namespace Epic.Data.UnitTypes
         string Name { get; }
         string BattleImgUrl { get; }
         string DashboardImgUrl { get; }
+        string DwellingImgUrl { get; }
         int Value { get; }
+        int ToTrainAmount { get; }
         IReadOnlyDictionary<string, int> ResourcesDistribution { get; }
     }
 
@@ -36,7 +38,9 @@ namespace Epic.Data.UnitTypes
         public string Name { get; set; }
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
+        public string DwellingImgUrl { get; set; }
         public int Value { get; set; } = 1;
+        public int ToTrainAmount { get; set; }
         public Dictionary<string, int> ResourcesDistribution { get; set; } = new Dictionary<string, int>();
 
         IReadOnlyDictionary<string, int> IUnitTypeProperties.ResourcesDistribution => ResourcesDistribution; 
@@ -70,6 +74,7 @@ namespace Epic.Data.UnitTypes
                 Attacks = properties.Attacks.ToList(),
                 Value = properties.Value,
                 ResourcesDistribution = properties.ResourcesDistribution,
+                ToTrainAmount = properties.ToTrainAmount
             };
         }
     }

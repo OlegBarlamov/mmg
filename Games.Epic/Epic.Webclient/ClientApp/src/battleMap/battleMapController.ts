@@ -9,6 +9,7 @@ import { distance } from "../common/math";
 import { BattleMapHighlighter, IBattleMapHighlighter } from "./battleMapHighlighter";
 
 export interface IBattleMapController {
+    readonly cellRadius: number
     readonly map: BattleMap
     readonly battleMapHighlighter: IBattleMapHighlighter
 
@@ -45,7 +46,7 @@ export class BattleMapController implements IBattleMapController {
     private hexagons: IHexagon[][] = []
     private units: IUnitTile[] = []
 
-    private readonly cellRadius: number = 60
+    readonly cellRadius: number = 60
     private readonly visualOffset: Point
     private readonly defaultCellsStrokeColor = 0xFFFFFF
     private readonly defaultCellsFillColor = 0x66CCFF
@@ -133,9 +134,12 @@ export class BattleMapController implements IBattleMapController {
 
     private getCanvasOffset(): Point {
         const offset = { x: 0, y: 0 }
+
         const containerSize = this.canvasService.size()
         const gridDesiredSize = this.map.grid.getSize(this.cellRadius)
 
+        // Use the original container size for positioning calculations
+        // The scale affects the rendering, not the positioning logic
         if (gridDesiredSize.width < containerSize.width) {
             offset.x = (containerSize.width - gridDesiredSize.width) / 2
         }
@@ -190,9 +194,9 @@ export class BattleMapController implements IBattleMapController {
                     fillAlpha: 1.0,
                 })
 
-                hexagonView.onMouseEnters = (sender, event) => this.onCellMouseEnter?.(cell, this.translatePointerEvent(event))
-                hexagonView.onMouseLeaves = (sender, event) => this.onCellMouseLeave?.(cell, this.translatePointerEvent(event))
-                hexagonView.onMouseUp = (sender, event) => this.onCellMouseClick?.(cell, this.translatePointerEvent(event))
+                hexagonView.onMouseEnters = (sender, event) => this.onCellMouseEnter?.(cell, this.translatePointerEvent(event, this.canvasService))
+                hexagonView.onMouseLeaves = (sender, event) => this.onCellMouseLeave?.(cell, this.translatePointerEvent(event, this.canvasService))
+                hexagonView.onMouseUp = (sender, event) => this.onCellMouseClick?.(cell, this.translatePointerEvent(event, this.canvasService))
 
                 row.push(hexagonView);
             }
@@ -227,20 +231,24 @@ export class BattleMapController implements IBattleMapController {
                 imgSrc: unit.currentProps.battleImgUrl
             })
 
-            unitTile.onMouseMove = (sender, event) => this.onUnitMouseMove?.(unit, this.translatePointerEvent(event))
-            unitTile.onMouseEnters = (sender, event) => this.onUnitMouseEnter?.(unit, this.translatePointerEvent(event))
-            unitTile.onMouseLeaves = (sender, event) => this.onUnitMouseLeave?.(unit, this.translatePointerEvent(event))
-            unitTile.onMouseUp = (sender, event) => this.onUnitMouseClick?.(unit, this.translatePointerEvent(event))
+            unitTile.onMouseMove = (sender, event) => this.onUnitMouseMove?.(unit, this.translatePointerEvent(event, this.canvasService))
+            unitTile.onMouseEnters = (sender, event) => this.onUnitMouseEnter?.(unit, this.translatePointerEvent(event, this.canvasService))
+            unitTile.onMouseLeaves = (sender, event) => this.onUnitMouseLeave?.(unit, this.translatePointerEvent(event, this.canvasService))
+            unitTile.onMouseUp = (sender, event) => this.onUnitMouseClick?.(unit, this.translatePointerEvent(event, this.canvasService))
 
             this.units.push(unitTile)
         }
     }
 
-    private translatePointerEvent(event: PointerEvent): PointerEvent {
+    private translatePointerEvent(event: PointerEvent, canvasService: ICanvasService): PointerEvent {
+        const pixiEvent = event as any;
+        const global = pixiEvent.data?.global ?? { x: event.x, y: event.y }
+        const resultPoint = canvasService.toLocal(global)
+        
         return {
             ...event,
-            x: event.x - this.visualOffset.x,
-            y: event.y - this.visualOffset.y,
+            x: resultPoint.x - this.visualOffset.x,
+            y: resultPoint.y - this.visualOffset.y,
         }
     }
 }
