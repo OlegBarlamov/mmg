@@ -38,6 +38,11 @@ namespace Epic.Core.Services.Units
             return units.Any();
         }
 
+        public Task<int> CountAliveUnits(Guid containerId)
+        {
+            return GlobalUnitsRepository.GetUnitsCount(containerId);
+        }
+
         public async Task<IReadOnlyCollection<IGlobalUnitObject>> GetAliveUnitsByContainerId(Guid containerId)
         {
             var aliveUsersEntities = await GlobalUnitsRepository.GetAliveByContainerId(containerId);

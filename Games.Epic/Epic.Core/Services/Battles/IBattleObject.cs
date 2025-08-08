@@ -5,13 +5,11 @@ using Epic.Data.Battles;
 
 namespace Epic.Core.Services.Battles
 {
-    public interface IBattleObject : IGameObject<IBattleEntity>
+    public interface IBattleObject : IGameObject<IBattleEntity>, ISize
     {
         Guid Id { get; }
         Guid BattleDefinitionId { get; }
         int TurnNumber { get; }
-        int Width { get; }
-        int Height { get; }
         bool IsActive { get; }
         int TurnPlayerIndex { get; }
         int LastTurnUnitIndex { get; }

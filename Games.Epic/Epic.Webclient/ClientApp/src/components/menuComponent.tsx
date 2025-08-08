@@ -5,6 +5,7 @@ import {IPlayerInfo, IUserUnit, IResourceInfo} from "../services/serverAPI";
 import {ArmyDisplay} from "./armyDisplay";
 import {SupplyComponent} from "./supplyComponent";
 import {ResourcesView} from "./resourcesView";
+import {BattleConfirmationDialog} from "./battleConfirmationDialog";
 import "./menuComponent.css";
 
 export interface IMenuComponentProps {
@@ -21,6 +22,9 @@ interface IMenuComponentState {
     armyUnits: IUserUnit[] | null
     armyCapacity: number
     resources: IResourceInfo[] | null
+    hoveredBattleHeight: number | null
+    showBattleConfirmation: boolean
+    pendingBattle: IBattleDefinition | null
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -38,7 +42,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             showSupply: false,
             armyUnits: null,
             armyCapacity: 7,
-            resources: null
+            resources: null,
+            hoveredBattleHeight: null,
+            showBattleConfirmation: false,
+            pendingBattle: null
         }
     }
     
@@ -115,6 +122,50 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         this.setState({ armyUnits: units })
     }
 
+    private handleBattleRowHover = (battleHeight: number | null) => {
+        this.setState({ hoveredBattleHeight: battleHeight })
+    }
+
+    private handleBattleSelected = (battle: IBattleDefinition) => {
+        // Check if there are units outside the battle height
+        const unitsOutsideBattleHeight = this.hasUnitsOutsideBattleHeight(battle.height)
+        
+        if (unitsOutsideBattleHeight) {
+            // Show confirmation dialog
+            this.setState({
+                showBattleConfirmation: true,
+                pendingBattle: battle
+            })
+        } else {
+            // Start battle immediately
+            this.props.onBattleSelected(battle)
+        }
+    }
+
+    private hasUnitsOutsideBattleHeight = (battleHeight: number): boolean => {
+        const { armyUnits } = this.state
+        if (!armyUnits) return false
+        
+        return armyUnits.some(unit => unit.slotIndex >= battleHeight)
+    }
+
+    private handleBattleConfirmationAccept = () => {
+        if (this.state.pendingBattle) {
+            this.props.onBattleSelected(this.state.pendingBattle)
+        }
+        this.setState({
+            showBattleConfirmation: false,
+            pendingBattle: null
+        })
+    }
+
+    private handleBattleConfirmationCancel = () => {
+        this.setState({
+            showBattleConfirmation: false,
+            pendingBattle: null
+        })
+    }
+
     // Method to refresh army units from server
     private refreshArmyFromServer = async () => {
         await this.fetchArmyUnits()
@@ -169,7 +220,12 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                     </thead>
                                     <tbody>
                                         {this.state.availableBattles.map((battle, index) => (
-                                            <tr key={index} className="battle-row">
+                                            <tr 
+                                                key={index} 
+                                                className="battle-row"
+                                                onMouseEnter={() => this.handleBattleRowHover(battle.height)}
+                                                onMouseLeave={() => this.handleBattleRowHover(null)}
+                                            >
                                                 <td className="battle-size">{battle.width}x{battle.height}</td>
                                                 <td className="battle-units">
                                                     <div className="units-horizontal">
@@ -213,7 +269,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                 <td className="battle-action">
                                                     <button 
                                                         className="battle-button"
-                                                        onClick={() => this.props.onBattleSelected(battle)}
+                                                        onClick={() => this.handleBattleSelected(battle)}
                                                         disabled={!this.hasArmyUnits()}
                                                     >
                                                         Start Battle
@@ -241,6 +297,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                     armyUnits={this.state.armyUnits}
                     armyCapacity={this.state.armyCapacity}
                     onArmyUnitsUpdate={this.handleArmyUnitsUpdate}
+                    highlightedSlots={this.state.hoveredBattleHeight}
                 />
 
                 {this.state.showSupply && (
@@ -257,6 +314,13 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
 
                 {/* Resources Display */}
                 <ResourcesView resources={this.state.resources} />
+
+                {/* Battle Confirmation Dialog */}
+                <BattleConfirmationDialog
+                    isVisible={this.state.showBattleConfirmation}
+                    onAccept={this.handleBattleConfirmationAccept}
+                    onCancel={this.handleBattleConfirmationCancel}
+                />
             </div>
         )
     }

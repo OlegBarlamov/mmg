@@ -35,6 +35,11 @@ namespace Epic.Data.GlobalUnits
             return Task.FromResult(_units.Where(unit => ids.Contains(unit.Id)).ToArray<IGlobalUnitEntity>());
         }
 
+        public Task<int> GetUnitsCount(Guid containerId)
+        {
+            return Task.FromResult(_units.Count(unit => unit.ContainerId == containerId));
+        }
+
         public Task RemoveByIds(IEnumerable<Guid> ids)
         {
             foreach (var id in ids)

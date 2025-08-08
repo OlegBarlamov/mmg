@@ -8,6 +8,7 @@ namespace Epic.Core.Services.Units
     {
         Task<IGlobalUnitObject> GetById(Guid id);
         Task<bool> HasAliveUnits(Guid containerId);
+        Task<int> CountAliveUnits(Guid containerId);
         Task<IReadOnlyCollection<IGlobalUnitObject>> GetAliveUnitsByContainerId(Guid containerId);
         
         Task<IReadOnlyCollection<IGlobalUnitObject>> GetUnitsByIds(IReadOnlyCollection<Guid> ids);

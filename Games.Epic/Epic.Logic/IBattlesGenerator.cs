@@ -66,15 +66,19 @@ namespace Epic.Logic
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
-            var width = _random.Next(5, 20);
-            var height = _random.Next(5, 14);
-
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
+
+            var maxWidth = Math.Min(Constants.MaxBattleWidth, Constants.StartBattleWidth + difficulty.TargetDifficulty / 500);
+            var maxHeight = Math.Min(Constants.MaxBattleHeight, Constants.StartBattleHeight + difficulty.TargetDifficulty / 500);
+            
+            var width = _random.Next(Constants.MinBattleWidth, maxWidth);
+            var height = _random.Next(Constants.MinBattleHeight, maxHeight);
+            
             var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
                 entity => entity.Value, difficulty.TargetDifficulty);
             var targetUnit = _orderedUnitTypes[_random.Next(0, maxStrongUnitIndex + 1)];
 
-            var unitsCount = Math.Max(1, (int)Math.Ceiling((double)difficulty.TargetDifficulty / targetUnit.Value));
+            var unitsCount = Math.Max(1, (int)Math.Round((double)difficulty.TargetDifficulty / targetUnit.Value));
 
             var container = await UnitsContainersService.Create(height, Guid.Empty);
 
@@ -182,9 +186,11 @@ namespace Epic.Logic
                 });
             } else if (rewardType == RewardTypes.UnitsToBuy)
             {
+                var minUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+                    entity => entity.Value, difficulty.TargetDifficulty / 2);
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty);
-                var unitToBuy = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
+                    entity => entity.Value, difficulty.TargetDifficulty * 3);
+                var unitToBuy = _orderedUnitTypes[_random.Next(minUnitIndex, maxUnitIndex + 1)];
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
                     ? unitToBuy.BattleImgUrl 
                     : unitToBuy.DwellingImgUrl;
@@ -193,7 +199,10 @@ namespace Epic.Logic
                 var rewardedBattleDefinition = battleDefinition;
                 if (isGuarded)
                 {
-                    var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(15, 11);
+                    var guardBattleWidth = Math.Min(Constants.MaxBattleWidth, Constants.StartBattleWidth + unitToBuy.Value * 3 / 500);
+                    var guardBattleHeight = Math.Min(Constants.MaxBattleHeight, Constants.StartBattleHeight + unitToBuy.Value * 3 / 500);
+                    
+                    var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
                     await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                     {
                         RewardType = RewardType.Battle,

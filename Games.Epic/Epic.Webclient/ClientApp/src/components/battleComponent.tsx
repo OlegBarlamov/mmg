@@ -55,16 +55,6 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
 
     async componentDidMount() {
-        await this.initializeBattle()
-    }
-
-    async componentDidUpdate(prevProps: IBattleComponentProps) {
-        if (prevProps.battleMap !== this.props.battleMap) {
-            await this.initializeBattle()
-        }
-    }
-
-    private async initializeBattle() {
         const canvasContainer = document.getElementById(CanvasContainerId)!
 
         const canvasService = this.props.serviceLocator.canvasService()

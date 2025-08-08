@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Objects;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
@@ -43,7 +44,8 @@ namespace Epic.Core.Services.Battles
 
         public Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
         {
-            return CreateBattleUnitsFromGlobalUnits(battleDefinition.Units, InBattlePlayerNumber.Player2, battleId);
+            var unitsFitToBattle = PickUnitsFitToBattleSize(battleDefinition.Units, battleDefinition);
+            return CreateBattleUnitsFromGlobalUnits(unitsFitToBattle, InBattlePlayerNumber.Player2, battleId);
         }
 
         public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(IReadOnlyCollection<IGlobalUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId)
@@ -76,6 +78,11 @@ namespace Epic.Core.Services.Battles
             var entities = battleUnits.Select(BattleUnitEntity.FromBattleUnitObject).ToArray<IBattleUnitEntity>();
             await BattleUnitsRepository.Update(entities);
             await BattleUnitsRepository.UpdateAttacksData(battleUnits.SelectMany(x => x.AttackFunctionsData).ToArray());
+        }
+
+        public IReadOnlyCollection<IGlobalUnitObject> PickUnitsFitToBattleSize(IReadOnlyCollection<IGlobalUnitObject> units, ISize size)
+        {
+            return units.OrderBy(x => x.ContainerSlotIndex).Take(size.Height).ToArray();
         }
 
         private async Task<IReadOnlyCollection<MutableBattleUnitObject>> FillBattleUnitObjects(

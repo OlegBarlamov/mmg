@@ -13,5 +13,6 @@ namespace Epic.Core.Services.Battles
         Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId);
         Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(IReadOnlyCollection<IGlobalUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId);
         Task UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnit);
+        IReadOnlyCollection<IGlobalUnitObject> PickUnitsFitToBattleSize(IReadOnlyCollection<IGlobalUnitObject> units, ISize size);
     }
 }

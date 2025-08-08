@@ -2,6 +2,7 @@ using System;
 using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
+using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.BattleReports;
 using Epic.Core.Services.Battles;
@@ -58,10 +59,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleConnectionsService, BattleConnectionsService>();
             serviceRegistrator.RegisterType<IBattlesCacheService, DefaultBattlesCacheService>();
             serviceRegistrator.RegisterType<IRewardsService, DefaultRewardsService>();
-            serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             serviceRegistrator.RegisterType<IPlayersService, DefaultPlayersService>();
-            serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
-            serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             serviceRegistrator.RegisterType<IUnitsContainersService, DefaultUnitsContainerService>();
             serviceRegistrator.RegisterType<IContainersManipulator, DefaultContainersManipulator>();
             serviceRegistrator.RegisterType<IHeroesService, DefaultHeroesService>();
@@ -81,6 +79,11 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IHeroEntitiesRepository, InMemoryHeroEntitiesRepository>();
             serviceRegistrator.RegisterType<IGameResourcesRepository, InMemoryGameResourcesRepository>();
             serviceRegistrator.RegisterType<IBattleReportsRepository, InMemoryBattleReportsRepository>();
+            
+            serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
+            serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
+            serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
+            serviceRegistrator.RegisterType<IBattleUnitsPlacer, BattleUnitsPlacer>();
         }
     }
 }

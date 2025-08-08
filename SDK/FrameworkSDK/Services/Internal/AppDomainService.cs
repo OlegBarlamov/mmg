@@ -56,7 +56,8 @@ namespace FrameworkSDK.Services
 		    lock (_locker)
 		    {
 			    _isDisposed = true;
-				_bufferedTypes.Clear();
+				_bufferedTypes?.Clear();
+				_bufferedTypes = null;
 		    }
 	    }
     }

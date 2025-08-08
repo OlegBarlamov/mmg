@@ -21,7 +21,8 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IBattlesCacheService BattlesCacheService { get; }
         [NotNull] private IGlobalUnitsService GlobalUnitsService { get; }
         [NotNull] private IPlayersService PlayersService { get; }
-        public IBattleReportsRepository BattleReportsRepository { get; }
+        [NotNull] private IBattleReportsRepository BattleReportsRepository { get; }
+        [NotNull] private IBattleUnitsPlacer BattleUnitsPlacer { get; }
 
         public DefaultBattlesService(
             [NotNull] IBattlesRepository battlesRepository,
@@ -30,7 +31,8 @@ namespace Epic.Core.Services.Battles
             [NotNull] IBattlesCacheService battlesCacheService,
             [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IPlayersService playersService,
-            [NotNull] IBattleReportsRepository battleReportsRepository)
+            [NotNull] IBattleReportsRepository battleReportsRepository,
+            [NotNull] IBattleUnitsPlacer battleUnitsPlacer)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -39,6 +41,7 @@ namespace Epic.Core.Services.Battles
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             BattleReportsRepository = battleReportsRepository ?? throw new ArgumentNullException(nameof(battleReportsRepository));
+            BattleUnitsPlacer = battleUnitsPlacer ?? throw new ArgumentNullException(nameof(battleUnitsPlacer));
         }
 
         public async Task<IBattleObject> GetBattleById(Guid battleId)
@@ -91,7 +94,7 @@ namespace Epic.Core.Services.Battles
                 throw new InvalidOperationException("Battle definition is finished");
             if (battleDefinitionObject.ExpireAtDay <= playerObject.Day)
                 throw new InvalidOperationException("Battle definition is expired");
-
+            
             var battleEntity = await BattlesRepository.CreateBattleAsync(
                 battleDefinitionObject.Id,
                 new[] { playerObject.Id },
@@ -119,10 +122,11 @@ namespace Epic.Core.Services.Battles
             await BattlesRepository.UpdateBattle(MutableBattleObject.ToEntity(mutableBattleObject));
             
             var userUnits = await GlobalUnitsService.GetAliveUnitsByContainerId(player.ActiveHero.ArmyContainerId);
-            var userBattleUnits = await BattleUnitsService.CreateBattleUnitsFromGlobalUnits(userUnits, InBattlePlayerNumber.Player1, battleObject.Id);
+            var userUnitsFitToBattle = BattleUnitsService.PickUnitsFitToBattleSize(userUnits, mutableBattleObject);
+            var userBattleUnits = await BattleUnitsService.CreateBattleUnitsFromGlobalUnits(userUnitsFitToBattle, InBattlePlayerNumber.Player1, battleObject.Id);
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
-            PlaceBattleUnits(mutableBattleObject);
+            BattleUnitsPlacer.PlaceBattleUnitsDefaultPattern(mutableBattleObject);
 
             await BattleUnitsService.UpdateUnits(mutableBattleObject.Units);
             
@@ -148,28 +152,6 @@ namespace Epic.Core.Services.Battles
                 battleObject.PlayersIds.ToArray(),
                 result.Winner.HasValue ? battleObject.GetPlayerId(result.Winner.Value) : null)
             );
-        }
-
-        private void PlaceBattleUnits(MutableBattleObject battleObject)
-        {
-            battleObject.Units.ForEach(u =>
-            {
-                var columnAddition = u.Row / battleObject.Height;
-                u.Row = u.Row - columnAddition * battleObject.Height;
-                if (u.PlayerIndex == (int)InBattlePlayerNumber.Player1)
-                {
-                    u.Column = 0 + columnAddition;
-                }
-                else if (u.PlayerIndex == (int)InBattlePlayerNumber.Player2)
-                {
-                    u.Column = battleObject.Width - 1 - columnAddition;
-                }
-                else
-                {
-                    u.Column = -1;
-                    u.Row = -1;
-                }
-            });
         }
 
         private async Task FillUnits(MutableBattleObject battleObject)

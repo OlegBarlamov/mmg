@@ -10,6 +10,7 @@ export interface IArmyDisplayProps {
     armyUnits: IUserUnit[] | null
     armyCapacity: number
     onArmyUnitsUpdate?: (units: IUserUnit[]) => void
+    highlightedSlots?: number | null
 }
 
 interface IArmyDisplayState {
@@ -124,12 +125,13 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
     private renderArmySlot(unit: IUserUnit | null, index: number) {
         const isSelected = this.state.selectedUnit?.id === unit?.id
         const isTarget = this.state.isDragging && !isSelected
+        const isHighlighted = this.props.highlightedSlots !== null && index < this.props.highlightedSlots!
         
         if (unit) {
             return (
                 <div 
                     key={index} 
-                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''}`}
+                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''} ${isHighlighted ? 'highlighted' : ''}`}
                     onClick={() => this.handleUnitClick(unit)}
                 >
                     <img 
@@ -144,7 +146,7 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
             return (
                 <div 
                     key={index} 
-                    className={`army-slot empty ${isTarget ? 'target' : ''}`}
+                    className={`army-slot empty ${isTarget ? 'target' : ''} ${isHighlighted ? 'highlighted' : ''}`}
                     onClick={() => this.handleEmptySlotClick(index)}
                 >
                     <div className="empty-slot">Empty</div>

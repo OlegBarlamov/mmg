@@ -8,12 +8,9 @@ using Epic.Data.BattleDefinitions;
 
 namespace Epic.Core.Services.BattleDefinitions
 {
-    public interface IBattleDefinitionObject : IGameObject<IBattleDefinitionEntity>
+    public interface IBattleDefinitionObject : IGameObject<IBattleDefinitionEntity>, ISize
     {
         Guid Id { get; }
-
-        int Width { get; }
-        int Height { get; }
         
         bool IsFinished { get; }
         
