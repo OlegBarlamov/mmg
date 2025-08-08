@@ -19,19 +19,16 @@ namespace Epic.Core.Services.Units
         {
             
         }
-        
-        public static MutableGlobalUnitObject CopyFrom(IGlobalUnitObject x)
+
+        protected MutableGlobalUnitObject(IGlobalUnitObject x)
         {
-            return new MutableGlobalUnitObject
-            {
-                Id = x.Id,
-                UnitType = x.UnitType,
-                UnitTypeId = x.UnitType.Id,
-                Count = x.Count,
-                IsAlive = x.IsAlive,
-                ContainerId = x.ContainerId,
-                ContainerSlotIndex = x.ContainerSlotIndex,
-            };
+            Id = x.Id;
+            UnitType = x.UnitType;
+            UnitTypeId = x.UnitType.Id;
+            Count = x.Count;
+            IsAlive = x.IsAlive;
+            ContainerId = x.ContainerId;
+            ContainerSlotIndex = x.ContainerSlotIndex;
         }
 
         public static MutableGlobalUnitObject FromEntity(IGlobalUnitEntity entity)
@@ -47,7 +44,7 @@ namespace Epic.Core.Services.Units
             };
         }
 
-        public IGlobalUnitEntity ToEntity()
+        public virtual IGlobalUnitEntity ToEntity()
         {
             return new GlobalUnitEntity
             {
@@ -58,6 +55,11 @@ namespace Epic.Core.Services.Units
                 ContainerId = ContainerId,
                 ContainerSlotIndex = ContainerSlotIndex,
             };
+        }
+        
+        public static MutableGlobalUnitObject CopyFrom(IGlobalUnitObject x)
+        {
+            return new MutableGlobalUnitObject(x);
         }
     }
 }

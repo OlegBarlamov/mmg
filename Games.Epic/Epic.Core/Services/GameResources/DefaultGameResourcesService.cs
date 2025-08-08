@@ -16,7 +16,9 @@ namespace Epic.Core.Services.GameResources
         {
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
         }
-        
+
+        public Guid GoldResourceId => GameResourcesRepository.GoldResourceId;
+
         public async Task<ResourceAmount> CreateResourceAmount(Guid resourceId, int amount)
         {
             var entity = await GameResourcesRepository.GetById(resourceId);

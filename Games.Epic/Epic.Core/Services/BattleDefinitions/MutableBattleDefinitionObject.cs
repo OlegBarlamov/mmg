@@ -15,6 +15,8 @@ namespace Epic.Core.Services.BattleDefinitions
         public bool IsFinished { get; set; }
         public Guid ContainerId { get; set; }
         public int ExpireAtDay { get; set; }
+        public int RewardVisibility { get; set; }
+        public int GuardVisibility { get; set; }
         public IUnitsContainerObject UnitsContainerObject { get; set; }
         public IReadOnlyCollection<IGlobalUnitObject> Units { get; set; }
         public IReadOnlyCollection<Guid> RewardsIds { get; set; }
@@ -34,6 +36,8 @@ namespace Epic.Core.Services.BattleDefinitions
                 ContainerId = entity.ContainerId,
                 IsFinished = entity.Finished,
                 ExpireAtDay = entity.ExpireAtDay,
+                RewardVisibility = entity.RewardVisibility,
+                GuardVisibility = entity.GuardVisibility,
             };
         }
 

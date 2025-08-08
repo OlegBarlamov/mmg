@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
 using Epic.Core.Logic;
+using Epic.Core.Services;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.BattleReports;
 using Epic.Core.Services.Battles;
@@ -84,6 +85,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
             serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             serviceRegistrator.RegisterType<IBattleUnitsPlacer, BattleUnitsPlacer>();
+
+            PredefinedStaticResources.QuestionIconUrl = "/resources/question.png";
         }
     }
 }

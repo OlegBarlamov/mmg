@@ -26,8 +26,5 @@ namespace Epic.Core.Services.Rewards
         IReadOnlyList<IGameResourceEntity> Resources { get; }
         
         [CanBeNull] IBattleDefinitionObject NextBattleDefinition { get; }
-        
-        RewardDescription GetDescription();
-        
     }
 }

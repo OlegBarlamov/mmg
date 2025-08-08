@@ -61,17 +61,31 @@ namespace Epic.Core.Services.BattleDefinitions
             return battleDefinitionObject;
         }
 
-        public Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height, int expireAtDay, Guid? containerId = null)
+        public Task<IBattleDefinitionObject> CreateBattleDefinition(
+            Guid playerId,
+            int width,
+            int height,
+            int expireAtDay,
+            int rewardVisibility,
+            int guardVisibility,
+            Guid? containerId = null)
         {
-            return CreateBattleDefinitionInternal(width, height, expireAtDay, containerId, playerId);
+            return CreateBattleDefinitionInternal(width, height, expireAtDay, rewardVisibility, guardVisibility, containerId, playerId);
         }
 
         public Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height)
         {
-            return CreateBattleDefinitionInternal(width, height, Int32.MaxValue);
+            return CreateBattleDefinitionInternal(width, height, 0, 0, Int32.MaxValue);
         }
 
-        private async Task<IBattleDefinitionObject> CreateBattleDefinitionInternal(int width, int height, int expireAtDay, Guid? containerId = null, Guid? playerId = null)
+        private async Task<IBattleDefinitionObject> CreateBattleDefinitionInternal(
+            int width,
+            int height,
+            int expireAtDay,
+            int rewardVisibility,
+            int guardVisibility,
+            Guid? containerId = null,
+            Guid? playerId = null)
         {
             var container = containerId.HasValue 
                 ? await UnitsContainersService.GetById(containerId.Value)
@@ -86,6 +100,8 @@ namespace Epic.Core.Services.BattleDefinitions
                 CreatedAt = DateTime.Now,
                 ExpireAtDay = expireAtDay,
                 ExpireAt = null,
+                RewardVisibility = rewardVisibility,
+                GuardVisibility = guardVisibility,
             };
             var entity = playerId.HasValue
                 ? await BattleDefinitionsRepository.Create(playerId.Value, fields)

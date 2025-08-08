@@ -125,8 +125,33 @@ namespace Epic.Logic
                        ((double)difficulty.MaxDifficulty - difficulty.MinDifficulty);
             int duration = Math.Max(1, (int)Math.Round(1 + t * 9) + _random.Next(-2, 3));
 
-            var battleDefinition =
-                await BattleDefinitionsService.CreateBattleDefinition(playerId, width, height, day + duration,
+            var rewardVisibility = 0;
+            if (difficulty.IdealDifficulty > 1000)
+            {
+                var rewardVisibilityChance = _random.Next(101);
+                if (rewardVisibilityChance < 10)
+                    rewardVisibility = -1;
+                if (rewardVisibilityChance < 3)
+                    rewardVisibility = -2;
+            }
+
+            var guardVisibility = 0;
+            if (difficulty.IdealDifficulty > 2000)
+            {
+                var guardVisibilityChance = _random.Next(101);
+                if (guardVisibilityChance < 10)
+                    guardVisibility = -1;
+                if (guardVisibilityChance < 3)
+                    guardVisibility = -2;
+            }
+            
+            var battleDefinition = await BattleDefinitionsService.CreateBattleDefinition(
+                    playerId,
+                    width,
+                    height,
+                    day + duration,
+                    rewardVisibility,
+                    guardVisibility,
                     container.Id);
 
 

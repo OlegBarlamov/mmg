@@ -18,6 +18,9 @@ namespace Epic.Core.Services.BattleDefinitions
         
         int ExpireAtDay { get; }
         
+        int RewardVisibility { get; }
+        int GuardVisibility { get; }
+        
         IUnitsContainerObject UnitsContainerObject { get; }
         
         IReadOnlyCollection<IRewardObject> Rewards { get; }

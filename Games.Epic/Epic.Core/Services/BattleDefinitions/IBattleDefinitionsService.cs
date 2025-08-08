@@ -12,7 +12,14 @@ namespace Epic.Core.Services.BattleDefinitions
         Task<IBattleDefinitionObject> GetBattleDefinitionById(Guid battleDefinitionId);
         Task<IBattleDefinitionObject> GetBattleDefinitionByPlayerAndId(Guid playerId, Guid battleDefinitionId);
 
-        Task<IBattleDefinitionObject> CreateBattleDefinition(Guid playerId, int width, int height, int expireAtDay, Guid? containerId = null);
+        Task<IBattleDefinitionObject> CreateBattleDefinition(
+            Guid playerId,
+            int width,
+            int height,
+            int expireAtDay,
+            int rewardVisibility,
+            int guardVisibility,
+            Guid? containerId = null);
         
         Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height);
         

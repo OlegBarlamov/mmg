@@ -50,7 +50,7 @@ namespace Epic.Server.Controllers
                     resourcesAmounts.AddRange(amounts);
                 }
 
-                return new AcceptingRewardResource(reward, resourcesAmounts);
+                return new AcceptingRewardResource(reward, resourcesAmounts, GameResourcesService.GoldResourceId);
             }));
             return Ok(rewardResources);
         }

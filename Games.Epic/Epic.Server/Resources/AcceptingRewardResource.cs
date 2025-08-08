@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Rewards;
 using Epic.Data.GameResources;
+using Epic.Logic;
 
 namespace Epic.Server.Resources
 {
@@ -21,7 +22,7 @@ namespace Epic.Server.Resources
         public BattleDefinitionResource NextBattle { get; }
         public bool CanDecline { get; }
 
-        public AcceptingRewardResource(IRewardObject reward, IReadOnlyList<ResourceAmount[]> prices)
+        public AcceptingRewardResource(IRewardObject reward, IReadOnlyList<ResourceAmount[]> prices, Guid goldResourceId)
         {
             Id = reward.Id;
             BattleDefinitionId = reward.BattleDefinitionId;
@@ -41,7 +42,12 @@ namespace Epic.Server.Resources
                 .ToArray();
 
             if (reward.NextBattleDefinition != null)
-                NextBattle = new BattleDefinitionResource(reward.NextBattleDefinition, Array.Empty<IRewardObject>());
+                NextBattle = new BattleDefinitionResource(
+                    reward.NextBattleDefinition,
+                    Array.Empty<IRewardObject>(), 
+                    DescriptionVisibility.Full,
+                    DescriptionVisibility.Full,
+                    goldResourceId);
 
             Prices = prices.Select(x => new PriceResource(x)).ToArray();
         }

@@ -12,6 +12,8 @@ namespace Epic.Data.BattleDefinitions
         DateTime CreatedAt { get; }
         int ExpireAtDay { get; }
         DateTime? ExpireAt { get; }
+        int RewardVisibility { get; }
+        int GuardVisibility { get; }
     }
     
     public interface IBattleDefinitionEntity : IBattleDefinitionFields
@@ -28,6 +30,8 @@ namespace Epic.Data.BattleDefinitions
         public DateTime CreatedAt { get; set; }
         public int ExpireAtDay { get; set; }
         public DateTime? ExpireAt { get; set; }
+        public int RewardVisibility { get; set; }
+        public int GuardVisibility { get; set; }
 
         public BattleDefinitionEntityFields()
         {
@@ -54,6 +58,8 @@ namespace Epic.Data.BattleDefinitions
                 CreatedAt = fields.CreatedAt,
                 ExpireAtDay = fields.ExpireAtDay,
                 ExpireAt = fields.ExpireAt,
+                RewardVisibility = fields.RewardVisibility,
+                GuardVisibility = fields.GuardVisibility
             };
         }
     }

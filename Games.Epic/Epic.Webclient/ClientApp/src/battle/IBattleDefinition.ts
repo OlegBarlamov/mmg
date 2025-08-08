@@ -1,7 +1,6 @@
 
 export interface IBattleDefinitionUnit {
-    typeId: string
-    count: number
+    count: string
     thumbnailUrl: string
     name: string
 }
@@ -9,7 +8,7 @@ export interface IBattleDefinitionUnit {
 export interface IBattleDefinitionReward {
     name: string
     thumbnailUrl: string
-    amount: number
+    amount: string
 }
 
 export interface IBattleDefinition {

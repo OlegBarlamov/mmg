@@ -589,7 +589,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                                                 alt={unit.name}
                                                 className="unit-thumbnail"
                                             />
-                                            <span className="unit-amount">x{unit.count}</span>
+                                            <span className="unit-amount">{unit.count}</span>
                                         </div>
                                     ))}
                                 </div>

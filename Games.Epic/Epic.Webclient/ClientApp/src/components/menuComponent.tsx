@@ -236,7 +236,11 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                                     alt={unit.name}
                                                                     className="unit-thumbnail"
                                                                 />
-                                                                <span className="unit-count">x{unit.count}</span>
+                                                                {unit.count ? (
+                                                                    <span className="unit-count">{unit.count}</span>
+                                                                ) : (
+                                                                    <span className="unit-count">?</span>
+                                                                )}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -250,8 +254,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                                     alt={reward.name}
                                                                     className="reward-thumbnail"
                                                                 />
-                                                                {reward.amount > 0 && (
+                                                                {reward.amount ? (
                                                                     <span className="reward-amount">{reward.amount}</span>
+                                                                ) : (
+                                                                    <span className="reward-amount">?</span>
                                                                 )}
                                                             </div>
                                                         ))}
