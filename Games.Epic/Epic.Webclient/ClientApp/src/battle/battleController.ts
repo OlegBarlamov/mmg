@@ -36,6 +36,7 @@ export class BattleController implements IBattleController {
     private readonly battleUserInputController: BattleUserInputController
     private readonly battleActionProcessor: IBattleActionsProcessor
     private readonly turnAwaiter: ITurnAwaiter
+    private readonly npcControl: boolean
 
     constructor(
         mapController: IBattleMapController,
@@ -50,6 +51,8 @@ export class BattleController implements IBattleController {
         this.map = mapController.map
 
         this.battleUserInputController = new BattleUserInputController(mapController, panelController)
+
+        this.npcControl = this.isAbleToControlNpc()
     }
 
     dispose(): void {
@@ -69,6 +72,8 @@ export class BattleController implements IBattleController {
         this.currentTurnIndex = this.map.turnInfo.index
 
         let reportId: string | null = null;
+
+        await this.turnAwaiter.waitForTurn(this.currentTurnIndex)
 
         while (!this.battleFinished) {
             try {
@@ -109,7 +114,13 @@ export class BattleController implements IBattleController {
     }
 
     isPlayerControlled(player: BattlePlayerNumber): boolean {
-        return player == BattlePlayerNumber.Player1 || player == BattlePlayerNumber.Player2
+        return player == BattlePlayerNumber.Player1 || (player == BattlePlayerNumber.Player2 && this.npcControl)
+    }
+
+    private isAbleToControlNpc() : boolean {
+        const params = new URLSearchParams(window.location.search);
+        const npcControl = params.get("npc");
+        return npcControl === "true";
     }
 
     private onNextRound(): void {

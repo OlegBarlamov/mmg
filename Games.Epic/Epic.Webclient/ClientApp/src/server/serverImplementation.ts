@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -11,12 +11,16 @@ import {OddRGrid} from "../hexogrid/oddRGrid";
 import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
-export const SERVER_BASE_URL = "http://localhost:5000"
+//export const SERVER_BASE_URL = "http://localhost:5000"
+export const SERVER_BASE_URL = "http://192.168.1.8:5000"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
     }    
+    getUnitInfo(unitTypeId: string): Promise<IUnitInfo> {
+        return this.fetchResource<IUnitInfo>(`api/unit-types/${unitTypeId}`, "GET", "unit_info")
+    }
     getReport(reportId: string): Promise<IReportInfo> {
         return this.fetchResource<IReportInfo>(`api/reports/${reportId}`, "GET", "report")
     }

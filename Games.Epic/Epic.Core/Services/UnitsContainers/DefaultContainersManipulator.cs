@@ -182,11 +182,13 @@ namespace Epic.Core.Services.UnitsContainers
         {
             var unit1Entity = unit1.ToEntity();
             var unit2Entity = unit2.ToEntity();
-            
+
+            var unit1ContainerId = unit1Entity.ContainerId;
+            var unit1ContainerSlotIndex = unit1Entity.ContainerSlotIndex;
             unit1Entity.ContainerId = unit2.ContainerId;
             unit1Entity.ContainerSlotIndex = unit2.ContainerSlotIndex;
-            unit2Entity.ContainerId = unit1.ContainerId;
-            unit2Entity.ContainerSlotIndex = unit1.ContainerSlotIndex;
+            unit2Entity.ContainerId = unit1ContainerId;
+            unit2Entity.ContainerSlotIndex = unit1ContainerSlotIndex;
 
             await GlobalUnitsRepository.Update(unit1Entity, unit2Entity);
 

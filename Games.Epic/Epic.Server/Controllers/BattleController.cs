@@ -89,6 +89,10 @@ namespace Epic.Server.Controllers
             if (player.ActiveHero?.HasAliveUnits != true)
                 return BadRequest("This player does not have any units.");
 
+            var activeBattle = await BattlesService.FindActiveBattleByPlayerId(playerId);
+            if (activeBattle != null)
+                return BadRequest("This player already has an active battle.");
+                
             try
             {
                 var battleObject = await BattlesService.CreateBattleFromDefinition(player, battleRequestBody.BattleDefinitionId);
@@ -137,7 +141,7 @@ namespace Epic.Server.Controllers
             using var clientConnection = ClientConnectionService.CreateConnection(webSocket);
             using var battleConnection = BattleConnectionsService.CreateConnection(clientConnection, battleObject);
             
-            await BattleGameManagersService.GetBattleGameManager(battleConnection);
+            await BattleGameManagersService.GetOrCreateBattleGameManager(battleConnection);
             
             try
             {

@@ -19,6 +19,7 @@ export class PixiHexagon implements IHexagon {
     onMouseDown: (sender: IHexagon, event: PointerEvent) => void = () => {}
     onMouseUp: (sender: IHexagon, event: PointerEvent) => void = () => {}
     onMouseMove: (sender: IHexagon, event: PointerEvent) => void = () => {}
+    onRightClick: (sender: IHexagon, event: PointerEvent) => void = () => {}
     
     constructor(props: IHexagonProps, graphics: PIXI.Graphics) {
         this.graphics = graphics
@@ -29,6 +30,7 @@ export class PixiHexagon implements IHexagon {
         graphics.onmousedown = (event) => this.onMouseDown(this, event)
         graphics.onmouseup = (event) => this.onMouseUp(this, event)
         graphics.onmousemove = (event) => this.onMouseMove(this, event)
+        graphics.on('rightclick', (event) => this.onRightClick(this, event))
     }
     
     dispose(): void {

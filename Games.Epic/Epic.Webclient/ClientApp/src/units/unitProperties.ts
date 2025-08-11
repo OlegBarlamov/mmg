@@ -18,7 +18,7 @@ export type AttackType = {
     attackMaxRange: number
     attackMinRange: number
     stayOnly: boolean
-    counterattackAllowed: boolean
+    counterattacksCount: number
     counterattackPenaltyPercentage: number
     rangePenalty: boolean
     rangePenaltyZonesCount: number

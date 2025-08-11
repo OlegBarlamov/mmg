@@ -211,16 +211,14 @@ namespace Epic.Logic
                 });
             } else if (rewardType == RewardTypes.UnitsToBuy)
             {
-                var minUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty / 2);
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty * 3);
-                var unitToBuy = _orderedUnitTypes[_random.Next(minUnitIndex, maxUnitIndex + 1)];
+                    entity => entity.Value, difficulty.TargetDifficulty);
+                var unitToBuy = _orderedUnitTypes[_random.Next(maxUnitIndex + 1)];
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
                     ? unitToBuy.BattleImgUrl 
                     : unitToBuy.DwellingImgUrl;
                     
-                var isGuarded = unitToBuy.Value >= 300;
+                var isGuarded = unitToBuy.Value >= 400;
                 var rewardedBattleDefinition = battleDefinition;
                 if (isGuarded)
                 {

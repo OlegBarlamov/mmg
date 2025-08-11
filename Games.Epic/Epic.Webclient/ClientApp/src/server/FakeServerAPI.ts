@@ -1,6 +1,6 @@
 import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -41,6 +41,9 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    getUnitInfo(unitTypeId: string): Promise<IUnitInfo> {
+        throw new Error("Method not implemented.");
+    }
     getReport(reportId: string): Promise<IReportInfo> {
         throw new Error("Method not implemented.");
     }
@@ -81,7 +84,8 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 typeId: sourceUnit.typeId,
                 count: sourceUnit.count - count,
                 thumbnailUrl: sourceUnit.thumbnailUrl,
-                slotIndex: sourceUnit.slotIndex
+                slotIndex: sourceUnit.slotIndex,
+                name: sourceUnit.name,
             }
             units.push(updatedSourceUnit)
         }
@@ -92,7 +96,8 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             typeId: sourceUnit.typeId,
             count: count,
             thumbnailUrl: sourceUnit.thumbnailUrl,
-            slotIndex: slotIndex
+            slotIndex: slotIndex,
+            name: sourceUnit.name,
         }
         units.push(newUnit)
         
@@ -169,7 +174,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     attackMaxRange: 1,
                     attackMinRange: 1,
                     stayOnly: false,
-                    counterattackAllowed: false,
+                    counterattacksCount: 0,
                     counterattackPenaltyPercentage: 0,
                     rangePenalty: false,
                     rangePenaltyZonesCount: 0,
@@ -197,6 +202,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             {
                 id: getRandomStringKey(7),
                 typeId: '1',
+                name: "FakeUnit",
                 thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                 count: 30,
                 slotIndex: 0,
@@ -207,6 +213,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 0,
@@ -214,6 +221,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 10,
                     slotIndex: 1,
@@ -221,6 +229,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 2,
@@ -230,6 +239,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 0,
@@ -237,6 +247,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 1,
@@ -244,6 +255,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 10,
                     slotIndex: 2,
@@ -251,6 +263,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,   
                     slotIndex: 3,
@@ -258,6 +271,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 4,
@@ -265,6 +279,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 9,
                     slotIndex: 5,
@@ -272,6 +287,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 6,
@@ -279,6 +295,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 7,
@@ -288,6 +305,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 1,
                     slotIndex: 0,
@@ -295,6 +313,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 2,
                     slotIndex: 1,
@@ -302,6 +321,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 3,
                     slotIndex: 2,
@@ -309,6 +329,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 4,
                     slotIndex: 3,
@@ -316,6 +337,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 5,
                     slotIndex: 4,
@@ -323,6 +345,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 6,
                     slotIndex: 5,
@@ -330,6 +353,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 {
                     id: getRandomStringKey(7),
                     typeId: '1',
+                    name: "FakeUnit",
                     thumbnailUrl: this.unitTypes.get('1')!.battleImgUrl,
                     count: 7,
                     slotIndex: 6,
@@ -430,6 +454,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 player: BattlePlayerNumber.Player1,
                 index: 0,
                 roundNumber: 0,
+                nextTurnUnitId: undefined,
             }
         })
     }
@@ -447,6 +472,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 isAlive: true,
                 position: unitPosition,
                 waited: false,
+                name: unit.name,
             }
         })
     }

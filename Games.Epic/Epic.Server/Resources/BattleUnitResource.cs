@@ -9,6 +9,8 @@ namespace Epic.Server.Resources
         public Guid Id { get; }
         
         public HexoPoint Position { get; }
+        
+        public string Name { get; }
 
         public string Player { get; }
         
@@ -22,6 +24,7 @@ namespace Epic.Server.Resources
         public BattleUnitResource(IBattleUnitObject battleUnitObject)
         {
             Id = battleUnitObject.Id;
+            Name = battleUnitObject.GlobalUnit.UnitType.Name;
             Position = new HexoPoint
             {
                 C = battleUnitObject.Column,

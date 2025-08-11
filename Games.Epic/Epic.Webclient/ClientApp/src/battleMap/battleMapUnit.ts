@@ -6,7 +6,8 @@ import {getRandomStringKey} from "../units/getRandomString";
 export type BattleMapUnit = {
     id: string
     position: IHexoPoint
-    
+    name: string
+
     player: BattlePlayerNumber
     
     props: UnitProperties
@@ -29,7 +30,7 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
                 attackMaxRange: 1,
                 attackMinRange: 1,
                 stayOnly: false,
-                counterattackAllowed: false,
+                counterattacksCount: 0,
                 counterattackPenaltyPercentage: 0,
                 rangePenalty: false,
                 rangePenaltyZonesCount: 0,
@@ -51,6 +52,7 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
         props,
         currentProps: props,
         count: count,
-        waited: false
+        waited: false,
+        name: "TestUnit",
     }
 }

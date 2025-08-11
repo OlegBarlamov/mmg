@@ -1,4 +1,5 @@
 import './battleComponent.css'
+import './battleUnitInfoModal.css'
 import React, { PureComponent } from "react";
 import { IServiceLocator } from "../services/serviceLocator";
 import { IBattleController } from "../battle/battleController";
@@ -14,6 +15,7 @@ import { BattleResultsModal } from './battleResultsModal';
 import { IReportInfo } from '../services/serverAPI';
 import { BattleControlPanel } from './battleControlPanel';
 import { BattleMapUnit } from '../battleMap/battleMapUnit';
+import { BattleUnitInfoModal } from './battleUnitInfoModal';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -33,11 +35,14 @@ interface IBattleComponentState {
     currentRoundNumber: number
     isPlayerTurn: boolean
     activeUnit: BattleMapUnit | null
+    showUnitInfoModal: boolean
+    selectedUnit: BattleMapUnit | null
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
     private battleController: IBattleController | null = null
     private controlPanelRef: React.RefObject<BattleControlPanel> = React.createRef()
+    private contextMenuHandler: ((e: Event) => void) | null = null
 
     constructor(props: IBattleComponentProps) {
         super(props)
@@ -50,12 +55,20 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             battleReport: null,
             currentRoundNumber: 0,
             isPlayerTurn: false,
-            activeUnit: null
+            activeUnit: null,
+            showUnitInfoModal: false,
+            selectedUnit: null
         }
     }
 
     async componentDidMount() {
         const canvasContainer = document.getElementById(CanvasContainerId)!
+
+        // Prevent default context menu on canvas to allow our custom right-click handling
+        this.contextMenuHandler = (e: Event) => {
+            e.preventDefault()
+        }
+        canvasContainer.addEventListener('contextmenu', this.contextMenuHandler)
 
         const canvasService = this.props.serviceLocator.canvasService()
         await canvasService.init(canvasContainer, this.getMapHexagonStyle(this.props.battleMap))
@@ -70,6 +83,9 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
         // Subscribe to turn changes
         this.battleController.onNextTurn.connect(this.handleNextTurn)
+
+        // Set up right-click handler for unit info modal
+        this.battleController.mapController.onUnitRightMouseClick = this.handleUnitRightClick
 
         // Do not wait
         this.startBattle()
@@ -100,6 +116,20 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             currentRoundNumber: turnInfo.roundNumber,
             isPlayerTurn: isPlayerTurn,
             activeUnit: activeUnit
+        })
+    }
+
+    private handleUnitRightClick = (unit: BattleMapUnit, event: PointerEvent) => {
+        this.setState({
+            showUnitInfoModal: true,
+            selectedUnit: unit
+        })
+    }
+
+    private handleUnitInfoModalClose = () => {
+        this.setState({
+            showUnitInfoModal: false,
+            selectedUnit: null
         })
     }
 
@@ -210,7 +240,14 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     async componentWillUnmount() {
         if (this.battleController) {
             this.battleController.onNextTurn.disconnect(this.handleNextTurn)
+            this.battleController.mapController.onUnitRightMouseClick = null
             this.battleController.dispose()
+        }
+
+        // Remove the context menu event listener
+        const canvasContainer = document.getElementById(CanvasContainerId)
+        if (canvasContainer) {
+            canvasContainer.removeEventListener('contextmenu', this.contextMenuHandler!)
         }
     }
 
@@ -305,6 +342,12 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         serviceLocator={this.props.serviceLocator}
                     />
                 )}
+
+                <BattleUnitInfoModal
+                    isVisible={this.state.showUnitInfoModal}
+                    unit={this.state.selectedUnit}
+                    onClose={this.handleUnitInfoModalClose}
+                />
             </div>
         )
     }

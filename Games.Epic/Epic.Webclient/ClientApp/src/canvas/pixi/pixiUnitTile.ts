@@ -25,6 +25,7 @@ export class PixiUnitTile implements IUnitTile {
     onMouseLeaves: (sender: IUnitTile, event: PointerEvent) => void = () => {}
     onMouseDown: (sender: IUnitTile, event: PointerEvent) => void = () => {}
     onMouseUp: (sender: IUnitTile, event: PointerEvent) => void = () => {}
+    onRightClick: (sender: IUnitTile, event: PointerEvent) => void = () => {}
 
     constructor(
         props: IUnitTileProps,
@@ -46,6 +47,7 @@ export class PixiUnitTile implements IUnitTile {
         hexagon.onMouseLeaves = (sender, event) => this.onMouseLeaves(this, event)
         hexagon.onMouseDown = (sender, event) => this.onMouseDown(this, event)
         hexagon.onMouseUp = (sender, event) => this.onMouseUp(this, event)
+        hexagon.onRightClick = (sender, event) => this.onRightClick(this, event)
         
         this.update(props)
     }

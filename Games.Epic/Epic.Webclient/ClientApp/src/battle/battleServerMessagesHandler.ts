@@ -27,10 +27,9 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     private readonly triggerAwaitingPromises: Map<number, (info: BattleTurnInfo) => void> = new Map()
     private readonly rejectAwaitingPromises: Map<number, (error: Error) => void> = new Map()
     
-    constructor(private mapController: IBattleMapController, currentTurnInfo: BattleTurnInfo) {
-        this.currentTurnIndex = currentTurnInfo.index
-        this.currentRoundNumber = currentTurnInfo.roundNumber
-        this.previousTurnInfos.set(currentTurnInfo.index, currentTurnInfo)
+    constructor(private mapController: IBattleMapController) {
+        this.currentTurnIndex = -1
+        this.currentRoundNumber = 0
     }
     
     getCurrentTurnInfo(): BattleTurnInfo {
@@ -143,7 +142,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                     winner: message.winner,
                     reportId: message.reportId
                 },
-                nextTurnUnitId: undefined,
+                nextTurnUnitId: "",
                 roundNumber: this.currentRoundNumber,
             }
             this.onNextTurnInfo(turnInfo)

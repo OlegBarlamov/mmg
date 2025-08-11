@@ -33,6 +33,10 @@ namespace Epic.Core.Services.Units
 
         public static MutableGlobalUnitObject FromEntity(IGlobalUnitEntity entity)
         {
+            if (entity.Count == 0)
+            {
+                
+            }
             return new MutableGlobalUnitObject
             {
                 Id = entity.Id,

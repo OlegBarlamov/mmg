@@ -25,6 +25,7 @@ export interface IBattleMapController {
 
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
+    onUnitRightMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
 
     destroy(): void
 }
@@ -35,6 +36,7 @@ export class BattleMapController implements IBattleMapController {
 
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
+    onUnitRightMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
 
     onCellMouseEnter: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
     onCellMouseLeave: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
@@ -235,6 +237,7 @@ export class BattleMapController implements IBattleMapController {
             unitTile.onMouseEnters = (sender, event) => this.onUnitMouseEnter?.(unit, this.translatePointerEvent(event, this.canvasService))
             unitTile.onMouseLeaves = (sender, event) => this.onUnitMouseLeave?.(unit, this.translatePointerEvent(event, this.canvasService))
             unitTile.onMouseUp = (sender, event) => this.onUnitMouseClick?.(unit, this.translatePointerEvent(event, this.canvasService))
+            unitTile.onRightClick = (sender, event) => this.onUnitRightMouseClick?.(unit, this.translatePointerEvent(event, this.canvasService))
 
             this.units.push(unitTile)
         }

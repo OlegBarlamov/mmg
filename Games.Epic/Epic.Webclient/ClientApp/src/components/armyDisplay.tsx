@@ -1,6 +1,8 @@
 import React, {PureComponent} from "react";
 import {IServiceLocator} from "../services/serviceLocator";
 import {IPlayerInfo, IUserUnit} from "../services/serverAPI";
+import {SplitModal} from "./splitModal";
+import {UnitInfoModal} from "./unitInfoModal";
 import "./armyDisplay.css";
 
 export interface IArmyDisplayProps {
@@ -18,6 +20,11 @@ interface IArmyDisplayState {
     error: string | null
     selectedUnit: IUserUnit | null
     isDragging: boolean
+    showSplitModal: boolean
+    splitAmount: number
+    splitTargetSlot: number | null
+    showUnitInfoModal: boolean
+    infoUnit: IUserUnit | null
 }
 
 export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplayState> {
@@ -28,15 +35,18 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
             isLoading: true,
             error: null,
             selectedUnit: null,
-            isDragging: false
+            isDragging: false,
+            showSplitModal: false,
+            splitAmount: 1,
+            splitTargetSlot: null,
+            showUnitInfoModal: false,
+            infoUnit: null
         }
     }
     
     async componentDidMount() {
         this.setState({ isLoading: false })
     }
-
-
 
     // Expose this method so parent can call it
     public async refreshArmy() {
@@ -49,8 +59,15 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
     }
 
     private handleUnitClick = (unit: IUserUnit) => {
-        if (this.state.selectedUnit) {
-            // If we have a selected unit, try to move it to this slot
+        // Check if we're in split mode (selected unit exists but not dragging)
+        if (this.state.selectedUnit && !this.state.isDragging) {
+            // We're in split mode, check if this is a valid target
+            const canBeSplitTarget = this.state.selectedUnit.typeId === unit.typeId
+            if (canBeSplitTarget) {
+                this.handleSplitTargetSelect(unit.slotIndex)
+            }
+        } else if (this.state.selectedUnit) {
+            // If we have a selected unit and are dragging, try to move it to this slot
             this.moveUnitToSlot(unit.slotIndex)
         } else {
             // Select this unit for moving
@@ -58,10 +75,81 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
         }
     }
 
+    private handleInfoClick = (unit: IUserUnit, event: React.MouseEvent) => {
+        event.stopPropagation() // Prevent triggering unit click
+        this.setState({ 
+            showUnitInfoModal: true, 
+            infoUnit: unit 
+        })
+    }
+
+    private handleUnitInfoModalClose = () => {
+        this.setState({ 
+            showUnitInfoModal: false, 
+            infoUnit: null 
+        })
+    }
+
+    private handleSplitClick = (unit: IUserUnit) => {
+        this.setState({ 
+            selectedUnit: unit, 
+            isDragging: false,
+            showSplitModal: false,
+            splitAmount: Math.max(1, Math.floor(unit.count / 2)),
+            splitTargetSlot: null
+        })
+    }
+
     private handleEmptySlotClick = (slotIndex: number) => {
-        if (this.state.selectedUnit) {
+        // Check if we're in split mode (selected unit exists but not dragging)
+        if (this.state.selectedUnit && !this.state.isDragging) {
+            // We're in split mode, empty slots are always valid targets
+            this.handleSplitTargetSelect(slotIndex)
+        } else if (this.state.selectedUnit) {
+            // If we have a selected unit and are dragging, try to move it to this slot
             this.moveUnitToSlot(slotIndex)
         }
+    }
+
+    private handleSplitTargetSelect = (slotIndex: number) => {
+        this.setState({ 
+            splitTargetSlot: slotIndex,
+            showSplitModal: true
+        })
+    }
+
+    private handleSplitModalClose = () => {
+        this.setState({ 
+            showSplitModal: false, 
+            selectedUnit: null,
+            splitAmount: 1,
+            splitTargetSlot: null
+        })
+    }
+
+    private handleSplitAmountChange = (amount: number) => {
+        this.setState({ splitAmount: amount })
+    }
+
+    private handleSplitComplete = (updatedContainer: any) => {
+        // Update the parent's army units state
+        this.props.onArmyUnitsUpdate?.(updatedContainer.units)
+        this.setState({ 
+            showSplitModal: false,
+            selectedUnit: null,
+            splitAmount: 1,
+            splitTargetSlot: null
+        })
+    }
+
+    private handleSplitError = (error: string) => {
+        this.setState({ 
+            error: error, 
+            showSplitModal: false,
+            selectedUnit: null,
+            splitAmount: 1,
+            splitTargetSlot: null
+        })
     }
 
     private moveUnitToSlot = async (targetSlotIndex: number) => {
@@ -126,12 +214,15 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
         const isSelected = this.state.selectedUnit?.id === unit?.id
         const isTarget = this.state.isDragging && !isSelected
         const isHighlighted = this.props.highlightedSlots !== null && index < this.props.highlightedSlots!
+        const isSplitTarget = this.state.showSplitModal && this.state.splitTargetSlot === index
+        const canBeSplitTarget = this.state.showSplitModal && unit && 
+            this.state.selectedUnit?.typeId === unit.typeId
         
         if (unit) {
             return (
                 <div 
                     key={index} 
-                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''} ${isHighlighted ? 'highlighted' : ''}`}
+                    className={`army-slot ${isSelected ? 'selected' : ''} ${isTarget ? 'target' : ''} ${isHighlighted ? 'highlighted' : ''} ${isSplitTarget ? 'split-target' : ''} ${canBeSplitTarget ? 'split-valid' : ''}`}
                     onClick={() => this.handleUnitClick(unit)}
                 >
                     <img 
@@ -140,19 +231,46 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
                         className="unit-image"
                     />
                     <div className="unit-count">{unit.count}</div>
+                    <button 
+                        className="unit-info-button"
+                        onClick={(e) => this.handleInfoClick(unit, e)}
+                        title="Unit Information"
+                    >
+                        i
+                    </button>
                 </div>
             )
         } else {
             return (
                 <div 
                     key={index} 
-                    className={`army-slot empty ${isTarget ? 'target' : ''} ${isHighlighted ? 'highlighted' : ''}`}
+                    className={`army-slot empty ${isTarget ? 'target' : ''} ${isHighlighted ? 'highlighted' : ''} ${isSplitTarget ? 'split-target' : ''}`}
                     onClick={() => this.handleEmptySlotClick(index)}
                 >
                     <div className="empty-slot">Empty</div>
                 </div>
             )
         }
+    }
+
+    private renderSplitButton() {
+        const isSelected = this.state.selectedUnit !== null
+        const selectedUnit = this.state.selectedUnit
+        const isDisabled = !isSelected || !selectedUnit || selectedUnit.count <= 1
+
+        return (
+            <button 
+                className={`split-button ${isDisabled ? 'disabled' : ''}`}
+                onClick={() => {
+                    if (!isDisabled && selectedUnit) {
+                        this.handleSplitClick(selectedUnit)
+                    }
+                }}
+                disabled={isDisabled}
+            >
+                Split
+            </button>
+        )
     }
 
     render() {
@@ -164,13 +282,16 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
                 <div className="army-section">
                     <div className="army-header">
                         <h2 className="army-title">Your Army</h2>
-                        <button 
-                            className="supply-button"
-                            onClick={this.props.onSupplyClick}
-                            disabled={!this.props.onSupplyClick}
-                        >
-                            Supply
-                        </button>
+                        <div className="header-buttons">
+                            {this.renderSplitButton()}
+                            <button 
+                                className="supply-button"
+                                onClick={this.props.onSupplyClick}
+                                disabled={!this.props.onSupplyClick}
+                            >
+                                Supply
+                            </button>
+                        </div>
                     </div>
                     <div className="army-loading">Loading army...</div>
                 </div>
@@ -182,13 +303,16 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
                 <div className="army-section">
                     <div className="army-header">
                         <h2 className="army-title">Your Army</h2>
-                        <button 
-                            className="supply-button"
-                            onClick={this.props.onSupplyClick}
-                            disabled={!this.props.onSupplyClick}
-                        >
-                            Supply
-                        </button>
+                        <div className="header-buttons">
+                            {this.renderSplitButton()}
+                            <button 
+                                className="supply-button"
+                                onClick={this.props.onSupplyClick}
+                                disabled={!this.props.onSupplyClick}
+                            >
+                                Supply
+                            </button>
+                        </div>
                     </div>
                     <div className="army-error">{error}</div>
                 </div>
@@ -208,21 +332,50 @@ export class ArmyDisplay extends PureComponent<IArmyDisplayProps, IArmyDisplaySt
         }
 
         return (
-            <div className="army-section">
-                <div className="army-header">
-                    <h2 className="army-title">Your Army ({armyCapacity} slots)</h2>
-                    <button 
-                        className="supply-button"
-                        onClick={this.props.onSupplyClick}
-                        disabled={!this.props.onSupplyClick}
-                    >
-                        Supply
-                    </button>
+            <>
+                <div className="army-section">
+                    <div className="army-header">
+                        <h2 className="army-title">Your Army ({armyCapacity} slots)</h2>
+                        <div className="header-buttons">
+                            {this.state.isDragging && (
+                                <button className="cancel-button" onClick={() => this.setState({ selectedUnit: null, isDragging: false })}>
+                                    Cancel
+                                </button>
+                            )}
+                            {this.renderSplitButton()}
+                            <button 
+                                className="supply-button"
+                                onClick={this.props.onSupplyClick}
+                                disabled={!this.props.onSupplyClick}
+                            >
+                                Supply
+                            </button>
+                        </div>
+                    </div>
+                    <div className="army-grid">
+                        {armySlots.map((unit, index) => this.renderArmySlot(unit, index))}
+                    </div>
                 </div>
-                <div className="army-grid">
-                    {armySlots.map((unit, index) => this.renderArmySlot(unit, index))}
-                </div>
-            </div>
+                <SplitModal
+                    isVisible={this.state.showSplitModal}
+                    selectedUnit={this.state.selectedUnit}
+                    splitAmount={this.state.splitAmount}
+                    splitTargetSlot={this.state.splitTargetSlot}
+                    splitTargetContainer="army"
+                    serviceLocator={this.props.serviceLocator}
+                    playerInfo={this.props.playerInfo}
+                    onSplitAmountChange={this.handleSplitAmountChange}
+                    onClose={this.handleSplitModalClose}
+                    onSplitComplete={this.handleSplitComplete}
+                    onError={this.handleSplitError}
+                />
+                <UnitInfoModal
+                    isVisible={this.state.showUnitInfoModal}
+                    unit={this.state.infoUnit}
+                    serviceLocator={this.props.serviceLocator}
+                    onClose={this.handleUnitInfoModalClose}
+                />
+            </>
         )
     }
 } 

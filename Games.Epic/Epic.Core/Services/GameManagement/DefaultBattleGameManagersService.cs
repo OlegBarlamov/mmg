@@ -27,7 +27,7 @@ namespace Epic.Core.Services.GameManagement
             BattleLogicFactory = battleLogicFactory ?? throw new ArgumentNullException(nameof(battleLogicFactory));
         }
         
-        public Task<IBattleGameManager> GetBattleGameManager(IBattleClientConnection clientConnection)
+        public Task<IBattleGameManager> GetOrCreateBattleGameManager(IBattleClientConnection clientConnection)
         {
             var battleObject = (MutableBattleObject)clientConnection.BattleObject;
             BattlesCacheService.AddIfAbsent(battleObject);

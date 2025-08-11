@@ -78,7 +78,7 @@ namespace Epic.Server
             
             var userPlayer = await PlayersService.CreatePlayer(user.Id, "admin_player", PlayerObjectType.Human);
 
-            await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, userPlayer.Id, 0);
+            await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, userPlayer.Id, 500);
             
             var hero = await HeroesService.CreateNew(userPlayer.Name, userPlayer.Id);
             await PlayersService.SetActiveHero(userPlayer.Id, hero.Id);

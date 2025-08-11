@@ -48,6 +48,7 @@ export class BattleMapsService implements IBattleMapsService {
                 player: BattlePlayerNumber.Player1,
                 index: 0,
                 roundNumber: 0,
+                nextTurnUnitId: undefined,
             }
         }
     }

@@ -39,7 +39,8 @@ namespace Epic.Server.Controllers
                     Response.Cookies.Append("token", sessionObject.Token, new CookieOptions
                     {
                         HttpOnly = true,
-                        Secure = true,
+                        // TODO make it secure 
+                        Secure = false,
                         SameSite = SameSiteMode.Strict,
                         Expires = DateTimeOffset.UtcNow.AddHours(AuthenticationConstants
                             .AuthenticationTokenExpirationHours),

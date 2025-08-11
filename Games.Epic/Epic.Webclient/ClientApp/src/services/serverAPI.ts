@@ -3,6 +3,7 @@ import {BattleMap} from "../battleMap/battleMap";
 import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import {IBattleConnectionMessagesHandler, IBattleServerConnection} from "../server/battleServerConnection";
+import { UnitProperties } from "../units/unitProperties";
 
 export interface IUserInfo {
     readonly userId: string
@@ -14,6 +15,7 @@ export interface IUserUnit {
     readonly id: string
     readonly typeId: string
     readonly count: number
+    readonly name: string
     readonly thumbnailUrl: string
     readonly slotIndex: number
 }
@@ -61,6 +63,12 @@ export interface IReportUnit {
     readonly name: string
 }
 
+export interface IUnitInfo extends UnitProperties {
+    readonly id: string
+    readonly name: string
+    readonly dashboardImgUrl: string
+}
+
 export interface IServerAPI {
     login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
@@ -83,4 +91,6 @@ export interface IServerAPI {
     getResources(): Promise<IResourceInfo[]>
 
     getReport(reportId: string): Promise<IReportInfo>
+
+    getUnitInfo(unitTypeId: string): Promise<IUnitInfo>
 }

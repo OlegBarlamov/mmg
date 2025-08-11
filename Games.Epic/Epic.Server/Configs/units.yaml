@@ -13,7 +13,7 @@ MeleeAttack: &MeleeAttack
 RangeAttack: &RangeAttack
   Name: "Range"
   ThumbnailUrl: "sword.png"
-  AttackMaxRange: 20
+  AttackMaxRange: 10
   AttackMinRange: 2
   StayOnly: true
   CounterattacksCount: 0
@@ -341,3 +341,102 @@ Units:
     ResourcesDistribution:
       Gold: 6
       Crystal: 1
+      
+  Gremlin:
+    Name: "Gremlin"
+    BattleImgUrl: "/resources/Gremlin_portrait.png"
+    DashboardImgUrl: "/resources/Gremlin_portrait.png"
+    Value: 30
+    Speed: 4
+    Health: 4
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  StoneGargoyle:
+    Name: "Stone Gargoyle"
+    BattleImgUrl: "/resources/Stone_Gargoyle_portrait.png"
+    DashboardImgUrl: "/resources/Stone_Gargoyle_portrait.png"
+    Value: 130
+    Speed: 6
+    Health: 16
+    ToTrainAmount: 9
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  StoneGolem:
+    Name: "Stone Golem"
+    BattleImgUrl: "/resources/Stone_Golem_portrait.png"
+    DashboardImgUrl: "/resources/Stone_Golem_portrait.png"
+    Value: 250
+    Speed: 4
+    Health: 30
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 5
+
+  Mage:
+    Name: "Mage"
+    BattleImgUrl: "/resources/Mage_portrait.png"
+    DashboardImgUrl: "/resources/Mage_portrait.png"
+    Value: 350
+    Speed: 5
+    Health: 25
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 7
+        MaxDamage: 9
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 9
+
+  Genie:
+    Name: "Genie"
+    BattleImgUrl: "/resources/Genie_portrait.png"
+    DashboardImgUrl: "/resources/Genie_portrait.png"
+    Value: 550
+    Speed: 7
+    Health: 40
+    ToTrainAmount: 3
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 13
+        MaxDamage: 16
+
+  Naga:
+    Name: "Naga"
+    BattleImgUrl: "/resources/Naga_portrait.png"
+    DashboardImgUrl: "/resources/Naga_portrait.png"
+    Value: 1100
+    Speed: 5
+    Health: 110
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 20
+        MaxDamage: 20
+    Gold: 4
+    Sulfur: 1
+
+  Giant:
+    Name: "Giant"
+    BattleImgUrl: "/resources/Giant_portrait.png"
+    DashboardImgUrl: "/resources/Giant_portrait.png"
+    Value: 2000
+    Speed: 7
+    Health: 150
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 60
+    ResourcesDistribution:
+      Gold: 6
+      Gems: 1

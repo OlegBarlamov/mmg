@@ -265,9 +265,9 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                 </td>
                                                 <td className="battle-expires">
                                                     {battle.expiresAfterDays === 0 ? (
-                                                        <span className="expires-soon">Expires today</span>
+                                                        <span className="expires-soon">0</span>
                                                     ) : battle.expiresAfterDays === 1 ? (
-                                                        <span className="expires-soon">1</span>
+                                                        <span className="expires-soon">1 day</span>
                                                     ) : (
                                                         <span className="expires-days">{battle.expiresAfterDays} days</span>
                                                     )}

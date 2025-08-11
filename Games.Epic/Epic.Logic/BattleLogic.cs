@@ -99,6 +99,13 @@ namespace Epic.Logic
                 while (!battleResult.Finished)
                 {
                     _activeUnit = GetActiveUnit(BattleObject.LastTurnUnitIndex, out var activeUnitIndex);
+                    if (_activeUnit.PlayerIndex != BattleObject.TurnPlayerIndex)
+                    {
+                        // should be called only once when the first active unit is found
+                        BattleObject.TurnPlayerIndex = _activeUnit.PlayerIndex;
+                        await BattlesService.UpdateBattle(BattleObject);
+                    }
+                    
                     await BroadcastMessageToClientAndSaveAsync(new NextTurnCommandFromServer(
                         BattleObject.TurnNumber,
                         (InBattlePlayerNumber)_activeUnit.PlayerIndex,
@@ -130,6 +137,7 @@ namespace Epic.Logic
                         await BattleUnitsService.UpdateUnits(_sortedBattleUnitObjects);
                         SortByInitiative(_sortedBattleUnitObjects);
                     }
+                    BattleObject.TurnPlayerIndex = _activeUnit.PlayerIndex;
                     BattleObject.LastTurnUnitIndex = activeUnitIndex;
                     BattleObject.TurnNumber++;
                     await BattlesService.UpdateBattle(BattleObject);
@@ -482,6 +490,15 @@ namespace Epic.Logic
                 {
                     await Task.WhenAll(messagesFromTurn.Select(connection.SendMessageAsync));
                 }
+            }
+
+            if (_activeUnit != null)
+            {
+                await connection.SendMessageAsync(new NextTurnCommandFromServer(
+                    BattleObject.TurnNumber,
+                    (InBattlePlayerNumber)BattleObject.TurnPlayerIndex,
+                    _activeUnit.Id,
+                    BattleObject.RoundNumber));
             }
         }
         
