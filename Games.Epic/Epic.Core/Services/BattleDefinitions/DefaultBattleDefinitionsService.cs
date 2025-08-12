@@ -75,7 +75,7 @@ namespace Epic.Core.Services.BattleDefinitions
 
         public Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height)
         {
-            return CreateBattleDefinitionInternal(width, height, 0, 0, Int32.MaxValue);
+            return CreateBattleDefinitionInternal(width, height, Int32.MaxValue, 0, 0);
         }
 
         private async Task<IBattleDefinitionObject> CreateBattleDefinitionInternal(

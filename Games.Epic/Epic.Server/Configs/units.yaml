@@ -540,3 +540,417 @@ Units:
     ResourcesDistribution:
       Gold: 6
       Sulfur: 2
+
+  # Dungeon
+  Troglodyte:
+    Name: "Troglodyte"
+    BattleImgUrl: "/resources/Troglodyte_portrait.png"
+    DashboardImgUrl: "/resources/Troglodyte_portrait.png"
+    Value: 50
+    Speed: 4
+    Health: 5
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+  
+  Harpy:
+    Name: "Harpy"
+    BattleImgUrl: "/resources/Harpy_portrait.png"
+    DashboardImgUrl: "/resources/Harpy_portrait.png"
+    Value: 130
+    Speed: 6
+    Health: 14
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 4
+  
+  Beholder:
+    Name: "Beholder"
+    BattleImgUrl: "/resources/Beholder_portrait.png"
+    DashboardImgUrl: "/resources/Beholder_portrait.png"
+    Value: 250
+    Speed: 5
+    Health: 22
+    ToTrainAmount: 7
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 5
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+  
+  Medusa:
+    Name: "Medusa"
+    BattleImgUrl: "/resources/Medusa_portrait.png"
+    DashboardImgUrl: "/resources/Medusa_portrait.png"
+    Value: 300
+    Speed: 5
+    Health: 25
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 6
+        MaxDamage: 8
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 8
+  
+  Minotaur:
+    Name: "Minotaur"
+    BattleImgUrl: "/resources/Minotaur_portrait.png"
+    DashboardImgUrl: "/resources/Minotaur_portrait.png"
+    Value: 500
+    Speed: 6
+    Health: 50
+    ToTrainAmount: 3
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 12
+        MaxDamage: 20
+  
+  Manticore:
+    Name: "Manticore"
+    BattleImgUrl: "/resources/Manticore_portrait.png"
+    DashboardImgUrl: "/resources/Manticore_portrait.png"
+    Value: 850
+    Speed: 7
+    Health: 80
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 14
+        MaxDamage: 20
+    ResourcesDistribution:
+      Gold: 3
+      Stone: 1
+  
+  RedDragon:
+    Name: "Red Dragon"
+    BattleImgUrl: "/resources/Red_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Red_Dragon_portrait.png"
+    Value: 3500
+    Speed: 15
+    Health: 250
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Sulfur: 2
+  
+  # Stronghold
+  Goblin:
+    Name: "Goblin"
+    BattleImgUrl: "/resources/Goblin_portrait.png"
+    DashboardImgUrl: "/resources/Goblin_portrait.png"
+    Value: 40
+    Speed: 5
+    Health: 5
+    ToTrainAmount: 15
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+  
+  WolfRider:
+    Name: "Wolf Rider"
+    BattleImgUrl: "/resources/Wolf_Rider_portrait.png"
+    DashboardImgUrl: "/resources/Wolf_Rider_portrait.png"
+    Value: 100
+    Speed: 6
+    Health: 10
+    ToTrainAmount: 9
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+  
+  Orc:
+    Name: "Orc"
+    BattleImgUrl: "/resources/Orc_portrait.png"
+    DashboardImgUrl: "/resources/Orc_portrait.png"
+    Value: 150
+    Speed: 4
+    Health: 15
+    ToTrainAmount: 7
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 5
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+  
+  Ogre:
+    Name: "Ogre"
+    BattleImgUrl: "/resources/Ogre_portrait.png"
+    DashboardImgUrl: "/resources/Ogre_portrait.png"
+    Value: 300
+    Speed: 4
+    Health: 40
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 12
+  
+  Roc:
+    Name: "Roc"
+    BattleImgUrl: "/resources/Roc_portrait.png"
+    DashboardImgUrl: "/resources/Roc_portrait.png"
+    Value: 600
+    Speed: 7
+    Health: 60
+    ToTrainAmount: 3
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 11
+        MaxDamage: 15
+      
+  Cyclops:
+    Name: "Cyclops"
+    BattleImgUrl: "/resources/Cyclops_portrait.png"
+    DashboardImgUrl: "/resources/Cyclops_portrait.png"
+    Value: 400
+    Speed: 5
+    Health: 35
+    ToTrainAmount: 5
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 12
+        MaxDamage: 18
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 9
+    ResourcesDistribution:
+      Gold: 3
+      Stone: 1
+  
+  Behemoth:
+    Name: "Behemoth"
+    BattleImgUrl: "/resources/Behemoth_portrait.png"
+    DashboardImgUrl: "/resources/Behemoth_portrait.png"
+    Value: 1500
+    Speed: 6
+    Health: 160
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Crystal: 2
+  
+  # Fortress
+  Gnoll:
+    Name: "Gnoll"
+    BattleImgUrl: "/resources/Gnoll_portrait.png"
+    DashboardImgUrl: "/resources/Gnoll_portrait.png"
+    Value: 50
+    Speed: 4
+    Health: 6
+    ToTrainAmount: 12
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+  
+  Lizardman:
+    Name: "Lizardman"
+    BattleImgUrl: "/resources/Lizardman_portrait.png"
+    DashboardImgUrl: "/resources/Lizardman_portrait.png"
+    Value: 110
+    Speed: 4
+    Health: 14
+    ToTrainAmount: 9
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 3
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+  
+  SerpentFly:
+    Name: "Serpent Fly"
+    BattleImgUrl: "/resources/Serpent_Fly_portrait.png"
+    DashboardImgUrl: "/resources/Serpent_Fly_portrait.png"
+    Value: 220
+    Speed: 9
+    Health: 20
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 5
+    SpecialAbilities:
+      - "Flying"
+      - "Dispels beneficial spells on attack"
+  
+  Basilisk:
+    Name: "Basilisk"
+    BattleImgUrl: "/resources/Basilisk_portrait.png"
+    DashboardImgUrl: "/resources/Basilisk_portrait.png"
+    Value: 325
+    Speed: 5
+    Health: 35
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 10
+    SpecialAbilities:
+      - "20% chance to petrify target"
+  
+  Gorgon:
+    Name: "Gorgon"
+    BattleImgUrl: "/resources/Gorgon_portrait.png"
+    DashboardImgUrl: "/resources/Gorgon_portrait.png"
+    Value: 525
+    Speed: 5
+    Health: 70
+    ToTrainAmount: 3
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 12
+        MaxDamage: 16
+    SpecialAbilities:
+      - "Death Stare ability"
+  
+  Wyvern:
+    Name: "Wyvern"
+    BattleImgUrl: "/resources/Wyvern_portrait.png"
+    DashboardImgUrl: "/resources/Wyvern_portrait.png"
+    Value: 800
+    Speed: 7
+    Health: 70
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 14
+        MaxDamage: 18
+    ResourcesDistribution:
+      Gold: 3
+      Mercury: 1
+  
+  Hydra:
+    Name: "Hydra"
+    BattleImgUrl: "/resources/Hydra_portrait.png"
+    DashboardImgUrl: "/resources/Hydra_portrait.png"
+    Value: 2200
+    Speed: 5
+    Health: 175
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 45
+    ResourcesDistribution:
+      Gold: 6
+      Sulfur: 2
+  
+  # Conflux
+  Pixie:
+    Name: "Pixie"
+    BattleImgUrl: "/resources/Pixie_portrait.png"
+    DashboardImgUrl: "/resources/Pixie_portrait.png"
+    Value: 25
+    Speed: 7
+    Health: 3
+    ToTrainAmount: 20
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+  
+  AirElemental:
+    Name: "Air Elemental"
+    BattleImgUrl: "/resources/Air_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Air_Elemental_portrait.png"
+    Value: 250
+    Speed: 7
+    Health: 25
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 8
+  
+  WaterElemental:
+    Name: "Water Elemental"
+    BattleImgUrl: "/resources/Water_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Water_Elemental_portrait.png"
+    Value: 300
+    Speed: 5
+    Health: 30
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 7
+  
+  FireElemental:
+    Name: "Fire Elemental"
+    BattleImgUrl: "/resources/Fire_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Fire_Elemental_portrait.png"
+    Value: 350
+    Speed: 6
+    Health: 35
+    ToTrainAmount: 5
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 6
+  
+  EarthElemental:
+    Name: "Earth Elemental"
+    BattleImgUrl: "/resources/Earth_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Earth_Elemental_portrait.png"
+    Value: 400
+    Speed: 4
+    Health: 40
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 8
+  
+  PsychicElemental:
+    Name: "Psychic Elemental"
+    BattleImgUrl: "/resources/Psychic_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Psychic_Elemental_portrait.png"
+    Value: 750
+    Speed: 7
+    Health: 75
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 10
+        MaxDamage: 20
+    ResourcesDistribution:
+      Gold: 3
+      Wood: 1
+  
+  Firebird:
+    Name: "Firebird"
+    BattleImgUrl: "/resources/Firebird_portrait.png"
+    DashboardImgUrl: "/resources/Firebird_portrait.png"
+    Value: 1000
+    Speed: 15
+    Health: 100
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 20
+        MaxDamage: 30
+    ResourcesDistribution:
+      Gold: 3
+      Mercury: 1
