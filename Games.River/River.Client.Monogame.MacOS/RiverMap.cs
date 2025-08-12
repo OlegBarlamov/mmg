@@ -195,7 +195,7 @@ namespace River.Client.MacOS
                     }
                     else
                     {
-                        map.SetCell(new Point(x, y), new EmptyMapTile(new Point(x, y)));
+                         map.SetCell(new Point(x, y), new EmptyMapTile(new Point(x, y)));
                     }
                 }
             }

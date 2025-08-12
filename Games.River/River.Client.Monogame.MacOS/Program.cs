@@ -1,6 +1,6 @@
 ﻿using System;
+using Console.GameFrameworkAdapter.Constructing;
 using FrameworkSDK;
-using FrameworkSDK.Constructing;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Constructing;
 using NetExtensions.Geometry;
@@ -15,6 +15,8 @@ namespace River.Client.MacOS
             using (var game = new DefaultAppFactory(args)
                 .AddServices(new MainModule())
                 .UseGame<RiverGameApp>()
+                .UseGameComponents()
+                .UseInGameConsole()
                 .UseGameParameters(new DefaultGameParameters
                 {
                     BackBufferSize = new SizeInt(1024, 768)

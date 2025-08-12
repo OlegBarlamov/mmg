@@ -440,3 +440,103 @@ Units:
     ResourcesDistribution:
       Gold: 6
       Gems: 1
+  
+  Imp:
+    Name: "Imp"
+    BattleImgUrl: "/resources/Imp_portrait.png"
+    DashboardImgUrl: "/resources/Imp_portrait.png"
+    Value: 50
+    Speed: 5
+    Health: 4
+    ToTrainAmount: 15
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+    
+  Gog:
+    Name: "Gog"
+    BattleImgUrl: "/resources/Gog_portrait.png"
+    DashboardImgUrl: "/resources/Gog_portrait.png"
+    Value: 200
+    Speed: 4
+    Health: 13
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 4
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+  
+  HellHound:
+    Name: "Hell Hound"
+    BattleImgUrl: "/resources/Hell_Hound_portrait.png"
+    DashboardImgUrl: "/resources/Hell_Hound_portrait.png"
+    Value: 200
+    Speed: 7
+    Health: 25
+    ToTrainAmount: 7
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 7
+  
+  Demon:
+    Name: "Demon"
+    BattleImgUrl: "/resources/Demon_portrait.png"
+    DashboardImgUrl: "/resources/Demon_portrait.png"
+    Value: 250
+    Speed: 5
+    Health: 35
+    ToTrainAmount: 5
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 9
+  
+  PitFiend:
+    Name: "Pit Fiend"
+    BattleImgUrl: "/resources/Pit_Fiend_portrait.png"
+    DashboardImgUrl: "/resources/Pit_Fiend_portrait.png"
+    Value: 500
+    Speed: 6
+    Health: 45
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 13
+        MaxDamage: 17
+  
+  Efreet:
+    Name: "Efreet"
+    BattleImgUrl: "/resources/Efreeti_portrait.png"
+    DashboardImgUrl: "/resources/Efreeti_portrait.png"
+    Value: 900
+    Speed: 9
+    Health: 90
+    ToTrainAmount: 3
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 16
+        MaxDamage: 24
+    ResourcesDistribution:
+      Gold: 3
+      Mercury: 1
+  
+  Devil:
+    Name: "Devil"
+    BattleImgUrl: "/resources/Devil_portrait.png"
+    DashboardImgUrl: "/resources/Devil_portrait.png"
+    Value: 2700
+    Speed: 11
+    Health: 160
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 40
+    ResourcesDistribution:
+      Gold: 6
+      Sulfur: 2

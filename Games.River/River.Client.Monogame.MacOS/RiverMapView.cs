@@ -41,7 +41,7 @@ namespace River.Client.MacOS
                     texture = TilesResourcePackage.WaterTexture;
                 }
                 
-                var tile = new RectangleF(mapTile.MapPoint.ToVector2(), new Vector2(32));
+                var tile = RectangleF.FromTopLeftAndSize(mapTile.MapPoint.ToVector2(), new Vector2(1));
                 context.Draw(texture, tile, Color.White);
             }
         }
