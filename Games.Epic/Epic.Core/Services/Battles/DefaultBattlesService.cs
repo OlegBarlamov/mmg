@@ -53,7 +53,7 @@ namespace Epic.Core.Services.Battles
             var battleEntity = await BattlesRepository.GetBattleByIdAsync(battleId);
             var battleObject = MutableBattleObject.FromEntity(battleEntity);
             await FillUnits(battleObject);
-            await FillUsers(battleObject);
+            await FillPlayers(battleObject);
 
             return battleObject;
         }
@@ -70,7 +70,7 @@ namespace Epic.Core.Services.Battles
             
             var battleObject = MutableBattleObject.FromEntity(battleEntity);
             await FillUnits(battleObject);
-            await FillUsers(battleObject);
+            await FillPlayers(battleObject);
             
             return battleObject;
         }
@@ -109,7 +109,7 @@ namespace Epic.Core.Services.Battles
             var battleInitialUnits = await BattleUnitsService.CreateUnitsFromBattleDefinition(battleDefinitionObject, battleObject.Id);
             battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
             
-            await FillUsers(battleObject);
+            await FillPlayers(battleObject);
             
             return battleObject;
         }
@@ -161,10 +161,10 @@ namespace Epic.Core.Services.Battles
             battleObject.Units = new List<MutableBattleUnitObject>(mutableBattleUnits);
         }
 
-        private async Task FillUsers(MutableBattleObject battleObject)
+        private async Task FillPlayers(MutableBattleObject battleObject)
         {
-            var userIds = await BattlesRepository.GetBattleUsers(battleObject.Id);
-            battleObject.PlayerIds = new List<Guid>(userIds);
+            var playerIds = await BattlesRepository.GetBattlePlayers(battleObject.Id);
+            battleObject.PlayerIds = new List<Guid>(playerIds);
         }
 
         private MutableBattleObject ToMutableObject(IBattleObject battleObject)

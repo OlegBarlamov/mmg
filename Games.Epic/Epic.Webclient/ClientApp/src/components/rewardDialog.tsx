@@ -265,6 +265,11 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
         return unit ? unit.amount : 0
     }
 
+    private getTotalSelectedUnits = (): number => {
+        const { unitQuantities } = this.state
+        return unitQuantities.reduce((total, quantity) => total + quantity, 0)
+    }
+
     private getUnitCost = (unitIndex: number): Array<{resource: any, amount: number}> | null => {
         const { reward } = this.props
         const { unitQuantities } = this.state
@@ -556,7 +561,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                             <button 
                                 className="reward-button accept-button" 
                                 onClick={this.handleAccept}
-                                disabled={this.state.isSubmitting}
+                                disabled={this.state.isSubmitting || this.getTotalSelectedUnits() < 1}
                             >
                                 {this.state.isSubmitting ? 'Buying...' : 'Buy'}
                             </button>

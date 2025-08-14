@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Epic.Core.Services.Battles;
+using Epic.Data.Heroes;
 using Epic.Data.UnitTypes.Subtypes;
 
 namespace Epic.Logic
@@ -16,6 +17,8 @@ namespace Epic.Logic
             IBattleUnitObject attacker,
             IBattleUnitObject target,
             IAttackFunctionType attackFunctionType,
+            IHeroStats attackerStats,
+            IHeroStats targetStats,
             int distanceToTarget,
             bool counterAttack,
             Random random)
@@ -25,6 +28,20 @@ namespace Epic.Logic
                 .Sum(x => random.Next(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
             
             var damage = randomSum / dicesCounts * attacker.GlobalUnit.Count;
+            
+            // Apply Attack vs Defense modifier
+            var attackDefenseDiff = attackerStats.Attack - targetStats.Defense;
+            var multiplier = 1.0;
+            if (attackDefenseDiff > 0)
+            {
+                multiplier = 1 + Math.Min(attackDefenseDiff * 0.05, 3.0); // +5% per point, max +300%
+            }
+            else if (attackDefenseDiff < 0)
+            {
+                multiplier = 1 + (attackDefenseDiff * 0.025); // -2.5% per point, no strict cap
+            }
+            damage = (int)(damage * multiplier);
+            
             if (attackFunctionType.RangePenalty)
             {
                 damage = ApplyRangePenalty(
@@ -37,7 +54,7 @@ namespace Epic.Logic
 
             if (counterAttack)
                 damage = (int)(damage * 0.01 * (100 - attackFunctionType.CounterattacksPenaltyPercentage));
-
+            
             var finalHealth = target.CurrentHealth - damage;
             var newCount = target.GlobalUnit.Count;
             if (finalHealth < 0)

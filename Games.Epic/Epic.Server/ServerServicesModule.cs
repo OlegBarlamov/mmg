@@ -85,6 +85,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
             serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             serviceRegistrator.RegisterType<IBattleUnitsPlacer, BattleUnitsPlacer>();
+            serviceRegistrator.RegisterType<IHeroesLevelsCalculator, HeroesLevelsCalculator>();
 
             PredefinedStaticResources.QuestionIconUrl = "/resources/question.png";
         }

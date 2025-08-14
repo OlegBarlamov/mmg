@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Server.Authentication;
 using Epic.Server.Resources;
@@ -29,7 +30,7 @@ namespace Epic.Server.Controllers
         public async Task<IActionResult> GetAllUserPlayers()
         {
             var userId = User.GetId();
-            var players = await PlayersService.GetAllByUserId(userId);
+            var players = await PlayersService.GetAllByUserId(userId); ;
             return Ok(players.Select(x => new PlayerResource(x, x.ActiveHero.IsKilled, x.ActiveHero.ArmyContainerId)));
         }
 

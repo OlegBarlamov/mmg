@@ -12,12 +12,12 @@ namespace Epic.Data.Heroes
         public string Name => nameof(InMemoryHeroEntitiesRepository);
         public string EntityName => "Hero";
         
-        private readonly List<IHeroEntity> _heroEntities = new List<IHeroEntity>();
+        private readonly List<MutableHeroEntity> _heroEntities = new List<MutableHeroEntity>();
         private readonly List<PlayerToHeroEntity> _playerToHeroEntities = new List<PlayerToHeroEntity>();
         
         public Task<IHeroEntity> GetById(Guid id)
         {
-            return Task.FromResult(_heroEntities.First(x => x.Id == id));
+            return Task.FromResult<IHeroEntity>(_heroEntities.First(x => x.Id == id));
         }
 
         public Task<IHeroEntity> Create(Guid id, IHeroEntityFields fieds)
@@ -68,6 +68,13 @@ namespace Epic.Data.Heroes
             return Task.FromResult<IReadOnlyCollection<IHeroEntity>>(playerToHeroEntities
                 .Select(x => _heroEntities.First(h => h.Id == x.HeroId))
                 .ToArray());
+        }
+
+        public Task Update(Guid id, IHeroEntityFields fields)
+        {
+            var entity = _heroEntities.First(x => x.Id == id);
+            entity.CopyFrom(fields);
+            return Task.CompletedTask;
         }
 
         private class PlayerToHeroEntity

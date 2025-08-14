@@ -2,6 +2,7 @@ using System;
 using Epic.Core.Logic;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
@@ -21,6 +22,7 @@ namespace Epic.Logic
         public IPlayersService PlayersService { get; }
         public ILoggerFactory LoggerFactory { get; }
         public IRandomProvider RandomProvider { get; }
+        public IHeroesService HeroesService { get; }
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
@@ -30,7 +32,8 @@ namespace Epic.Logic
             [NotNull] IDaysProcessor daysProcessor,
             [NotNull] IPlayersService playersService,
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IRandomProvider randomProvider)
+            [NotNull] IRandomProvider randomProvider,
+            [NotNull] IHeroesService heroesService)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
@@ -40,6 +43,7 @@ namespace Epic.Logic
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
+            HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
         }
         
         public IBattleLogic Create(MutableBattleObject battleObject, IBattleMessageBroadcaster broadcaster)
@@ -53,7 +57,8 @@ namespace Epic.Logic
                 DaysProcessor,
                 PlayersService,
                 LoggerFactory.CreateLogger<BattleLogic>(),
-                RandomProvider);
+                RandomProvider,
+                HeroesService);
         }
     }
 }

@@ -17,6 +17,20 @@
     gap: 10px;
 }
 
+.user-info-section .left-side {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.user-info-section .right-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .user-info {
     display: flex;
     align-items: center;
@@ -95,6 +109,82 @@
 }
 
 .day-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.level-badge {
+    background: linear-gradient(145deg, #9b59b6, #8e44ad);
+    border: 2px solid #6c3483;
+    border-radius: 15px;
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.level-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.experience-badge {
+    background: linear-gradient(145deg, #27ae60, #2ecc71);
+    border: 2px solid #1e8449;
+    border-radius: 15px;
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.experience-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: bold;
+}
+
+.stats-badge {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    border: 2px solid #a93226;
+    border-radius: 15px;
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 140px;
+}
+
+.stats-icon {
     width: 16px;
     height: 16px;
     border-radius: 50%;

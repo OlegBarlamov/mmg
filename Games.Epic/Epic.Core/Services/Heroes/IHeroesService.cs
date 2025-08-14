@@ -9,5 +9,6 @@ namespace Epic.Core.Services.Heroes
         Task<IHeroObject> GetById(Guid id);
         Task<IHeroObject> CreateNew(string name, Guid playerId, bool setActive = false);
         Task<IReadOnlyList<IHeroObject>> GetByPlayerId(Guid playerId);
+        Task GiveExperience(Guid heroId, int experience);
     }
 }

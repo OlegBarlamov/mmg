@@ -5,7 +5,7 @@ using Epic.Data.Heroes;
 
 namespace Epic.Core.Services.Heroes
 {
-    public interface IHeroObject : IGameObject<IHeroEntity>
+    public interface IHeroObject : IGameObject<IHeroEntity>, IHeroStats
     {
         Guid Id { get; }
         string Name { get; }
@@ -27,7 +27,8 @@ namespace Epic.Core.Services.Heroes
         public bool IsKilled { get; set; }
         public int Level { get; set; }
         public int Experience { get; set; }
-        
+        public int Attack { get; set; }
+        public int Defense { get; set; }
         
         
         
@@ -35,6 +36,21 @@ namespace Epic.Core.Services.Heroes
         public IUnitsContainerObject ArmyContainer { get; set; }
 
         private MutableHeroObject() { }
+
+        public static MutableHeroObject CopyFrom(IHeroObject heroObject)
+        {
+            return new MutableHeroObject
+            {
+                Id = heroObject.Id,
+                Name = heroObject.Name,
+                ArmyContainerId = heroObject.ArmyContainerId,
+                IsKilled = heroObject.IsKilled,
+                Level = heroObject.Level,
+                Experience = heroObject.Experience,
+                Attack = heroObject.Attack,
+                Defense = heroObject.Defense,
+            };
+        }
         
         public static MutableHeroObject FromEntity(IHeroEntity entity)
         {
@@ -46,6 +62,8 @@ namespace Epic.Core.Services.Heroes
                 IsKilled = entity.IsKilled,
                 Level = entity.Level,
                 Experience = entity.Experience,
+                Attack = entity.Attack,
+                Defense = entity.Defense,
             };
         }
         

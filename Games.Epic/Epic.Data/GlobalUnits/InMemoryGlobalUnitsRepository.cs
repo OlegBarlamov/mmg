@@ -37,7 +37,7 @@ namespace Epic.Data.GlobalUnits
 
         public Task<int> GetUnitsCount(Guid containerId)
         {
-            return Task.FromResult(_units.Count(unit => unit.ContainerId == containerId));
+            return Task.FromResult(_units.Count(unit => unit.ContainerId == containerId && unit.IsAlive));
         }
 
         public Task RemoveByIds(IEnumerable<Guid> ids)
@@ -78,7 +78,7 @@ namespace Epic.Data.GlobalUnits
 
         public Task<IGlobalUnitEntity> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex)
         {
-            return Task.FromResult<IGlobalUnitEntity>(_units.First(unit => unit.ContainerId == containerId && unit.ContainerSlotIndex == slotIndex));
+            return Task.FromResult<IGlobalUnitEntity>(_units.First(unit => unit.ContainerId == containerId && unit.ContainerSlotIndex == slotIndex && unit.IsAlive));
         }
     }
 }

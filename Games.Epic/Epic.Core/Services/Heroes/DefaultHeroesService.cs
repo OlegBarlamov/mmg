@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Logic;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.Heroes;
@@ -15,15 +16,18 @@ namespace Epic.Core.Services.Heroes
         public IHeroEntitiesRepository HeroEntitiesRepository { get; }
         public IUnitsContainersService UnitsContainersService { get; }
         public IGlobalUnitsService GlobalUnitsService { get; }
+        public IHeroesLevelsCalculator HeroesLevelsCalculator { get; }
 
         public DefaultHeroesService(
             [NotNull] IHeroEntitiesRepository heroEntitiesRepository,
             [NotNull] IUnitsContainersService unitsContainersService,
-            [NotNull] IGlobalUnitsService globalUnitsService)
+            [NotNull] IGlobalUnitsService globalUnitsService,
+            [NotNull] IHeroesLevelsCalculator heroesLevelsCalculator)
         {
             HeroEntitiesRepository = heroEntitiesRepository ?? throw new ArgumentNullException(nameof(heroEntitiesRepository));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
+            HeroesLevelsCalculator = heroesLevelsCalculator ?? throw new ArgumentNullException(nameof(heroesLevelsCalculator));
         }
         
         public async Task<IHeroObject> GetById(Guid id)
@@ -56,6 +60,20 @@ namespace Epic.Core.Services.Heroes
             var heroes = entities.Select(MutableHeroObject.FromEntity).ToArray();
             await Task.WhenAll(heroes.Select(FillHeroObject));
             return heroes;
+        }
+
+        public async Task GiveExperience(Guid heroId, int experience)
+        {
+            var heroObject = await GetById(heroId);
+            var gainResult = HeroesLevelsCalculator.GiveExperience(heroObject, experience);
+
+            var mutableHeroObject = MutableHeroObject.CopyFrom(heroObject);
+            mutableHeroObject.Experience += gainResult.ExperienceGain;
+            mutableHeroObject.Level += gainResult.LevelsGain;
+            mutableHeroObject.Attack += gainResult.AttacksGain;
+            mutableHeroObject.Defense += gainResult.DefenseGain;
+
+            await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
         }
 
         private async Task FillHeroObject(MutableHeroObject heroObject)

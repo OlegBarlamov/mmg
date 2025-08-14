@@ -9,6 +9,6 @@ namespace Epic.Data.Battles
         Task<IBattleEntity> FindActiveBattleByPlayerIdAsync(Guid playerId);
         Task<IBattleEntity> CreateBattleAsync(Guid battleDefinitionId, Guid[] playerIds, int width, int height, bool isActive, bool progressDays);
         Task UpdateBattle(IBattleEntity battleEntity);
-        Task<Guid[]> GetBattleUsers(Guid battleId);
+        Task<Guid[]> GetBattlePlayers(Guid battleId);
     }
 }

@@ -20,6 +20,11 @@ export interface IUserUnit {
     readonly slotIndex: number
 }
 
+export interface IHeroStats {
+    readonly attack: number
+    readonly defense: number
+}
+
 export interface IPlayerInfo {
     readonly id: string
     readonly day: number
@@ -28,6 +33,9 @@ export interface IPlayerInfo {
     readonly battlesGenerationInProgress: boolean
     readonly armyContainerId: string
     readonly supplyContainerId: string
+    readonly experience: number
+    readonly level: number
+    readonly stats: IHeroStats
 }
 
 export interface IUnitsContainerInfo {

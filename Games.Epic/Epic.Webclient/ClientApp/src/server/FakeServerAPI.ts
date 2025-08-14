@@ -148,7 +148,13 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             isDefeated: false,
             battlesGenerationInProgress: false,
             armyContainerId: `${id}_army`,
-            supplyContainerId: `${id}_supply`
+            supplyContainerId: `${id}_supply`,
+            experience: 0,
+            level: 1,
+            stats: {
+                attack: 0,
+                defense: 0,
+            }
         })
     }
     getPlayers(): Promise<IPlayerInfo[]> {

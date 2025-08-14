@@ -58,7 +58,7 @@ namespace Epic.Core.Services.UnitTypes
             var resourcesByKeys = await GameResourcesRepository.GetAllResourcesByKeys();
 
             var totalUnitValue = unitType.Value;
-            var distribution = unitType.GetNormalizedResourcesDistribution(); // Dictionary<ResourceKey, int>
+            var distribution = unitType.GetNormalizedResourcesDistribution();
             var totalParts = distribution.Values.Sum();
 
             var resourceValues = new Dictionary<Guid, int>();

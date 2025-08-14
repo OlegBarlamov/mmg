@@ -12,5 +12,6 @@ namespace Epic.Data.Heroes
         Task<IHeroEntity> CreateForPlayer(Guid id, IHeroEntityFields fields, Guid playerId);
         Task GiveToPlayer(Guid heroId, Guid playerId);
         Task<IReadOnlyCollection<IHeroEntity>> GetByPlayerId(Guid playerId);
+        Task Update(Guid id, IHeroEntityFields fields);
     }
 }

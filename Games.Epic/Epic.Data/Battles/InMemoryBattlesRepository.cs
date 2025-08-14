@@ -93,7 +93,7 @@ namespace Epic.Data.Battles
             return Task.CompletedTask;
         }
 
-        public Task<Guid[]> GetBattleUsers(Guid battleId)
+        public Task<Guid[]> GetBattlePlayers(Guid battleId)
         {
             var userIds = _playerBattles.Where(x => x.BattleId == battleId).Select(x => x.PlayerId).ToArray();
             return Task.FromResult(userIds);

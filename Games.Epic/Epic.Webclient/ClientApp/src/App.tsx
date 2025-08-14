@@ -140,29 +140,48 @@ export class App extends PureComponent<IAppProps, IAppState> {
 
         return (
             <div className="user-info-section">
-                <div className="user-info">
-                    <div className="user-avatar">
-                        {userInfo.userName.charAt(0).toUpperCase()}
+                <div className="left-side">
+                    <div className="level-badge">
+                        <div className="level-icon">L</div>
+                        Level {playerInfo.level}
                     </div>
-                    <div className="user-name">Hello, {userInfo.userName}</div>
+                    
+                    <div className="experience-badge">
+                        <div className="experience-icon">XP</div>
+                        {playerInfo.experience} XP
+                    </div>
+                    
+                    <div className="stats-badge">
+                        <div className="stats-icon">S</div>
+                        ATK: {playerInfo.stats.attack} | DEF: {playerInfo.stats.defense}
+                    </div>
                 </div>
                 
-                <div className="player-info">
-                    <div className={`player-badge ${playerInfo.isDefeated ? 'defeated' : ''}`}>
-                        <div className="player-icon">P</div>
-                        {playerInfo.name}
-                    </div>
-                    
-                    <div className="day-badge">
-                        <div className="day-icon">D</div>
-                        Day {playerInfo.day}
-                    </div>
-                    
-                    {playerInfo.isDefeated && (
-                        <div className="defeated-badge">
-                            DEFEATED
+                <div className="right-side">
+                    <div className="user-info">
+                        <div className="user-avatar">
+                            {userInfo.userName.charAt(0).toUpperCase()}
                         </div>
-                    )}
+                        <div className="user-name">Hello, {userInfo.userName}</div>
+                    </div>
+                    
+                    <div className="player-info">
+                        <div className={`player-badge ${playerInfo.isDefeated ? 'defeated' : ''}`}>
+                            <div className="player-icon">P</div>
+                            {playerInfo.name}
+                        </div>
+                        
+                        <div className="day-badge">
+                            <div className="day-icon">D</div>
+                            Day {playerInfo.day}
+                        </div>
+                        
+                        {playerInfo.isDefeated && (
+                            <div className="defeated-badge">
+                                DEFEATED
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         )

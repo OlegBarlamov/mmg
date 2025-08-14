@@ -8,13 +8,16 @@ using Epic.Core;
 using Epic.Core.ClientMessages;
 using Epic.Core.Logic;
 using Epic.Core.Logic.Erros;
+using Epic.Core.Objects;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
+using Epic.Data.Heroes;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NetExtensions.Collections;
@@ -33,10 +36,11 @@ namespace Epic.Logic
         private IPlayersService PlayersService { get; }
         private ILogger<BattleLogic> Logger { get; }
         private IRandomProvider RandomProvider { get; }
+        public IHeroesService HeroesService { get; }
 
         private readonly List<MutableBattleUnitObject> _sortedBattleUnitObjects;
-
         private readonly ConcurrentDictionary<int, List<IServerBattleMessage>> _passedServerBattleMessages = new ConcurrentDictionary<int, List<IServerBattleMessage>>();
+        private readonly Dictionary<Guid, IPlayerObject> _players = new Dictionary<Guid, IPlayerObject>();
 
         private IBattleUnitObject _activeUnit;
         [CanBeNull] private TurnInfo _expectedTurn;
@@ -53,7 +57,8 @@ namespace Epic.Logic
             [NotNull] IDaysProcessor daysProcessor,
             [NotNull] IPlayersService playersService,
             [NotNull] ILogger<BattleLogic> logger,
-            [NotNull] IRandomProvider randomProvider)
+            [NotNull] IRandomProvider randomProvider,
+            [NotNull] IHeroesService heroesService)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -65,6 +70,7 @@ namespace Epic.Logic
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
+            HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
 
             _sortedBattleUnitObjects = new List<MutableBattleUnitObject>(battleObject.Units);
             SortByInitiative(_sortedBattleUnitObjects);
@@ -82,6 +88,10 @@ namespace Epic.Logic
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(BattleLogic));
+            
+            _players.Clear();
+            var players = await Task.WhenAll(BattleObject.PlayerIds.Select(PlayersService.GetById));
+            players.ForEach(x => _players.Add(x.Id, x));
             
             var battleResult = GetBattleResult();
 
@@ -125,7 +135,8 @@ namespace Epic.Logic
                         // TODO AI
                     }
 
-                    var isNextRound = activeUnitIndex + 1 >= _sortedBattleUnitObjects.Count;
+                    GetActiveUnit(activeUnitIndex, out var nextActiveUnitIndex);
+                    var isNextRound = nextActiveUnitIndex <= activeUnitIndex;
                     if (isNextRound)
                     {
                         BattleObject.RoundNumber++;
@@ -171,6 +182,7 @@ namespace Epic.Logic
                 if (winnerId.HasValue)
                 {
                     winnerPlayerId = winnerId.Value;
+                    await GiveExperience(winnerPlayerId, battleResult.Winner.Value, BattleObject);
                     var rewards = await RewardsService.GetRewardsFromBattleDefinition(BattleObject.BattleDefinitionId);
                     var rewardsIds = rewards.Select(x => x.Id).ToArray();
                     await RewardsService.GiveRewardsToPlayerAsync(rewardsIds, winnerPlayerId);
@@ -191,6 +203,21 @@ namespace Epic.Logic
                 ReportId = reportEntity.Id.ToString(),
             };
             await BroadcastMessageToClientAndSaveAsync(battleFinishedCommand);
+        }
+
+        private async Task GiveExperience(Guid playerId, InBattlePlayerNumber winner, IBattleObject battleObject)
+        {
+            var unitsContributeToExperience = battleObject.Units
+                .Where(x => (InBattlePlayerNumber)x.PlayerIndex != winner)
+                .Where(x => !x.GlobalUnit.IsAlive)
+                .ToArray();
+
+            var experienceToGain = unitsContributeToExperience.Sum(x => x.InitialCount * x.GlobalUnit.UnitType.Value);
+            if (experienceToGain > 0)
+            {
+                var playerObject = _players[playerId];
+                await HeroesService.GiveExperience(playerObject.ActiveHero.Id, experienceToGain);
+            }
         }
 
         private Task BroadcastMessageToClientAndSaveAsync(IServerBattleMessage message)
@@ -294,11 +321,17 @@ namespace Epic.Logic
             if (targetActor.AttackFunctionsData[command.AttackIndex].BulletsCount < 1)
                 throw new BattleLogicException($"The attack does not have enough bullets {attackFunction.EnemyInRangeDisablesAttack}");
                 
-                
             var mutableActor = targetActor;
             mutableActor.Column = command.MoveToCell.C;
             mutableActor.Row = command.MoveToCell.R;
             mutableActor.AttackFunctionsData[command.AttackIndex].BulletsCount -= 1;
+
+            var actorPlayerId = BattleObject.GetPlayerId((InBattlePlayerNumber)targetActor.PlayerIndex);
+            var actorPlayer = actorPlayerId.HasValue && _players.TryGetValue(actorPlayerId.Value, out var player1) 
+                ?  player1 : null;
+            var targetPlayerId = BattleObject.GetPlayerId((InBattlePlayerNumber)targetTarget.PlayerIndex);
+            var targetPlayer = targetPlayerId.HasValue && _players.TryGetValue(targetPlayerId.Value, out var player2) 
+                ?  player2 : null;
             
             //TODO Check if it is reachable 
             
@@ -319,6 +352,8 @@ namespace Epic.Logic
                 targetActor, 
                 targetTarget,
                 attackFunction,
+                (IHeroStats)actorPlayer?.ActiveHero ?? DefaultHeroStats.Instance,
+                (IHeroStats)targetPlayer?.ActiveHero ?? DefaultHeroStats.Instance,
                 range,
                 false,
                 RandomProvider.Random);
@@ -372,6 +407,8 @@ namespace Epic.Logic
                         targetTarget,
                         targetActor, 
                         targetTarget.GlobalUnit.UnitType.Attacks[attackFunctionForCounterattack.AttackIndex],
+                        (IHeroStats)targetPlayer?.ActiveHero ?? DefaultHeroStats.Instance,
+                        (IHeroStats)actorPlayer?.ActiveHero ?? DefaultHeroStats.Instance,
                         range,
                         true,
                         RandomProvider.Random);
