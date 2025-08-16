@@ -79,6 +79,35 @@ namespace Epic.Server.Controllers
             return Ok(new BattleResource(battleObject));
         }
 
+        [HttpGet("player/{enemyPlayerId}")]
+        public async Task<IActionResult> StartBattle(Guid enemyPlayerId)
+        {
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            if (playerId == enemyPlayerId)
+                return BadRequest("Can not begin battle with the same player");
+            
+            var player = await PlayersService.GetById(playerId);
+            if (player.ActiveHero?.HasAliveUnits != true)
+                return BadRequest("This player does not have any units.");
+            
+            var enemyPlayer = await PlayersService.GetById(enemyPlayerId);
+            if (player.ActiveHero?.HasAliveUnits != true)
+                return BadRequest("The enemy player does not have any units.");
+
+            var activeBattle = await BattlesService.FindActiveBattleByPlayerId(playerId);
+            if (activeBattle != null)
+                return BadRequest("This player already has an active battle.");
+            
+            var enemyPlayerActiveBattle = await BattlesService.FindActiveBattleByPlayerId(enemyPlayerId);
+            if (enemyPlayerActiveBattle != null)
+                return BadRequest("The enemy player already has an active battle.");
+            
+            var battleObject = await BattlesService.CreateBattleFromPlayerEnemy(player, enemyPlayer);
+            battleObject = await BattlesService.BeginBattle(playerId, battleObject);
+            return Ok(new BattleResource(battleObject));
+        }
+
         [HttpPost]
         public async Task<IActionResult> StartBattle([FromBody] StartBattleRequestBody battleRequestBody)
         {

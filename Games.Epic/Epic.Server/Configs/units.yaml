@@ -258,7 +258,7 @@ Units:
     Name: "Ghost Dragon"
     BattleImgUrl: "/resources/Bone_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Bone_Dragon_portrait.png"
-    Value: 3000
+    Value: 1800
     Speed: 14
     Health: 200
     Attack: 17
@@ -485,7 +485,7 @@ Units:
     Name: "Giant"
     BattleImgUrl: "/resources/Giant_portrait.png"
     DashboardImgUrl: "/resources/Giant_portrait.png"
-    Value: 2000
+    Value: 2500
     Speed: 7
     Health: 150
     Attack: 19
@@ -599,7 +599,7 @@ Units:
     Name: "Devil"
     BattleImgUrl: "/resources/Devil_portrait.png"
     DashboardImgUrl: "/resources/Devil_portrait.png"
-    Value: 2700
+    Value: 3200
     Speed: 11
     Health: 160
     Attack: 19
@@ -835,7 +835,7 @@ Units:
     Name: "Behemoth"
     BattleImgUrl: "/resources/Behemoth_portrait.png"
     DashboardImgUrl: "/resources/Behemoth_portrait.png"
-    Value: 1500
+    Value: 2000
     Speed: 6
     Health: 160
     Attack: 17
@@ -957,7 +957,7 @@ Units:
     Name: "Hydra"
     BattleImgUrl: "/resources/Hydra_portrait.png"
     DashboardImgUrl: "/resources/Hydra_portrait.png"
-    Value: 2200
+    Value: 2700
     Speed: 5
     Health: 175
     Attack: 16
@@ -1069,7 +1069,7 @@ Units:
     Name: "Firebird"
     BattleImgUrl: "/resources/Firebird_portrait.png"
     DashboardImgUrl: "/resources/Firebird_portrait.png"
-    Value: 1000
+    Value: 1500
     Speed: 15
     Health: 100
     Attack: 18

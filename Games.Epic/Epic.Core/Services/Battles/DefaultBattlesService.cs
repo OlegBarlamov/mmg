@@ -114,6 +114,32 @@ namespace Epic.Core.Services.Battles
             return battleObject;
         }
 
+        public async Task<IBattleObject> CreateBattleFromPlayerEnemy(IPlayerObject player, IPlayerObject enemyPlayer)
+        {
+            var battleDef = await BattleDefinitionsService.CreateBattleDefinition(18, 14);
+            var battleEntity = await BattlesRepository.CreateBattleAsync(
+                battleDef.Id,
+                new[] { player.Id, enemyPlayer.Id },
+                battleDef.Width,
+                battleDef.Height,
+                false,
+                false);
+            
+            var battleObject = MutableBattleObject.FromEntity(battleEntity);
+            var enemyGlobalUnits = await GlobalUnitsService.GetAliveUnitsByContainerId(enemyPlayer.ActiveHero.ArmyContainerId);
+            var battleInitialUnits = await BattleUnitsService.CreateBattleUnitsFromGlobalUnits(
+                enemyGlobalUnits, 
+                InBattlePlayerNumber.Player2, 
+                battleObject.Id,
+                enemyPlayer.ActiveHero);
+            
+            battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
+            
+            await FillPlayers(battleObject);
+            
+            return battleObject;
+        }
+
         public async Task<IBattleObject> BeginBattle(Guid playerId, IBattleObject battleObject)
         {
             var player = await PlayersService.GetById(playerId);

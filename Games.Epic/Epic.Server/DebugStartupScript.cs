@@ -75,17 +75,28 @@ namespace Epic.Server
             
             var user = await UsersRepository.CreateUserAsync("admin",
                 BasicAuthentication.GetHashFromCredentials("admin", "123"));
+            var user1 = await UsersRepository.CreateUserAsync("admin1",
+                BasicAuthentication.GetHashFromCredentials("admin1", "123"));
             await SessionsRepository.CreateSessionAsync("test_token", user.Id, new SessionData());
+            await SessionsRepository.CreateSessionAsync("test_token", user1.Id, new SessionData());
             
             var userPlayer = await PlayersService.CreatePlayer(user.Id, "admin_player", PlayerObjectType.Human);
+            var user1Player = await PlayersService.CreatePlayer(user1.Id, "admin_1_player", PlayerObjectType.Human);
 
             await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, userPlayer.Id, 500);
+            await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, user1Player.Id, 500);
             
             var hero = await HeroesService.CreateNew(userPlayer.Name, userPlayer.Id);
             await PlayersService.SetActiveHero(userPlayer.Id, hero.Id);
             
+            var hero1 = await HeroesService.CreateNew(user1Player.Name, user1Player.Id);
+            await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
+            
             await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero.ArmyContainerId, true, 0);
             await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero.ArmyContainerId, true, 1);
+            
+            await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero1.ArmyContainerId, true, 0);
+            await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero1.ArmyContainerId, true, 1);
 
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
@@ -94,63 +105,14 @@ namespace Epic.Server
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-
-            // var bd1 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 10, 8, 3);
-            // var bd2 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 6, 6, 3);
-            // var bd3 = await BattleDefinitionsService.CreateBattleDefinition(userPlayer.Id, 7, 7, 3);
-            //
-            // await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, bd1.ContainerId, true, 0);
-            // await GlobalUnitsRepository.Create(pickerUnitType.Id, 20, bd2.ContainerId, true, 0);
-            // await GlobalUnitsRepository.Create(archerUnitType.Id, 30, bd3.ContainerId, true, 0);
-            //
-            // await RewardsRepository.CreateRewardAsync(bd1.Id, new MutableRewardFields
-            //     {
-            //         Amounts  = new[] { 5000 },
-            //         CanDecline = true,
-            //         Ids = new[] { ResourcesRepository.GoldResourceId },
-            //         RewardType = RewardType.ResourcesGain,
-            //         Message = "Reward!", 
-            //     }
-            // );
-            // await RewardsRepository.CreateRewardAsync(bd2.Id, new MutableRewardFields
-            //     {
-            //       Amounts  = new[] { 10 },
-            //       CanDecline = true,
-            //       Ids = new[] { pickerUnitType.Id },
-            //       RewardType = RewardType.UnitsGain,
-            //       Message = "Reward!", 
-            //     }
-            // );
-            //
-            // var bd3_1 = await BattleDefinitionsService.CreateBattleDefinition(6, 6);
-            // await GlobalUnitsRepository.Create(archerUnitType.Id, 15, bd3_1.ContainerId, true, 0);
-            // await GlobalUnitsRepository.Create(pickerUnitType.Id, 20, bd3_1.ContainerId, true, 1);
-            // await GlobalUnitsRepository.Create(archerUnitType.Id, 15, bd3_1.ContainerId, true, 2);
-            // await RewardsRepository.CreateRewardAsync(bd3_1.Id, new MutableRewardFields
-            //     {
-            //         Amounts  = new []{ 100, 50 },
-            //         CanDecline = true,
-            //         Ids = new []{pickerUnitType.Id, archerUnitType.Id},
-            //         RewardType = RewardType.UnitToBuy,
-            //         Message = "Now you can train units",
-            //         CustomIconUrl = "https://heroes.thelazy.net/images/6/63/Adventure_Map_Castle_capitol.gif",
-            //         CustomTitle = "Units dwelling",
-            //     }
-            // );
-            //
-            // await RewardsRepository.CreateRewardAsync(bd3.Id, new MutableRewardFields
-            //     {
-            //         Amounts  = Array.Empty<int>(),
-            //         CanDecline = false,
-            //         Ids = Array.Empty<Guid>(),
-            //         RewardType = RewardType.Battle,
-            //         Message = "You need to defeat the guard.",
-            //         CustomIconUrl = "https://heroes.thelazy.net/images/6/63/Adventure_Map_Castle_capitol.gif",
-            //         CustomTitle = "Units dwelling",
-            //         NextBattleDefinitionId = bd3_1.Id,
-            //     }
-            // );
-
+            
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
         }
 
         private class SessionData : ISessionData

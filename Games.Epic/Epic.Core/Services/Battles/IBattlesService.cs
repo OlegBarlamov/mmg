@@ -16,6 +16,8 @@ namespace Epic.Core.Services.Battles
         Task<IBattleObject> CreateBattleFromDefinition(IPlayerObject playerObject, Guid battleDefinitionId);
         Task<IBattleObject> CreateBattleFromDefinition(Guid playerId, IBattleDefinitionObject battleDefinitionObject, bool progressDays);
         Task<IBattleObject> CreateBattleFromDefinition(IPlayerObject playerObject, IBattleDefinitionObject battleDefinitionObject, bool progressDays);
+
+        Task<IBattleObject> CreateBattleFromPlayerEnemy(IPlayerObject player, IPlayerObject enemyPlayer);
         
         Task<IBattleObject> BeginBattle(Guid playerId, IBattleObject battleObject);
         Task UpdateBattle(IBattleObject battleObject);

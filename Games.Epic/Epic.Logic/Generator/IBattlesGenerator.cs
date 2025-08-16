@@ -82,6 +82,8 @@ namespace Epic.Logic.Generator
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
+            var rewardFactor = 3;
+            
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
 
@@ -212,7 +214,7 @@ namespace Epic.Logic.Generator
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.ResourcesGain,
-                    Amounts = new[] { goldAmount },
+                    Amounts = new[] { goldAmount * rewardFactor },
                     CanDecline = true,
                     NextBattleDefinitionId = null,
                     CustomIconUrl = null,
@@ -229,7 +231,7 @@ namespace Epic.Logic.Generator
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.ResourcesGain,
-                    Amounts = new[] { resourceAmount },
+                    Amounts = new[] { resourceAmount * rewardFactor },
                     CanDecline = true,
                     NextBattleDefinitionId = null,
                     CustomIconUrl = null,
@@ -261,7 +263,7 @@ namespace Epic.Logic.Generator
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.UnitsGain,
-                    Amounts = new[] { unitsGainAmount },
+                    Amounts = new[] { unitsGainAmount * rewardFactor },
                     CanDecline = true,
                     NextBattleDefinitionId = null,
                     CustomIconUrl = null,
@@ -319,7 +321,7 @@ namespace Epic.Logic.Generator
                 await RewardsRepository.CreateRewardAsync(rewardedBattleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.UnitToBuy,
-                    Amounts = new[] { unitToBuy.ToTrainAmount },
+                    Amounts = new[] { unitToBuy.ToTrainAmount * rewardFactor },
                     Message = "You can train units now",
                     CanDecline = true,
                     NextBattleDefinitionId = null,
@@ -332,7 +334,7 @@ namespace Epic.Logic.Generator
 
         public async Task Generate(Guid playerId, int day, int currentBattlesCount)
         {
-            int count = _random.Next(1, 4);
+            int count = currentBattlesCount < 5 ? _random.Next(3, 7) : _random.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
                 await GenerateSingle(playerId, day);
