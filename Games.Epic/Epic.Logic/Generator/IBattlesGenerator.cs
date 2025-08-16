@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
@@ -10,6 +11,7 @@ using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Logic.Utils;
 using JetBrains.Annotations;
+using NetExtensions.Collections;
 
 namespace Epic.Logic.Generator
 {
@@ -29,9 +31,11 @@ namespace Epic.Logic.Generator
         public IUnitsContainersService UnitsContainersService { get; }
         public IRewardsRepository RewardsRepository { get; }
         public IGameResourcesRepository GameResourcesRepository { get; }
+        public IPlayersService PlayersService { get; }
 
         private readonly Random _random = new Random();
 
+        private readonly Dictionary<Guid, IUnitTypeEntity> _unitTypesByIds = new Dictionary<Guid, IUnitTypeEntity>();
         private readonly List<IUnitTypeEntity> _orderedUnitTypes = new List<IUnitTypeEntity>();
         private readonly List<IGameResourceEntity> _resources = new List<IGameResourceEntity>();
         
@@ -41,7 +45,8 @@ namespace Epic.Logic.Generator
             [NotNull] IUnitTypesRepository unitTypesRepository,
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IRewardsRepository rewardsRepository,
-            [NotNull] IGameResourcesRepository gameResourcesRepository)
+            [NotNull] IGameResourcesRepository gameResourcesRepository,
+            [NotNull] IPlayersService playersService)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -49,6 +54,7 @@ namespace Epic.Logic.Generator
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
         }
 
         public async Task Initialize()
@@ -57,6 +63,7 @@ namespace Epic.Logic.Generator
 
             var allUnits = await UnitTypesRepository.GetAll();
             _orderedUnitTypes.AddRange(allUnits);
+            allUnits.ForEach(x => _unitTypesByIds.Add(x.Id, x));
             
             _orderedUnitTypes.Sort((x, y) => x.Value.CompareTo(y.Value));
             
@@ -75,6 +82,7 @@ namespace Epic.Logic.Generator
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
+            var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
 
             var maxWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + difficulty.TargetDifficulty / 300);
@@ -90,9 +98,37 @@ namespace Epic.Logic.Generator
             var unitsCount = Math.Max(1, (int)Math.Round((double)difficulty.TargetDifficulty / targetUnit.Value));
 
             var container = await UnitsContainersService.Create(height, Guid.Empty);
+
+            var slotsDistribution = (SlotsDistributionPattern)_random.Next(0, 4);
+
+            var maxSlotsCount = int.MaxValue;
+            var minSlotsCount = 1;
+            switch (slotsDistribution)
+            {
+                case SlotsDistributionPattern.Single:
+                    maxSlotsCount = 1;
+                    maxSlotsCount = 1;
+                    break;
+                case SlotsDistributionPattern.Few:
+                    minSlotsCount = 2;
+                    maxSlotsCount = 3;
+                    break;
+                case SlotsDistributionPattern.Partially:
+                    minSlotsCount = 4;
+                    maxSlotsCount = 6;
+                    break;
+                case SlotsDistributionPattern.Full:
+                    minSlotsCount = int.MaxValue;
+                    maxSlotsCount = int.MaxValue;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            var slotsCountLimit = Math.Min(unitsCount, height);
+            maxSlotsCount = Math.Min(maxSlotsCount, slotsCountLimit);
+            minSlotsCount = Math.Min(minSlotsCount, slotsCountLimit);
             
-            var maxSlotsCount = Math.Min(unitsCount, height);
-            var targetSlotsCount = _random.Next(1, maxSlotsCount + 1);
+            var targetSlotsCount = _random.Next(minSlotsCount, maxSlotsCount + 1);
 
             // 1. Create the unit distribution
             var slotDistributions = new List<int>();
@@ -132,7 +168,7 @@ namespace Epic.Logic.Generator
 
             double t = ((double)difficulty.TargetDifficulty - difficulty.MinDifficulty) /
                        ((double)difficulty.MaxDifficulty - difficulty.MinDifficulty);
-            int duration = Math.Max(1, (int)Math.Round(1 + t * 9) + _random.Next(-2, 3));
+            int duration = Math.Max(1, (int)Math.Round(1 + t * 12) + _random.Next(-2, 3));
 
             var rewardVisibility = 0;
             if (difficulty.IdealDifficulty > 1000)
@@ -204,9 +240,23 @@ namespace Epic.Logic.Generator
             else if (rewardType == RewardTypes.UnitsGain)
             {
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty);
+                    entity => entity.Value, difficulty.TargetDifficulty / 2);
                 var unitToGain = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
-                var unitsGainAmount = Math.Max(1, (int)Math.Floor((double)difficulty.TargetDifficulty / unitToGain.Value));
+                var unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 2) / unitToGain.Value));
+                
+                var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
+                var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);
+                var desiredUnits = supplyUnits.Concat(armyUnits)
+                    .Select(x => x.TypeId)
+                    .Distinct()
+                    .Select(id => _unitTypesByIds[id]);
+
+                var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty / 4).ToList();
+                if (availableDesiredUnits.Any() && _random.Next(100) > 66)
+                {
+                    unitToGain = availableDesiredUnits[_random.Next(0, availableDesiredUnits.Count)];
+                    unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 4) / unitToGain.Value));
+                }
                 
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
@@ -221,8 +271,21 @@ namespace Epic.Logic.Generator
             } else if (rewardType == RewardTypes.UnitsToBuy)
             {
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty);
+                    entity => entity.Value, difficulty.TargetDifficulty * 2);
                 var unitToBuy = _orderedUnitTypes[_random.Next(maxUnitIndex + 1)];
+                
+                var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
+                var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);
+                var desiredUnits = supplyUnits.Concat(armyUnits)
+                    .Select(x => x.TypeId)
+                    .Distinct()
+                    .Select(id => _unitTypesByIds[id]);
+
+                var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
+                if (availableDesiredUnits.Any() && _random.Next(100) > 66)
+                    unitToBuy = availableDesiredUnits[_random.Next(0, availableDesiredUnits.Count)];
+
+
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
                     ? unitToBuy.BattleImgUrl 
                     : unitToBuy.DwellingImgUrl;
@@ -231,8 +294,8 @@ namespace Epic.Logic.Generator
                 var rewardedBattleDefinition = battleDefinition;
                 if (isGuarded)
                 {
-                    var guardBattleWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + unitToBuy.Value * 3 / 500);
-                    var guardBattleHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + unitToBuy.Value * 3 / 500);
+                    var guardBattleWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + (unitToBuy.Value * unitToBuy.ToTrainAmount / 2) / 300);
+                    var guardBattleHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + (unitToBuy.Value * unitToBuy.ToTrainAmount / 2) / 300);
                     
                     var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
                     await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
@@ -247,7 +310,7 @@ namespace Epic.Logic.Generator
                         CustomTitle = $"Dwelling of {unitToBuy.Name}",
                     });
                     
-                    await GlobalUnitsRepository.Create(unitToBuy.Id, unitToBuy.ToTrainAmount * 3,
+                    await GlobalUnitsRepository.Create(unitToBuy.Id, unitToBuy.ToTrainAmount / 2,
                         guardBattleDefinition.ContainerId, true, guardBattleDefinition.Height / 2);
                     
                     rewardedBattleDefinition = guardBattleDefinition;
