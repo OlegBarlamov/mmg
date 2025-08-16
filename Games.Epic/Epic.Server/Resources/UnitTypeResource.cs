@@ -15,6 +15,8 @@ namespace Epic.Server.Resources
         
         public int Speed { get; set; }
         public int Health { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
         public IReadOnlyList<IAttackFunctionType> Attacks { get; set; }
         
         public UnitTypeResource(IUnitTypeObject unitTypeObject)
@@ -26,6 +28,8 @@ namespace Epic.Server.Resources
             Speed = unitTypeObject.Speed;
             Health = unitTypeObject.Health;
             Attacks = unitTypeObject.Attacks;
+            Attack = unitTypeObject.Attack;
+            Defense = unitTypeObject.Defense;
         }
     }
 }

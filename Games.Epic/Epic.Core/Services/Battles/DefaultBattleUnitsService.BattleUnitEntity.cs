@@ -41,8 +41,8 @@ namespace Epic.Core.Services.Battles
                     InitialCount = globalUnit.Count,
                     CurrentCount = globalUnit.Count,
                     Waited = false,
-                    CurrentAttack = heroStats.Attack,
-                    CurrentDefense = heroStats.Defense,
+                    CurrentAttack = globalUnit.UnitType.Attack + heroStats.Attack,
+                    CurrentDefense = globalUnit.UnitType.Defense + heroStats.Defense,
                 };
             }
         }

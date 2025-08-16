@@ -9,6 +9,8 @@ namespace Epic.Data.UnitTypes
     {
         int Speed { get; }
         int Health { get; }
+        int Attack { get; }
+        int Defense { get; }
         IReadOnlyList<IAttackFunctionType> Attacks { get; }
     }
     
@@ -27,6 +29,8 @@ namespace Epic.Data.UnitTypes
     {
         public int Speed { get; set; }
         public int Health { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
         public List<AttackFunctionType> Attacks { get; set; } = new List<AttackFunctionType>();
 
         IReadOnlyList<IAttackFunctionType> IUnitProps.Attacks => Attacks;
@@ -74,7 +78,9 @@ namespace Epic.Data.UnitTypes
                 Attacks = properties.Attacks.ToList(),
                 Value = properties.Value,
                 ResourcesDistribution = properties.ResourcesDistribution,
-                ToTrainAmount = properties.ToTrainAmount
+                ToTrainAmount = properties.ToTrainAmount,
+                Attack = properties.Attack,
+                Defense = properties.Defense,
             };
         }
     }

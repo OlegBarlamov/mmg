@@ -2,6 +2,8 @@ export type UnitProperties = {
     battleImgUrl: string
     speed: number
     health: number
+    attack: number
+    defense: number
     attacks: AttackType[]
     attacksStates: AttackState[]
 }

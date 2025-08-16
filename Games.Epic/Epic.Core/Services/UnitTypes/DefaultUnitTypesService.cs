@@ -74,9 +74,9 @@ namespace Epic.Core.Services.UnitTypes
                 var share = totalUnitValue * proportion;
                 var resourceUnitPrice = resourcesByKeys[resourceKey].Price;
 
-                var resourcePrice = Math.Floor(share * resourceUnitPrice);
-                resourceValues[resourceId] = (int)(resourcePrice / resourceUnitPrice);
-                totalAssigned += resourcePrice;
+                var resourcePrice = Math.Ceiling(share / resourceUnitPrice);
+                resourceValues[resourceId] = (int)resourcePrice;
+                totalAssigned += share;
             }
 
             // Compute expected total value in resource prices

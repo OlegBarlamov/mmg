@@ -68,6 +68,24 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                                         )}
                                     </span>
                                 </div>
+                                <div className="property-item">
+                                    <span className="property-label">Attack:</span>
+                                    <span className="property-value">
+                                        {unit.props.attack}
+                                        {unit.currentProps.attack !== unit.props.attack && (
+                                            <span className="current-value"> ({unit.currentProps.attack})</span>
+                                        )}
+                                    </span>
+                                </div>
+                                <div className="property-item">
+                                    <span className="property-label">Defense:</span>
+                                    <span className="property-value">
+                                        {unit.props.defense}
+                                        {unit.currentProps.defense !== unit.props.defense && (
+                                            <span className="current-value"> ({unit.currentProps.defense})</span>
+                                        )}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
