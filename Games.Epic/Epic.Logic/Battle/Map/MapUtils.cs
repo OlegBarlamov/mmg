@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Battles;
 
-namespace Epic.Logic
+namespace Epic.Logic.Battle.Map
 {
-    public static class Utils
+    public static class MapUtils
     {
         public static bool IsEnemyInRange(IBattleUnitObject actor, int range, IReadOnlyCollection<IBattleUnitObject> units)
         {

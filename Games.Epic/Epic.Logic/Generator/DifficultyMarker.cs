@@ -1,7 +1,8 @@
 using System;
+using Epic.Logic.Utils;
 using NetExtensions.Helpers;
 
-namespace Epic.Logic
+namespace Epic.Logic.Generator
 {
     public class DifficultyMarker
     {
@@ -12,8 +13,8 @@ namespace Epic.Logic
 
         public static DifficultyMarker GenerateFromDay(Random random, int day)
         {
-            var minDifficulty = 5 * MathExtended.Sqr(day) + 100;
-            var maxDifficulty = 25 * MathExtended.Sqr(day) + 1000;
+            var minDifficulty = 10 * MathExtended.Sqr(day) + 500;
+            var maxDifficulty = 50 * MathExtended.Sqr(day) + 1000;
             
             var range = maxDifficulty - minDifficulty;
 

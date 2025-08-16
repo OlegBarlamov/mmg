@@ -16,6 +16,8 @@ namespace Epic.Core.Services.Battles
         int InitialCount { get; }
         int CurrentCount { get; }
         bool Waited { get; }
+        int CurrentAttack { get; set; }
+        int CurrentDefense { get; set; }
         IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; }
     }
 }

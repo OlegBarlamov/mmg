@@ -6,6 +6,7 @@ using Epic.Core.Objects;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
+using Epic.Data.Heroes;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NetExtensions.Collections;
@@ -45,18 +46,22 @@ namespace Epic.Core.Services.Battles
         public Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
         {
             var unitsFitToBattle = PickUnitsFitToBattleSize(battleDefinition.Units, battleDefinition);
-            return CreateBattleUnitsFromGlobalUnits(unitsFitToBattle, InBattlePlayerNumber.Player2, battleId);
+            return CreateBattleUnitsFromGlobalUnits(unitsFitToBattle, InBattlePlayerNumber.Player2, battleId, DefaultHeroStats.Instance);
         }
 
-        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(IReadOnlyCollection<IGlobalUnitObject> playerUnits, InBattlePlayerNumber playerNumber, Guid battleId)
+        public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(
+            IReadOnlyCollection<IGlobalUnitObject> playerUnits, 
+            InBattlePlayerNumber playerNumber, 
+            Guid battleId,
+            IHeroStats heroStats)
         {
             var userUnitsById = playerUnits.ToDictionary(u => u.Id, u => u);
-            var entities = playerUnits.Select(u => BattleUnitEntityFields.FromUserUnit(u, battleId, playerNumber))
+            var entities = playerUnits.Select(u => BattleUnitEntityFields.FromUserUnit(u, battleId, playerNumber, heroStats))
                 .ToArray<IBattleUnitEntityFields>();
 
             var createdInstances = await BattleUnitsRepository.CreateBatch(entities);
             
-            var attacksDataMapPerBattleUnit = createdInstances.ToDictionary(x => x.Id, x => CreateAttackData(x, userUnitsById[x.PlayerUnitId]));
+            var attacksDataMapPerBattleUnit = createdInstances.ToDictionary(x => x.Id, x => CreateAttackData(x, userUnitsById[x.GlobalUnitId]));
             await BattleUnitsRepository.InsertAttacksData(attacksDataMapPerBattleUnit
                 .SelectMany(x => x.Value)
                 .ToArray()
@@ -68,7 +73,6 @@ namespace Epic.Core.Services.Battles
                 u.GlobalUnit = MutableGlobalUnitObject.CopyFrom(userUnitsById[u.PlayerUnitId]);
                 u.AttackFunctionsData = attacksDataMapPerBattleUnit[u.Id];
             });
-            
 
             return createdBattleUnits;
         }

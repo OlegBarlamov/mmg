@@ -8,9 +8,10 @@ using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
+using Epic.Logic.Utils;
 using JetBrains.Annotations;
 
-namespace Epic.Logic
+namespace Epic.Logic.Generator
 {
     public interface IBattlesGenerator
     {
@@ -64,15 +65,23 @@ namespace Epic.Logic
             _resources.AddRange(resourcesByKeys.Values);
         }
 
+        private enum SlotsDistributionPattern
+        {
+            Single,
+            Few,
+            Partially,
+            Full,
+        } 
+
         public async Task GenerateSingle(Guid playerId, int day)
         {
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
 
-            var maxWidth = Math.Min(Constants.MaxBattleWidth, Constants.StartBattleWidth + difficulty.TargetDifficulty / 500);
-            var maxHeight = Math.Min(Constants.MaxBattleHeight, Constants.StartBattleHeight + difficulty.TargetDifficulty / 500);
+            var maxWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + difficulty.TargetDifficulty / 300);
+            var maxHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + difficulty.TargetDifficulty / 300);
             
-            var width = _random.Next(Constants.MinBattleWidth, maxWidth);
-            var height = _random.Next(Constants.MinBattleHeight, maxHeight);
+            var width = _random.Next(BattleConstants.MinBattleWidth, maxWidth);
+            var height = _random.Next(BattleConstants.MinBattleHeight, maxHeight);
             
             var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
                 entity => entity.Value, difficulty.TargetDifficulty);
@@ -81,7 +90,7 @@ namespace Epic.Logic
             var unitsCount = Math.Max(1, (int)Math.Round((double)difficulty.TargetDifficulty / targetUnit.Value));
 
             var container = await UnitsContainersService.Create(height, Guid.Empty);
-
+            
             var maxSlotsCount = Math.Min(unitsCount, height);
             var targetSlotsCount = _random.Next(1, maxSlotsCount + 1);
 
@@ -222,8 +231,8 @@ namespace Epic.Logic
                 var rewardedBattleDefinition = battleDefinition;
                 if (isGuarded)
                 {
-                    var guardBattleWidth = Math.Min(Constants.MaxBattleWidth, Constants.StartBattleWidth + unitToBuy.Value * 3 / 500);
-                    var guardBattleHeight = Math.Min(Constants.MaxBattleHeight, Constants.StartBattleHeight + unitToBuy.Value * 3 / 500);
+                    var guardBattleWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + unitToBuy.Value * 3 / 500);
+                    var guardBattleHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + unitToBuy.Value * 3 / 500);
                     
                     var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
                     await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields

@@ -1,6 +1,6 @@
-namespace Epic.Logic
+namespace Epic.Logic.Generator
 {
-    public static class Constants
+    public static class BattleConstants
     {
         public const int MinBattleWidth = 5;
         public const int MinBattleHeight = 3;

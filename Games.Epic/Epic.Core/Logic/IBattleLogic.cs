@@ -9,7 +9,7 @@ namespace Epic.Core.Logic
 {
     public interface IBattleLogic : IDisposable
     {
-        Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage clientBattleMessage);
+        Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage command);
         
         Task<BattleResult> Run(CancellationToken cancellationToken);
     }

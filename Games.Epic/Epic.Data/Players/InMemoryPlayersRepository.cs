@@ -46,7 +46,7 @@ namespace Epic.Data.Players
             return Task.FromResult<IPlayerEntity>(newPlayer);
         }
 
-        public Task DayIncrement(Guid[] playerIds)
+        public Task DayIncrement(IReadOnlyList<Guid> playerIds)
         {
             _playerEntities.Where(x => playerIds.Contains(x.Id)).ToList().ForEach(x => x.Day++);
             return Task.CompletedTask;

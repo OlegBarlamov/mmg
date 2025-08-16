@@ -123,7 +123,12 @@ namespace Epic.Core.Services.Battles
             
             var userUnits = await GlobalUnitsService.GetAliveUnitsByContainerId(player.ActiveHero.ArmyContainerId);
             var userUnitsFitToBattle = BattleUnitsService.PickUnitsFitToBattleSize(userUnits, mutableBattleObject);
-            var userBattleUnits = await BattleUnitsService.CreateBattleUnitsFromGlobalUnits(userUnitsFitToBattle, InBattlePlayerNumber.Player1, battleObject.Id);
+            var userBattleUnits = await BattleUnitsService.CreateBattleUnitsFromGlobalUnits(
+                userUnitsFitToBattle, 
+                InBattlePlayerNumber.Player1, 
+                battleObject.Id,
+                player.ActiveHero);
+            
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
             BattleUnitsPlacer.PlaceBattleUnitsDefaultPattern(mutableBattleObject);

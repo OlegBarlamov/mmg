@@ -4,6 +4,7 @@ using System.Linq;
 using Epic.Core.Services.Rewards;
 using Epic.Data.GameResources;
 using Epic.Logic;
+using Epic.Logic.Descriptions;
 
 namespace Epic.Server.Resources
 {

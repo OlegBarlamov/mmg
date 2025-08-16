@@ -2,7 +2,7 @@ using System;
 using Epic.Core.Services;
 using Epic.Core.Services.Units;
 
-namespace Epic.Logic
+namespace Epic.Logic.Descriptions
 {
     public class ArmySizeDescription
     {

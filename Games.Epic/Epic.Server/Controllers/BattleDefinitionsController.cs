@@ -6,6 +6,7 @@ using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Logic;
+using Epic.Logic.Descriptions;
 using Epic.Server.Authentication;
 using Epic.Server.Resources;
 using JetBrains.Annotations;

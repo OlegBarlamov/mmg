@@ -4,7 +4,7 @@ using Epic.Core.Services.Battles;
 using Epic.Data.Heroes;
 using Epic.Data.UnitTypes.Subtypes;
 
-namespace Epic.Logic
+namespace Epic.Logic.Battle.Formulas
 {
     public class UnitTakesDamageData
     {
@@ -17,8 +17,6 @@ namespace Epic.Logic
             IBattleUnitObject attacker,
             IBattleUnitObject target,
             IAttackFunctionType attackFunctionType,
-            IHeroStats attackerStats,
-            IHeroStats targetStats,
             int distanceToTarget,
             bool counterAttack,
             Random random)
@@ -30,7 +28,7 @@ namespace Epic.Logic
             var damage = randomSum / dicesCounts * attacker.GlobalUnit.Count;
             
             // Apply Attack vs Defense modifier
-            var attackDefenseDiff = attackerStats.Attack - targetStats.Defense;
+            var attackDefenseDiff = attacker.CurrentAttack - target.CurrentDefense;
             var multiplier = 1.0;
             if (attackDefenseDiff > 0)
             {

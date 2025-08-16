@@ -4,7 +4,7 @@ using Epic.Core.Services;
 using Epic.Core.Services.Rewards;
 using Epic.Data.Reward;
 
-namespace Epic.Logic
+namespace Epic.Logic.Descriptions
 {
     public class RewardDescription
     {

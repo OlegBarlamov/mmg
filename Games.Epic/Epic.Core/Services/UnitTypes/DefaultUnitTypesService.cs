@@ -72,19 +72,21 @@ namespace Epic.Core.Services.UnitTypes
 
                 var proportion = (decimal)part / totalParts;
                 var share = totalUnitValue * proportion;
-                var unitPrice = resourcesByKeys[resourceKey].Price;
+                var resourceUnitPrice = resourcesByKeys[resourceKey].Price;
 
-                var resourcePrice = Math.Floor(share * unitPrice);
-                resourceValues[resourceId] = (int)resourcePrice;
+                var resourcePrice = Math.Floor(share * resourceUnitPrice);
+                resourceValues[resourceId] = (int)(resourcePrice / resourceUnitPrice);
                 totalAssigned += resourcePrice;
             }
 
             // Compute expected total value in resource prices
             int leftover = (int)Math.Round(totalUnitValue - totalAssigned);
-
-            // Assign leftover to gold
-            if (!resourceValues.TryAdd(GameResourcesRepository.GoldResourceId, leftover))
-                resourceValues[GameResourcesRepository.GoldResourceId] += leftover;
+            if (leftover > 0)
+            {
+                // Assign leftover to gold
+                if (!resourceValues.TryAdd(GameResourcesRepository.GoldResourceId, leftover))
+                    resourceValues[GameResourcesRepository.GoldResourceId] += leftover;
+            }
 
             return Price.Create(resourceValues);
         }

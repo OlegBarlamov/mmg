@@ -51,7 +51,7 @@ namespace Epic.Core.Services.BattleReports
         private async Task<IReadOnlyList<IBattleReportUnitObject>> GetUnits(Guid battleId)
         {
             var unitEntities = await BattleUnitsRepository.GetByBattleId(battleId);
-            var unitsToGlobalMap = unitEntities.ToDictionary(x => x.Id, x => x.PlayerUnitId);
+            var unitsToGlobalMap = unitEntities.ToDictionary(x => x.Id, x => x.GlobalUnitId);
             var globalUnits = await GlobalUnitsRepository.FetchUnitsByIds(unitsToGlobalMap.Values);
             var globalUnitsToTypesMap = globalUnits.ToDictionary(x => x.Id, x => x.TypeId);
             var types = await UnitTypesService.GetUnitTypesByIdsAsync(globalUnitsToTypesMap.Values

@@ -1,9 +1,10 @@
 using System;
 using Epic.Core.Logic;
 using Epic.Core.Services.Heroes;
+using Epic.Logic.Generator;
 using JetBrains.Annotations;
 
-namespace Epic.Logic
+namespace Epic.Logic.Heroes
 {
     [UsedImplicitly]
     public class HeroesLevelsCalculator : IHeroesLevelsCalculator

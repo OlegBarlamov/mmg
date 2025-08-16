@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Epic.Logic
+namespace Epic.Logic.Utils
 {
     internal static class BinarySearch
     {

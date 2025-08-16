@@ -1,6 +1,7 @@
 using System;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
+using Epic.Data.Heroes;
 
 namespace Epic.Core.Services.Battles
 {
@@ -9,24 +10,30 @@ namespace Epic.Core.Services.Battles
         internal class BattleUnitEntityFields : IBattleUnitEntityFields
         {
             public Guid BattleId { get; set; }
-            public Guid PlayerUnitId { get; set; }
+            public Guid GlobalUnitId { get; set; }
             public int Column { get; set; }
             public int Row { get; set; }
             public int PlayerIndex { get; set; }
             public int CurrentHealth { get; set; }
             public int InitialCount { get; set; }
             public int CurrentCount { get; set; }
+            public int CurrentAttack { get; set; }
+            public int CurrentDefense { get; set; }
             public bool Waited { get; set; }
 
 
             protected BattleUnitEntityFields() {}
             
-            public static BattleUnitEntityFields FromUserUnit(IGlobalUnitObject globalUnit, Guid battleId, InBattlePlayerNumber playerNumber)
+            public static BattleUnitEntityFields FromUserUnit(
+                IGlobalUnitObject globalUnit, 
+                Guid battleId, 
+                InBattlePlayerNumber playerNumber,
+                IHeroStats heroStats)
             {
                 return new BattleUnitEntityFields
                 {
                     BattleId = battleId,
-                    PlayerUnitId = globalUnit.Id,
+                    GlobalUnitId = globalUnit.Id,
                     Column = -1,
                     Row = globalUnit.ContainerSlotIndex,
                     PlayerIndex = (int)playerNumber,
@@ -34,6 +41,8 @@ namespace Epic.Core.Services.Battles
                     InitialCount = globalUnit.Count,
                     CurrentCount = globalUnit.Count,
                     Waited = false,
+                    CurrentAttack = heroStats.Attack,
+                    CurrentDefense = heroStats.Defense,
                 };
             }
         }
@@ -52,7 +61,7 @@ namespace Epic.Core.Services.Battles
                 return new BattleUnitEntity(battleUnit.Id)
                 {
                     BattleId = battleUnit.BattleId,
-                    PlayerUnitId = battleUnit.GlobalUnit.Id,
+                    GlobalUnitId = battleUnit.GlobalUnit.Id,
                     Column = battleUnit.Column,
                     Row = battleUnit.Row,
                     PlayerIndex = battleUnit.PlayerIndex,
@@ -60,6 +69,8 @@ namespace Epic.Core.Services.Battles
                     InitialCount = battleUnit.InitialCount,
                     CurrentCount = battleUnit.CurrentCount,
                     Waited = battleUnit.Waited,
+                    CurrentAttack = battleUnit.CurrentAttack,
+                    CurrentDefense = battleUnit.CurrentDefense,
                 };
             }
         }

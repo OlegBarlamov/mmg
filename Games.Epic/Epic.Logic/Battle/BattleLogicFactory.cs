@@ -6,10 +6,11 @@ using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
+using Epic.Logic.Generator;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Logic
+namespace Epic.Logic.Battle
 {
     [UsedImplicitly]
     public class BattleLogicFactory : IBattleLogicFactory

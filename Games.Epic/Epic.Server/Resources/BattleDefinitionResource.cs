@@ -5,6 +5,7 @@ using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using Epic.Logic;
+using Epic.Logic.Descriptions;
 
 namespace Epic.Server.Resources
 {

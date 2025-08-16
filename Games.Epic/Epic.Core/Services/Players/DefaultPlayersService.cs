@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Services.Heroes;
@@ -76,7 +77,7 @@ namespace Epic.Core.Services.Players
             return await Task.WhenAll(entities.Select(x => FromEntity(x)));
         }
 
-        public Task DayIncrement(Guid[] playerIds)
+        public Task DayIncrement(IReadOnlyList<Guid> playerIds)
         {
            return PlayersRepository.DayIncrement(playerIds);
         }

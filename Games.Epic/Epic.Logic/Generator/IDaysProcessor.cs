@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Services.BattleDefinitions;
@@ -6,11 +7,11 @@ using Epic.Core.Services.Players;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Epic.Logic
+namespace Epic.Logic.Generator
 {
     public interface IDaysProcessor
     {
-        Task ProcessNewDay(Guid[] playerIds);
+        Task ProcessNewDay(IReadOnlyList<Guid> playerIds);
     }
     
     [UsedImplicitly]
@@ -33,7 +34,7 @@ namespace Epic.Logic
             BattlesGenerator = battlesGenerator ?? throw new ArgumentNullException(nameof(battlesGenerator));
         }
 
-        public async Task ProcessNewDay(Guid[] playerIds)
+        public async Task ProcessNewDay(IReadOnlyList<Guid> playerIds)
         {
             try
             {

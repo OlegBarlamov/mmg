@@ -1,6 +1,6 @@
 using System;
 
-namespace Epic.Logic
+namespace Epic.Logic.Generator
 {
     public interface IRandomProvider
     {

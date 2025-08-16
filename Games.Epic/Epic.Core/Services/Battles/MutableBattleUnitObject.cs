@@ -18,7 +18,9 @@ namespace Epic.Core.Services.Battles
         public int InitialCount { get; set; }
         public int CurrentCount { get; set; }
         public bool Waited { get; set; }
-        
+        public int CurrentAttack { get; set; }
+        public int CurrentDefense { get; set; }
+
         public IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; set; }
 
         IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
@@ -33,7 +35,7 @@ namespace Epic.Core.Services.Battles
             return new MutableBattleUnitObject(entity.Id)
             {
                 BattleId = entity.BattleId,
-                PlayerUnitId = entity.PlayerUnitId,
+                PlayerUnitId = entity.GlobalUnitId,
                 Column = entity.Column,
                 Row = entity.Row,
                 PlayerIndex = entity.PlayerIndex,
@@ -41,6 +43,8 @@ namespace Epic.Core.Services.Battles
                 InitialCount = entity.InitialCount,
                 CurrentCount = entity.CurrentCount,
                 Waited = entity.Waited,
+                CurrentAttack = entity.CurrentAttack,
+                CurrentDefense = entity.CurrentDefense,
             };
         }
         

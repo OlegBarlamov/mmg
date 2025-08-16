@@ -1,7 +1,7 @@
 using System;
 using Epic.Core;
 
-namespace Epic.Logic
+namespace Epic.Logic.Battle.Map
 {
     public class OddRHexoGrid
     {

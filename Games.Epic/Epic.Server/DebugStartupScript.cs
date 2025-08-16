@@ -11,6 +11,7 @@ using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Logic;
+using Epic.Logic.Generator;
 using Epic.Server.Authentication;
 using FrameworkSDK;
 using JetBrains.Annotations;

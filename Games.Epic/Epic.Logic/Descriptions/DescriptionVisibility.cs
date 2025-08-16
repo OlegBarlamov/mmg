@@ -1,4 +1,4 @@
-namespace Epic.Logic
+namespace Epic.Logic.Descriptions
 {
     public enum DescriptionVisibility
     {

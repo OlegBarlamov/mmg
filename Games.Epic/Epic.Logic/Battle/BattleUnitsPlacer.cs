@@ -5,7 +5,7 @@ using Epic.Core;
 using Epic.Core.Logic;
 using Epic.Core.Services.Battles;
 
-namespace Epic.Logic
+namespace Epic.Logic.Battle
 {
     public class BattleUnitsPlacer : IBattleUnitsPlacer
     {
