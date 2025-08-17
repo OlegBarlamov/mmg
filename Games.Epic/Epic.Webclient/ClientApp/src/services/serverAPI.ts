@@ -88,6 +88,7 @@ export interface IServerAPI {
 
     getBattles(): Promise<IBattleDefinition[]>
     beginBattle(battleDefinitionId: string): Promise<BattleMap>
+    beginBattleWithPlayer(playerName: string): Promise<BattleMap>
     getActiveBattle(): Promise<BattleMap | null>
     establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
 

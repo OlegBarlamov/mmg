@@ -7,6 +7,7 @@ namespace Epic.Data.Players
     public interface IPlayersRepository : IRepository
     {
         Task<IPlayerEntity> GetById(Guid playerId);
+        Task<IPlayerEntity> FindByName(string playerName);
         Task<IPlayerEntity[]> GetByIds(IReadOnlyList<Guid> playerId);
         Task<IPlayerEntity[]> GetByUserId(Guid userId);
         Task Update(IPlayerEntity entity);

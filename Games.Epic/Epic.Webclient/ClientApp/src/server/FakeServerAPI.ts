@@ -41,6 +41,9 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    beginBattleWithPlayer(playerName: string): Promise<BattleMap> {
+        throw new Error("Method not implemented.");
+    }
     getUnitInfo(unitTypeId: string): Promise<IUnitInfo> {
         throw new Error("Method not implemented.");
     }

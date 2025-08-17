@@ -6,4 +6,9 @@ namespace Epic.Server.RequestBodies
     {
         public Guid BattleDefinitionId { get; set; }
     }
+
+    public class StartBattleWithPlayerRequestBody
+    {
+        public string PlayerName { get; set; }
+    }
 }

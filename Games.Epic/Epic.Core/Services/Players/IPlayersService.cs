@@ -10,6 +10,7 @@ namespace Epic.Core.Services.Players
         Task<IPlayerObject> GetByIdAndUserId(Guid userId, Guid playerId);
         Task<IPlayerObject> CreatePlayer(Guid userId, string name, PlayerObjectType playerObjectType);
         Task<IPlayerObject> GetById(Guid playerId);
+        Task<IPlayerObject> FindByName(string playerName);
         Task<IPlayerObject[]> GetAllByUserId(Guid userId);
         Task<IPlayerObject[]> GetByIds(Guid[] playerIds);
         Task DayIncrement(IReadOnlyList<Guid> playerIds);

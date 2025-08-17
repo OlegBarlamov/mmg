@@ -6,11 +6,13 @@ import {ArmyDisplay} from "./armyDisplay";
 import {SupplyComponent} from "./supplyComponent";
 import {ResourcesView} from "./resourcesView";
 import {BattleConfirmationDialog} from "./battleConfirmationDialog";
+import {PlayerBattleModal} from "./playerBattleModal";
 import "./menuComponent.css";
 
 export interface IMenuComponentProps {
     serviceLocator: IServiceLocator
     onBattleSelected(definition: IBattleDefinition): void
+    onPlayerBattleSelected(battleMap: any): void
     playerInfo: IPlayerInfo | null
 }
 
@@ -25,6 +27,8 @@ interface IMenuComponentState {
     hoveredBattleHeight: number | null
     showBattleConfirmation: boolean
     pendingBattle: IBattleDefinition | null
+    showPlayerBattleModal: boolean
+    isPlayerBattleLoading: boolean
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -45,7 +49,9 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             resources: null,
             hoveredBattleHeight: null,
             showBattleConfirmation: false,
-            pendingBattle: null
+            pendingBattle: null,
+            showPlayerBattleModal: false,
+            isPlayerBattleLoading: false
         }
     }
     
@@ -164,6 +170,40 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             showBattleConfirmation: false,
             pendingBattle: null
         })
+    }
+
+    private handlePlayerBattleClick = () => {
+        this.setState({ showPlayerBattleModal: true })
+    }
+
+    private handlePlayerBattleClose = () => {
+        this.setState({ 
+            showPlayerBattleModal: false,
+            isPlayerBattleLoading: false
+        })
+    }
+
+    private handlePlayerBattleAccept = async (playerName: string) => {
+        this.setState({ isPlayerBattleLoading: true })
+        
+        try {
+            const serverAPI = this.props.serviceLocator.serverAPI()
+            const battleMap = await serverAPI.beginBattleWithPlayer(playerName)
+            
+            // Close the modal
+            this.setState({ 
+                showPlayerBattleModal: false,
+                isPlayerBattleLoading: false
+            })
+            
+            // Start the battle
+            this.props.onPlayerBattleSelected(battleMap)
+        } catch (error) {
+            console.error('Failed to start battle with player:', error)
+            // Error will be handled by the modal component
+            this.setState({ isPlayerBattleLoading: false })
+            throw error
+        }
     }
 
     // Method to refresh army units from server
@@ -285,6 +325,16 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                         ))}
                                     </tbody>
                                 </table>
+                                
+                                <div className="battle-actions">
+                                    <button 
+                                        className="player-battle-button"
+                                        onClick={this.handlePlayerBattleClick}
+                                        disabled={!this.hasArmyUnits()}
+                                    >
+                                        Battle with Player
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div className="no-battles">No battles available</div>
@@ -326,6 +376,14 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                     isVisible={this.state.showBattleConfirmation}
                     onAccept={this.handleBattleConfirmationAccept}
                     onCancel={this.handleBattleConfirmationCancel}
+                />
+
+                {/* Player Battle Modal */}
+                <PlayerBattleModal
+                    isVisible={this.state.showPlayerBattleModal}
+                    onCancel={this.handlePlayerBattleClose}
+                    onAccept={this.handlePlayerBattleAccept}
+                    isLoading={this.state.isPlayerBattleLoading}
                 />
             </div>
         )

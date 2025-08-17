@@ -29,6 +29,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
         
         this.onBattleDefinitionSelected = this.onBattleDefinitionSelected.bind(this)
         this.onBattleFinished = this.onBattleFinished.bind(this)
+        this.onPlayerBattleSelected = this.onPlayerBattleSelected.bind(this)
     }
     async componentDidMount(): Promise<void> {
         const serverAPI = this.props.serviceLocator.serverAPI()
@@ -88,8 +89,14 @@ export class App extends PureComponent<IAppProps, IAppState> {
                 isLoading: false,
             })
         )
+    }
 
-
+    private onPlayerBattleSelected(battleMap: any) {
+        this.setState({
+            ...this.state,
+            selectedBattle: battleMap,
+            battleKey: this.state.battleKey + 1,
+        })
     }
     
     private onBattleFinished(newBattleMap?: BattleMap) : void {
@@ -229,6 +236,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
                                     ref={this.menuComponentRef}
                                     serviceLocator={this.props.serviceLocator}
                                     onBattleSelected={this.onBattleDefinitionSelected}
+                                    onPlayerBattleSelected={this.onPlayerBattleSelected}
                                     playerInfo={this.state.playerInfo}
                                 />
                             </div>

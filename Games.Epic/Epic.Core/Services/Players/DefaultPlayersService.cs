@@ -65,6 +65,12 @@ namespace Epic.Core.Services.Players
             return await FromEntity(playerEntity);
         }
 
+        public async Task<IPlayerObject> FindByName(string playerName)
+        {
+            var playerEntity = await PlayersRepository.FindByName(playerName);
+            return await FromEntity(playerEntity);
+        }
+
         public async Task<IPlayerObject[]> GetAllByUserId(Guid userId)
         {
             var entities = await PlayersRepository.GetByUserId(userId);

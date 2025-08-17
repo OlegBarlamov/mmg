@@ -18,6 +18,13 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
     }    
+    async beginBattleWithPlayer(playerName: string): Promise<BattleMap> {
+        const battleMap = await this.fetchResource<BattleMap>("api/battle/player", "POST", "begin_battle_player", {
+            playerName: playerName,
+        })
+        this.fillMapCells(battleMap)
+        return battleMap
+    }
     getUnitInfo(unitTypeId: string): Promise<IUnitInfo> {
         return this.fetchResource<IUnitInfo>(`api/unit-types/${unitTypeId}`, "GET", "unit_info")
     }

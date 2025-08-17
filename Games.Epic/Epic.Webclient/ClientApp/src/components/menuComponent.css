@@ -13,11 +13,57 @@
 }
 
 .battles-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    color: #f1c40f;
     text-align: center;
-    color: #ecf0f1;
+    margin-bottom: 20px;
+    font-size: 2rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.battle-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.player-battle-button {
+    padding: 12px 24px;
+    background: linear-gradient(145deg, #9b59b6, #8e44ad);
+    border: 2px solid #6c3483;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.player-battle-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #8e44ad, #9b59b6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.player-battle-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.player-battle-button:disabled {
+    background: #7f8c8d;
+    border-color: #6c7b7d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+.player-battle-button:disabled:hover {
+    background: #7f8c8d;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* Battles Table Styles */
