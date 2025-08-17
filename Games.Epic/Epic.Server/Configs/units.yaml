@@ -1082,3 +1082,156 @@ Units:
     ResourcesDistribution:
       Gold: 3
       Mercury: 1
+
+  Rogue:
+    Name: "Rogue"
+    BattleImgUrl: "/resources/Rogue_portrait.png"
+    DashboardImgUrl: "/resources/Rogue_portrait.png"
+    Value: 50
+    Speed: 6
+    Health: 10
+    Attack: 8
+    Defense: 3
+    ToTrainAmount: 20
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 4
+
+  Nomad:
+    Name: "Nomad"
+    BattleImgUrl: "/resources/Nomad_portrait.png"
+    DashboardImgUrl: "/resources/Nomad_portrait.png"
+    Value: 200
+    Speed: 7
+    Health: 30
+    Attack: 9
+    Defense: 8
+    ToTrainAmount: 10
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 6
+
+  Troll:
+    Name: "Troll"
+    BattleImgUrl: "/resources/Troll_portrait.png"
+    DashboardImgUrl: "/resources/Troll_portrait.png"
+    Value: 500
+    Speed: 7
+    Health: 40
+    Attack: 10
+    Defense: 9
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 10
+        MaxDamage: 15
+      - <<: *MeleeAttack
+        MinDamage: 8
+        MaxDamage: 10
+
+  GoldGolem:
+    Name: "Gold Golem"
+    BattleImgUrl: "/resources/Gold_Golem_portrait.png"
+    DashboardImgUrl: "/resources/Gold_Golem_portrait.png"
+    Value: 600
+    Speed: 5
+    Health: 50
+    Attack: 11
+    Defense: 12
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 8
+        MaxDamage: 10
+
+  DiamondGolem:
+    Name: "Diamond Golem"
+    BattleImgUrl: "/resources/Diamond_Golem_portrait.png"
+    DashboardImgUrl: "/resources/Diamond_Golem_portrait.png"
+    Value: 750
+    Speed: 5
+    Health: 60
+    Attack: 13
+    Defense: 12
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 10
+        MaxDamage: 14
+        
+  RustDragon:
+    Name: "Rust Dragon"
+    BattleImgUrl: "/resources/Rust_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Rust_Dragon_portrait.png"
+    Value: 15000
+    Speed: 19
+    Health: 750
+    Attack: 30
+    Defense: 30
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 50
+        MaxDamage: 60
+    ResourcesDistribution:
+      Gold: 50
+      Mercury: 5
+  
+  FaerieDragon:
+    Name: "Faerie Dragon"
+    BattleImgUrl: "/resources/Faerie_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Faerie_Dragon_portrait.png"
+    Value: 10000
+    Speed: 15
+    Health: 500
+    Attack: 20
+    Defense: 20
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 20
+        MaxDamage: 30
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 35
+    ResourcesDistribution:
+      Gold: 30
+      Gems: 3
+
+  CrystalDragon:
+    Name: "Crystal Dragon"
+    BattleImgUrl: "/resources/Crystal_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Crystal_Dragon_portrait.png"
+    Value: 10000
+    Speed: 16
+    Health: 750
+    Attack: 40
+    Defense: 40
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 60
+        MaxDamage: 75
+    ResourcesDistribution:
+      Gold: 40
+      Crystal: 4
+
+  AzureDragon:
+    Name: "Azure Dragon"
+    BattleImgUrl: "/resources/Azure_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Azure_Dragon_portrait.png"
+    Value: 30000
+    Speed: 19
+    Health: 1000
+    Attack: 50
+    Defense: 50
+    ToTrainAmount: 1
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 70
+        MaxDamage: 80
+    ResourcesDistribution:
+      Gold: 100
+      Gems: 5
