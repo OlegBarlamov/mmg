@@ -57,16 +57,16 @@ namespace Epic.Logic.Battle
                     if (attack.EnemyInRangeDisablesAttack > 0 &&
                         enemies.Any(x => MapUtils.IsEnemyInRange(unit, attack.EnemyInRangeDisablesAttack, enemies))) 
                         continue;
-                    
-                    if (attack.StayOnly && (distance < attack.AttackMinRange || distance > attack.AttackMaxRange))
-                        continue;
 
-                    if (attack.StayOnly)
+                    if (distance >= attack.AttackMinRange && distance <= attack.AttackMaxRange)
                     {
                         possibleAttacksWithTargets.Add(new Tuple<IBattleUnitObject, IAttackFunctionType, HexoPoint, int>(enemy, attack,
                             new HexoPoint(unit.Column, unit.Row), i));
                         continue;
                     }
+
+                    if (attack.StayOnly)
+                        continue;
 
                     foreach (var point in cellsToMove)
                     {
