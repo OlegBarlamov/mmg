@@ -37,7 +37,7 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                                 <div className="unit-count">Count: {unit.count}</div>
                                 <div className="unit-position">Position: ({unit.position.r}, {unit.position.c})</div>
                                 <div className="unit-player">Player: {unit.player}</div>
-                                {unit.waited && (
+                                {unit.currentProps.waited && (
                                     <div className="unit-waited">Status: Waited</div>
                                 )}
                             </div>

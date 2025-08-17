@@ -192,6 +192,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 }
             ],
             attacksStates: [],
+            waited: false,
         }]
     ])
     private messagesHandler: IBattleConnectionMessagesHandler | undefined = undefined

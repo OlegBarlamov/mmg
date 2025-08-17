@@ -22,6 +22,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     
     private disposed = false
 
+    private previousAnimationPromise: Promise<void> = Promise.resolve()
+
     private readonly previousTurnInfos: Map<number, BattleTurnInfo> = new Map()
     private readonly awaitingPromises: Map<number, Promise<BattleTurnInfo>> = new Map()
     private readonly triggerAwaitingPromises: Map<number, (info: BattleTurnInfo) => void> = new Map()
@@ -97,7 +99,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             this.cancelCurrentUserActionPending(message)
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                await this.mapController.moveUnit(unit, message.moveToCell.r, message.moveToCell.c)
+                this.previousAnimationPromise = this.previousAnimationPromise
+                .then(() => this.mapController.moveUnit(unit, message.moveToCell.r, message.moveToCell.c))
                 return
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
@@ -110,7 +113,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 nextTurnUnitId: message.nextTurnUnitId,
                 roundNumber: message.roundNumber,
             }
-            this.onNextTurnInfo(turnInfo)
+            this.previousAnimationPromise = this.previousAnimationPromise
+            .then(() => this.onNextTurnInfo(turnInfo))
             return
         } else if (message.command === 'UNIT_ATTACK') {
             if (!message.isCounterattack) {
@@ -119,16 +123,17 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             const unit = getUnitById(this.mapController.map, message.actorId)
             const target = getUnitById(this.mapController.map, message.targetId)
             if (unit && target) {
-                await this.mapController.unitAttacks(unit, target, message.attackIndex)
+                this.previousAnimationPromise = this.previousAnimationPromise
+                .then(() => this.mapController.unitAttacks(unit, target, message.attackIndex))
                 return
             } else {
                 throw Error("Target unit from server not found: " + message.targetId + " or actor unit not found: " + message.actorId)
             }
-            return
         } else if (message.command === 'TAKE_DAMAGE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                await this.mapController.unitTakeDamage(unit, message.damageTaken, message.killedCount, message.remainingCount, message.remainingHealth)
+                this.previousAnimationPromise = this.previousAnimationPromise
+                .then(() => this.mapController.unitTakeDamage(unit, message.damageTaken, message.killedCount, message.remainingCount, message.remainingHealth))
                 return
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
@@ -145,7 +150,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 nextTurnUnitId: "",
                 roundNumber: this.currentRoundNumber,
             }
-            this.onNextTurnInfo(turnInfo)
+            this.previousAnimationPromise = this.previousAnimationPromise
+            .then(() => this.onNextTurnInfo(turnInfo))
             return
         } else if (message.command === 'UNIT_PASS') {
             this.cancelCurrentUserActionPending(message)
@@ -155,7 +161,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             this.cancelCurrentUserActionPending(message)
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                await this.mapController.unitWaits(unit)
+                this.previousAnimationPromise = this.previousAnimationPromise
+                .then(() => this.mapController.unitWaits(unit))
                 return
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)

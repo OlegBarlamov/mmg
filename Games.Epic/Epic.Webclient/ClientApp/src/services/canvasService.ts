@@ -6,6 +6,7 @@ import {IUnitTile, IUnitTileProps} from "../canvas/unitTile";
 import {getTexture} from "../canvas/pixi/pixiTextures";
 import {PixiUnitTile} from "../canvas/pixi/pixiUnitTile";
 import { Point } from "pixi.js";
+import { Animation } from "../common/animation";
 
 export enum HexagonStyle {
     QStyle,
@@ -24,6 +25,10 @@ export interface ICanvasService {
 
     createUnit(props: IUnitTileProps): Promise<IUnitTile>
     changeUnit(unit: IUnitTile, newProps: IUnitTileProps): Promise<IUnitTile>
+    changeUnitAnimated(unit: IUnitTile, newProps: IUnitTileProps, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<IUnitTile>
+    animateUnitAttack(attacker: IUnitTile, target: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut'; attackDistance: number; returnDuration: number }>): Promise<void>
+    animateUnitDamage(unit: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<void>
+    animateUnitWait(unit: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<void>
     destroyUnit(unit: IUnitTile): void
     
     setCursorForHexagon(hex: IHexagon, cursor?: string): void
@@ -103,6 +108,70 @@ export class CanvasService implements ICanvasService {
         pixiUnit.update(newProps)
         
         return Promise.resolve(pixiUnit)
+    }
+
+    async changeUnitAnimated(
+        unit: IUnitTile, 
+        newProps: IUnitTileProps, 
+        animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>
+    ): Promise<IUnitTile> {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+        
+        if (pixiUnit.text !== newProps.text) {
+            pixiUnit.textGraphics.text = newProps.text
+        }
+        
+        this.changeHexagon(pixiUnit.hexagonPixi, {
+            ...newProps.hexagon,
+            x: 0,
+            y: 0,
+        })
+        
+        // Animate the position change
+        await Animation.animatePosition(
+            pixiUnit.container,
+            newProps.hexagon.x,
+            newProps.hexagon.y,
+            animationOptions
+        )
+        
+        pixiUnit.update(newProps)
+        
+        return pixiUnit
+    }
+
+    async animateUnitAttack(
+        attacker: IUnitTile,
+        target: IUnitTile,
+        animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut'; attackDistance: number; returnDuration: number }>
+    ): Promise<void> {
+        const pixiAttacker = attacker as PixiUnitTile
+        const pixiTarget = target as PixiUnitTile
+        
+        if (!pixiAttacker || !pixiTarget) throw new Error("The input units are not PIXI based")
+        
+        await Animation.animateAttack(pixiAttacker.container, pixiTarget.container, animationOptions)
+    }
+
+    async animateUnitDamage(
+        unit: IUnitTile,
+        animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>
+    ): Promise<void> {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+        
+        await Animation.animateDamage(pixiUnit.container, animationOptions)
+    }
+
+    async animateUnitWait(
+        unit: IUnitTile,
+        animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>
+    ): Promise<void> {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+        
+        await Animation.animateWait(pixiUnit.container, animationOptions)
     }
     destroyUnit(unit: IUnitTile): void {
         const pixiUnit = unit as PixiUnitTile

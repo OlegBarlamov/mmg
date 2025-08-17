@@ -46,7 +46,7 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                 <button 
                     className="control-button wait-button"
                     onClick={this.handleWaitClick}
-                    disabled={!this.props.isPlayerTurn || this.props.activeUnit?.waited === true}
+                    disabled={!this.props.isPlayerTurn || this.props.activeUnit?.currentProps.waited === true}
                 >
                     Wait
                 </button>

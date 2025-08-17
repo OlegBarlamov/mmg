@@ -13,7 +13,7 @@ namespace Epic.Logic.Generator
 
         public static DifficultyMarker GenerateFromDay(Random random, int day)
         {
-            var minDifficulty = 3 * MathExtended.Sqr(day) + 300;
+            var minDifficulty = 3 * MathExtended.Sqr(day) + 200;
             var maxDifficulty = 30 * MathExtended.Sqr(day) + 2000;
             
             var range = maxDifficulty - minDifficulty;

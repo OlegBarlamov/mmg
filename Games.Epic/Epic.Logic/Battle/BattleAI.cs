@@ -58,7 +58,7 @@ namespace Epic.Logic.Battle
                         enemies.Any(x => MapUtils.IsEnemyInRange(unit, attack.EnemyInRangeDisablesAttack, enemies))) 
                         continue;
                     
-                    if (attack.StayOnly && (distance < attack.AttackMaxRange || distance > attack.AttackMaxRange))
+                    if (attack.StayOnly && (distance < attack.AttackMinRange || distance > attack.AttackMaxRange))
                         continue;
 
                     if (attack.StayOnly)

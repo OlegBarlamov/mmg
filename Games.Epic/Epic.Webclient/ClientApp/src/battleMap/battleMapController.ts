@@ -98,24 +98,47 @@ export class BattleMapController implements IBattleMapController {
         return closestHexagon.cell
     }
 
-    unitWaits(unit: BattleMapUnit): Promise<void> {
-       unit.waited = true
-       return Promise.resolve()
+    async unitWaits(unit: BattleMapUnit): Promise<void> {
+       unit.currentProps.waited = true
+       
+       // Get the unit tile for animation
+       const unitTile = this.getUnitTile(unit)
+       
+       // Animate the wait effect
+       await this.canvasService.animateUnitWait(unitTile, {
+           duration: 300 // Slightly longer duration for a more noticeable wait effect
+       })
     }
 
-    unitAttacks(unit: BattleMapUnit, target: BattleMapUnit, attackIndex: number): Promise<void> {
+    async unitAttacks(unit: BattleMapUnit, target: BattleMapUnit, attackIndex: number): Promise<void> {
         unit.currentProps.attacksStates[attackIndex].bulletsCount--
-        return Promise.resolve()
+        
+        // Get the unit tiles for animation
+        const attackerTile = this.getUnitTile(unit)
+        const targetTile = this.getUnitTile(target)
+        
+        // Animate the attack
+        await this.canvasService.animateUnitAttack(attackerTile, targetTile, {
+            duration: 200,
+            attackDistance: 0.25, // Move 25% toward target
+            returnDuration: 200
+        })
     }
 
     async unitTakeDamage(target: BattleMapUnit, damageTaken: number, killedCount: number, remainingCount: number, remainingHealth: number): Promise<void> {
         target.currentProps.health = remainingHealth
         target.count = remainingCount
 
+        const unitTile = this.getUnitTile(target)
+        
+        // Animate damage effect
+        await this.canvasService.animateUnitDamage(unitTile, {
+            duration: 300
+        })
+
         if (target.count < 1) {
             await this.removeUnit(target)
         } else {
-            const unitTile = this.getUnitTile(target)
             await this.canvasService.changeUnit(unitTile, {
                 ...unitTile,
                 text: target.count.toString()
@@ -156,13 +179,16 @@ export class BattleMapController implements IBattleMapController {
         const unitTile = this.getUnitTile(unit)
 
         const newPoint = this.map.grid.getCellCenterPoint(r, c, this.cellRadius)
-        await this.canvasService.changeUnit(unitTile, {
+        await this.canvasService.changeUnitAnimated(unitTile, {
             ...unitTile,
             hexagon: {
                 ...unitTile.hexagon,
                 x: newPoint.x + this.visualOffset.x,
                 y: newPoint.y + this.visualOffset.y,
             }
+        }, {
+            duration: 300, // 300ms animation duration
+            easing: 'easeInOut'
         })
         unit.position = { r, c }
     }

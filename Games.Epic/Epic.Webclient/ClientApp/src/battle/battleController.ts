@@ -125,7 +125,7 @@ export class BattleController implements IBattleController {
 
     private onNextRound(): void {
         this.map.units.forEach(unit => {
-            unit.waited = false
+            unit.currentProps.waited = false
         })
     }
 

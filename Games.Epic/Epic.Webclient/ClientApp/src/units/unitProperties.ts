@@ -6,6 +6,7 @@ export type UnitProperties = {
     defense: number
     attacks: AttackType[]
     attacksStates: AttackState[]
+    waited: boolean
 }
 
 export type AttackState = {
