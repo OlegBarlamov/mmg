@@ -91,7 +91,11 @@ export class BattleServerConnection implements IBattleServerConnection {
             }
             
             const message = data as BattleCommandFromServer
-            console.info('Message received: ' + message.command)
+            console.info(
+                'Message received: ' +
+                message.command + ':\n' +
+                JSON.stringify(message, null, 2)
+              )
             
             this.handler.onMessage(message).catch((err) => {
                 console.error("Error handling message:", err)

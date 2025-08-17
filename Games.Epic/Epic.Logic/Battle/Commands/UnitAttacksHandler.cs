@@ -72,7 +72,7 @@ namespace Epic.Logic.Battle.Commands
                 _attackFunction,
                 _range,
                 false,
-                context.RandomProvider.Random);
+                context.RandomProvider);
 
             _targetTarget.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
             _targetTarget.GlobalUnit.IsAlive = _targetTarget.GlobalUnit.Count > 0;
@@ -114,7 +114,7 @@ namespace Epic.Logic.Battle.Commands
                         _targetTarget.GlobalUnit.UnitType.Attacks[attackFunctionForCounterattack.AttackIndex],
                         _range,
                         true,
-                        context.RandomProvider.Random);
+                        context.RandomProvider);
 
                     TargetActor.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
                     TargetActor.GlobalUnit.IsAlive = TargetActor.GlobalUnit.Count > 0;

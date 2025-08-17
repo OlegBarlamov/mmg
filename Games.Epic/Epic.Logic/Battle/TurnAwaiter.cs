@@ -9,19 +9,33 @@ namespace Epic.Logic.Battle
     {
         public TurnInfo ExpectedTurn => _expectedTurn;
         
+        private bool _aiTurnExpected;
         [CanBeNull] private TurnInfo _expectedTurn;
         [CanBeNull] private TaskCompletionSource<ClientUserAction> _awaitPlayerTurnTaskCompletionSource;
 
         public Task<ClientUserAction> WaitForClientTurn(int playerIndex, int turnIndex)
         {
+            _aiTurnExpected = false;
             _expectedTurn = new TurnInfo(turnIndex, playerIndex);
             _awaitPlayerTurnTaskCompletionSource = new TaskCompletionSource<ClientUserAction>();
             return _awaitPlayerTurnTaskCompletionSource.Task;
         }
 
+        public void WaitForAiTurn(int playerIndex, int turnIndex)
+        {
+            _expectedTurn = new TurnInfo(turnIndex, playerIndex);
+            _aiTurnExpected = true;
+        }
+
         public void TurnProcessed(string command)
         {
-            _awaitPlayerTurnTaskCompletionSource?.SetResult(new ClientUserAction(command));
+            if (!_aiTurnExpected)
+            {
+                var completionSource = _awaitPlayerTurnTaskCompletionSource;  
+                _awaitPlayerTurnTaskCompletionSource = null;
+                completionSource?.TrySetResult(new ClientUserAction(command));
+            }
+            _aiTurnExpected = false;
         } 
 
         public void Dispose()

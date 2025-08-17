@@ -7,6 +7,7 @@ using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using Epic.Logic.Generator;
+using FrameworkSDK.Common;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,7 @@ namespace Epic.Logic.Battle
         public IDaysProcessor DaysProcessor { get; }
         public IPlayersService PlayersService { get; }
         public ILoggerFactory LoggerFactory { get; }
-        public IRandomProvider RandomProvider { get; }
+        public IRandomService RandomProvider { get; }
         public IHeroesService HeroesService { get; }
 
         public BattleLogicFactory(
@@ -33,7 +34,7 @@ namespace Epic.Logic.Battle
             [NotNull] IDaysProcessor daysProcessor,
             [NotNull] IPlayersService playersService,
             [NotNull] ILoggerFactory loggerFactory,
-            [NotNull] IRandomProvider randomProvider,
+            [NotNull] IRandomService randomProvider,
             [NotNull] IHeroesService heroesService)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));

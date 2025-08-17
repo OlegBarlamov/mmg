@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using Epic.Core.Services.Battles;
-using Epic.Data.Heroes;
 using Epic.Data.UnitTypes.Subtypes;
+using FrameworkSDK.Common;
 
 namespace Epic.Logic.Battle.Formulas
 {
@@ -13,17 +13,18 @@ namespace Epic.Logic.Battle.Formulas
         public int RemainingHealth { get; set; }
         public int RemainingCount { get; set; }
 
+        
         public static UnitTakesDamageData FromUnitAndTarget(
             IBattleUnitObject attacker,
             IBattleUnitObject target,
             IAttackFunctionType attackFunctionType,
             int distanceToTarget,
             bool counterAttack,
-            Random random)
+            IRandomService random)
         {
             var dicesCounts = Math.Min(attacker.GlobalUnit.Count, 10);
             var randomSum = Enumerable.Range(0, dicesCounts)
-                .Sum(x => random.Next(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
+                .Sum(x => random.NextInteger(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
             
             var damage = randomSum / dicesCounts * attacker.GlobalUnit.Count;
             

@@ -11,6 +11,7 @@ using Epic.Data.Reward;
 using Epic.Data.UnitTypes;
 using Epic.Logic.Utils;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NetExtensions.Collections;
 
 namespace Epic.Logic.Generator
@@ -32,6 +33,7 @@ namespace Epic.Logic.Generator
         public IRewardsRepository RewardsRepository { get; }
         public IGameResourcesRepository GameResourcesRepository { get; }
         public IPlayersService PlayersService { get; }
+        public ILogger<BattleGenerator> Logger { get; }
 
         private readonly Random _random = new Random();
 
@@ -46,7 +48,8 @@ namespace Epic.Logic.Generator
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IGameResourcesRepository gameResourcesRepository,
-            [NotNull] IPlayersService playersService)
+            [NotNull] IPlayersService playersService,
+            [NotNull] ILogger<BattleGenerator> logger)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -55,6 +58,7 @@ namespace Epic.Logic.Generator
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Initialize()
@@ -86,6 +90,8 @@ namespace Epic.Logic.Generator
             
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
+            
+            Logger.LogInformation($"Generated Difficulty day {day}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
 
             var maxWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + difficulty.TargetDifficulty / 300);
             var maxHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + difficulty.TargetDifficulty / 300);

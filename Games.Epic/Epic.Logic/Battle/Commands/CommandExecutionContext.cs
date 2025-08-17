@@ -3,7 +3,7 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Units;
-using Epic.Logic.Generator;
+using FrameworkSDK.Common;
 
 namespace Epic.Logic.Battle.Commands
 {
@@ -16,7 +16,7 @@ namespace Epic.Logic.Battle.Commands
         
         public IBattleMessageBroadcaster MessageBroadcaster { get; }
         public IGlobalUnitsService GlobalUnitsService { get; }
-        public IRandomProvider RandomProvider { get; }
+        public IRandomService RandomProvider { get; }
         public IBattleClientConnection Connection { get; }
 
         public CommandExecutionContext(
@@ -26,7 +26,7 @@ namespace Epic.Logic.Battle.Commands
             IBattleUnitsService battleUnitsService,
             BattleUnitsCarousel unitsCarousel,
             IGlobalUnitsService globalUnitsService,
-            IRandomProvider randomProvider,
+            IRandomService randomProvider,
             IBattleClientConnection connection)
         {
             BattleObject = battleObject;

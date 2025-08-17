@@ -1,4 +1,3 @@
-using System;
 using System.Net.WebSockets;
 using Console.Core;
 using Console.FrameworkAdapter;
@@ -29,12 +28,13 @@ using Epic.Data.Players;
 using Epic.Data.Reward;
 using Epic.Data.UnitsContainers;
 using Epic.Data.UnitTypes;
-using Epic.Logic;
 using Epic.Logic.Battle;
 using Epic.Logic.Generator;
 using Epic.Logic.Heroes;
 using Epic.Server.Services;
+using FrameworkSDK.Common;
 using FrameworkSDK.DependencyInjection;
+using FrameworkSDK.Services.Randoms;
 using JetBrains.Annotations;
 using DefaultBattleUnitsService = Epic.Core.Services.Battles.DefaultBattleUnitsService;
 
@@ -45,7 +45,8 @@ namespace Epic.Server
     {
         public void RegisterServices(IServiceRegistrator serviceRegistrator)
         {
-            serviceRegistrator.RegisterInstance<IRandomProvider>(new FixedRandomProvider(new Random(0)));
+            serviceRegistrator.RegisterInstance<IRandomSeedProvider>(new FixedSeedProvider());
+            serviceRegistrator.RegisterType<IRandomService, DefaultRandomService>();
             
             serviceRegistrator.RegisterType<IConsoleController, LoggerConsoleMessagesViewer>();
             

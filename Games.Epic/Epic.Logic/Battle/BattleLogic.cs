@@ -16,6 +16,7 @@ using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using Epic.Logic.Battle.Commands;
 using Epic.Logic.Generator;
+using FrameworkSDK.Common;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -32,13 +33,14 @@ namespace Epic.Logic.Battle
         private IDaysProcessor DaysProcessor { get; }
         private IPlayersService PlayersService { get; }
         private ILogger<BattleLogic> Logger { get; }
-        private IRandomProvider RandomProvider { get; }
+        private IRandomService RandomProvider { get; }
         private IHeroesService HeroesService { get; }
 
         private BattleResultLogic BattleResultLogic { get; }
         private BattleUnitsCarousel BattleUnitsCarousel { get; }
         private TurnAwaiter TurnAwaiter { get; }
         private ClientConnectedHandler ClientConnectedHandler { get; }
+        private BattleAI AI { get; }
 
         private Dictionary<Type, ICommandsHandler> CommandsHandlers { get; } =
             new Dictionary<Type, ICommandsHandler>
@@ -61,7 +63,7 @@ namespace Epic.Logic.Battle
             [NotNull] IDaysProcessor daysProcessor,
             [NotNull] IPlayersService playersService,
             [NotNull] ILogger<BattleLogic> logger,
-            [NotNull] IRandomProvider randomProvider,
+            [NotNull] IRandomService randomProvider,
             [NotNull] IHeroesService heroesService)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
@@ -91,6 +93,8 @@ namespace Epic.Logic.Battle
                 DaysProcessor,
                 PlayersService);
             TurnAwaiter = new TurnAwaiter();
+            
+            AI = new BattleAI(BattleObject, this);
         }
 
         public void Dispose()
@@ -106,17 +110,18 @@ namespace Epic.Logic.Battle
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(BattleLogic));
 
-            if (BattleObject.TurnNumber < 0 && !BattleResultLogic.UpdateIsBattleFinished(BattleObject))
-            {
-                // Initialize the battle
-                BattleObject.TurnNumber = 0;
-                await BattlesService.UpdateBattle(BattleObject);
-
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
             try
             {
+                if (BattleObject.TurnNumber < 0 && !BattleResultLogic.UpdateIsBattleFinished(BattleObject))
+                {
+                    // Initialize the battle
+                    BattleObject.TurnNumber = 0;
+                    await BattlesService.UpdateBattle(BattleObject);
+                    await ClientConnectedHandler.WaitForFirstClientConnected();
+                    
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
                 while (!BattleResultLogic.UpdateIsBattleFinished(BattleObject))
                 {
                     BattleUnitsCarousel.ProcessNextTurn();
@@ -126,24 +131,31 @@ namespace Epic.Logic.Battle
                         BattleObject.TurnPlayerIndex = BattleUnitsCarousel.ActiveUnit.PlayerIndex;
                         await BattlesService.UpdateBattle(BattleObject);
                     }
-
+                    
                     await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(
                         new NextTurnCommandFromServer(
-                        BattleObject.TurnNumber,
-                        BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber(),
-                        BattleUnitsCarousel.ActiveUnit.Id,
-                        BattleObject.RoundNumber));
+                            BattleObject.TurnNumber,
+                            BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber(),
+                            BattleUnitsCarousel.ActiveUnit.Id,
+                            BattleObject.RoundNumber));
 
                     cancellationToken.ThrowIfCancellationRequested();
 
                     if (IsHumanControlled(BattleUnitsCarousel.ActiveUnit))
                     {
+                        Logger.LogInformation(
+                            $"Await player turn: {BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber()} - {BattleObject.TurnNumber}");
                         await TurnAwaiter.WaitForClientTurn(BattleUnitsCarousel.ActiveUnit.PlayerIndex, BattleObject.TurnNumber);
                     }
                     else
                     {
-                        // TODO AI
+                        Logger.LogInformation(
+                            $"Await AI turn: {BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber()} - {BattleObject.TurnNumber}");
+                        TurnAwaiter.WaitForAiTurn(BattleUnitsCarousel.ActiveUnit.PlayerIndex, BattleObject.TurnNumber);
+                        await AI.ProcessAction(BattleUnitsCarousel.ActiveUnit);
                     }
+                    
+                    Logger.LogInformation($"Turn finished: {BattleObject.TurnNumber}");
 
                     if (BattleUnitsCarousel.IsNextRound())
                         await BattleUnitsCarousel.OnNextRound();
@@ -173,8 +185,8 @@ namespace Epic.Logic.Battle
 
         private bool IsHumanControlled(IBattleUnitObject unit)
         {
-            // TODO change to add AI
-            return true;
+            var player = BattleObject.GetPlayerId(unit.PlayerIndex.ToInBattlePlayerNumber());
+            return player != null;
         }
 
         public async Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage command)

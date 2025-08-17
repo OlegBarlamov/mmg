@@ -16,15 +16,27 @@ namespace Epic.Logic.Battle.Commands
         private IBattleMessageBroadcaster MessageBroadcaster { get; }
         private readonly ConcurrentDictionary<int, List<IServerBattleMessage>> _passedServerBattleMessages =
             new ConcurrentDictionary<int, List<IServerBattleMessage>>();
+
+        private bool _clientConnected;
+        [CanBeNull] private TaskCompletionSource<bool> _awaitFirstClientConnectedCompletionSource;
         
         public void Dispose()
         {
             _passedServerBattleMessages.Clear();
+            _awaitFirstClientConnectedCompletionSource?.TrySetCanceled();
         }
         
         public ClientConnectedHandler([NotNull] IBattleMessageBroadcaster messageBroadcaster)
         {
             MessageBroadcaster = messageBroadcaster ?? throw new ArgumentNullException(nameof(messageBroadcaster));
+        }
+
+        public Task WaitForFirstClientConnected()
+        {
+            if (_clientConnected) return Task.CompletedTask;
+            
+            _awaitFirstClientConnectedCompletionSource ??= new TaskCompletionSource<bool>();
+            return _awaitFirstClientConnectedCompletionSource.Task;
         }
         
         public override void Validate(CommandExecutionContext context, ClientConnectedBattleMessage command)
@@ -61,6 +73,10 @@ namespace Epic.Logic.Battle.Commands
                     context.BattleObject.RoundNumber));
             }
 
+            _clientConnected = true;
+            var completionSource = _awaitFirstClientConnectedCompletionSource;
+            _awaitFirstClientConnectedCompletionSource = null;
+            completionSource?.TrySetResult(true);
             return new CmdExecutionResult(false);
         }
 

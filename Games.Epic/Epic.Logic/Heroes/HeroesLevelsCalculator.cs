@@ -2,6 +2,7 @@ using System;
 using Epic.Core.Logic;
 using Epic.Core.Services.Heroes;
 using Epic.Logic.Generator;
+using FrameworkSDK.Common;
 using JetBrains.Annotations;
 
 namespace Epic.Logic.Heroes
@@ -9,9 +10,9 @@ namespace Epic.Logic.Heroes
     [UsedImplicitly]
     public class HeroesLevelsCalculator : IHeroesLevelsCalculator
     {
-        private IRandomProvider RandomProvider { get; }
+        private IRandomService RandomProvider { get; }
 
-        public HeroesLevelsCalculator([NotNull] IRandomProvider randomProvider)
+        public HeroesLevelsCalculator([NotNull] IRandomService randomProvider)
         {
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
         }
@@ -35,7 +36,7 @@ namespace Epic.Logic.Heroes
                 currentLevel++;
 
                 // Randomly choose Attack or Defense
-                if (RandomProvider.Random.Next(2) == 0)
+                if (RandomProvider.NextInteger(0, 2) == 0)
                 {
                     gainedAttacks++;
                 }
