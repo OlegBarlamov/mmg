@@ -136,7 +136,7 @@ export class BattleController implements IBattleController {
     private async processStep(unit: BattleMapUnit): Promise<void> {
         await this.mapController.battleMapHighlighter.setActiveUnit(unit)
 
-        const cellsForMove = getCellsForUnitMove(this.map, unit)
+        const cellsForMove = getCellsForUnitMove(this.map, unit, unit.currentProps.movementType)
         const reachableCells = [this.map.grid.getCell(unit.position.r, unit.position.c), ...cellsForMove]
         const attackTargets = getAttackTargets(this.map, unit, reachableCells)
 

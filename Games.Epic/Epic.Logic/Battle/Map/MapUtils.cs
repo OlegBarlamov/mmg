@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core;
 using Epic.Core.Services.Battles;
+using Epic.Data.UnitTypes.Subtypes;
 
 namespace Epic.Logic.Battle.Map
 {
@@ -13,7 +14,7 @@ namespace Epic.Logic.Battle.Map
                                   u.GlobalUnit.IsAlive && OddRHexoGrid.Distance(actor, u) <= range);
         }
         
-        public static List<HexoPoint> GetCellsForUnitMove(IBattleObject map, IBattleUnitObject unit)
+        public static List<HexoPoint> GetCellsForUnitMove(IBattleObject map, IBattleUnitObject unit, MovementType movementType)
         {
             var start = new HexoPoint(unit.Column, unit.Row);
             int moveRange = unit.GlobalUnit.UnitType.Speed;
@@ -31,7 +32,7 @@ namespace Epic.Logic.Battle.Map
 
             bool IsCellBlocked(HexoPoint cell)
             {
-                return map.Units.Any(x => x.Column == cell.C && x.Row == cell.R);
+                return map.Units.Any(x => x.GlobalUnit.IsAlive && x.Column == cell.C && x.Row == cell.R);
             }
 
             // Start BFS
@@ -47,13 +48,23 @@ namespace Epic.Logic.Battle.Map
                 // Mark visited
                 visited.Add(key);
 
-                // Skip blocked cells (except the starting one)
-                if (IsCellBlocked(currentCell) && !currentCell.Equals(start))
-                    continue;
-
+                // Add to available cells:
+                // - Ground: only if not blocked
+                // - Fly: allow traversal but cannot stop on blocked cells
                 if (!currentCell.Equals(start))
                 {
-                    availableCells.Add(currentCell);
+                    if (movementType == MovementType.Fly)
+                    {
+                        if (!IsCellBlocked(currentCell)) 
+                            availableCells.Add(currentCell);
+                    }
+                    else // Ground
+                    {
+                        if (!IsCellBlocked(currentCell))
+                            availableCells.Add(currentCell);
+                        else
+                            continue; // stop BFS at blocked cell
+                    }
                 }
 
                 // Explore neighbors

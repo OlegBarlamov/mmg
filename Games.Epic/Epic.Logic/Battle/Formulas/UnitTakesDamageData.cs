@@ -26,7 +26,7 @@ namespace Epic.Logic.Battle.Formulas
             var randomSum = Enumerable.Range(0, dicesCounts)
                 .Sum(x => random.NextInteger(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
             
-            var damage = randomSum / dicesCounts * attacker.GlobalUnit.Count;
+            var damage = randomSum * attacker.GlobalUnit.Count / Math.Max(0, dicesCounts);
             
             // Apply Attack vs Defense modifier
             var attackDefenseDiff = attacker.CurrentAttack - target.CurrentDefense;

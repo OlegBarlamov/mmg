@@ -78,7 +78,8 @@ namespace Epic.Data.BattleDefinitions
 
         public Task<int> CountBattles(Guid playerId)
         {
-            return Task.FromResult(_playerBattleDefinitions.Count(ub => ub.PlayerId == playerId));
+            return Task.FromResult(_playerBattleDefinitions.Count(x => x.PlayerId == playerId &&
+                                                                       !_battleDefinitions.First(b => b.Id == x.BattleDefinitionId).Finished));
         }
     }
 }

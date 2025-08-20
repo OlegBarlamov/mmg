@@ -108,6 +108,10 @@ export class UnitInfoModal extends PureComponent<IUnitInfoModalProps, IUnitInfoM
                         <span className="stat-label">Defense:</span>
                         <span className="stat-value">{unitInfo.defense}</span>
                     </div>
+                    <div className="stat-item">
+                        <span className="stat-label">Movement:</span>
+                        <span className="stat-value">{unitInfo.movementType}</span>
+                    </div>
                     {unitInfo.attacks && unitInfo.attacks.length > 0 && (
                         <div className="attacks-section">
                             <h5>Attacks ({unitInfo.attacks.length})</h5>

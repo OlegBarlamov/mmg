@@ -5,7 +5,7 @@ import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
 import {BattlePlayerNumber} from "../player/playerNumber";
-import {UnitProperties} from "../units/unitProperties";
+import {MovementType, UnitProperties} from "../units/unitProperties";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 import {getRandomStringKey} from "../units/getRandomString";
 import {
@@ -196,6 +196,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             ],
             attacksStates: [],
             waited: false,
+            movementType: MovementType.Walk,
         }]
     ])
     private messagesHandler: IBattleConnectionMessagesHandler | undefined = undefined

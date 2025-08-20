@@ -11,6 +11,7 @@ import { BattlePlayerNumber } from '../player/playerNumber';
 import { RewardDialog } from './rewardDialog';
 import { IRewardToAccept } from '../rewards/IRewardToAccept';
 import { RewardType } from '../rewards/RewardType';
+import { RewardManager, IRewardManagerState } from '../services/rewardManager';
 import { BattleResultsModal } from './battleResultsModal';
 import { IReportInfo } from '../services/serverAPI';
 import { BattleControlPanel } from './battleControlPanel';
@@ -29,7 +30,7 @@ export interface IBattleComponentProps {
 interface IBattleComponentState {
     battleLoaded: boolean
     currentReward: IRewardToAccept | null
-    rewards: IRewardToAccept[]
+    rewards: IRewardToAccept[] | null
     currentRewardIndex: number
     battleReport: IReportInfo | null
     currentRoundNumber: number
@@ -43,6 +44,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     private battleController: IBattleController | null = null
     private controlPanelRef: React.RefObject<BattleControlPanel> = React.createRef()
     private contextMenuHandler: ((e: Event) => void) | null = null
+    private rewardManager: RewardManager
 
     constructor(props: IBattleComponentProps) {
         super(props)
@@ -50,7 +52,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         this.state = {
             battleLoaded: false,
             currentReward: null,
-            rewards: [],
+            rewards: null,
             currentRewardIndex: 0,
             battleReport: null,
             currentRoundNumber: 0,
@@ -59,6 +61,16 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             showUnitInfoModal: false,
             selectedUnit: null
         }
+
+        // Initialize reward manager with callbacks
+        this.rewardManager = new RewardManager(
+            this.props.serviceLocator.serverAPI(),
+            {
+                onRewardComplete: this.handleRewardComplete,
+                onBattleReward: this.handleBattleReward,
+                onRewardError: this.handleRewardError
+            }
+        );
     }
 
     async componentDidMount() {
@@ -158,14 +170,13 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     }
 
     private async proceedToRewards() {
-        const serverAPI = this.props.serviceLocator.serverAPI()
-        const rewards = await serverAPI.getMyRewards()
-
-        if (rewards.length > 0) {
+        const rewardState = await this.rewardManager.checkForRewards()
+        
+        if (rewardState.rewards && rewardState.rewards.length > 0) {
             this.setState({
-                rewards: rewards,
-                currentReward: rewards[0],
-                currentRewardIndex: 0
+                rewards: rewardState.rewards,
+                currentReward: rewardState.currentReward,
+                currentRewardIndex: rewardState.currentRewardIndex
             })
         } else {
             this.props.onBattleFinished()
@@ -186,55 +197,44 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
     }
 
-    private handleRewardAccept = async () => {
-        const { currentReward } = this.state
-        if (!currentReward) return
-
-        const serverAPI = this.props.serviceLocator.serverAPI()
-        const result = await serverAPI.acceptReward(currentReward.id, {
-            accepted: true,
-            amounts: currentReward.amounts,
+    private handleRewardComplete = () => {
+        // Clear reward state when all rewards are complete
+        this.setState({
+            currentReward: null,
+            rewards: null,
+            currentRewardIndex: 0
         })
+        this.props.onBattleFinished()
+    }
 
-        // If this was a Battle reward and we got a new battle map, notify the parent component
-        if (currentReward.rewardType === RewardType.Battle && result.nextBattle) {
-            // Pass the new battle map to the parent component
-            this.props.onBattleFinished(result.nextBattle)
-        } else {
-            this.showNextReward()
-        }
+    private handleBattleReward = (battleMap: any) => {
+        // Pass the new battle map to the parent component
+        this.props.onBattleFinished(battleMap)
+    }
+
+    private handleRewardError = (error: Error) => {
+        console.error('Reward error:', error)
+        this.props.onBattleFinished()
+    }
+
+    private handleRewardAccept = async () => {
+        await this.rewardManager.acceptReward()
+        const state = this.rewardManager.getState()
+        this.setState({
+            rewards: state.rewards,
+            currentReward: state.currentReward,
+            currentRewardIndex: state.currentRewardIndex
+        })
     }
 
     private handleRewardDecline = async () => {
-        const { currentReward } = this.state
-        if (!currentReward) return
-
-        const serverAPI = this.props.serviceLocator.serverAPI()
-        await serverAPI.acceptReward(currentReward.id, {
-            accepted: false,
-            amounts: [],
+        await this.rewardManager.declineReward()
+        const state = this.rewardManager.getState()
+        this.setState({
+            rewards: state.rewards,
+            currentReward: state.currentReward,
+            currentRewardIndex: state.currentRewardIndex
         })
-
-        this.showNextReward()
-    }
-
-    private showNextReward = () => {
-        const { rewards, currentRewardIndex } = this.state
-        const nextIndex = currentRewardIndex + 1
-
-        if (nextIndex < rewards.length) {
-            this.setState({
-                currentReward: rewards[nextIndex],
-                currentRewardIndex: nextIndex
-            })
-        } else {
-            this.setState({
-                currentReward: null,
-                rewards: [],
-                currentRewardIndex: 0
-            })
-            this.props.onBattleFinished()
-        }
     }
 
     async componentWillUnmount() {

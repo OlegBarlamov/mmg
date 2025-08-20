@@ -2,11 +2,14 @@ import React, {PureComponent} from "react";
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {IServiceLocator} from "../services/serviceLocator";
 import {IPlayerInfo, IUserUnit, IResourceInfo} from "../services/serverAPI";
+import {IRewardToAccept} from "../rewards/IRewardToAccept";
+import {RewardManager} from "../services/rewardManager";
 import {ArmyDisplay} from "./armyDisplay";
 import {SupplyComponent} from "./supplyComponent";
 import {ResourcesView} from "./resourcesView";
 import {BattleConfirmationDialog} from "./battleConfirmationDialog";
 import {PlayerBattleModal} from "./playerBattleModal";
+import {RewardDialog} from "./rewardDialog";
 import "./menuComponent.css";
 
 export interface IMenuComponentProps {
@@ -29,12 +32,16 @@ interface IMenuComponentState {
     pendingBattle: IBattleDefinition | null
     showPlayerBattleModal: boolean
     isPlayerBattleLoading: boolean
+    rewards: IRewardToAccept[] | null
+    currentReward: IRewardToAccept | null
+    currentRewardIndex: number
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
     private retryTimeoutId: number | null = null;
     private readonly RETRY_DELAY_MS = 2000; // 2 seconds
     private armyDisplayRef: React.RefObject<ArmyDisplay> = React.createRef();
+    private rewardManager: RewardManager;
     
     constructor(props: IMenuComponentProps) {
         super(props)
@@ -51,8 +58,21 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             showBattleConfirmation: false,
             pendingBattle: null,
             showPlayerBattleModal: false,
-            isPlayerBattleLoading: false
+            isPlayerBattleLoading: false,
+            rewards: null,
+            currentReward: null,
+            currentRewardIndex: 0
         }
+
+        // Initialize reward manager with callbacks
+        this.rewardManager = new RewardManager(
+            this.props.serviceLocator.serverAPI(),
+            {
+                onRewardComplete: this.handleRewardComplete,
+                onBattleReward: this.handleBattleReward,
+                onRewardError: this.handleRewardError
+            }
+        );
     }
     
     async componentDidMount() {
@@ -61,6 +81,52 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             this.fetchArmyUnits(),
             this.fetchResources()
         ])
+        
+        // Check for unaccepted rewards after initial load
+        const rewardState = await this.rewardManager.checkForRewards()
+        this.setState({
+            rewards: rewardState.rewards,
+            currentReward: rewardState.currentReward,
+            currentRewardIndex: rewardState.currentRewardIndex
+        })
+    }
+
+    private handleRewardComplete = () => {
+        // Clear reward state when all rewards are complete
+        this.setState({
+            rewards: null,
+            currentReward: null,
+            currentRewardIndex: 0
+        })
+    }
+
+    private handleBattleReward = (battleMap: any) => {
+        // For Battle rewards, we need to use the onPlayerBattleSelected method
+        this.props.onPlayerBattleSelected(battleMap)
+    }
+
+    private handleRewardError = (error: Error) => {
+        console.error('Reward error:', error)
+    }
+
+    private handleRewardAccept = async () => {
+        await this.rewardManager.acceptReward()
+        const state = this.rewardManager.getState()
+        this.setState({
+            rewards: state.rewards,
+            currentReward: state.currentReward,
+            currentRewardIndex: state.currentRewardIndex
+        })
+    }
+
+    private handleRewardDecline = async () => {
+        await this.rewardManager.declineReward()
+        const state = this.rewardManager.getState()
+        this.setState({
+            rewards: state.rewards,
+            currentReward: state.currentReward,
+            currentRewardIndex: state.currentRewardIndex
+        })
     }
 
     public setBattlesGenerationInProgress(battlesGenerationInProgress: boolean) {
@@ -385,6 +451,16 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                     onAccept={this.handlePlayerBattleAccept}
                     isLoading={this.state.isPlayerBattleLoading}
                 />
+
+                {/* Reward Dialog */}
+                {this.state.currentReward && (
+                    <RewardDialog
+                        reward={this.state.currentReward}
+                        onAccept={this.handleRewardAccept}
+                        onDecline={this.handleRewardDecline}
+                        serviceLocator={this.props.serviceLocator}
+                    />
+                )}
             </div>
         )
     }

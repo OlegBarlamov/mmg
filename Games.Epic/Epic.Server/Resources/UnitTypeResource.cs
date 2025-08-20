@@ -17,6 +17,8 @@ namespace Epic.Server.Resources
         public int Health { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
+        public MovementType Movement { get; set; }
+        public string MovementType { get; set; }
         public IReadOnlyList<IAttackFunctionType> Attacks { get; set; }
         
         public UnitTypeResource(IUnitTypeObject unitTypeObject)
@@ -30,6 +32,8 @@ namespace Epic.Server.Resources
             Attacks = unitTypeObject.Attacks;
             Attack = unitTypeObject.Attack;
             Defense = unitTypeObject.Defense;
+            Movement = unitTypeObject.Movement;
+            MovementType = unitTypeObject.Movement.ToString();
         }
     }
 }

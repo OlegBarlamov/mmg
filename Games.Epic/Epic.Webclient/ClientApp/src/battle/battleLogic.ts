@@ -1,6 +1,7 @@
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
 import {IAttackTarget} from "./attackTarget";
+import { MovementType } from "../units/unitProperties";
 
 export function getUnit(map: BattleMap, row: number, col: number): BattleMapUnit | null {
     return map.units.find(x => x.position.r === row && x.position.c === col) ?? null
@@ -57,7 +58,7 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
     return result
 }
 
-export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit): BattleMapCell[] {
+export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit, movementType: MovementType): BattleMapCell[] {
     const start = unit.position
     const moveRange = unit.currentProps.speed
     const availableCells: BattleMapCell[] = []
@@ -86,13 +87,18 @@ export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit): Battle
         // Mark this cell as visited
         visited.add(key)
 
-        // If it's not blocked by another unit and within bounds, add to available cells
-        if (isCellBlocked(currentCell) && currentCell !== start) {
-            continue
-        }
-
         if (currentCell !== start) {
-            availableCells.push(currentCell)
+            if (movementType === MovementType.Fly) {
+                if (!isCellBlocked(currentCell)) {
+                    availableCells.push(currentCell)
+                }
+            } else {
+                if (!isCellBlocked(currentCell)) {
+                    availableCells.push(currentCell)
+                } else {
+                    continue // stop BFS at blocked cell for ground
+                }
+            }
         }
 
         // Get neighboring cells and continue exploring

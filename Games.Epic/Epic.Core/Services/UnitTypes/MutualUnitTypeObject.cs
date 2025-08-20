@@ -14,6 +14,7 @@ namespace Epic.Core.Services.UnitTypes
         public int Health { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
+        public MovementType Movement { get; set; }
         public List<AttackFunctionType> Attacks { get; set; } = new List<AttackFunctionType>();
         IReadOnlyList<IAttackFunctionType> IUnitProps.Attacks => Attacks;
         public string BattleImgUrl { get; set; }
@@ -41,6 +42,7 @@ namespace Epic.Core.Services.UnitTypes
                 ResourcesDistribution = entity.ResourcesDistribution,
                 Attack = entity.Attack,
                 Defense = entity.Defense,
+                Movement = entity.Movement,
             };
         }
 

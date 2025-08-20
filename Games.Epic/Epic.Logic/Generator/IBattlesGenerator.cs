@@ -86,7 +86,7 @@ namespace Epic.Logic.Generator
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
-            var rewardFactor = 3;
+            var rewardFactor = 1;
             
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
@@ -252,9 +252,9 @@ namespace Epic.Logic.Generator
             else if (rewardType == RewardTypes.UnitsGain)
             {
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty / 2);
+                    entity => entity.Value, difficulty.TargetDifficulty);
                 var unitToGain = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
-                var unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 2) / unitToGain.Value));
+                var unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty) / unitToGain.Value));
                 
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
                 var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);
@@ -263,11 +263,11 @@ namespace Epic.Logic.Generator
                     .Distinct()
                     .Select(id => _unitTypesByIds[id]);
 
-                var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty / 4).ToList();
+                var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty / 2).ToList();
                 if (availableDesiredUnits.Any() && _random.Next(100) > 66)
                 {
                     unitToGain = availableDesiredUnits[_random.Next(0, availableDesiredUnits.Count)];
-                    unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 4) / unitToGain.Value));
+                    unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 2) / unitToGain.Value));
                 }
                 
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
@@ -283,7 +283,7 @@ namespace Epic.Logic.Generator
             } else if (rewardType == RewardTypes.UnitsToBuy)
             {
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
-                    entity => entity.Value, difficulty.TargetDifficulty * 2);
+                    entity => entity.Value, (int)(difficulty.TargetDifficulty * 1.5));
                 var unitToBuy = _orderedUnitTypes[_random.Next(maxUnitIndex + 1)];
                 
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
@@ -295,7 +295,7 @@ namespace Epic.Logic.Generator
 
                 var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
                 if (availableDesiredUnits.Any() && _random.Next(100) > 66)
-                    unitToBuy = availableDesiredUnits[_random.Next(0, availableDesiredUnits.Count)];
+                    unitToBuy = availableDesiredUnits[_random.Next(availableDesiredUnits.Count)];
 
 
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 

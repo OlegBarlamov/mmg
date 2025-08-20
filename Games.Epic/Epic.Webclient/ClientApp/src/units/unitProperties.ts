@@ -7,6 +7,12 @@ export type UnitProperties = {
     attacks: AttackType[]
     attacksStates: AttackState[]
     waited: boolean
+    movementType: MovementType
+}
+
+export enum MovementType {
+    Walk = "Walk",
+    Fly = "Fly",
 }
 
 export type AttackState = {

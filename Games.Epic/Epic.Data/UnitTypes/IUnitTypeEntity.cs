@@ -11,6 +11,7 @@ namespace Epic.Data.UnitTypes
         int Health { get; }
         int Attack { get; }
         int Defense { get; }
+        MovementType Movement { get; }
         IReadOnlyList<IAttackFunctionType> Attacks { get; }
     }
     
@@ -31,6 +32,7 @@ namespace Epic.Data.UnitTypes
         public int Health { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
+        public MovementType Movement { get; set; }
         public List<AttackFunctionType> Attacks { get; set; } = new List<AttackFunctionType>();
 
         IReadOnlyList<IAttackFunctionType> IUnitProps.Attacks => Attacks;
@@ -81,6 +83,7 @@ namespace Epic.Data.UnitTypes
                 ToTrainAmount = properties.ToTrainAmount,
                 Attack = properties.Attack,
                 Defense = properties.Defense,
+                Movement = properties.Movement,
             };
         }
     }

@@ -1,5 +1,5 @@
 import {BattlePlayerNumber} from "../player/playerNumber";
-import {UnitProperties} from "../units/unitProperties";
+import {MovementType, UnitProperties} from "../units/unitProperties";
 import {IHexoPoint} from "../hexogrid/hexoGrid";
 import {getRandomStringKey} from "../units/getRandomString";
 
@@ -42,6 +42,7 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
         ],
         attacksStates: [],
         waited: false,
+        movementType: MovementType.Walk,
     }
     return {
         id: getRandomStringKey(10),

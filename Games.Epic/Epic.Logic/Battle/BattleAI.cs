@@ -33,11 +33,11 @@ namespace Epic.Logic.Battle
 
         public async Task ProcessAction(IBattleUnitObject unit)
         {
-            var enemies = Battle.Units.Where(x => x.PlayerIndex != unit.PlayerIndex).ToList();
+            var enemies = Battle.Units.Where(x => x.PlayerIndex != unit.PlayerIndex && x.GlobalUnit.IsAlive).ToList();
             var attacks = unit.GlobalUnit.UnitType.Attacks;
 
             Tuple<IBattleUnitObject, int> closestTarget = null;
-            var cellsToMove = MapUtils.GetCellsForUnitMove(Battle, unit);
+            var cellsToMove = MapUtils.GetCellsForUnitMove(Battle, unit, unit.GlobalUnit.UnitType.Movement);
             var possibleAttacksWithTargets = new List<Tuple<IBattleUnitObject, IAttackFunctionType, HexoPoint, int>>();
             
             foreach (var enemy in enemies)
