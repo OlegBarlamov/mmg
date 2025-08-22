@@ -4,7 +4,6 @@ using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
-using Epic.Logic;
 using Epic.Logic.Descriptions;
 
 namespace Epic.Server.Resources
@@ -31,7 +30,8 @@ namespace Epic.Server.Resources
             Id = battleDefinitionObject.Id.ToString();
             Width = battleDefinitionObject.Width;
             Height = battleDefinitionObject.Height;
-            Rewards = rewards.Select(x => new BattleDefinitionRewardResource(x, rewardVisibility, goldResourceId)).ToArray();
+            Rewards = rewards.SelectMany(x => BattleDefinitionRewardResource.CreateFromComposite((CompositeRewardObject)x, rewardVisibility, goldResourceId))
+                .ToArray();
             ExpiresAfterDays = playerObject != null ? battleDefinitionObject.ExpireAtDay - playerObject.Day : null;
             
             if (battleDefinitionObject.Units.Count > 0)
@@ -53,13 +53,17 @@ namespace Epic.Server.Resources
         public string ThumbnailUrl { get; }
         public string Amount { get; }
 
-        public BattleDefinitionRewardResource(IRewardObject rewardObject, DescriptionVisibility visibility, Guid goldResourceId)
+        public BattleDefinitionRewardResource(RewardDescription description)
         {
-            var description = RewardDescription.Create(rewardObject as CompositeRewardObject, visibility, goldResourceId);
-            
             Name = description.Name;
             ThumbnailUrl = description.IconUrl;
             Amount = description.Amount;
+        }
+
+        public static BattleDefinitionRewardResource[] CreateFromComposite(CompositeRewardObject rewardObject, DescriptionVisibility visibility, Guid goldResourceId)
+        {
+            var descriptions = RewardDescription.CreateComposite(rewardObject, visibility, goldResourceId);
+            return descriptions.Select(x => new BattleDefinitionRewardResource(x)).ToArray();
         }
     }
 

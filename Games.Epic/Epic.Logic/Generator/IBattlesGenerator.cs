@@ -234,19 +234,36 @@ namespace Epic.Logic.Generator
             }
             else if (rewardType == RewardTypes.Resource)
             {
-                var resourceType = _resources[_random.Next(0, _resources.Count)];
-                var resourceAmount = Math.Max(1,
-                    (int)Math.Ceiling((double)difficulty.TargetDifficulty / resourceType.Price));
-                resourceAmount = RoundToFriendlyNumber(resourceAmount);
+                var resourcesValue = difficulty.TargetDifficulty;
+                var resourceTypes = new List<IGameResourceEntity>();
+                var resourcesAmounts = new List<int>();
+                var resourceTypesCount = 3;
+                // var resourceTypesCount = resourcesValue > _resources.Sum(x => x.Price) 
+                //     ? _random.Next(1, _resources.Count) : 1;
+                var valuePerResource = (double)resourcesValue / resourceTypesCount;
+                for (var i = 0; i < resourceTypesCount; i++)
+                {
+                    var availableResources = new List<IGameResourceEntity>(_resources); 
+                    var resourceType = availableResources[_random.Next(0, availableResources.Count)];
+                    availableResources.Remove(resourceType);
+                    
+                    var resourceAmount = Math.Max(1,
+                        (int)Math.Ceiling(valuePerResource / resourceType.Price));
+                    resourceAmount = RoundToFriendlyNumber(resourceAmount);
+                    
+                    resourceTypes.Add(resourceType);
+                    resourcesAmounts.Add(resourceAmount * rewardFactor);
+                }
+                
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.ResourcesGain,
-                    Amounts = new[] { resourceAmount * rewardFactor },
+                    Amounts = resourcesAmounts.ToArray(),
                     CanDecline = true,
                     NextBattleDefinitionId = null,
                     CustomIconUrl = null,
                     CustomTitle = null,
-                    Ids = new[] { resourceType.Id },
+                    Ids = resourceTypes.Select(x => x.Id).ToArray(),
                 });
             }
             else if (rewardType == RewardTypes.UnitsGain)
@@ -254,7 +271,7 @@ namespace Epic.Logic.Generator
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
                     entity => entity.Value, difficulty.TargetDifficulty);
                 var unitToGain = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
-                var unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty) / unitToGain.Value));
+                var unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 2) / unitToGain.Value));
                 
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
                 var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);
@@ -263,11 +280,11 @@ namespace Epic.Logic.Generator
                     .Distinct()
                     .Select(id => _unitTypesByIds[id]);
 
-                var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty / 2).ToList();
+                var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
                 if (availableDesiredUnits.Any() && _random.Next(100) > 66)
                 {
                     unitToGain = availableDesiredUnits[_random.Next(0, availableDesiredUnits.Count)];
-                    unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 2) / unitToGain.Value));
+                    unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 3) / unitToGain.Value));
                 }
                 
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields

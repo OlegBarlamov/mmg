@@ -1144,9 +1144,6 @@ Units:
     Defense: 9
     ToTrainAmount: 8
     Attacks:
-      - <<: *RangeAttack
-        MinDamage: 10
-        MaxDamage: 15
       - <<: *MeleeAttack
         MinDamage: 8
         MaxDamage: 10
