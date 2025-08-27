@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Rewards;
 using Epic.Data.GameResources;
-using Epic.Logic;
 using Epic.Logic.Descriptions;
 
 namespace Epic.Server.Resources
@@ -37,7 +36,7 @@ namespace Epic.Server.Resources
             UnitsRewards = reward.UnitTypes
                 .Select((x, i) => new UnitRewardResource(x, reward.Amounts[i]))
                 .ToArray();
-
+            
             ResourcesRewards = reward.Resources
                 .Select((x, i) => new ResourceDashboardResource(ResourceAmount.Create(x, reward.Amounts[i])))
                 .ToArray();

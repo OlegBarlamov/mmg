@@ -13,7 +13,7 @@ MeleeAttack: &MeleeAttack
 RangeAttack: &RangeAttack
   Name: "Range"
   ThumbnailUrl: "sword.png"
-  AttackMaxRange: 10
+  AttackMaxRange: 12
   AttackMinRange: 2
   StayOnly: true
   CounterattacksCount: 0
@@ -148,7 +148,7 @@ Units:
     Value: 3500             # Approximate value
     Speed: 12
     Health: 200
-    ToTrainAmount: 3
+    ToTrainAmount: 2
     Attack: 20
     Defense: 20
     Movement: Fly
@@ -159,6 +159,127 @@ Units:
     ResourcesDistribution:
       Gold: 6
       Gems: 1
+      
+  Halberdier:
+    Name: "Halberdier"
+    BattleImgUrl: "/resources/Halberdier_portrait.png"
+    DashboardImgUrl: "/resources/Halberdier_portrait.png"
+    Value: 75
+    Speed: 5
+    Health: 10
+    Attack: 6
+    Defense: 5
+    ToTrainAmount: 28
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  Marksman:
+    Name: "Marksman"
+    BattleImgUrl: "/resources/Marksman_portrait.png"
+    DashboardImgUrl: "/resources/Marksman_portrait.png"
+    Value: 150
+    Speed: 6
+    Health: 10
+    Attack: 6
+    Defense: 3
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 4
+        MaxDamage: 6
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  RoyalGriffin:
+    Name: "Royal Griffin"
+    BattleImgUrl: "/resources/Royal_Griffin_portrait.png"
+    DashboardImgUrl: "/resources/Royal_Griffin_portrait.png"
+    Value: 240
+    Speed: 9
+    Health: 25
+    Attack: 9
+    Defense: 9
+    Movement: Fly
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 6
+    SpecialAbilities:
+      - UnlimitedRetaliation
+
+  Crusader:
+    Name: "Crusader"
+    BattleImgUrl: "/resources/Crusader_portrait.png"
+    DashboardImgUrl: "/resources/Crusader_portrait.png"
+    Value: 400
+    Speed: 6
+    Health: 35
+    Attack: 12
+    Defense: 12
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 10
+
+  Zealot:
+    Name: "Zealot"
+    BattleImgUrl: "/resources/Zealot_portrait.png"
+    DashboardImgUrl: "/resources/Zealot_portrait.png"
+    Value: 450
+    Speed: 7
+    Health: 30
+    Attack: 12
+    Defense: 10
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 10
+        MaxDamage: 12
+      - <<: *MeleeAttack
+        MinDamage: 10
+        MaxDamage: 12
+
+  Champion:
+    Name: "Champion"
+    BattleImgUrl: "/resources/Champion_portrait.png"
+    DashboardImgUrl: "/resources/Champion_portrait.png"
+    Value: 1200
+    Speed: 9
+    Health: 100
+    Attack: 16
+    Defense: 16
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 20
+        MaxDamage: 25
+    ResourcesDistribution:
+      Gold: 5
+      Wood: 1
+
+  Archangel:
+    Name: "Archangel"
+    BattleImgUrl: "/resources/Archangel_portrait.png"
+    DashboardImgUrl: "/resources/Archangel_portrait.png"
+    Value: 6000
+    Speed: 18
+    Health: 250
+    Attack: 30
+    Defense: 30
+    Movement: Fly
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 50
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Gems: 3
       
   Skeleton:
     Name: "Skeleton"
@@ -175,13 +296,13 @@ Units:
         MinDamage: 1
         MaxDamage: 3
 
-  Zombie:
-    Name: "Zombie"
+  WalkingDead:
+    Name: "Walking Dead"
     BattleImgUrl: "/resources/Walking_Dead_portrait.png"
     DashboardImgUrl: "/resources/Walking_Dead_portrait.png"
-    Value: 90
-    Speed: 4
-    Health: 20
+    Value: 100
+    Speed: 3
+    Health: 15
     ToTrainAmount: 16
     Attack: 5
     Defense: 5
@@ -210,9 +331,9 @@ Units:
     Name: "Vampire"
     BattleImgUrl: "/resources/Vampire_portrait.png"
     DashboardImgUrl: "/resources/Vampire_portrait.png"
-    Value: 300
+    Value: 360
     Speed: 6
-    Health: 40
+    Health: 30
     Attack: 10
     Defense: 9
     ToTrainAmount: 8
@@ -240,12 +361,12 @@ Units:
         MinDamage: 6
         MaxDamage: 7
 
-  DreadKnight:
-    Name: "Dread Knight"
+  BlackKnight:
+    Name: "Black Knight"
     BattleImgUrl: "/resources/Black_Knight_portrait.png"
     DashboardImgUrl: "/resources/Black_Knight_portrait.png"
     Value: 1200
-    Speed: 9
+    Speed: 7
     Health: 120
     Attack: 16
     Defense: 16
@@ -258,17 +379,133 @@ Units:
       Gold: 4
       Stone: 1
 
-  GhostDragon:
-    Name: "Ghost Dragon"
+  BonetDragon:
+    Name: "Bone Dragon"
     BattleImgUrl: "/resources/Bone_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Bone_Dragon_portrait.png"
     Value: 1800
-    Speed: 14
-    Health: 200
+    Speed: 9
+    Health: 150
     Attack: 17
     Defense: 15
     ToTrainAmount: 2
     Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Mercury: 1
+      
+  SkeletonWarrior:
+    Name: "Skeleton Warrior"
+    BattleImgUrl: "/resources/Skeleton_Warrior_portrait.png"
+    DashboardImgUrl: "/resources/Skeleton_Warrior_portrait.png"
+    Value: 70        # Gold cost
+    Speed: 5
+    Health: 6
+    Attack: 6
+    Defense: 6
+    ToTrainAmount: 24
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+
+  Zombie:
+    Name: "Zombie"
+    BattleImgUrl: "/resources/Zombie_portrait.png"
+    DashboardImgUrl: "/resources/Zombie_portrait.png"
+    Value: 125       # Gold cost
+    Speed: 4
+    Health: 20
+    Attack: 5
+    Defense: 5
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  Wraith:
+    Name: "Wraith"
+    BattleImgUrl: "/resources/Wraith_portrait.png"
+    DashboardImgUrl: "/resources/Wraith_portrait.png"
+    Value: 230       # Gold cost
+    Speed: 7
+    Health: 18
+    Attack: 7
+    Defense: 7
+    ToTrainAmount: 12
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  VampireLord:
+    Name: "Vampire Lord"
+    BattleImgUrl: "/resources/Vampire_Lord_portrait.png"
+    DashboardImgUrl: "/resources/Vampire_Lord_portrait.png"
+    Value: 500       # Gold cost
+    Speed: 9
+    Health: 40
+    Attack: 10
+    Defense: 10
+    Movement: Fly
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 8
+
+  PowerLich:
+    Name: "Power Lich"
+    BattleImgUrl: "/resources/Power_Lich_portrait.png"
+    DashboardImgUrl: "/resources/Power_Lich_portrait.png"
+    Value: 600       # Gold cost
+    Speed: 6
+    Health: 40
+    Attack: 13
+    Defense: 10
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 11
+        MaxDamage: 15
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 8
+
+  DreadKnight:
+    Name: "Dread Knight"
+    BattleImgUrl: "/resources/Dread_Knight_portrait.png"
+    DashboardImgUrl: "/resources/Dread_Knight_portrait.png"
+    Value: 1500      # Gold cost
+    Speed: 9
+    Health: 120
+    Attack: 18
+    Defense: 18
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 15
+        MaxDamage: 30
+    ResourcesDistribution:
+      Gold: 4
+      Stone: 1
+
+  GhostDragon:
+    Name: "Ghost Dragon"
+    BattleImgUrl: "/resources/Ghost_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Ghost_Dragon_portrait.png"
+    Value: 3000      # Gold cost
+    Speed: 14
+    Health: 200
+    Attack: 19
+    Defense: 17
+    Movement: Fly
+    ToTrainAmount: 2
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 25
@@ -393,6 +630,122 @@ Units:
       Gold: 6
       Crystal: 1
       
+  CentaurCaptain:
+    Name: "Centaur Captain"
+    BattleImgUrl: "/resources/Centaur_Captain_portrait.png"
+    DashboardImgUrl: "/resources/Centaur_Captain_portrait.png"
+    Value: 90
+    Speed: 8
+    Health: 10
+    Attack: 6
+    Defense: 3
+    ToTrainAmount: 28
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  BattleDwarf:
+    Name: "Battle Dwarf"
+    BattleImgUrl: "/resources/Battle_Dwarf_portrait.png"
+    DashboardImgUrl: "/resources/Battle_Dwarf_portrait.png"
+    Value: 150
+    Speed: 5
+    Health: 20
+    Attack: 6
+    Defense: 7
+    ToTrainAmount: 20
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+
+  GrandElf:
+    Name: "Grand Elf"
+    BattleImgUrl: "/resources/GrandElf_portrait.png"
+    DashboardImgUrl: "/resources/GrandElf_portrait.png"
+    Value: 225
+    Speed: 6
+    Health: 15
+    Attack: 9
+    Defense: 5
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 5
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+
+  SilverPegasus:
+    Name: "Silver Pegasus"
+    BattleImgUrl: "/resources/Silver_Pegasus_portrait.png"
+    DashboardImgUrl: "/resources/Silver_Pegasus_portrait.png"
+    Value: 275
+    Speed: 12
+    Health: 30
+    Attack: 9
+    Defense: 8
+    Movement: Fly
+    ToTrainAmount: 10
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 9
+
+  DendroidSoldier:
+    Name: "Dendroid Soldier"
+    BattleImgUrl: "/resources/Dendroid_Soldier_portrait.png"
+    DashboardImgUrl: "/resources/Dendroid_Soldier_portrait.png"
+    Value: 425
+    Speed: 3
+    Health: 65
+    Attack: 9
+    Defense: 12
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 10
+        MaxDamage: 14
+
+  WarUnicorn:
+    Name: "War Unicorn"
+    BattleImgUrl: "/resources/War_Unicorn_portrait.png"
+    DashboardImgUrl: "/resources/War_Unicorn_portrait.png"
+    Value: 950
+    Speed: 9
+    Health: 110
+    Attack: 15
+    Defense: 14
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 18
+        MaxDamage: 22
+    ResourcesDistribution:
+      Gold: 4
+      Gems: 1
+
+  GoldDragon:
+    Name: "Gold Dragon"
+    BattleImgUrl: "/resources/Gold_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Gold_Dragon_portrait.png"
+    Value: 5000
+    Speed: 16
+    Health: 250
+    Attack: 27
+    Defense: 27
+    Movement: Fly
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Crystal: 1
+  
   Gremlin:
     Name: "Gremlin"
     BattleImgUrl: "/resources/Gremlin_portrait.png"

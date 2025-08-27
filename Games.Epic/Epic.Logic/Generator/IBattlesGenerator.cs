@@ -237,9 +237,8 @@ namespace Epic.Logic.Generator
                 var resourcesValue = difficulty.TargetDifficulty;
                 var resourceTypes = new List<IGameResourceEntity>();
                 var resourcesAmounts = new List<int>();
-                var resourceTypesCount = 3;
-                // var resourceTypesCount = resourcesValue > _resources.Sum(x => x.Price) 
-                //     ? _random.Next(1, _resources.Count) : 1;
+                var resourceTypesCount = resourcesValue > _resources.Sum(x => x.Price) / 2
+                    ? _random.Next(1, _resources.Count) : 1;
                 var valuePerResource = (double)resourcesValue / resourceTypesCount;
                 for (var i = 0; i < resourceTypesCount; i++)
                 {

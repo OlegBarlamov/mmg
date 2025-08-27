@@ -72,6 +72,7 @@ namespace Epic.Server
         {
             var pickerUnitType = await UnitTypesRepository.GetByName("Pikeman");
             var archerUnitType = await UnitTypesRepository.GetByName("Archer");
+            var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
             
             var user = await UsersRepository.CreateUserAsync("admin",
                 BasicAuthentication.GetHashFromCredentials("admin", "123"));
@@ -94,6 +95,7 @@ namespace Epic.Server
             
             await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero.ArmyContainerId, true, 0);
             await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero.ArmyContainerId, true, 1);
+            // await GlobalUnitsRepository.Create(archangelUnitType.Id, 1, hero.ArmyContainerId, true, 2);
             
             await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero1.ArmyContainerId, true, 0);
             await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero1.ArmyContainerId, true, 1);

@@ -1,0 +1,9 @@
+Rewards:
+  Campfire:
+    Variants:
+      Data:
+        RewardType: ResourcesGain
+        Resources: Gold
+        Amount: 40
+      
+    

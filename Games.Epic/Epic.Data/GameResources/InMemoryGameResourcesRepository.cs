@@ -25,7 +25,7 @@ namespace Epic.Data.GameResources
         public Task<IReadOnlyList<IGameResourceEntity>> GetByIds(IEnumerable<Guid> ids)
         {
             return Task.FromResult<IReadOnlyList<IGameResourceEntity>>(
-                _resources.Where(x => ids.Contains(x.Id))
+                ids.Select(x => _resources.First(y => y.Id == x))
                 .ToArray());
         }
 
