@@ -13,7 +13,7 @@ import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
 export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-//export const SERVER_BASE_URL = "https://e6a442051205.ngrok-free.app"
+//export const SERVER_BASE_URL = "https://e7a7d9e29a38.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Data.UnitTypes;
-using Epic.Logic;
 using Epic.Logic.Generator;
 using FrameworkSDK;
 using JetBrains.Annotations;

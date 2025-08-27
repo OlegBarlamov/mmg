@@ -41,11 +41,12 @@ Units:
         MinDamage: 1
         MaxDamage: 1
   
+  # Castle
   Pikeman:
     Name: "Pikeman"
     BattleImgUrl: "/resources/Pikeman_portrait.png"
     DashboardImgUrl: "/resources/Pikeman_portrait.png"
-    Value: 60              # Approximate value
+    Value: 60
     Speed: 4
     Health: 10
     Attack: 4
@@ -60,7 +61,7 @@ Units:
     Name: "Archer"
     BattleImgUrl: "/resources/Archer_portrait.png"
     DashboardImgUrl: "/resources/Archer_portrait.png"
-    Value: 100              # Approximate value
+    Value: 100
     Speed: 4
     Health: 10
     Attack: 6
@@ -78,7 +79,7 @@ Units:
     Name: "Griffin"
     BattleImgUrl: "/resources/Griffin_portrait.png"
     DashboardImgUrl: "/resources/Griffin_portrait.png"
-    Value: 200              # Approximate value
+    Value: 200
     Speed: 6
     Health: 25
     Attack: 8
@@ -94,7 +95,7 @@ Units:
     Name: "Swordsman"
     BattleImgUrl: "/resources/Swordsman_portrait.png"
     DashboardImgUrl: "/resources/Swordsman_portrait.png"
-    Value: 300             # Approximate value
+    Value: 300
     Speed: 5
     Health: 35
     Attack: 10
@@ -109,7 +110,7 @@ Units:
     Name: "Monk"
     BattleImgUrl: "/resources/Monk_portrait.png"
     DashboardImgUrl: "/resources/Monk_portrait.png"
-    Value: 400             # Approximate value
+    Value: 400
     Speed: 5
     Health: 30
     Attack: 12
@@ -127,7 +128,7 @@ Units:
     Name: "Cavalier"
     BattleImgUrl: "/resources/Cavalier_portrait.png"
     DashboardImgUrl: "/resources/Cavalier_portrait.png"
-    Value: 1000             # Approximate value
+    Value: 1000
     Speed: 7
     Health: 100
     Attack: 15
@@ -280,7 +281,8 @@ Units:
     ResourcesDistribution:
       Gold: 6
       Gems: 3
-      
+  
+  # Necropolis
   Skeleton:
     Name: "Skeleton"
     BattleImgUrl: "/resources/Skeleton_portrait.png"
@@ -379,7 +381,7 @@ Units:
       Gold: 4
       Stone: 1
 
-  BonetDragon:
+  BoneDragon:
     Name: "Bone Dragon"
     BattleImgUrl: "/resources/Bone_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Bone_Dragon_portrait.png"
@@ -402,7 +404,7 @@ Units:
     Name: "Skeleton Warrior"
     BattleImgUrl: "/resources/Skeleton_Warrior_portrait.png"
     DashboardImgUrl: "/resources/Skeleton_Warrior_portrait.png"
-    Value: 70        # Gold cost
+    Value: 70
     Speed: 5
     Health: 6
     Attack: 6
@@ -417,7 +419,7 @@ Units:
     Name: "Zombie"
     BattleImgUrl: "/resources/Zombie_portrait.png"
     DashboardImgUrl: "/resources/Zombie_portrait.png"
-    Value: 125       # Gold cost
+    Value: 125
     Speed: 4
     Health: 20
     Attack: 5
@@ -432,7 +434,7 @@ Units:
     Name: "Wraith"
     BattleImgUrl: "/resources/Wraith_portrait.png"
     DashboardImgUrl: "/resources/Wraith_portrait.png"
-    Value: 230       # Gold cost
+    Value: 230
     Speed: 7
     Health: 18
     Attack: 7
@@ -447,7 +449,7 @@ Units:
     Name: "Vampire Lord"
     BattleImgUrl: "/resources/Vampire_Lord_portrait.png"
     DashboardImgUrl: "/resources/Vampire_Lord_portrait.png"
-    Value: 500       # Gold cost
+    Value: 500
     Speed: 9
     Health: 40
     Attack: 10
@@ -463,7 +465,7 @@ Units:
     Name: "Power Lich"
     BattleImgUrl: "/resources/Power_Lich_portrait.png"
     DashboardImgUrl: "/resources/Power_Lich_portrait.png"
-    Value: 600       # Gold cost
+    Value: 600
     Speed: 6
     Health: 40
     Attack: 13
@@ -481,7 +483,7 @@ Units:
     Name: "Dread Knight"
     BattleImgUrl: "/resources/Dread_Knight_portrait.png"
     DashboardImgUrl: "/resources/Dread_Knight_portrait.png"
-    Value: 1500      # Gold cost
+    Value: 1500
     Speed: 9
     Health: 120
     Attack: 18
@@ -499,7 +501,7 @@ Units:
     Name: "Ghost Dragon"
     BattleImgUrl: "/resources/Ghost_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Ghost_Dragon_portrait.png"
-    Value: 3000      # Gold cost
+    Value: 3000
     Speed: 14
     Health: 200
     Attack: 19
@@ -514,6 +516,7 @@ Units:
       Gold: 6
       Mercury: 1
 
+  # Rampart
   Centaur:
     Name: "Centaur"
     BattleImgUrl: "/resources/Centaur_portrait.png"
@@ -662,8 +665,8 @@ Units:
 
   GrandElf:
     Name: "Grand Elf"
-    BattleImgUrl: "/resources/GrandElf_portrait.png"
-    DashboardImgUrl: "/resources/GrandElf_portrait.png"
+    BattleImgUrl: "/resources/Grand_Elf_portrait.png"
+    DashboardImgUrl: "/resources/Grand_Elf_portrait.png"
     Value: 225
     Speed: 6
     Health: 15
@@ -746,6 +749,7 @@ Units:
       Gold: 6
       Crystal: 1
   
+  # Tower
   Gremlin:
     Name: "Gremlin"
     BattleImgUrl: "/resources/Gremlin_portrait.png"
@@ -768,8 +772,8 @@ Units:
     Value: 130
     Speed: 6
     Health: 16
-    Attack: 7
-    Defense: 7
+    Attack: 6
+    Defense: 6
     ToTrainAmount: 18
     Movement: Fly
     Attacks:
@@ -781,8 +785,8 @@ Units:
     Name: "Stone Golem"
     BattleImgUrl: "/resources/Stone_Golem_portrait.png"
     DashboardImgUrl: "/resources/Stone_Golem_portrait.png"
-    Value: 250
-    Speed: 4
+    Value: 150
+    Speed: 3
     Health: 30
     Attack: 7
     Defense: 10
@@ -860,7 +864,129 @@ Units:
     ResourcesDistribution:
       Gold: 6
       Gems: 1
+      
+  MasterGremlin:
+    Name: "Master Gremlin"
+    BattleImgUrl: "/resources/Master_Gremlin_portrait.png"
+    DashboardImgUrl: "/resources/Master_Gremlin_portrait.png"
+    Value: 40
+    Speed: 5
+    Health: 4
+    Attack: 4
+    Defense: 4
+    ToTrainAmount: 32
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 1
+        MaxDamage: 2
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 1
+
+  ObsidianGargoyle:
+    Name: "Obsidian Gargoyle"
+    BattleImgUrl: "/resources/Obsidian_Gargoyle_portrait.png"
+    DashboardImgUrl: "/resources/Obsidian_Gargoyle_portrait.png"
+    Value: 160
+    Speed: 9
+    Health: 16
+    Attack: 7
+    Defense: 7
+    Movement: Fly
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  IronGolem:
+    Name: "Iron Golem"
+    BattleImgUrl: "/resources/Iron_Golem_portrait.png"
+    DashboardImgUrl: "/resources/Iron_Golem_portrait.png"
+    Value: 200
+    Speed: 5
+    Health: 35
+    Attack: 9
+    Defense: 10
+    ToTrainAmount: 12
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 5
+
+  ArchMage:
+    Name: "Arch Mage"
+    BattleImgUrl: "/resources/Arch_Mage_portrait.png"
+    DashboardImgUrl: "/resources/Arch_Mage_portrait.png"
+    Value: 450
+    Speed: 7
+    Health: 30
+    Attack: 12
+    Defense: 9
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 7
+        MaxDamage: 9
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 9
+
+  MasterGenie:
+    Name: "Master Genie"
+    BattleImgUrl: "/resources/Master_Genie_portrait.png"
+    DashboardImgUrl: "/resources/Master_Genie_portrait.png"
+    Value: 600
+    Speed: 11
+    Health: 40
+    Attack: 12
+    Defense: 12
+    Movement: Fly
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 13
+        MaxDamage: 16
+
+  NagaQueen:
+    Name: "Naga Queen"
+    BattleImgUrl: "/resources/Naga_Queen_portrait.png"
+    DashboardImgUrl: "/resources/Naga_Queen_portrait.png"
+    Value: 1600
+    Speed: 7
+    Health: 110
+    Attack: 16
+    Defense: 13
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 30
+    Gold: 4
+    Sulfur: 1
+
+  Titan:
+    Name: "Titan"
+    BattleImgUrl: "/resources/Titan_portrait.png"
+    DashboardImgUrl: "/resources/Titan_portrait.png"
+    Value: 6000
+    Speed: 11
+    Health: 300
+    Attack: 24
+    Defense: 24
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 40
+        MaxDamage: 60
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 60
+    ResourcesDistribution:
+      Gold: 6
+      Gems: 1
   
+ # Inferno
   Imp:
     Name: "Imp"
     BattleImgUrl: "/resources/Imp_portrait.png"
@@ -880,7 +1006,7 @@ Units:
     Name: "Gog"
     BattleImgUrl: "/resources/Gog_portrait.png"
     DashboardImgUrl: "/resources/Gog_portrait.png"
-    Value: 200
+    Value: 125
     Speed: 4
     Health: 13
     Attack: 6
@@ -891,8 +1017,8 @@ Units:
         MinDamage: 2
         MaxDamage: 4
       - <<: *MeleeAttack
-        MinDamage: 2
-        MaxDamage: 4
+        MinDamage: 1
+        MaxDamage: 2
   
   HellHound:
     Name: "Hell Hound"
@@ -903,7 +1029,7 @@ Units:
     Health: 25
     Attack: 10
     Defense: 6
-    ToTrainAmount: 14
+    ToTrainAmount: 10
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -918,7 +1044,7 @@ Units:
     Health: 35
     Attack: 10
     Defense: 10
-    ToTrainAmount: 10
+    ToTrainAmount: 8
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 7
@@ -933,7 +1059,7 @@ Units:
     Health: 45
     Attack: 13
     Defense: 13
-    ToTrainAmount: 8
+    ToTrainAmount: 6
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 13
@@ -948,7 +1074,7 @@ Units:
     Health: 90
     Attack: 16
     Defense: 12
-    ToTrainAmount: 6
+    ToTrainAmount: 4
     Movement: Fly
     Attacks:
       - <<: *MeleeAttack
@@ -975,7 +1101,122 @@ Units:
         MaxDamage: 40
     ResourcesDistribution:
       Gold: 6
-      Sulfur: 2
+      Sulfur: 1
+      
+  Familiar:
+    Name: "Familiar"
+    BattleImgUrl: "/resources/Familiar_portrait.png"
+    DashboardImgUrl: "/resources/Familiar_portrait.png"
+    Value: 60        # Gold cost
+    Speed: 7
+    Health: 4
+    Attack: 4
+    Defense: 4
+    ToTrainAmount: 30
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  Magog:
+    Name: "Magog"
+    BattleImgUrl: "/resources/Magog_portrait.png"
+    DashboardImgUrl: "/resources/Magog_portrait.png"
+    Value: 175
+    Speed: 6
+    Health: 13
+    Attack: 7
+    Defense: 4
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 4
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  Cerberus:
+    Name: "Cerberus"
+    BattleImgUrl: "/resources/Cerberus_portrait.png"
+    DashboardImgUrl: "/resources/Cerberus_portrait.png"
+    Value: 250
+    Speed: 10
+    Health: 35
+    Attack: 10
+    Defense: 8
+    ToTrainAmount: 10
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 7
+
+  HornedDemon:
+    Name: "Horned Demon"
+    BattleImgUrl: "/resources/Horned_Demon_portrait.png"
+    DashboardImgUrl: "/resources/Horned_Demon_portrait.png"
+    Value: 270
+    Speed: 6
+    Health: 40
+    Attack: 10
+    Defense: 10
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 9
+        
+  PitLord:
+    Name: "Pit Lord"
+    BattleImgUrl: "/resources/Pit_Lord_portrait.png"
+    DashboardImgUrl: "/resources/Pit_Lord_portrait.png"
+    Value: 700
+    Speed: 7
+    Health: 45
+    Attack: 13
+    Defense: 13
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 13
+        MaxDamage: 17
+
+  EfreetSultan:
+    Name: "Efreet Sultan"
+    BattleImgUrl: "/resources/Efreet_Sultan_portrait.png"
+    DashboardImgUrl: "/resources/Efreet_Sultan_portrait.png"
+    Value: 1100
+    Speed: 13
+    Health: 90
+    Attack: 16
+    Defense: 14
+    Movement: Fly
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 16
+        MaxDamage: 24
+    ResourcesDistribution:
+      Gold: 3
+      Mercury: 1
+
+  ArchDevil:
+    Name: "Arch Devil"
+    BattleImgUrl: "/resources/Arch_Devil_portrait.png"
+    DashboardImgUrl: "/resources/Arch_Devil_portrait.png"
+    Value: 5500
+    Speed: 17
+    Health: 200
+    Attack: 26
+    Defense: 28
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 40
+    ResourcesDistribution:
+      Gold: 6
+      Sulfur: 1
 
   # Dungeon
   Troglodyte:
@@ -1016,7 +1257,7 @@ Units:
     Value: 250
     Speed: 5
     Health: 22
-    Attack: 8
+    Attack: 9
     Defense: 7
     ToTrainAmount: 14
     Attacks:
@@ -1052,8 +1293,8 @@ Units:
     Value: 500
     Speed: 6
     Health: 50
-    Attack: 11
-    Defense: 8
+    Attack: 14
+    Defense: 12
     ToTrainAmount: 6
     Attacks:
       - <<: *MeleeAttack
@@ -1068,8 +1309,9 @@ Units:
     Speed: 7
     Health: 80
     Attack: 15
-    Defense: 11
+    Defense: 13
     ToTrainAmount: 4
+    Movement: Fly
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 14
@@ -1083,12 +1325,132 @@ Units:
     BattleImgUrl: "/resources/Red_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Red_Dragon_portrait.png"
     Value: 3500
-    Speed: 15
+    Speed: 11
     Health: 250
     Attack: 19
     Defense: 19
     ToTrainAmount: 2
     Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 6
+      Sulfur: 2
+  
+  InfernalTroglodyte:
+    Name: "Infernal Troglodyte"
+    BattleImgUrl: "/resources/Infernal_Troglodyte_portrait.png"
+    DashboardImgUrl: "/resources/Infernal_Troglodyte_portrait.png"
+    Value: 65
+    Speed: 5
+    Health: 6
+    Attack: 5
+    Defense: 4
+    ToTrainAmount: 28
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+
+  HarpyHag:
+    Name: "Harpy Hag"
+    BattleImgUrl: "/resources/Harpy_Hag_portrait.png"
+    DashboardImgUrl: "/resources/Harpy_Hag_portrait.png"
+    Value: 170
+    Speed: 9
+    Health: 14
+    Attack: 6
+    Defense: 6
+    Movement: Fly
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 4
+
+  EvilEye:
+    Name: "Evil Eye"
+    BattleImgUrl: "/resources/Evil_Eye_portrait.png"
+    DashboardImgUrl: "/resources/Evil_Eye_portrait.png"
+    Value: 280
+    Speed: 7
+    Health: 22
+    Attack: 10
+    Defense: 8
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 5
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  MedusaQueen:
+    Name: "Medusa Queen"
+    BattleImgUrl: "/resources/Medusa_Queen_portrait.png"
+    DashboardImgUrl: "/resources/Medusa_Queen_portrait.png"
+    Value: 330
+    Speed: 6
+    Health: 30
+    Attack: 10
+    Defense: 10
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 6
+        MaxDamage: 8
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 8
+
+  MinotaurKing:
+    Name: "Minotaur King"
+    BattleImgUrl: "/resources/Minotaur_King_portrait.png"
+    DashboardImgUrl: "/resources/Minotaur_King_portrait.png"
+    Value: 575
+    Speed: 8
+    Health: 50
+    Attack: 15
+    Defense: 15
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 12
+        MaxDamage: 20
+
+  Scorpicore:
+    Name: "Scorpicore"
+    BattleImgUrl: "/resources/Scorpicore_portrait.png"
+    DashboardImgUrl: "/resources/Scorpicore_portrait.png"
+    Value: 1050
+    Speed: 11
+    Health: 80
+    Attack: 16
+    Defense: 14
+    Movement: Fly
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 14
+        MaxDamage: 20
+    ResourcesDistribution:
+      Gold: 3
+      Stone: 1
+
+  BlackDragon:
+    Name: "Black Dragon"
+    BattleImgUrl: "/resources/Black_Dragon_portrait.png"
+    DashboardImgUrl: "/resources/Black_Dragon_portrait.png"
+    Value: 5000
+    Speed: 15
+    Health: 300
+    Attack: 25
+    Defense: 25
+    Movement: Fly
+    ToTrainAmount: 2
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 40
@@ -1181,19 +1543,19 @@ Units:
     Name: "Cyclops"
     BattleImgUrl: "/resources/Cyclops_portrait.png"
     DashboardImgUrl: "/resources/Cyclops_portrait.png"
-    Value: 400
-    Speed: 5
-    Health: 35
+    Value: 750
+    Speed: 6
+    Health: 70
     Attack: 15
     Defense: 12
-    ToTrainAmount: 10
+    ToTrainAmount: 4
     Attacks:
       - <<: *RangeAttack
-        MinDamage: 12
-        MaxDamage: 18
+        MinDamage: 16
+        MaxDamage: 20
       - <<: *MeleeAttack
-        MinDamage: 6
-        MaxDamage: 9
+        MinDamage: 8
+        MaxDamage: 10
     ResourcesDistribution:
       Gold: 3
       Stone: 1
@@ -1202,7 +1564,7 @@ Units:
     Name: "Behemoth"
     BattleImgUrl: "/resources/Behemoth_portrait.png"
     DashboardImgUrl: "/resources/Behemoth_portrait.png"
-    Value: 2000
+    Value: 1500
     Speed: 6
     Health: 160
     Attack: 17
@@ -1212,9 +1574,125 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 30
         MaxDamage: 50
+  
+  Hobgoblin:
+    Name: "Hobgoblin"
+    BattleImgUrl: "/resources/Hobgoblin_portrait.png"
+    DashboardImgUrl: "/resources/Hobgoblin_portrait.png"
+    Value: 50
+    Speed: 7
+    Health: 5
+    Attack: 5
+    Defense: 3
+    ToTrainAmount: 30
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  WolfRaider:
+    Name: "Wolf Raider"
+    BattleImgUrl: "/resources/Wolf_Raider_portrait.png"
+    DashboardImgUrl: "/resources/Wolf_Raider_portrait.png"
+    Value: 140
+    Speed: 8
+    Health: 10
+    Attack: 8
+    Defense: 5
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 4
+
+  OrcChieftain:
+    Name: "Orc Chieftain"
+    BattleImgUrl: "/resources/Orc_Chieftain_portrait.png"
+    DashboardImgUrl: "/resources/Orc_Chieftain_portrait.png"
+    Value: 165
+    Speed: 5
+    Health: 20
+    Attack: 8
+    Defense: 4
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 5
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+
+  OgreMage:
+    Name: "Ogre Mage"
+    BattleImgUrl: "/resources/Ogre_Mage_portrait.png"
+    DashboardImgUrl: "/resources/Ogre_Mage_portrait.png"
+    Value: 400
+    Speed: 5
+    Health: 60
+    Attack: 13
+    Defense: 7
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 12
+
+  Thunderbird:
+    Name: "Thunderbird"
+    BattleImgUrl: "/resources/Thunderbird_portrait.png"
+    DashboardImgUrl: "/resources/Thunderbird_portrait.png"
+    Value: 700
+    Speed: 11
+    Health: 60
+    Attack: 13
+    Defense: 11
+    Movement: Fly
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 11
+        MaxDamage: 15
+
+  CyclopsKing:
+    Name: "Cyclops King"
+    BattleImgUrl: "/resources/Cyclops_King_portrait.png"
+    DashboardImgUrl: "/resources/Cyclops_King_portrait.png"
+    Value: 1100
+    Speed: 8
+    Health: 70
+    Attack: 17
+    Defense: 13
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 16
+        MaxDamage: 20
+      - <<: *MeleeAttack
+        MinDamage: 8
+        MaxDamage: 10
     ResourcesDistribution:
-      Gold: 6
-      Crystal: 2
+      Gold: 3
+      Stone: 1
+
+  AncientBehemoth:
+    Name: "Ancient Behemoth"
+    BattleImgUrl: "/resources/Ancient_Behemoth_portrait.png"
+    DashboardImgUrl: "/resources/Ancient_Behemoth_portrait.png"
+    Value: 3500
+    Speed: 9
+    Health: 300
+    Attack: 19
+    Defense: 19
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 5
+      Crystal: 1
+  
   
   # Fortress
   Gnoll:
@@ -1224,7 +1702,7 @@ Units:
     Value: 50
     Speed: 4
     Health: 6
-    Attack: 4
+    Attack: 3
     Defense: 5
     ToTrainAmount: 24
     Attacks:
@@ -1257,17 +1735,14 @@ Units:
     Value: 220
     Speed: 9
     Health: 20
-    Attack: 6
-    Defense: 8
+    Attack: 7
+    Defense: 9
     ToTrainAmount: 16
     Movement: Fly
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
         MaxDamage: 5
-    SpecialAbilities:
-      - "Flying"
-      - "Dispels beneficial spells on attack"
   
   Basilisk:
     Name: "Basilisk"
@@ -1283,8 +1758,6 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 6
         MaxDamage: 10
-    SpecialAbilities:
-      - "20% chance to petrify target"
   
   Gorgon:
     Name: "Gorgon"
@@ -1294,14 +1767,12 @@ Units:
     Speed: 5
     Health: 70
     Attack: 10
-    Defense: 16
+    Defense: 14
     ToTrainAmount: 6
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 12
         MaxDamage: 16
-    SpecialAbilities:
-      - "Death Stare ability"
   
   Wyvern:
     Name: "Wyvern"
@@ -1326,7 +1797,7 @@ Units:
     Name: "Hydra"
     BattleImgUrl: "/resources/Hydra_portrait.png"
     DashboardImgUrl: "/resources/Hydra_portrait.png"
-    Value: 2700
+    Value: 2200
     Speed: 5
     Health: 175
     Attack: 16
@@ -1336,9 +1807,123 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 25
         MaxDamage: 45
+  
+  GnollMarauder:
+    Name: "Gnoll Marauder"
+    BattleImgUrl: "/resources/Gnoll_Marauder_portrait.png"
+    DashboardImgUrl: "/resources/Gnoll_Marauder_portrait.png"
+    Value: 70
+    Speed: 5
+    Health: 6
+    Attack: 4
+    Defense: 6
+    ToTrainAmount: 24
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  LizardWarrior:
+    Name: "Lizard Warrior"
+    BattleImgUrl: "/resources/Lizard_Warrior_portrait.png"
+    DashboardImgUrl: "/resources/Lizard_Warrior_portrait.png"
+    Value: 140
+    Speed: 5
+    Health: 15
+    Attack: 6
+    Defense: 8
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 3
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  DragonFly:
+    Name: "Dragon Fly"
+    BattleImgUrl: "/resources/Dragon_Fly_portrait.png"
+    DashboardImgUrl: "/resources/Dragon_Fly_portrait.png"
+    Value: 240
+    Speed: 13
+    Health: 20
+    Attack: 8
+    Defense: 10
+    Movement: Fly
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 5
+
+  GreaterBasilisk:
+    Name: "Greater Basilisk"
+    BattleImgUrl: "/resources/Greater_Basilisk_portrait.png"
+    DashboardImgUrl: "/resources/Greater_Basilisk_portrait.png"
+    Value: 400
+    Speed: 7
+    Health: 40
+    Attack: 12
+    Defense: 12
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 10
+
+  MightyGorgon:
+    Name: "Mighty Gorgon"
+    BattleImgUrl: "/resources/Mighty_Gorgon_portrait.png"
+    DashboardImgUrl: "/resources/Mighty_Gorgon_portrait.png"
+    Value: 600
+    Speed: 6
+    Health: 70
+    Attack: 11
+    Defense: 16
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 12
+        MaxDamage: 16
+
+  WyvernMonarch:
+    Name: "Wyvern Monarch"
+    BattleImgUrl: "/resources/Wyvern_Monarch_portrait.png"
+    DashboardImgUrl: "/resources/Wyvern_Monarch_portrait.png"
+    Value: 1100
+    Speed: 11
+    Health: 70
+    Attack: 14
+    Defense: 14
+    Movement: Fly
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 18
+        MaxDamage: 22
     ResourcesDistribution:
-      Gold: 6
-      Sulfur: 2
+      Gold: 3
+      Mercury: 1
+
+  ChaosHydra:
+    Name: "Chaos Hydra"
+    BattleImgUrl: "/resources/Chaos_Hydra_portrait.png"
+    DashboardImgUrl: "/resources/Chaos_Hydra_portrait.png"
+    Value: 4000
+    Speed: 7
+    Health: 250
+    Attack: 18
+    Defense: 20
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 45
+    ResourcesDistribution:
+      Gold: 5
+      Sulfur: 1
+  
   
   # Conflux
   Pixie:
@@ -1348,7 +1933,7 @@ Units:
     Value: 25
     Speed: 7
     Health: 3
-    Attack: 4
+    Attack: 2
     Defense: 2
     ToTrainAmount: 40
     Movement: Fly
@@ -1398,7 +1983,6 @@ Units:
     Attack: 10
     Defense: 8
     ToTrainAmount: 10
-    Movement: Fly
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 4
@@ -1411,7 +1995,7 @@ Units:
     Value: 400
     Speed: 4
     Health: 40
-    Attack: 8
+    Attack: 10
     Defense: 10
     ToTrainAmount: 8
     Attacks:
@@ -1423,7 +2007,7 @@ Units:
     Name: "Psychic Elemental"
     BattleImgUrl: "/resources/Psychic_Elemental_portrait.png"
     DashboardImgUrl: "/resources/Psychic_Elemental_portrait.png"
-    Value: 750
+    Value: 950
     Speed: 7
     Health: 75
     Attack: 15
@@ -1441,34 +2025,156 @@ Units:
     Name: "Firebird"
     BattleImgUrl: "/resources/Firebird_portrait.png"
     DashboardImgUrl: "/resources/Firebird_portrait.png"
-    Value: 1500
+    Value: 2500
     Speed: 15
-    Health: 100
+    Health: 150
     Attack: 18
     Defense: 18
     ToTrainAmount: 2
     Movement: Fly
     Attacks:
       - <<: *MeleeAttack
-        MinDamage: 20
-        MaxDamage: 30
+        MinDamage: 30
+        MaxDamage: 40
     ResourcesDistribution:
       Gold: 3
       Mercury: 1
+      
+  Sprite:
+    Name: "Sprite"
+    BattleImgUrl: "/resources/Sprite_portrait.png"
+    DashboardImgUrl: "/resources/Sprite_portrait.png"
+    Value: 30
+    Speed: 9
+    Health: 3
+    Attack: 2
+    Defense: 2
+    Movement: Fly
+    ToTrainAmount: 48   # 24 × 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
 
+  StormElemental:
+    Name: "Storm Elemental"
+    BattleImgUrl: "/resources/Storm_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Storm_Elemental_portrait.png"
+    Value: 275
+    Speed: 8
+    Health: 25
+    Attack: 9
+    Defense: 9
+    ToTrainAmount: 12
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 8
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 4
+
+  IceElemental:
+    Name: "Ice Elemental"
+    BattleImgUrl: "/resources/Ice_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Ice_Elemental_portrait.png"
+    Value: 375
+    Speed: 6
+    Health: 30
+    Attack: 8
+    Defense: 9
+    ToTrainAmount: 12
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 7
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 7
+
+  EnergyElemental:
+    Name: "Energy Elemental"
+    BattleImgUrl: "/resources/Energy_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Energy_Elemental_portrait.png"
+    Value: 400
+    Speed: 8
+    Health: 35
+    Attack: 12
+    Defense: 8
+    Movement: Fly
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 6
+
+  MagmaElemental:
+    Name: "Magma Elemental"
+    BattleImgUrl: "/resources/Magma_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Magma_Elemental_portrait.png"
+    Value: 500
+    Speed: 6
+    Health: 40
+    Attack: 11
+    Defense: 11
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 10
+
+  MagicElemental:
+    Name: "Magic Elemental"
+    BattleImgUrl: "/resources/MagicElemental_portrait.png"
+    DashboardImgUrl: "/resources/MagicElemental_portrait.png"
+    Value: 1200
+    Speed: 9
+    Health: 80
+    Attack: 15
+    Defense: 13
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 15
+        MaxDamage: 25
+    ResourcesDistribution:
+      Gold: 3
+      Wood: 1
+
+  Phoenix:
+    Name: "Phoenix"
+    BattleImgUrl: "/resources/Phoenix_portrait.png"
+    DashboardImgUrl: "/resources/Phoenix_portrait.png"
+    Value: 3500
+    Speed: 21
+    Health: 200
+    Attack: 21
+    Defense: 18
+    Movement: Fly
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 40
+    ResourcesDistribution:
+      Gold: 5
+      Mercury: 1
+  
+  
+  # Neutral
   Rogue:
     Name: "Rogue"
     BattleImgUrl: "/resources/Rogue_portrait.png"
     DashboardImgUrl: "/resources/Rogue_portrait.png"
-    Value: 50
+    Value: 100
     Speed: 6
     Health: 10
     Attack: 8
     Defense: 3
-    ToTrainAmount: 20
+    ToTrainAmount: 16
     Attacks:
       - <<: *MeleeAttack
-        MinDamage: 1
+        MinDamage: 2
         MaxDamage: 4
 
   Nomad:
@@ -1480,7 +2186,7 @@ Units:
     Health: 30
     Attack: 9
     Defense: 8
-    ToTrainAmount: 10
+    ToTrainAmount: 14
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1493,19 +2199,19 @@ Units:
     Value: 500
     Speed: 7
     Health: 40
-    Attack: 10
-    Defense: 9
-    ToTrainAmount: 8
+    Attack: 14
+    Defense: 7
+    ToTrainAmount: 6
     Attacks:
       - <<: *MeleeAttack
-        MinDamage: 8
-        MaxDamage: 10
+        MinDamage: 10
+        MaxDamage: 15
 
   GoldGolem:
     Name: "Gold Golem"
     BattleImgUrl: "/resources/Gold_Golem_portrait.png"
     DashboardImgUrl: "/resources/Gold_Golem_portrait.png"
-    Value: 600
+    Value: 500
     Speed: 5
     Health: 50
     Attack: 11
@@ -1525,7 +2231,7 @@ Units:
     Health: 60
     Attack: 13
     Defense: 12
-    ToTrainAmount: 6
+    ToTrainAmount: 4
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 10
@@ -1535,8 +2241,8 @@ Units:
     Name: "Rust Dragon"
     BattleImgUrl: "/resources/Rust_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Rust_Dragon_portrait.png"
-    Value: 15000
-    Speed: 19
+    Value: 22000
+    Speed: 17
     Health: 750
     Attack: 30
     Defense: 30
@@ -1545,16 +2251,16 @@ Units:
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 50
-        MaxDamage: 60
+        MaxDamage: 50
     ResourcesDistribution:
       Gold: 50
-      Mercury: 5
+      Sulfur: 5
   
   FaerieDragon:
     Name: "Faerie Dragon"
     BattleImgUrl: "/resources/Faerie_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Faerie_Dragon_portrait.png"
-    Value: 10000
+    Value: 14000
     Speed: 15
     Health: 500
     Attack: 20
@@ -1566,8 +2272,8 @@ Units:
         MinDamage: 20
         MaxDamage: 30
       - <<: *MeleeAttack
-        MinDamage: 25
-        MaxDamage: 35
+        MinDamage: 20
+        MaxDamage: 30
     ResourcesDistribution:
       Gold: 30
       Gems: 3
@@ -1576,9 +2282,9 @@ Units:
     Name: "Crystal Dragon"
     BattleImgUrl: "/resources/Crystal_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Crystal_Dragon_portrait.png"
-    Value: 10000
+    Value: 25000
     Speed: 16
-    Health: 750
+    Health: 800
     Attack: 40
     Defense: 40
     ToTrainAmount: 1
@@ -1595,7 +2301,7 @@ Units:
     Name: "Azure Dragon"
     BattleImgUrl: "/resources/Azure_Dragon_portrait.png"
     DashboardImgUrl: "/resources/Azure_Dragon_portrait.png"
-    Value: 30000
+    Value: 40000
     Speed: 19
     Health: 1000
     Attack: 50
@@ -1608,4 +2314,4 @@ Units:
         MaxDamage: 80
     ResourcesDistribution:
       Gold: 100
-      Gems: 5
+      Mercury: 5
