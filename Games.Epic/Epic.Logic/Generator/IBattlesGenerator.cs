@@ -39,6 +39,7 @@ namespace Epic.Logic.Generator
 
         private readonly Dictionary<Guid, IUnitTypeEntity> _unitTypesByIds = new Dictionary<Guid, IUnitTypeEntity>();
         private readonly List<IUnitTypeEntity> _orderedUnitTypes = new List<IUnitTypeEntity>();
+        private readonly List<IUnitTypeEntity> _orderedUnitTypesToTrain = new List<IUnitTypeEntity>();
         private readonly List<IGameResourceEntity> _resources = new List<IGameResourceEntity>();
         
         public BattleGenerator(
@@ -70,6 +71,7 @@ namespace Epic.Logic.Generator
             allUnits.ForEach(x => _unitTypesByIds.Add(x.Id, x));
             
             _orderedUnitTypes.Sort((x, y) => x.Value.CompareTo(y.Value));
+            _orderedUnitTypesToTrain.AddRange(_orderedUnitTypes.Where(x => x.ToTrainAmount > 0));
             
             _resources.Clear();
             var resourcesByKeys = await GameResourcesRepository.GetAllResourcesByKeys();
@@ -298,9 +300,9 @@ namespace Epic.Logic.Generator
                 });
             } else if (rewardType == RewardTypes.UnitsToBuy)
             {
-                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypesToTrain,
                     entity => entity.Value, (int)(difficulty.TargetDifficulty * 1.5));
-                var unitToBuy = _orderedUnitTypes[_random.Next(maxUnitIndex + 1)];
+                var unitToBuy = _orderedUnitTypesToTrain[_random.Next(maxUnitIndex + 1)];
                 
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
                 var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);

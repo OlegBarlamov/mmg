@@ -170,7 +170,7 @@ Units:
     Health: 10
     Attack: 6
     Defense: 5
-    ToTrainAmount: 28
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -185,7 +185,7 @@ Units:
     Health: 10
     Attack: 6
     Defense: 3
-    ToTrainAmount: 18
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 4
@@ -204,7 +204,7 @@ Units:
     Attack: 9
     Defense: 9
     Movement: Fly
-    ToTrainAmount: 16
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -221,7 +221,7 @@ Units:
     Health: 35
     Attack: 12
     Defense: 12
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 7
@@ -236,7 +236,7 @@ Units:
     Health: 30
     Attack: 12
     Defense: 10
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 10
@@ -254,7 +254,7 @@ Units:
     Health: 100
     Attack: 16
     Defense: 16
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 20
@@ -273,7 +273,7 @@ Units:
     Attack: 30
     Defense: 30
     Movement: Fly
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 50
@@ -409,7 +409,7 @@ Units:
     Health: 6
     Attack: 6
     Defense: 6
-    ToTrainAmount: 24
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -424,7 +424,7 @@ Units:
     Health: 20
     Attack: 5
     Defense: 5
-    ToTrainAmount: 16
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -439,7 +439,7 @@ Units:
     Health: 18
     Attack: 7
     Defense: 7
-    ToTrainAmount: 12
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -455,7 +455,7 @@ Units:
     Attack: 10
     Defense: 10
     Movement: Fly
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 5
@@ -470,7 +470,7 @@ Units:
     Health: 40
     Attack: 13
     Defense: 10
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 11
@@ -488,7 +488,7 @@ Units:
     Health: 120
     Attack: 18
     Defense: 18
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 15
@@ -507,7 +507,7 @@ Units:
     Attack: 19
     Defense: 17
     Movement: Fly
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 25
@@ -642,7 +642,7 @@ Units:
     Health: 10
     Attack: 6
     Defense: 3
-    ToTrainAmount: 28
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -657,7 +657,7 @@ Units:
     Health: 20
     Attack: 6
     Defense: 7
-    ToTrainAmount: 20
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -672,7 +672,7 @@ Units:
     Health: 15
     Attack: 9
     Defense: 5
-    ToTrainAmount: 14
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -691,7 +691,7 @@ Units:
     Attack: 9
     Defense: 8
     Movement: Fly
-    ToTrainAmount: 10
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 5
@@ -706,7 +706,7 @@ Units:
     Health: 65
     Attack: 9
     Defense: 12
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 10
@@ -721,7 +721,7 @@ Units:
     Health: 110
     Attack: 15
     Defense: 14
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 18
@@ -740,7 +740,7 @@ Units:
     Attack: 27
     Defense: 27
     Movement: Fly
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 40
@@ -874,7 +874,7 @@ Units:
     Health: 4
     Attack: 4
     Defense: 4
-    ToTrainAmount: 32
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 1
@@ -893,7 +893,7 @@ Units:
     Attack: 7
     Defense: 7
     Movement: Fly
-    ToTrainAmount: 18
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -908,7 +908,7 @@ Units:
     Health: 35
     Attack: 9
     Defense: 10
-    ToTrainAmount: 12
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 4
@@ -923,7 +923,7 @@ Units:
     Health: 30
     Attack: 12
     Defense: 9
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 7
@@ -942,7 +942,7 @@ Units:
     Attack: 12
     Defense: 12
     Movement: Fly
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 13
@@ -957,7 +957,7 @@ Units:
     Health: 110
     Attack: 16
     Defense: 13
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -974,7 +974,7 @@ Units:
     Health: 300
     Attack: 24
     Defense: 24
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 40
@@ -1112,7 +1112,7 @@ Units:
     Health: 4
     Attack: 4
     Defense: 4
-    ToTrainAmount: 30
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1127,7 +1127,7 @@ Units:
     Health: 13
     Attack: 7
     Defense: 4
-    ToTrainAmount: 16
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -1145,7 +1145,7 @@ Units:
     Health: 35
     Attack: 10
     Defense: 8
-    ToTrainAmount: 10
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1160,7 +1160,7 @@ Units:
     Health: 40
     Attack: 10
     Defense: 10
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 7
@@ -1175,7 +1175,7 @@ Units:
     Health: 45
     Attack: 13
     Defense: 13
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 13
@@ -1191,7 +1191,7 @@ Units:
     Attack: 16
     Defense: 14
     Movement: Fly
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 16
@@ -1209,7 +1209,7 @@ Units:
     Health: 200
     Attack: 26
     Defense: 28
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -1348,7 +1348,7 @@ Units:
     Health: 6
     Attack: 5
     Defense: 4
-    ToTrainAmount: 28
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1364,7 +1364,7 @@ Units:
     Attack: 6
     Defense: 6
     Movement: Fly
-    ToTrainAmount: 18
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1379,7 +1379,7 @@ Units:
     Health: 22
     Attack: 10
     Defense: 8
-    ToTrainAmount: 14
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -1397,7 +1397,7 @@ Units:
     Health: 30
     Attack: 10
     Defense: 10
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 6
@@ -1415,7 +1415,7 @@ Units:
     Health: 50
     Attack: 15
     Defense: 15
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 12
@@ -1431,7 +1431,7 @@ Units:
     Attack: 16
     Defense: 14
     Movement: Fly
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 14
@@ -1450,7 +1450,7 @@ Units:
     Attack: 25
     Defense: 25
     Movement: Fly
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 40
@@ -1584,7 +1584,7 @@ Units:
     Health: 5
     Attack: 5
     Defense: 3
-    ToTrainAmount: 30
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1599,7 +1599,7 @@ Units:
     Health: 10
     Attack: 8
     Defense: 5
-    ToTrainAmount: 18
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -1614,7 +1614,7 @@ Units:
     Health: 20
     Attack: 8
     Defense: 4
-    ToTrainAmount: 14
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -1632,7 +1632,7 @@ Units:
     Health: 60
     Attack: 13
     Defense: 7
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -1648,7 +1648,7 @@ Units:
     Attack: 13
     Defense: 11
     Movement: Fly
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 11
@@ -1663,7 +1663,7 @@ Units:
     Health: 70
     Attack: 17
     Defense: 13
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 16
@@ -1684,7 +1684,7 @@ Units:
     Health: 300
     Attack: 19
     Defense: 19
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -1817,7 +1817,7 @@ Units:
     Health: 6
     Attack: 4
     Defense: 6
-    ToTrainAmount: 24
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1832,7 +1832,7 @@ Units:
     Health: 15
     Attack: 6
     Defense: 8
-    ToTrainAmount: 18
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -1851,7 +1851,7 @@ Units:
     Attack: 8
     Defense: 10
     Movement: Fly
-    ToTrainAmount: 16
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1866,7 +1866,7 @@ Units:
     Health: 40
     Attack: 12
     Defense: 12
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -1881,7 +1881,7 @@ Units:
     Health: 70
     Attack: 11
     Defense: 16
-    ToTrainAmount: 6
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 12
@@ -1897,7 +1897,7 @@ Units:
     Attack: 14
     Defense: 14
     Movement: Fly
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 18
@@ -1915,7 +1915,7 @@ Units:
     Health: 250
     Attack: 18
     Defense: 20
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 25
@@ -2050,7 +2050,7 @@ Units:
     Attack: 2
     Defense: 2
     Movement: Fly
-    ToTrainAmount: 48   # 24 × 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -2065,7 +2065,7 @@ Units:
     Health: 25
     Attack: 9
     Defense: 9
-    ToTrainAmount: 12
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -2083,7 +2083,7 @@ Units:
     Health: 30
     Attack: 8
     Defense: 9
-    ToTrainAmount: 12
+    ToTrainAmount: 0
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -2102,7 +2102,7 @@ Units:
     Attack: 12
     Defense: 8
     Movement: Fly
-    ToTrainAmount: 16
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 4
@@ -2117,7 +2117,7 @@ Units:
     Health: 40
     Attack: 11
     Defense: 11
-    ToTrainAmount: 8
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -2132,7 +2132,7 @@ Units:
     Health: 80
     Attack: 15
     Defense: 13
-    ToTrainAmount: 4
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 15
@@ -2151,7 +2151,7 @@ Units:
     Attack: 21
     Defense: 18
     Movement: Fly
-    ToTrainAmount: 2
+    ToTrainAmount: 0
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
