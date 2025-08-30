@@ -12,6 +12,7 @@ namespace Epic.Data.UnitTypes
 
         Task<IUnitTypeEntity> CreateUnitType(Guid id, UnitTypeProperties properties);
         Task<IUnitTypeEntity[]> CreateBatch(IEnumerable<UnitTypeProperties> properties);
+        Task UpdateBatch(IEnumerable<IUnitTypeEntity> updatedEntities);
         Task<IUnitTypeEntity[]> GetAll();
     }
 }

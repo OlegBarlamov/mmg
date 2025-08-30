@@ -24,6 +24,7 @@ namespace Epic.Data.UnitTypes
         int Value { get; }
         int ToTrainAmount { get; }
         IReadOnlyDictionary<string, int> ResourcesDistribution { get; }
+        IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; }
     }
 
     public abstract class UnitTypeProps : IUnitProps
@@ -48,6 +49,9 @@ namespace Epic.Data.UnitTypes
         public int Value { get; set; } = 1;
         public int ToTrainAmount { get; set; }
         public Dictionary<string, int> ResourcesDistribution { get; set; } = new Dictionary<string, int>();
+        public List<Guid> UpgradeForUnitTypeIds { get; set; } = new List<Guid>();
+        
+        IReadOnlyList<Guid> IUnitTypeProperties.UpgradeForUnitTypeIds => UpgradeForUnitTypeIds;
 
         IReadOnlyDictionary<string, int> IUnitTypeProperties.ResourcesDistribution => ResourcesDistribution; 
         
@@ -59,7 +63,7 @@ namespace Epic.Data.UnitTypes
         Guid Id { get; }
     }
 
-    internal class UnitTypeEntity : UnitTypeProperties, IUnitTypeEntity
+    public class UnitTypeEntity : UnitTypeProperties, IUnitTypeEntity
     {
         public Guid Id { get; }
 
@@ -68,23 +72,28 @@ namespace Epic.Data.UnitTypes
             Id = id;
         }
 
-        internal static UnitTypeEntity FromProperties(Guid id, UnitTypeProperties properties)
+        internal void FillProperties(IUnitTypeProperties properties)
         {
-            return new UnitTypeEntity(id)
-            {
-                Name = properties.Name,
-                BattleImgUrl = properties.BattleImgUrl,
-                DashboardImgUrl = properties.DashboardImgUrl,
-                Speed = properties.Speed,
-                Health = properties.Health,
-                Attacks = properties.Attacks.ToList(),
-                Value = properties.Value,
-                ResourcesDistribution = properties.ResourcesDistribution,
-                ToTrainAmount = properties.ToTrainAmount,
-                Attack = properties.Attack,
-                Defense = properties.Defense,
-                Movement = properties.Movement,
-            };
+            Name = properties.Name;
+            BattleImgUrl = properties.BattleImgUrl;
+            DashboardImgUrl = properties.DashboardImgUrl;
+            Speed = properties.Speed;
+            Health = properties.Health;
+            Attacks = properties.Attacks.Cast<AttackFunctionType>().ToList();
+            Value = properties.Value;
+            ResourcesDistribution = new Dictionary<string, int>(properties.ResourcesDistribution);
+            ToTrainAmount = properties.ToTrainAmount;
+            Attack = properties.Attack;
+            Defense = properties.Defense;
+            Movement = properties.Movement;
+            UpgradeForUnitTypeIds = new List<Guid>(properties.UpgradeForUnitTypeIds);
+        }
+
+        public static UnitTypeEntity FromProperties(Guid id, IUnitTypeProperties properties)
+        {
+            var entity = new UnitTypeEntity(id);
+            entity.FillProperties(properties);
+            return entity;
         }
     }
 }

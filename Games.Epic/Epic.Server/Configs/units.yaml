@@ -171,6 +171,8 @@ Units:
     Attack: 6
     Defense: 5
     ToTrainAmount: 0
+    UpgradeOf:
+      - Pikeman
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -186,6 +188,8 @@ Units:
     Attack: 6
     Defense: 3
     ToTrainAmount: 0
+    UpgradeOf:
+      - Archer
     Attacks:
       - <<: *RangeAttack
         MinDamage: 4
@@ -205,6 +209,8 @@ Units:
     Defense: 9
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Griffin
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -222,6 +228,8 @@ Units:
     Attack: 12
     Defense: 12
     ToTrainAmount: 0
+    UpgradeOf:
+      - Swordsman
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 7
@@ -237,6 +245,8 @@ Units:
     Attack: 12
     Defense: 10
     ToTrainAmount: 0
+    UpgradeOf:
+      - Monk
     Attacks:
       - <<: *RangeAttack
         MinDamage: 10
@@ -255,6 +265,8 @@ Units:
     Attack: 16
     Defense: 16
     ToTrainAmount: 0
+    UpgradeOf:
+      - Cavalier
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 20
@@ -274,6 +286,8 @@ Units:
     Defense: 30
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Angel
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 50
@@ -410,6 +424,8 @@ Units:
     Attack: 6
     Defense: 6
     ToTrainAmount: 0
+    UpgradeOf:
+      - Skeleton
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -425,6 +441,8 @@ Units:
     Attack: 5
     Defense: 5
     ToTrainAmount: 0
+    UpgradeOf:
+      - WalkingDead
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -440,6 +458,8 @@ Units:
     Attack: 7
     Defense: 7
     ToTrainAmount: 0
+    UpgradeOf:
+      - Wight
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -456,6 +476,8 @@ Units:
     Defense: 10
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Vampire
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 5
@@ -471,6 +493,8 @@ Units:
     Attack: 13
     Defense: 10
     ToTrainAmount: 0
+    UpgradeOf:
+      - Lich
     Attacks:
       - <<: *RangeAttack
         MinDamage: 11
@@ -489,6 +513,8 @@ Units:
     Attack: 18
     Defense: 18
     ToTrainAmount: 0
+    UpgradeOf:
+      - BlackKnight
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 15
@@ -508,6 +534,8 @@ Units:
     Defense: 17
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - BoneDragon
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 25
@@ -643,6 +671,8 @@ Units:
     Attack: 6
     Defense: 3
     ToTrainAmount: 0
+    UpgradeOf:
+      - Centaur
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -658,6 +688,8 @@ Units:
     Attack: 6
     Defense: 7
     ToTrainAmount: 0
+    UpgradeOf:
+      - Dwarf
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -673,6 +705,8 @@ Units:
     Attack: 9
     Defense: 5
     ToTrainAmount: 0
+    UpgradeOf:
+      - WoodElf
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -692,6 +726,8 @@ Units:
     Defense: 8
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Pegasus
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 5
@@ -707,6 +743,8 @@ Units:
     Attack: 9
     Defense: 12
     ToTrainAmount: 0
+    UpgradeOf:
+      - Dendroid
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 10
@@ -722,6 +760,8 @@ Units:
     Attack: 15
     Defense: 14
     ToTrainAmount: 0
+    UpgradeOf:
+      - Unicorn
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 18
@@ -741,6 +781,8 @@ Units:
     Defense: 27
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - GreenDragon
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 40
@@ -875,6 +917,8 @@ Units:
     Attack: 4
     Defense: 4
     ToTrainAmount: 0
+    UpgradeOf:
+      - Gremlin
     Attacks:
       - <<: *RangeAttack
         MinDamage: 1
@@ -894,6 +938,8 @@ Units:
     Defense: 7
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - StoneGargoyle
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -909,6 +955,8 @@ Units:
     Attack: 9
     Defense: 10
     ToTrainAmount: 0
+    UpgradeOf:
+      - StoneGolem
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 4
@@ -924,6 +972,8 @@ Units:
     Attack: 12
     Defense: 9
     ToTrainAmount: 0
+    UpgradeOf:
+      - Mage
     Attacks:
       - <<: *RangeAttack
         MinDamage: 7
@@ -943,6 +993,8 @@ Units:
     Defense: 12
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Genie
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 13
@@ -958,6 +1010,8 @@ Units:
     Attack: 16
     Defense: 13
     ToTrainAmount: 0
+    UpgradeOf:
+      - Naga
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -975,6 +1029,8 @@ Units:
     Attack: 24
     Defense: 24
     ToTrainAmount: 0
+    UpgradeOf:
+      - Giant
     Attacks:
       - <<: *RangeAttack
         MinDamage: 40
@@ -1113,6 +1169,8 @@ Units:
     Attack: 4
     Defense: 4
     ToTrainAmount: 0
+    UpgradeOf:
+      - Imp
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1128,6 +1186,8 @@ Units:
     Attack: 7
     Defense: 4
     ToTrainAmount: 0
+    UpgradeOf:
+      - Gog
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -1146,6 +1206,8 @@ Units:
     Attack: 10
     Defense: 8
     ToTrainAmount: 0
+    UpgradeOf:
+      - HellHound
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1161,6 +1223,8 @@ Units:
     Attack: 10
     Defense: 10
     ToTrainAmount: 0
+    UpgradeOf:
+      - Demon
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 7
@@ -1176,6 +1240,8 @@ Units:
     Attack: 13
     Defense: 13
     ToTrainAmount: 0
+    UpgradeOf:
+      - PitFiend
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 13
@@ -1192,6 +1258,8 @@ Units:
     Defense: 14
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Efreet
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 16
@@ -1210,6 +1278,8 @@ Units:
     Attack: 26
     Defense: 28
     ToTrainAmount: 0
+    UpgradeOf:
+      - Devil
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -1349,6 +1419,8 @@ Units:
     Attack: 5
     Defense: 4
     ToTrainAmount: 0
+    UpgradeOf:
+      - Troglodyte
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1365,6 +1437,8 @@ Units:
     Defense: 6
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Harpy
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1380,6 +1454,8 @@ Units:
     Attack: 10
     Defense: 8
     ToTrainAmount: 0
+    UpgradeOf:
+      - Beholder
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -1398,6 +1474,8 @@ Units:
     Attack: 10
     Defense: 10
     ToTrainAmount: 0
+    UpgradeOf:
+      - Medusa
     Attacks:
       - <<: *RangeAttack
         MinDamage: 6
@@ -1416,6 +1494,8 @@ Units:
     Attack: 15
     Defense: 15
     ToTrainAmount: 0
+    UpgradeOf:
+      - Minotaur
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 12
@@ -1432,6 +1512,8 @@ Units:
     Defense: 14
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Manticore
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 14
@@ -1451,6 +1533,8 @@ Units:
     Defense: 25
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - RedDragon
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 40
@@ -1585,6 +1669,8 @@ Units:
     Attack: 5
     Defense: 3
     ToTrainAmount: 0
+    UpgradeOf:
+      - Goblin
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -1600,6 +1686,8 @@ Units:
     Attack: 8
     Defense: 5
     ToTrainAmount: 0
+    UpgradeOf:
+      - WolfRider
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 3
@@ -1615,6 +1703,8 @@ Units:
     Attack: 8
     Defense: 4
     ToTrainAmount: 0
+    UpgradeOf:
+      - Orc
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -1633,6 +1723,8 @@ Units:
     Attack: 13
     Defense: 7
     ToTrainAmount: 0
+    UpgradeOf:
+      - Ogre
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -1649,6 +1741,8 @@ Units:
     Defense: 11
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Roc
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 11
@@ -1664,6 +1758,8 @@ Units:
     Attack: 17
     Defense: 13
     ToTrainAmount: 0
+    UpgradeOf:
+      - Cyclops
     Attacks:
       - <<: *RangeAttack
         MinDamage: 16
@@ -1685,6 +1781,8 @@ Units:
     Attack: 19
     Defense: 19
     ToTrainAmount: 0
+    UpgradeOf:
+      - Behemoth
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -1818,6 +1916,8 @@ Units:
     Attack: 4
     Defense: 6
     ToTrainAmount: 0
+    UpgradeOf:
+      - Gnoll
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1833,6 +1933,8 @@ Units:
     Attack: 6
     Defense: 8
     ToTrainAmount: 0
+    UpgradeOf:
+      - Lizardman
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -1852,6 +1954,8 @@ Units:
     Defense: 10
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - SerpentFly
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 2
@@ -1867,6 +1971,8 @@ Units:
     Attack: 12
     Defense: 12
     ToTrainAmount: 0
+    UpgradeOf:
+      - Basilisk
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -1882,6 +1988,8 @@ Units:
     Attack: 11
     Defense: 16
     ToTrainAmount: 0
+    UpgradeOf:
+      - Gorgon
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 12
@@ -1898,6 +2006,8 @@ Units:
     Defense: 14
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Wyvern
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 18
@@ -1916,6 +2026,8 @@ Units:
     Attack: 18
     Defense: 20
     ToTrainAmount: 0
+    UpgradeOf:
+      - Hydra
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 25
@@ -2051,6 +2163,8 @@ Units:
     Defense: 2
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Pixie
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 1
@@ -2066,6 +2180,8 @@ Units:
     Attack: 9
     Defense: 9
     ToTrainAmount: 0
+    UpgradeOf:
+      - AirElemental
     Attacks:
       - <<: *RangeAttack
         MinDamage: 2
@@ -2084,6 +2200,8 @@ Units:
     Attack: 8
     Defense: 9
     ToTrainAmount: 0
+    UpgradeOf:
+      - WaterElemental
     Attacks:
       - <<: *RangeAttack
         MinDamage: 3
@@ -2103,6 +2221,8 @@ Units:
     Defense: 8
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - FireElemental
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 4
@@ -2118,6 +2238,8 @@ Units:
     Attack: 11
     Defense: 11
     ToTrainAmount: 0
+    UpgradeOf:
+      - EarthElemental
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 6
@@ -2133,6 +2255,8 @@ Units:
     Attack: 15
     Defense: 13
     ToTrainAmount: 0
+    UpgradeOf:
+      - PsychicElemental
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 15
@@ -2152,6 +2276,8 @@ Units:
     Defense: 18
     Movement: Fly
     ToTrainAmount: 0
+    UpgradeOf:
+      - Firebird
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 30
@@ -2217,6 +2343,9 @@ Units:
     Attack: 11
     Defense: 12
     ToTrainAmount: 6
+    UpgradeOf:
+      - StoneGolem
+      - IronGolem
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 8
@@ -2232,6 +2361,10 @@ Units:
     Attack: 13
     Defense: 12
     ToTrainAmount: 4
+    UpgradeOf:
+      - StoneGolem
+      - IronGolem
+      - GoldGolem
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 10

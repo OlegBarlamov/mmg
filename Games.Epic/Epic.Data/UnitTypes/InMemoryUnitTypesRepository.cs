@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Data.Exceptions;
 using JetBrains.Annotations;
+using NetExtensions.Collections;
 
 namespace Epic.Data.UnitTypes
 {
@@ -13,7 +14,7 @@ namespace Epic.Data.UnitTypes
         public string Name => nameof(InMemoryUnitTypesRepository);
         public string EntityName => "UnitType";
         
-        private readonly List<IUnitTypeEntity> _unitTypes = new List<IUnitTypeEntity>();
+        private readonly List<UnitTypeEntity> _unitTypes = new List<UnitTypeEntity>();
         
         public Task<IUnitTypeEntity> GetById(Guid id)
         {
@@ -21,12 +22,12 @@ namespace Epic.Data.UnitTypes
             if (unitType == null)
                 throw new EntityNotFoundException(this, id.ToString());
             
-            return Task.FromResult(unitType);
+            return Task.FromResult<IUnitTypeEntity>(unitType);
         }
 
         public Task<IUnitTypeEntity> GetByName(string name)
         {
-            return Task.FromResult(_unitTypes.FirstOrDefault(u => u.Name == name));
+            return Task.FromResult<IUnitTypeEntity>(_unitTypes.FirstOrDefault(u => u.Name == name));
         }
 
         public Task<IReadOnlyCollection<IUnitTypeEntity>> FetchByIds(IEnumerable<Guid> ids)
@@ -54,9 +55,15 @@ namespace Epic.Data.UnitTypes
             return Task.FromResult(entities.ToArray<IUnitTypeEntity>());
         }
 
+        public Task UpdateBatch(IEnumerable<IUnitTypeEntity> updatedEntities)
+        {
+            updatedEntities.ForEach(x => _unitTypes.First(y => x.Id == y.Id).FillProperties(x));
+            return Task.CompletedTask;
+        }
+
         public Task<IUnitTypeEntity[]> GetAll()
         {
-            return Task.FromResult(_unitTypes.ToArray());
+            return Task.FromResult(_unitTypes.ToArray<IUnitTypeEntity>());
         }
     }
 }

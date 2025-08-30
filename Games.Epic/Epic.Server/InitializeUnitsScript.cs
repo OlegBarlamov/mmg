@@ -14,7 +14,14 @@ namespace Epic.Server
 {
     internal class UnitsConfig
     {
-        public Dictionary<string, UnitTypeProperties> Units { get; set; }
+        internal class UnitDeclaration : UnitTypeProperties
+        {
+            [UsedImplicitly]
+            public string[] UpgradeOf { get; set; } = Array.Empty<string>();
+        }
+        
+        [UsedImplicitly]
+        public Dictionary<string, UnitDeclaration> Units { get; set; }
     }
     
     [UsedImplicitly]
@@ -45,9 +52,47 @@ namespace Epic.Server
                 .Build();
                 
             var config = deserializer.Deserialize<UnitsConfig>(new MergingParser(new Parser(file)));
-            await UnitTypesRepository.CreateBatch(config.Units.Select(x => x.Value));
+            
+            var createdUnits = await UnitTypesRepository.CreateBatch(config.Units.Select(x => x.Value));
+            var createdUnitsByNames = createdUnits.ToDictionary(x => x.Name, x => x);
+            
+            FillUpgradedUnitsData(config, createdUnitsByNames, out var updatedUnits);
+
+            await UnitTypesRepository.UpdateBatch(updatedUnits);
 
             await BattlesGenerator.Initialize();
+        }
+
+        private void FillUpgradedUnitsData(
+            UnitsConfig config, 
+            IReadOnlyDictionary<string, IUnitTypeEntity> createdUnits,
+            out List<UnitTypeEntity> updatedEntities)
+        {
+            updatedEntities = new List<UnitTypeEntity>();
+            
+            foreach (var configUnit in config.Units.Values)
+            {
+                var upgradeOfIds = configUnit.UpgradeOf
+                    .Select(configName =>
+                    {
+                        var configUnitUpgradeTo = config.Units[configName];
+                        return createdUnits[configUnitUpgradeTo.Name].Id;
+                    }).ToArray();
+                var targetEntity = createdUnits[configUnit.Name];
+                var updatedEntity = UnitTypeEntity.FromProperties(targetEntity.Id, targetEntity);
+                var hasChanged = updatedEntity.UpgradeForUnitTypeIds.Count != upgradeOfIds.Length ||
+                    updatedEntity.UpgradeForUnitTypeIds.Any(x => !upgradeOfIds.Contains(x));
+                
+                if (!hasChanged)
+                    continue;
+                
+                var finalUpgradeOfIds = updatedEntity.UpgradeForUnitTypeIds
+                    .Concat(upgradeOfIds)
+                    .Distinct();
+                
+                updatedEntity.UpgradeForUnitTypeIds = new List<Guid>(finalUpgradeOfIds);
+                updatedEntities.Add(updatedEntity);
+            }
         }
 
         public void Dispose()
