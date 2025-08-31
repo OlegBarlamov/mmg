@@ -36,7 +36,7 @@ namespace Epic.Server.Resources
             
             if (battleDefinitionObject.Units.Count > 0)
             {
-                Units = CombinedUnitDescriptor.Create(battleDefinitionObject.Units)
+                Units = CombinedUnitDescriptor.Create(battleDefinitionObject.Units, true)
                     .Select(x => new BattleDefinitionUnitResource(x, guardVisibility))
                     .ToArray();
             }

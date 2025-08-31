@@ -174,9 +174,20 @@ namespace Epic.Logic.Generator
             // Optional: Make sure indices are unique (in case of rounding)
             slotIndices = slotIndices.Distinct().ToList();
 
+            
+            IUnitTypeEntity upgradedType = null;
+            if (targetSlotsCount > 2 && _random.Next(100) < 15)
+            {
+                var upgradeTypes = await UnitTypesRepository.GetUpgradesFor(targetUnit.Id);
+                var orderedUpgrades = upgradeTypes.OrderBy(x => x.Value).ToList();
+                upgradedType = orderedUpgrades.FirstOrDefault();
+            }
+            var upgradedSlot = upgradedType != null ? targetSlotsCount / 2 : -1;
+
             for (int i = 0; i < slotIndices.Count && i < slotDistributions.Count; i++)
             {
-                await GlobalUnitsRepository.Create(targetUnit.Id, slotDistributions[i], container.Id, true,
+                var typeId = i == upgradedSlot && upgradedType != null ? upgradedType.Id : targetUnit.Id;
+                await GlobalUnitsRepository.Create(typeId, slotDistributions[i], container.Id, true,
                     slotIndices[i]);
             }
 

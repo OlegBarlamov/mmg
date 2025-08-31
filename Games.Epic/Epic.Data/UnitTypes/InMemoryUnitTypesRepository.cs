@@ -65,5 +65,11 @@ namespace Epic.Data.UnitTypes
         {
             return Task.FromResult(_unitTypes.ToArray<IUnitTypeEntity>());
         }
+
+        public Task<IUnitTypeEntity[]> GetUpgradesFor(Guid unitTypeId)
+        {
+            var result = _unitTypes.Where(x => x.UpgradeForUnitTypeIds.Contains(unitTypeId));
+            return Task.FromResult(result.ToArray<IUnitTypeEntity>());
+        }
     }
 }

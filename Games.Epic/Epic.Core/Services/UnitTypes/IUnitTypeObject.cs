@@ -13,5 +13,6 @@ namespace Epic.Core.Services.UnitTypes
         string DashboardImgUrl { get; }
         int Value { get; }
         IReadOnlyDictionary<string, int> ResourcesDistribution { get; } 
+        IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; }
     }
 }

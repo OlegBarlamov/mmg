@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Epic.Data.GameResources;
 
 namespace Epic.Core.Services.UnitTypes
@@ -13,6 +14,11 @@ namespace Epic.Core.Services.UnitTypes
                 copy.Add(PredefinedResourcesKeys.Gold, 1);
             }
             return copy;
+        }
+        
+        public static bool IsUpgradeFor(this IUnitTypeObject target, IUnitTypeObject unitType)
+        {
+            return target.UpgradeForUnitTypeIds.Contains(unitType.Id);
         }
     }
 }

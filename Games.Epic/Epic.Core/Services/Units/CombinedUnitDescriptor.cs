@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.PlayerUnits;
 using NetExtensions.Collections;
 
@@ -13,14 +14,30 @@ namespace Epic.Core.Services.Units
         {
         }
 
-        public static CombinedUnitDescriptor[] Create(IReadOnlyCollection<IGlobalUnitObject> units)
+        public static CombinedUnitDescriptor[] Create(IReadOnlyCollection<IGlobalUnitObject> units, bool combineUpgradedTypes)
         {
             if (units.Count == 0)
                 throw new ArgumentException(nameof(units));
             
-            return units.GroupBy(u => u.UnitType.Id)
+            var descriptors = units.GroupBy(u => u.UnitType.Id)
                 .Select(group => CreateFromSameTyped(group.ToArray()))
-                .ToArray();
+                .ToList();
+
+            if (combineUpgradedTypes)
+            {
+                var descriptorsCopy = descriptors.ToArray();
+                foreach (var descriptor in descriptorsCopy)
+                {
+                    var upgradeForUnit = descriptors.FirstOrDefault(x => descriptor.UnitType.IsUpgradeFor(x.UnitType));
+                    if (upgradeForUnit != null)
+                    {
+                        descriptors.Remove(descriptor);
+                        upgradeForUnit.AddCount(descriptor.Count);
+                    }
+                }
+            }
+
+            return descriptors.ToArray();
         } 
 
         public static CombinedUnitDescriptor CreateFromSameTyped(IReadOnlyCollection<IGlobalUnitObject> units)
@@ -39,8 +56,13 @@ namespace Epic.Core.Services.Units
         {
             if (!this.IsSameType(unit))
                 throw new ArgumentException($"{unit} can not be combined with {this}. Types do not match.");
-            
-            Count += unit.Count;
+
+            AddCount(unit.Count);
+        }
+
+        public void AddCount(int count)
+        {
+            Count += count;
         }
 
         public override IGlobalUnitEntity ToEntity()

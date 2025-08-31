@@ -21,6 +21,7 @@ namespace Epic.Core.Services.UnitTypes
         public string DashboardImgUrl { get; set; }
         public int Value { get; set; }
         public IReadOnlyDictionary<string, int> ResourcesDistribution { get; set; }
+        public IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; set; }
 
         private MutualUnitTypeObject()
         {
@@ -43,6 +44,7 @@ namespace Epic.Core.Services.UnitTypes
                 Attack = entity.Attack,
                 Defense = entity.Defense,
                 Movement = entity.Movement,
+                UpgradeForUnitTypeIds = entity.UpgradeForUnitTypeIds
             };
         }
 
