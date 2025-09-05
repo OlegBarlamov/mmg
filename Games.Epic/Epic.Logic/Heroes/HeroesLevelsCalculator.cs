@@ -1,7 +1,6 @@
 using System;
 using Epic.Core.Logic;
 using Epic.Core.Services.Heroes;
-using Epic.Logic.Generator;
 using FrameworkSDK.Common;
 using JetBrains.Annotations;
 
@@ -21,6 +20,7 @@ namespace Epic.Logic.Heroes
         {
             int gainedExp = experienceGain;
             int gainedLevels = 0, gainedAttacks = 0, gainedDefense = 0;
+            int gainedArmySlots = 0;
 
             var currentExp = hero.Experience + gainedExp;
             int currentLevel = hero.Level;
@@ -45,10 +45,20 @@ namespace Epic.Logic.Heroes
                     gainedDefense++;
                 }
 
+                if (currentLevel % 4 == 0)
+                {
+                    gainedArmySlots++;
+                }
+
                 requiredXp = GetXpRequiredForNextLevel(currentLevel, GetTotalXpForLevel(currentLevel));
             }
 
-            return new ExperienceGainResult(gainedExp, gainedLevels, gainedAttacks, gainedDefense);
+            return new ExperienceGainResult(gainedExp, gainedLevels)
+            {
+                AttacksGain = gainedAttacks,
+                DefenseGain = gainedDefense,
+                ArmySlotsGain = gainedArmySlots,
+            };
         }
         
         private const int BaseXpForLevel2 = 100;
@@ -94,15 +104,14 @@ namespace Epic.Logic.Heroes
     {
         public int ExperienceGain { get; }
         public int LevelsGain { get; }
-        public int AttacksGain { get; }
-        public int DefenseGain { get; }
+        public int AttacksGain { get; set; }
+        public int DefenseGain { get; set; }
+        public int ArmySlotsGain { get; set; }
 
-        public ExperienceGainResult(int exp, int levels, int attacks, int defense)
+        public ExperienceGainResult(int exp, int levels)
         {
             ExperienceGain = exp;
             LevelsGain = levels;
-            AttacksGain = attacks;
-            DefenseGain = defense;
         }
     }
 }

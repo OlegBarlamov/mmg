@@ -51,41 +51,116 @@ namespace Epic.Logic.Battle.Commands
 
         public override async Task<ICmdExecutionResult> Execute(CommandExecutionContext context, UnitAttackClientBattleMessage command)
         {
+            var originalColumn = TargetActor.Column;
+            var originalRow = TargetActor.Row;
             TargetActor.Column = command.MoveToCell.C;
             TargetActor.Row = command.MoveToCell.R;
-            TargetActor.AttackFunctionsData[command.AttackIndex].BulletsCount -= 1;
             
-            await context.BattleUnitsService.UpdateUnits(new[] { TargetActor });
-
             await context.MessageBroadcaster.BroadcastMessageAsync(
                 new UnitMoveCommandFromServer(command.TurnIndex, command.Player, command.ActorId, command.MoveToCell)
             );
-
-            await context.MessageBroadcaster.BroadcastMessageAsync(
-                new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.ActorId,
-                    command.TargetId, command.AttackIndex, false)
-            );
-
-            var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
+            
+            await ProcessAttack(
+                context,
                 TargetActor,
                 _targetTarget,
                 _attackFunction,
-                _range,
+                command.AttackIndex,
+                command,
                 false,
+                _range);
+
+            if (_attackFunction.CanTargetCounterattack && _targetTarget.GlobalUnit.IsAlive)
+            {
+                var attackFunctionForCounterattack = FindAttackFunctionForCounterattack(_targetTarget, _range, context.BattleObject.Units);
+                if (attackFunctionForCounterattack != null)
+                {
+                    await ProcessAttack(
+                        context,
+                        _targetTarget,
+                        TargetActor,
+                        _targetTarget.GlobalUnit.UnitType.Attacks[attackFunctionForCounterattack.AttackIndex],
+                        attackFunctionForCounterattack.AttackIndex,
+                        command,
+                        true,
+                        _range);
+                }
+            }
+
+            for (int i = 1; i < _attackFunction.AttacksCount; i++)
+            {
+                if (!_targetTarget.GlobalUnit.IsAlive || !TargetActor.GlobalUnit.IsAlive)
+                    break;
+                
+                await ProcessAttack(
+                    context,
+                    TargetActor,
+                    _targetTarget,
+                    _attackFunction,
+                    command.AttackIndex,
+                    command,
+                    false,
+                    _range);
+            }
+
+            if (TargetActor.GlobalUnit.IsAlive && _attackFunction.MovesBackAfterAttack)
+            {
+                TargetActor.Column = originalColumn;
+                TargetActor.Row = originalRow;
+                
+                await context.BattleUnitsService.UpdateUnits(new[] { TargetActor });
+                
+                await context.MessageBroadcaster.BroadcastMessageAsync(
+                    new UnitMoveCommandFromServer(command.TurnIndex, command.Player, command.ActorId, new HexoPoint(
+                        TargetActor.Column, TargetActor.Row))
+                );
+            }
+
+            return new CmdExecutionResult(true);
+        }
+
+        private static async Task ProcessAttack(
+            CommandExecutionContext context,
+            MutableBattleUnitObject attacker,
+            MutableBattleUnitObject target,
+            IAttackFunctionType attackType,
+            int attackIndex,
+            UnitAttackClientBattleMessage command,
+            bool isCounterAttack,
+            int range
+            )
+        {
+            await context.MessageBroadcaster.BroadcastMessageAsync(
+                new UnitAttackCommandFromServer(command.TurnIndex, command.Player, attacker.Id.ToString(),
+                    target.Id.ToString(), attackIndex, isCounterAttack)
+            );
+            
+            attacker.AttackFunctionsData[attackIndex].BulletsCount -= 1;
+            if (isCounterAttack)
+                attacker.AttackFunctionsData[attackIndex].CounterattacksUsed += 1;
+            
+            await context.BattleUnitsService.UpdateUnits(new[] { attacker });
+
+            var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
+                attacker,
+                target,
+                attackType,
+                range,
+                isCounterAttack,
                 context.RandomProvider);
 
-            _targetTarget.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
-            _targetTarget.GlobalUnit.IsAlive = _targetTarget.GlobalUnit.Count > 0;
+            target.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
+            target.GlobalUnit.IsAlive = target.GlobalUnit.Count > 0;
 
-            await context.GlobalUnitsService.UpdateUnits(new[] { _targetTarget.GlobalUnit });
+            await context.GlobalUnitsService.UpdateUnits(new[] { target.GlobalUnit });
 
-            _targetTarget.CurrentCount = unitTakesDamageData.RemainingCount;
-            _targetTarget.CurrentHealth = unitTakesDamageData.RemainingHealth;
+            target.CurrentCount = unitTakesDamageData.RemainingCount;
+            target.CurrentHealth = unitTakesDamageData.RemainingHealth;
 
-            await context.BattleUnitsService.UpdateUnits(new[] { _targetTarget });
+            await context.BattleUnitsService.UpdateUnits(new[] { target });
 
             var serverUnitTakesDamage =
-                new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, command.TargetId)
+                new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, target.Id.ToString())
                 {
                     DamageTaken = unitTakesDamageData.DamageTaken,
                     KilledCount = unitTakesDamageData.KilledCount,
@@ -93,51 +168,6 @@ namespace Epic.Logic.Battle.Commands
                     RemainingHealth = unitTakesDamageData.RemainingHealth,
                 };
             await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
-
-            if (_attackFunction.CanTargetCounterattack && _targetTarget.GlobalUnit.IsAlive)
-            {
-                var attackFunctionForCounterattack = FindAttackFunctionForCounterattack(_targetTarget, _range, context.BattleObject.Units);
-                if (attackFunctionForCounterattack != null)
-                {
-                    await context.MessageBroadcaster.BroadcastMessageAsync(
-                        new UnitAttackCommandFromServer(command.TurnIndex, command.Player, command.TargetId,
-                            command.ActorId, attackFunctionForCounterattack.AttackIndex, true)
-                    );
-
-                    attackFunctionForCounterattack.CounterattacksUsed++;
-                    attackFunctionForCounterattack.BulletsCount--;
-                    await context.BattleUnitsService.UpdateUnits(new[] { _targetTarget });
-
-                    unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
-                        _targetTarget,
-                        TargetActor,
-                        _targetTarget.GlobalUnit.UnitType.Attacks[attackFunctionForCounterattack.AttackIndex],
-                        _range,
-                        true,
-                        context.RandomProvider);
-
-                    TargetActor.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
-                    TargetActor.GlobalUnit.IsAlive = TargetActor.GlobalUnit.Count > 0;
-
-                    await context.GlobalUnitsService.UpdateUnits(new[] { TargetActor.GlobalUnit });
-
-                    TargetActor.CurrentCount = unitTakesDamageData.RemainingCount;
-                    TargetActor.CurrentHealth = unitTakesDamageData.RemainingHealth;
-
-                    await context.BattleUnitsService.UpdateUnits(new[] { TargetActor });
-
-                    await context.MessageBroadcaster.BroadcastMessageAsync(
-                        new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, command.ActorId)
-                        {
-                            DamageTaken = unitTakesDamageData.DamageTaken,
-                            KilledCount = unitTakesDamageData.KilledCount,
-                            RemainingCount = unitTakesDamageData.RemainingCount,
-                            RemainingHealth = unitTakesDamageData.RemainingHealth,
-                        });
-                }
-            }
-
-            return new CmdExecutionResult(true);
         }
 
         private static AttackFunctionStateEntity FindAttackFunctionForCounterattack(IBattleUnitObject unit, int range, IReadOnlyCollection<IBattleUnitObject> battleUnits)

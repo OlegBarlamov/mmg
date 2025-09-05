@@ -294,12 +294,12 @@ namespace Epic.Logic.Descriptions
             if (amount <= 1)    return "Single";
             if (amount <= 2)    return "Pair";
             if (amount <= 4)    return "Cluster";
-            if (amount <= 7)    return "Set";
-            if (amount <= 14)   return "Pocketful";
-            if (amount <= 24)   return "Handful";
-            if (amount <= 39)   return "Pouch";
-            if (amount <= 59)   return "Box";
-            if (amount <= 98)   return "Casket";
+            if (amount <= 7)    return "Bundle";
+            if (amount <= 14)   return "Satchel";
+            if (amount <= 24)   return "Pouch";
+            if (amount <= 39)   return "Box";
+            if (amount <= 59)   return "Chest";
+            if (amount <= 98)   return "Vault";
             return "Treasure"; // 99+
         }
         

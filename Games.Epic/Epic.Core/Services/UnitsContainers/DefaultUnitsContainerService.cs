@@ -36,5 +36,15 @@ namespace Epic.Core.Services.UnitsContainers
 
             return MutableUnitsContainerObject.FromEntity(entity);
         }
+
+        public async Task<IUnitsContainerObject> ChangeCapacity(IUnitsContainerObject container, int newCapacity)
+        {
+            var entity = container.ToEntity();
+            entity.Capacity = newCapacity;
+
+            await UnitsContainerRepository.Update(entity);
+
+            return MutableUnitsContainerObject.FromEntity(entity);
+        }
     }
 }

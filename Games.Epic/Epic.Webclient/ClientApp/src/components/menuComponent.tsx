@@ -52,7 +52,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             battlesGenerationInProgress: false,
             showSupply: false,
             armyUnits: null,
-            armyCapacity: 7,
+            armyCapacity: 3,
             resources: null,
             hoveredBattleHeight: null,
             showBattleConfirmation: false,

@@ -13,11 +13,11 @@ namespace Epic.Data.UnitsContainers
         public string Name => nameof(InMemoryUnitsContainerRepository);
         public string EntityName => "UnitsContainer";
         
-        private readonly List<IUnitsContainerEntity> _unitsContainers = new List<IUnitsContainerEntity>();
+        private readonly List<MutableUnitsContainerEntity> _unitsContainers = new List<MutableUnitsContainerEntity>();
         
         public Task<IUnitsContainerEntity> GetById(Guid id)
         {
-            return Task.FromResult(_unitsContainers.First(x => x.Id == id));
+            return Task.FromResult<IUnitsContainerEntity>(_unitsContainers.First(x => x.Id == id));
         }
 
         public Task<IUnitsContainerEntity> Create(int capacity, Guid ownerPlayerId)
@@ -37,7 +37,7 @@ namespace Epic.Data.UnitsContainers
         {
             entities.ForEach(x =>
             {
-                _unitsContainers.First(y => y.Id == x.Id).OwnerPlayerId = x.OwnerPlayerId;
+                _unitsContainers.First(y => y.Id == x.Id).CopyFrom(x); 
             });
             return Task.CompletedTask;
         }

@@ -16,5 +16,11 @@ namespace Epic.Data.UnitsContainers
         public Guid OwnerPlayerId { get; set; }
 
         public MutableUnitsContainerEntity() {}
+
+        public void CopyFrom(IUnitsContainerEntity entity)
+        {
+            Capacity = entity.Capacity;
+            OwnerPlayerId = entity.OwnerPlayerId;
+        }
     }
 }

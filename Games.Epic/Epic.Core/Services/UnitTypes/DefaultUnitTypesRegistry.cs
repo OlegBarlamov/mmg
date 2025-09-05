@@ -32,11 +32,17 @@ namespace Epic.Core.Services.UnitTypes
             return _unitTypesByIds[typeId];
         }
 
-        public IReadOnlyList<IUnitTypeEntity> FindUpgradesFor(Guid typeId)
+        public IReadOnlyList<IUnitTypeEntity> GetUpgradesFor(Guid typeId)
         {
             return _upgrades.TryGetValue(typeId, out var upgrades) 
                 ? upgrades.Select(ById).ToArray() 
                 : Array.Empty<IUnitTypeEntity>();
+        }
+
+        public IReadOnlyList<IUnitTypeEntity> GetSourceTypeFromUpgraded(Guid upgradedTypeId)
+        {
+            var typeEntity = ById(upgradedTypeId);
+            return typeEntity.UpgradeForUnitTypeIds.Select(ById).ToArray();
         }
 
         public async Task Load(CancellationToken cancellationToken)
@@ -44,18 +50,19 @@ namespace Epic.Core.Services.UnitTypes
             _unitTypesByIds.Clear();
             _upgrades.Clear();
             _orderedUnitTypes.Clear();
+            _toTrainOrderedUnitTypes.Clear();
             
             
             var allUnits = await UnitTypesRepository.GetAll();
             _orderedUnitTypes.AddRange(allUnits);
+            _toTrainOrderedUnitTypes.AddRange(allUnits.Where(x => x.ToTrainAmount > 0));
             _orderedUnitTypes.Sort((x, y) => x.Value.CompareTo(y.Value));
+            _toTrainOrderedUnitTypes.Sort((x, y) => x.Value.CompareTo(y.Value));
             
             
             allUnits.ForEach(x =>
             {
                 _unitTypesByIds.Add(x.Id, x);
-                if (x.ToTrainAmount > 0)
-                    _toTrainOrderedUnitTypes.Add(x);
                 
                 foreach (var upgradeForId in x.UpgradeForUnitTypeIds)
                 {

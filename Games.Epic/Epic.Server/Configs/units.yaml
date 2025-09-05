@@ -192,8 +192,9 @@ Units:
       - Archer
     Attacks:
       - <<: *RangeAttack
-        MinDamage: 4
-        MaxDamage: 6
+        MinDamage: 2
+        MaxDamage: 3
+        AttacksCount: 2
       - <<: *MeleeAttack
         MinDamage: 1
         MaxDamage: 2
@@ -215,8 +216,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 3
         MaxDamage: 6
-    SpecialAbilities:
-      - UnlimitedRetaliation
+        CounterattacksCount: 32
 
   Crusader:
     Name: "Crusader"
@@ -234,6 +234,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 7
         MaxDamage: 10
+        AttacksCount: 2
 
   Zealot:
     Name: "Zealot"
@@ -482,6 +483,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 5
         MaxDamage: 8
+        CanTargetCounterattack: false
 
   PowerLich:
     Name: "Power Lich"
@@ -711,6 +713,7 @@ Units:
       - <<: *RangeAttack
         MinDamage: 3
         MaxDamage: 5
+        AttacksCount: 2
       - <<: *MeleeAttack
         MinDamage: 2
         MaxDamage: 4
@@ -886,6 +889,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 20
         MaxDamage: 20
+        CanTargetCounterattack: false
     Gold: 4
     Sulfur: 1
 
@@ -1016,6 +1020,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 30
         MaxDamage: 30
+        CanTargetCounterattack: false
     Gold: 4
     Sulfur: 1
 
@@ -1155,6 +1160,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 30
         MaxDamage: 40
+        CanTargetCounterattack: false
     ResourcesDistribution:
       Gold: 6
       Sulfur: 1
@@ -1212,6 +1218,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 2
         MaxDamage: 7
+        CanTargetCounterattack: false
 
   HornedDemon:
     Name: "Horned Demon"
@@ -1284,6 +1291,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 30
         MaxDamage: 40
+        CanTargetCounterattack: false
     ResourcesDistribution:
       Gold: 6
       Sulfur: 1
@@ -1319,6 +1327,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 1
         MaxDamage: 4
+        MovesBackAfterAttack: true
   
   Beholder:
     Name: "Beholder"
@@ -1443,6 +1452,8 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 1
         MaxDamage: 4
+        MovesBackAfterAttack: true
+        CanTargetCounterattack: false
 
   EvilEye:
     Name: "Evil Eye"
@@ -1518,6 +1529,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 14
         MaxDamage: 20
+        CanTargetCounterattack: false
     ResourcesDistribution:
       Gold: 3
       Stone: 1
@@ -1692,6 +1704,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 3
         MaxDamage: 4
+        AttacksCount: 2
 
   OrcChieftain:
     Name: "Orc Chieftain"
@@ -1709,6 +1722,7 @@ Units:
       - <<: *RangeAttack
         MinDamage: 2
         MaxDamage: 5
+        AttacksCount: 2
       - <<: *MeleeAttack
         MinDamage: 1
         MaxDamage: 3
@@ -1747,6 +1761,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 11
         MaxDamage: 15
+        AttacksCount: 2
 
   CyclopsKing:
     Name: "Cyclops King"
@@ -1905,6 +1920,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 25
         MaxDamage: 45
+        CanTargetCounterattack: false
   
   GnollMarauder:
     Name: "Gnoll Marauder"
@@ -2032,6 +2048,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 25
         MaxDamage: 45
+        CanTargetCounterattack: false
     ResourcesDistribution:
       Gold: 5
       Sulfur: 1
@@ -2129,6 +2146,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 10
         MaxDamage: 20
+        CanTargetCounterattack: false
     ResourcesDistribution:
       Gold: 3
       Wood: 1
@@ -2169,6 +2187,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 1
         MaxDamage: 2
+        CanTargetCounterattack: false
 
   StormElemental:
     Name: "Storm Elemental"
@@ -2261,6 +2280,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 15
         MaxDamage: 25
+        CanTargetCounterattack: false
     ResourcesDistribution:
       Gold: 3
       Wood: 1

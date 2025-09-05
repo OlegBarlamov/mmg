@@ -19,6 +19,8 @@ namespace Epic.Data.UnitTypes.Subtypes
         int EnemyInRangeDisablesAttack { get; }
         int MinDamage { get; }
         int MaxDamage { get; }
+        int AttacksCount { get; }
+        bool MovesBackAfterAttack { get; }
     } 
     
     public class AttackFunctionType : IAttackFunctionType
@@ -37,6 +39,8 @@ namespace Epic.Data.UnitTypes.Subtypes
         public int EnemyInRangeDisablesAttack { get; set; }
         public int MinDamage { get; set; } = 1;
         public int MaxDamage { get; set; } = 1;
+        public int AttacksCount { get; set; } = 1;
+        public bool MovesBackAfterAttack { get; set; }
 
         public AttackFunctionType()
         {

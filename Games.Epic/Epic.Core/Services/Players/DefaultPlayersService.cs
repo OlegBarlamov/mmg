@@ -44,7 +44,7 @@ namespace Epic.Core.Services.Players
         {
             var user = await UsersService.GetUserById(userId);
             
-            var supplyContainer = await UnitsContainersService.Create(30, Guid.Empty);
+            var supplyContainer = await UnitsContainersService.Create(24, Guid.Empty);
             var entity = await PlayersRepository.Create(new MutablePlayerEntityFields
             {
                 Day = 0,

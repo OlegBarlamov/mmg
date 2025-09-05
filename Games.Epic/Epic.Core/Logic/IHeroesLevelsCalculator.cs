@@ -8,6 +8,7 @@ namespace Epic.Core.Logic
         public int LevelsGain { get; }
         public int AttacksGain { get; }
         public int DefenseGain { get; }
+        public int ArmySlotsGain { get; }
     }
     
     public interface IHeroesLevelsCalculator

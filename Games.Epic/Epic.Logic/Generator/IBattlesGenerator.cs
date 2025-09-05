@@ -75,7 +75,7 @@ namespace Epic.Logic.Generator
         {
             var rewardFactor = 1;
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
-            var toTrainOrderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
+            var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;
             var resources = ResourcesRegistry.GetAll();
             
             var player = await PlayersService.GetById(playerId);
@@ -241,9 +241,9 @@ namespace Epic.Logic.Generator
                 var resourceTypesCount = resourcesValue > resources.Sum(x => x.Price) / 2
                     ? _random.Next(1, resources.Count) : 1;
                 var valuePerResource = (double)resourcesValue / resourceTypesCount;
+                var availableResources = new List<IGameResourceEntity>(resources);
                 for (var i = 0; i < resourceTypesCount; i++)
                 {
-                    var availableResources = new List<IGameResourceEntity>(resources); 
                     var resourceType = availableResources[_random.Next(0, availableResources.Count)];
                     availableResources.Remove(resourceType);
                     
@@ -306,14 +306,20 @@ namespace Epic.Logic.Generator
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
                 var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);
                 IEnumerable<Guid> GetWithUpgrades(Guid typeId) =>
-                    new[] { typeId }.Concat(UnitTypesRegistry.FindUpgradesFor(typeId).Select(u => u.Id));
-                
-                var desiredUnits = supplyUnits.Concat(armyUnits)
+                    new[] { typeId }.Concat(UnitTypesRegistry.GetUpgradesFor(typeId).Select(u => u.Id));
+                IEnumerable<Guid> GetOriginalTypes(Guid typeId) =>
+                    new[] { typeId }.Concat(UnitTypesRegistry.GetSourceTypeFromUpgraded(typeId).Select(u => u.Id));
+
+                var playerUnitTypes = supplyUnits.Concat(armyUnits)
                     .Select(x => x.TypeId)
                     .Distinct()
+                    .ToArray();
+                var desiredUnits = playerUnitTypes
+                    .SelectMany(GetOriginalTypes)
                     .SelectMany(GetWithUpgrades)
+                    .Distinct()
                     .Select(UnitTypesRegistry.ById);
-
+                
                 var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
                 if (availableDesiredUnits.Any() && _random.Next(100) > 66)
                     unitToBuy = availableDesiredUnits[_random.Next(availableDesiredUnits.Count)];
@@ -365,7 +371,7 @@ namespace Epic.Logic.Generator
 
         public async Task Generate(Guid playerId, int day, int currentBattlesCount)
         {
-            int count = currentBattlesCount < 5 ? _random.Next(3, 7) : _random.Next(1, 4);
+            int count = currentBattlesCount <= 5 ? _random.Next(3, 7) : _random.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
                 await GenerateSingle(playerId, day);

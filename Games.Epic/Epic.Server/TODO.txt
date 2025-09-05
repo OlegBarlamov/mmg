@@ -5,11 +5,10 @@ Tech:
 - Have real DB based on profile
 
 Product:
-- Upgrade units
+- Show hero stats in battle
 - Battle map obstacles
 - In battle special abilities
 - Choose in battle attack type
-- Show hero stats in battle
 - Objects rewards
 - Proper login/logout, new game
 - Game types (long, battle etc)

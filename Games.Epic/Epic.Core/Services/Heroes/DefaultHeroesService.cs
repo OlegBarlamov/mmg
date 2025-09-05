@@ -40,7 +40,7 @@ namespace Epic.Core.Services.Heroes
 
         public async Task<IHeroObject> CreateNew(string name, Guid playerId, bool setActive = false)
         {
-            var container = await UnitsContainersService.Create(7, playerId);
+            var container = await UnitsContainersService.Create(3, playerId);
             var entity = await HeroEntitiesRepository.CreateForPlayer(playerId, new MutableHeroEntityFields
             {
                 Name = name,
@@ -74,6 +74,12 @@ namespace Epic.Core.Services.Heroes
             mutableHeroObject.Defense += gainResult.DefenseGain;
 
             await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
+
+            if (gainResult.ArmySlotsGain != 0)
+            {
+                var newCapacity = Math.Min(11, heroObject.ArmyContainer.Capacity + gainResult.ArmySlotsGain);
+                await UnitsContainersService.ChangeCapacity(heroObject.ArmyContainer, newCapacity);
+            }
         }
 
         private async Task FillHeroObject(MutableHeroObject heroObject)

@@ -11,6 +11,7 @@ namespace Epic.Core.Services.UnitTypes
         
         IUnitTypeEntity ById(Guid typeId);
 
-        IReadOnlyList<IUnitTypeEntity> FindUpgradesFor(Guid typeId);
+        IReadOnlyList<IUnitTypeEntity> GetUpgradesFor(Guid typeId);
+        IReadOnlyList<IUnitTypeEntity> GetSourceTypeFromUpgraded(Guid upgradedTypeId);
     }
 }
