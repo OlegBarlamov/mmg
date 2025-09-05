@@ -68,7 +68,7 @@ export class RewardManager {
     /**
      * Handle reward acceptance
      */
-    async acceptReward(): Promise<void> {
+    async acceptReward(affectedSlots?: number[]): Promise<void> {
         const { currentReward } = this.state;
         if (!currentReward) return;
 
@@ -76,6 +76,7 @@ export class RewardManager {
             const result = await this.serverAPI.acceptReward(currentReward.id, {
                 accepted: true,
                 amounts: currentReward.amounts,
+                affectedSlots: affectedSlots || [],
             });
 
             // If this was a Battle reward and we got a new battle map, notify callback
@@ -101,6 +102,7 @@ export class RewardManager {
             await this.serverAPI.acceptReward(currentReward.id, {
                 accepted: false,
                 amounts: [],
+                affectedSlots: [],
             });
 
             this.showNextReward();

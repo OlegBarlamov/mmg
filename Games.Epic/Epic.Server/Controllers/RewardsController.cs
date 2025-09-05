@@ -43,7 +43,7 @@ namespace Epic.Server.Controllers
             var rewardResources = await Task.WhenAll(rewards.Select(async reward =>
             {
                 var resourcesAmounts = new List<ResourceAmount[]>();
-                if (reward.RewardType == RewardType.UnitToBuy)
+                if (reward.RewardType == RewardType.UnitsToBuy || reward.RewardType == RewardType.UnitsToUpgrade)
                 {
                     var prices = await UnitTypesService.GetPrices(reward.UnitTypes);
                     var amounts = await GameResourcesService.GetResourcesAmountsFromPrices(prices);
@@ -63,7 +63,7 @@ namespace Epic.Server.Controllers
             
             if (body.Accepted)
             {
-                var acceptResult = await RewardsService.AcceptRewardAsync(id, playerId, body.Amounts);
+                var acceptResult = await RewardsService.AcceptRewardAsync(id, playerId, body.Amounts, body.AffectedSlots);
                 return Ok(new AcceptedRewardResource(acceptResult));
             }
 

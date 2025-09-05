@@ -81,6 +81,43 @@ namespace Epic.Core.Services.Units
             return await FillUserObjects(unitObjects);
         }
 
+        public async Task<IReadOnlyCollection<IGlobalUnitObject>> UpgradeUnits(IReadOnlyCollection<UpgradeUnitData> unitsToUpgrade)
+        {
+            var updatedOrCreatedUnits = await Task.WhenAll(unitsToUpgrade.Select(async unitToUpgrade =>
+            {
+                if (unitToUpgrade.Amount <= 0)
+                    return unitToUpgrade.Unit;
+
+                var mutableUnit = MutableGlobalUnitObject.CopyFrom(unitToUpgrade.Unit);
+                if (unitToUpgrade.Amount >= unitToUpgrade.Unit.Count)
+                {
+                    mutableUnit.UnitTypeId = unitToUpgrade.UpgradeToType.Id;
+                    mutableUnit.UnitType = unitToUpgrade.UpgradeToType;
+
+                    await UpdateUnits(new[] { mutableUnit });
+
+                    return mutableUnit;
+                }
+                
+                
+                mutableUnit.Count -= unitToUpgrade.Amount;
+
+                var createdUnits = await CreateUnits(new[]
+                {
+                    new CreateUnitData(unitToUpgrade.UpgradeToType.Id, unitToUpgrade.Amount)
+                    {
+                        ContainerId = unitToUpgrade.ContainerId,
+                    }
+                });
+                
+                await UpdateUnits(new[] { mutableUnit });
+
+                return createdUnits.First();
+            }));
+
+            return updatedOrCreatedUnits;
+        }
+
         public async Task<IGlobalUnitObject> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex)
         {
             var unitEntity = await GlobalUnitsRepository.GetAliveUnitFromContainerInSlot(containerId, slotIndex);
@@ -88,6 +125,21 @@ namespace Epic.Core.Services.Units
             
             var filledUnits = await FillUserObjects(new [] { unit });
             return filledUnits.First();
+        }
+
+        public async Task<IReadOnlyList<IGlobalUnitObject>> GetAliveUnitFromContainerPerSlots(Guid containerId, int startSlot, int endSlot)
+        {
+            var result = new List<IGlobalUnitObject>();
+            
+            var allUnits = await GetAliveUnitsByContainerId(containerId);
+
+            for (var i = startSlot; i <= endSlot; i++)
+            {
+                var unit = allUnits.FirstOrDefault(x => x.ContainerSlotIndex == i);
+                result.Add(unit);
+            }
+
+            return result;
         }
 
         public Task RemoveUnits(IReadOnlyCollection<IGlobalUnitObject> units)

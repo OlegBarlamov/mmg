@@ -5,7 +5,8 @@ namespace Epic.Data.Reward
         None,
         ResourcesGain,
         UnitsGain, 
-        UnitToBuy,
+        UnitsToBuy,
+        UnitsToUpgrade,
         Battle,
     }
 }

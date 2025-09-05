@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -19,6 +19,14 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
     }    
+    getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]> {
+        const query = unitTypeIds.map(id => `ids=${encodeURIComponent(id)}`).join("&");
+        return this.fetchResource<IUnitTypeInfo[]>(
+            `api/unit-types?${query}`,
+            "GET",
+            "units_infos"
+        )
+    }
     async beginBattleWithPlayer(playerName: string): Promise<BattleMap> {
         const battleMap = await this.fetchResource<BattleMap>("api/battle/player", "POST", "begin_battle_player", {
             playerName: playerName,
@@ -26,8 +34,8 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         this.fillMapCells(battleMap)
         return battleMap
     }
-    getUnitInfo(unitTypeId: string): Promise<IUnitInfo> {
-        return this.fetchResource<IUnitInfo>(`api/unit-types/${unitTypeId}`, "GET", "unit_info")
+    getUnitTypeInfo(unitTypeId: string): Promise<IUnitTypeInfo> {
+        return this.fetchResource<IUnitTypeInfo>(`api/unit-types/${unitTypeId}`, "GET", "unit_type_info")
     }
     getReport(reportId: string): Promise<IReportInfo> {
         return this.fetchResource<IReportInfo>(`api/reports/${reportId}`, "GET", "report")

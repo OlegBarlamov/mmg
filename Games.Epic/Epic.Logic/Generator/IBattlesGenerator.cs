@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.UnitsContainers;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
@@ -12,13 +14,11 @@ using Epic.Data.UnitTypes;
 using Epic.Logic.Utils;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NetExtensions.Collections;
 
 namespace Epic.Logic.Generator
 {
     public interface IBattlesGenerator
     {
-        Task Initialize();
         Task Generate(Guid playerId, int day, int currentBattlesCount);
         Task GenerateSingle(Guid playerId, int day);
     }
@@ -34,13 +34,10 @@ namespace Epic.Logic.Generator
         public IGameResourcesRepository GameResourcesRepository { get; }
         public IPlayersService PlayersService { get; }
         public ILogger<BattleGenerator> Logger { get; }
+        public IGameResourcesRegistry ResourcesRegistry { get; }
+        public IUnitTypesRegistry UnitTypesRegistry { get; }
 
         private readonly Random _random = new Random();
-
-        private readonly Dictionary<Guid, IUnitTypeEntity> _unitTypesByIds = new Dictionary<Guid, IUnitTypeEntity>();
-        private readonly List<IUnitTypeEntity> _orderedUnitTypes = new List<IUnitTypeEntity>();
-        private readonly List<IUnitTypeEntity> _orderedUnitTypesToTrain = new List<IUnitTypeEntity>();
-        private readonly List<IGameResourceEntity> _resources = new List<IGameResourceEntity>();
         
         public BattleGenerator(
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
@@ -50,7 +47,9 @@ namespace Epic.Logic.Generator
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IGameResourcesRepository gameResourcesRepository,
             [NotNull] IPlayersService playersService,
-            [NotNull] ILogger<BattleGenerator> logger)
+            [NotNull] ILogger<BattleGenerator> logger,
+            [NotNull] IGameResourcesRegistry resourcesRegistry,
+            [NotNull] IUnitTypesRegistry unitTypesRegistry)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -60,22 +59,8 @@ namespace Epic.Logic.Generator
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        public async Task Initialize()
-        {
-            _orderedUnitTypes.Clear();
-
-            var allUnits = await UnitTypesRepository.GetAll();
-            _orderedUnitTypes.AddRange(allUnits);
-            allUnits.ForEach(x => _unitTypesByIds.Add(x.Id, x));
-            
-            _orderedUnitTypes.Sort((x, y) => x.Value.CompareTo(y.Value));
-            _orderedUnitTypesToTrain.AddRange(_orderedUnitTypes.Where(x => x.ToTrainAmount > 0));
-            
-            _resources.Clear();
-            var resourcesByKeys = await GameResourcesRepository.GetAllResourcesByKeys();
-            _resources.AddRange(resourcesByKeys.Values);
+            ResourcesRegistry = resourcesRegistry ?? throw new ArgumentNullException(nameof(resourcesRegistry));
+            UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
         }
 
         private enum SlotsDistributionPattern
@@ -89,6 +74,9 @@ namespace Epic.Logic.Generator
         public async Task GenerateSingle(Guid playerId, int day)
         {
             var rewardFactor = 1;
+            var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
+            var toTrainOrderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
+            var resources = ResourcesRegistry.GetAll();
             
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
@@ -101,13 +89,13 @@ namespace Epic.Logic.Generator
             var width = _random.Next(BattleConstants.MinBattleWidth, maxWidth);
             var height = _random.Next(BattleConstants.MinBattleHeight, maxHeight);
             
-            var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+            var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(orderedUnitTypes,
                 entity => entity.Value, difficulty.TargetDifficulty);
             var normalizedMean = 1.0 / 3.0; // Bias toward lower part
             var stdDev = 0.25; // how chaotic the output
             var sample = RandomDistributions.GetBoundedNormal(_random, normalizedMean, stdDev, 0, 1);
             var targetIndex = (int)(sample * maxStrongUnitIndex);
-            var targetUnit = _orderedUnitTypes[targetIndex];
+            var targetUnit = orderedUnitTypes[targetIndex];
 
             var unitsCount = Math.Max(1, (int)Math.Round((double)difficulty.TargetDifficulty / targetUnit.Value));
 
@@ -225,13 +213,13 @@ namespace Epic.Logic.Generator
                     container.Id);
 
 
-            var rewardTypeIndex = _random.Next(0, Enum.GetValues(typeof(RewardTypes))
+            var rewardTypeIndex = _random.Next(0, Enum.GetValues(typeof(GeneratedRewardTypes))
                 .Cast<int>()
                 .Max() + 1);
 
-            var rewardType = (RewardTypes)rewardTypeIndex;
+            var rewardType = (GeneratedRewardTypes)rewardTypeIndex;
 
-            if (rewardType == RewardTypes.Gold)
+            if (rewardType == GeneratedRewardTypes.Gold)
             {
                 var goldAmount = RoundToFriendlyNumber(difficulty.TargetDifficulty);
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
@@ -245,17 +233,17 @@ namespace Epic.Logic.Generator
                     Ids = new[] { GameResourcesRepository.GoldResourceId },
                 });
             }
-            else if (rewardType == RewardTypes.Resource)
+            else if (rewardType == GeneratedRewardTypes.Resource)
             {
                 var resourcesValue = difficulty.TargetDifficulty;
                 var resourceTypes = new List<IGameResourceEntity>();
                 var resourcesAmounts = new List<int>();
-                var resourceTypesCount = resourcesValue > _resources.Sum(x => x.Price) / 2
-                    ? _random.Next(1, _resources.Count) : 1;
+                var resourceTypesCount = resourcesValue > resources.Sum(x => x.Price) / 2
+                    ? _random.Next(1, resources.Count) : 1;
                 var valuePerResource = (double)resourcesValue / resourceTypesCount;
                 for (var i = 0; i < resourceTypesCount; i++)
                 {
-                    var availableResources = new List<IGameResourceEntity>(_resources); 
+                    var availableResources = new List<IGameResourceEntity>(resources); 
                     var resourceType = availableResources[_random.Next(0, availableResources.Count)];
                     availableResources.Remove(resourceType);
                     
@@ -278,11 +266,11 @@ namespace Epic.Logic.Generator
                     Ids = resourceTypes.Select(x => x.Id).ToArray(),
                 });
             }
-            else if (rewardType == RewardTypes.UnitsGain)
+            else if (rewardType == GeneratedRewardTypes.UnitsGain)
             {
-                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypes,
+                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(orderedUnitTypes,
                     entity => entity.Value, difficulty.TargetDifficulty);
-                var unitToGain = _orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
+                var unitToGain = orderedUnitTypes[_random.Next(0, maxUnitIndex + 1)];
                 var unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 2) / unitToGain.Value));
                 
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
@@ -290,10 +278,10 @@ namespace Epic.Logic.Generator
                 var desiredUnits = supplyUnits.Concat(armyUnits)
                     .Select(x => x.TypeId)
                     .Distinct()
-                    .Select(id => _unitTypesByIds[id]);
+                    .Select(UnitTypesRegistry.ById);
 
                 var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
-                if (availableDesiredUnits.Any() && _random.Next(100) > 66)
+                if (availableDesiredUnits.Any() && _random.Next(100) < 33)
                 {
                     unitToGain = availableDesiredUnits[_random.Next(0, availableDesiredUnits.Count)];
                     unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 3) / unitToGain.Value));
@@ -309,29 +297,33 @@ namespace Epic.Logic.Generator
                     CustomTitle = null,
                     Ids = new[] { unitToGain.Id },
                 });
-            } else if (rewardType == RewardTypes.UnitsToBuy)
+            } else if (rewardType == GeneratedRewardTypes.UnitsToBuy)
             {
-                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(_orderedUnitTypesToTrain,
+                var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(toTrainOrderedUnitTypes,
                     entity => entity.Value, (int)(difficulty.TargetDifficulty * 1.5));
-                var unitToBuy = _orderedUnitTypesToTrain[_random.Next(maxUnitIndex + 1)];
+                var unitToBuy = toTrainOrderedUnitTypes[_random.Next(maxUnitIndex + 1)];
                 
                 var supplyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.SupplyContainerId);
                 var armyUnits = await GlobalUnitsRepository.GetAliveByContainerId(player.ActiveHero.ArmyContainerId);
+                IEnumerable<Guid> GetWithUpgrades(Guid typeId) =>
+                    new[] { typeId }.Concat(UnitTypesRegistry.FindUpgradesFor(typeId).Select(u => u.Id));
+                
                 var desiredUnits = supplyUnits.Concat(armyUnits)
                     .Select(x => x.TypeId)
                     .Distinct()
-                    .Select(id => _unitTypesByIds[id]);
+                    .SelectMany(GetWithUpgrades)
+                    .Select(UnitTypesRegistry.ById);
 
                 var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
                 if (availableDesiredUnits.Any() && _random.Next(100) > 66)
                     unitToBuy = availableDesiredUnits[_random.Next(availableDesiredUnits.Count)];
 
-
+                var upgradeOnly = unitToBuy.ToTrainAmount < 1 && unitToBuy.UpgradeForUnitTypeIds.Any();
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
                     ? unitToBuy.BattleImgUrl 
                     : unitToBuy.DwellingImgUrl;
                     
-                var isGuarded = unitToBuy.Value >= 400;
+                var isGuarded = !upgradeOnly && unitToBuy.Value >= 400;
                 var rewardedBattleDefinition = battleDefinition;
                 if (isGuarded)
                 {
@@ -359,9 +351,9 @@ namespace Epic.Logic.Generator
                 
                 await RewardsRepository.CreateRewardAsync(rewardedBattleDefinition.Id, new MutableRewardFields
                 {
-                    RewardType = RewardType.UnitToBuy,
-                    Amounts = new[] { unitToBuy.ToTrainAmount * rewardFactor },
-                    Message = "You can train units now",
+                    RewardType = upgradeOnly ? RewardType.UnitsToUpgrade : RewardType.UnitsToBuy,
+                    Amounts = upgradeOnly ? new [] { 0 } : new[] { unitToBuy.ToTrainAmount * rewardFactor },
+                    Message = upgradeOnly ?  "You can upgrade units now" : "You can train units now",
                     CanDecline = true,
                     NextBattleDefinitionId = null,
                     CustomIconUrl = dwellingIcon,
@@ -380,7 +372,7 @@ namespace Epic.Logic.Generator
             }
         }
 
-        internal enum RewardTypes
+        internal enum GeneratedRewardTypes
         {
             Gold, 
             Resource,

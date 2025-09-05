@@ -1,7 +1,7 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap} from "../battleMap/battleMap";
 import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
-import { IRewardToAccept } from "../rewards/IRewardToAccept";
+import { IPriceResource, IRewardToAccept } from "../rewards/IRewardToAccept";
 import {IBattleConnectionMessagesHandler, IBattleServerConnection} from "../server/battleServerConnection";
 import { UnitProperties } from "../units/unitProperties";
 
@@ -71,10 +71,12 @@ export interface IReportUnit {
     readonly name: string
 }
 
-export interface IUnitInfo extends UnitProperties {
+export interface IUnitTypeInfo extends UnitProperties {
     readonly id: string
     readonly name: string
     readonly dashboardImgUrl: string
+    readonly upgradeForUnitTypeIds: string[]
+    readonly price: IPriceResource
 }
 
 export interface IServerAPI {
@@ -101,5 +103,6 @@ export interface IServerAPI {
 
     getReport(reportId: string): Promise<IReportInfo>
 
-    getUnitInfo(unitTypeId: string): Promise<IUnitInfo>
+    getUnitTypeInfo(unitTypeId: string): Promise<IUnitTypeInfo>
+    getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]>
 }

@@ -16,7 +16,9 @@ namespace Epic.Core.Services.Units
         Task UpdateUnits(IReadOnlyCollection<IGlobalUnitObject> playerUnits);
         
         Task<IReadOnlyCollection<IGlobalUnitObject>> CreateUnits(IReadOnlyCollection<CreateUnitData> unitsToCreate);
+        Task<IReadOnlyCollection<IGlobalUnitObject>> UpgradeUnits(IReadOnlyCollection<UpgradeUnitData> unitsToUpgrade);
         Task<IGlobalUnitObject> GetAliveUnitFromContainerInSlot(Guid containerId, int slotIndex);
+        Task<IReadOnlyList<IGlobalUnitObject>> GetAliveUnitFromContainerPerSlots(Guid containerId, int startSlot, int endSlot);
 
         Task RemoveUnits(IReadOnlyCollection<IGlobalUnitObject> units);
     }

@@ -1,5 +1,5 @@
 import React, {PureComponent} from "react";
-import {IUserUnit, IUnitInfo} from "../services/serverAPI";
+import {IUserUnit, IUnitTypeInfo} from "../services/serverAPI";
 import {IServiceLocator} from "../services/serviceLocator";
 import "./unitInfoModal.css";
 
@@ -11,7 +11,7 @@ export interface IUnitInfoModalProps {
 }
 
 interface IUnitInfoModalState {
-    unitInfo: IUnitInfo | null
+    unitInfo: IUnitTypeInfo | null
     isLoading: boolean
     error: string | null
 }
@@ -50,7 +50,7 @@ export class UnitInfoModal extends PureComponent<IUnitInfoModalProps, IUnitInfoM
         
         try {
             const serverAPI = this.props.serviceLocator.serverAPI()
-            const unitInfo = await serverAPI.getUnitInfo(this.props.unit.typeId)
+            const unitInfo = await serverAPI.getUnitTypeInfo(this.props.unit.typeId)
             this.setState({ unitInfo, isLoading: false })
         } catch (error) {
             console.error('Failed to fetch unit info:', error)

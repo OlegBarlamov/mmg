@@ -154,7 +154,7 @@ namespace Epic.Logic.Descriptions
                 }
             }
 
-            if (reward.RewardType == RewardType.UnitToBuy)
+            if (reward.RewardType == RewardType.UnitsToBuy || reward.RewardType == RewardType.UnitsToUpgrade)
             {
                 switch (visibility)
                 {

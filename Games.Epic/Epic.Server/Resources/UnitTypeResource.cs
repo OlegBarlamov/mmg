@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Epic.Core.Services.UnitTypes;
+using Epic.Data.GameResources;
 using Epic.Data.UnitTypes;
 using Epic.Data.UnitTypes.Subtypes;
 
@@ -21,7 +23,11 @@ namespace Epic.Server.Resources
         public string MovementType { get; set; }
         public IReadOnlyList<IAttackFunctionType> Attacks { get; set; }
         
-        public UnitTypeResource(IUnitTypeObject unitTypeObject)
+        public IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; set; }
+        
+        public PriceResource Price { get; set; }
+        
+        public UnitTypeResource(IUnitTypeObject unitTypeObject, ResourceAmount[] resourceAmounts)
         {
             Id = unitTypeObject.Id;
             Name = unitTypeObject.Name;
@@ -34,6 +40,8 @@ namespace Epic.Server.Resources
             Defense = unitTypeObject.Defense;
             Movement = unitTypeObject.Movement;
             MovementType = unitTypeObject.Movement.ToString();
+            UpgradeForUnitTypeIds = unitTypeObject.UpgradeForUnitTypeIds;
+            Price = new PriceResource(resourceAmounts);
         }
     }
 }

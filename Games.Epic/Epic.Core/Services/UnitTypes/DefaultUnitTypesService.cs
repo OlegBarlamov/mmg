@@ -34,7 +34,7 @@ namespace Epic.Core.Services.UnitTypes
             return MutualUnitTypeObject.FromEntity(unitTypeEntity);
         }
 
-        public async Task<IReadOnlyCollection<IUnitTypeObject>> GetUnitTypesByIdsAsync(IReadOnlyCollection<Guid> ids)
+        public async Task<IReadOnlyList<IUnitTypeObject>> GetUnitTypesByIdsAsync(IReadOnlyCollection<Guid> ids)
         {
             var entities = await Repository.FetchByIds(ids);
             var unitTypeObjects = entities.Select(MutualUnitTypeObject.FromEntity).ToArray();
@@ -89,6 +89,16 @@ namespace Epic.Core.Services.UnitTypes
             }
 
             return Price.Create(resourceValues);
+        }
+
+        public async Task<Price> GetPriceForUpgrade(IUnitTypeObject originalUnitType, IUnitTypeObject targetUnitType)
+        {
+            var originalUnitPrice = await GetPrice(originalUnitType);
+            var targetUnitPrice = await GetPrice(targetUnitType);
+            
+            originalUnitPrice.Invert();
+
+            return Price.Combine(new []{ targetUnitPrice, originalUnitPrice });
         }
 
         public Task<Price[]> GetPrices(IReadOnlyList<IUnitTypeObject> unitTypes)

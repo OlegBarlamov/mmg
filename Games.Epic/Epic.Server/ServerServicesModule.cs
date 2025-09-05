@@ -70,6 +70,10 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IHeroesService, DefaultHeroesService>();
             serviceRegistrator.RegisterType<IGameResourcesService, DefaultGameResourcesService>();
             serviceRegistrator.RegisterType<IBattleReportsService, DefaultBattleReportsService>();
+            serviceRegistrator.RegisterType<DefaultUnitTypesRegistry, DefaultUnitTypesRegistry>();
+            serviceRegistrator.RegisterFactory<IUnitTypesRegistry>((locator, _) => locator.Resolve<DefaultUnitTypesRegistry>());
+            serviceRegistrator.RegisterType<DefaultGameResourcesRegistry, DefaultGameResourcesRegistry>();
+            serviceRegistrator.RegisterFactory<IGameResourcesRegistry>((locator, _) => locator.Resolve<DefaultGameResourcesRegistry>());
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

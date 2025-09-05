@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.UnitTypes;
-using Epic.Logic.Generator;
 using FrameworkSDK;
 using JetBrains.Annotations;
 using YamlDotNet.Core;
@@ -28,14 +29,14 @@ namespace Epic.Server
     public class InitializeUnitsScript : IAppComponent
     {
         public IUnitTypesRepository UnitTypesRepository { get; }
-        public IBattlesGenerator BattlesGenerator { get; }
+        public DefaultUnitTypesRegistry UnitTypesRegistry { get; }
 
         public InitializeUnitsScript(
             [NotNull] IUnitTypesRepository unitTypesRepository,
-            [NotNull] IBattlesGenerator battlesGenerator)
+            [NotNull] DefaultUnitTypesRegistry unitTypesRegistry)
         {
             UnitTypesRepository = unitTypesRepository ?? throw new ArgumentNullException(nameof(unitTypesRepository));
-            BattlesGenerator = battlesGenerator ?? throw new ArgumentNullException(nameof(battlesGenerator));
+            UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
         }
         
         public void Configure()
@@ -60,7 +61,7 @@ namespace Epic.Server
 
             await UnitTypesRepository.UpdateBatch(updatedUnits);
 
-            await BattlesGenerator.Initialize();
+            await UnitTypesRegistry.Load(CancellationToken.None);
         }
 
         private void FillUpgradedUnitsData(

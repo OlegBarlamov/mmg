@@ -109,8 +109,8 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         console.error('Reward error:', error)
     }
 
-    private handleRewardAccept = async () => {
-        await this.rewardManager.acceptReward()
+    private handleRewardAccept = async (affectedSlots: number[]) => {
+        await this.rewardManager.acceptReward(affectedSlots)
         const state = this.rewardManager.getState()
         this.setState({
             rewards: state.rewards,

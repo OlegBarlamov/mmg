@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Epic.Core.Services.GameResources;
 using Epic.Data.GameResources;
 using FrameworkSDK;
 using JetBrains.Annotations;
@@ -14,10 +16,14 @@ namespace Epic.Server
     public class InitializeResourcesScript : IAppComponent
     {
         public IGameResourcesRepository GameResourcesRepository { get; }
+        public DefaultGameResourcesRegistry DefaultGameResourcesRegistry { get; }
 
-        public InitializeResourcesScript([NotNull] IGameResourcesRepository gameResourcesRepository)
+        public InitializeResourcesScript(
+            [NotNull] IGameResourcesRepository gameResourcesRepository,
+            [NotNull] DefaultGameResourcesRegistry defaultGameResourcesRegistry)
         {
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
+            DefaultGameResourcesRegistry = defaultGameResourcesRegistry ?? throw new ArgumentNullException(nameof(defaultGameResourcesRegistry));
         }
         
         public void Configure()
@@ -44,6 +50,8 @@ namespace Epic.Server
                 resourceEntity.Key = x.Key;
                 return resourceEntity;
             }));
+
+            await DefaultGameResourcesRegistry.Load(CancellationToken.None);
         }
         
         public void Dispose()

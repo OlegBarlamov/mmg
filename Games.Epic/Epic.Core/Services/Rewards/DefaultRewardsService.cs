@@ -15,6 +15,7 @@ using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
 using Epic.Data.Reward;
 using JetBrains.Annotations;
+using NetExtensions.Collections;
 
 namespace Epic.Core.Services.Rewards
 {
@@ -81,7 +82,7 @@ namespace Epic.Core.Services.Rewards
             return RewardsRepository.GiveRewardsToPlayerAsync(rewardIds, playerId);
         }
 
-        public async Task<AcceptedRewardData> AcceptRewardAsync(Guid rewardId, Guid playerId, int[] amounts)
+        public async Task<AcceptedRewardData> AcceptRewardAsync(Guid rewardId, Guid playerId, int[] amounts, int[] affectedSlots)
         {
             var player = await PlayersService.GetById(playerId);
             var rewardEntity = await RewardsRepository.RemoveRewardFromPlayer(playerId, rewardId);
@@ -96,14 +97,14 @@ namespace Epic.Core.Services.Rewards
                 var unitTypes = rewardObject.UnitTypes;
                 if (unitTypes.Count > 0)
                 {
-                    if (rewardObject.RewardType == RewardType.UnitToBuy)
+                    if (rewardObject.RewardType == RewardType.UnitsToBuy)
                     {
-                        var prices = await Task.WhenAll(unitTypes.Select(async (unitType, i) =>
+                        var prices = await UnitTypesService.GetPrices(unitTypes);
+                        prices.For((x, i) =>
                         {
-                            var price = await UnitTypesService.GetPrice(unitType);
-                            price.MultiplyBy(amounts[i]);
-                            return price;
-                        }));
+                            x.MultiplyBy(amounts[i]);
+                            return false;
+                        });
                         priceToPay = Price.Combine(prices);
 
                         var enoughResources = await GameResourcesRepository.IsEnoughToPay(priceToPay, playerId);
@@ -111,28 +112,81 @@ namespace Epic.Core.Services.Rewards
                             throw new NotEnoughResourcesToPayException();
                     }
 
-                    var createData = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
-                    var units = await GlobalUnitsService.CreateUnits(createData);
-                    unitsGiven = units.ToArray();
-
-                    if (!priceToPay.IsEmpty())
+                    if (rewardObject.RewardType == RewardType.UnitsToUpgrade)
                     {
+                        int maxSlot = affectedSlots.Any() ? affectedSlots.Max() : 0;
+                        var armyUnitsInSlots = await GlobalUnitsService.GetAliveUnitFromContainerPerSlots(player.ActiveHero.ArmyContainerId, 0, maxSlot);
+                        var upgradeUnitsData = new List<UpgradeUnitData>();
+                        for (int i = 0; i < affectedSlots.Length; i++)
+                        {
+                            var targetSlotIndex = affectedSlots[i];
+                            var targetUnit = armyUnitsInSlots[targetSlotIndex];
+                            if (targetUnit == null)
+                                throw new InvalidOperationException($"Target slot {targetSlotIndex} is empty");
+                            
+                            var upgradeTo = unitTypes.FirstOrDefault(x => x.IsUpgradeFor(targetUnit.UnitType));
+                            if (upgradeTo == null)
+                                throw new UnitCantBeUpgradedInTheReward(targetUnit, rewardObject);
+                            
+                            upgradeUnitsData.Add(new UpgradeUnitData(targetUnit, upgradeTo, amounts[i]));
+                        }
+
+                        var prices = await Task.WhenAll(upgradeUnitsData.Select(x =>
+                            UnitTypesService.GetPriceForUpgrade(x.Unit.UnitType, x.UpgradeToType)));
+                        
+                        prices.For((x,i) =>
+                        {
+                            x.MultiplyBy(amounts[i]);
+                            return false;
+                        });
+                        priceToPay = Price.Combine(prices);
+                        
+                        var enoughResources = await GameResourcesRepository.IsEnoughToPay(priceToPay, playerId);
+                        if (!enoughResources)
+                            throw new NotEnoughResourcesToPayException();
+
+                        var units = await GlobalUnitsService.UpgradeUnits(upgradeUnitsData);
+                        
                         var payed = await GameResourcesRepository.PayIfEnough(priceToPay, playerId);
                         if (!payed)
-                        {
-                            await GlobalUnitsService.RemoveUnits(units);
                             throw new NotEnoughResourcesToPayException();
+
+                        var notPlacedUnits = units.Where(x => x.ContainerId != player.ActiveHero.ArmyContainerId).ToArray();
+                        try
+                        {
+                            await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId,
+                                notPlacedUnits);
+                        }
+                        catch (InvalidUnitSlotsOperationException)
+                        {
+                            await ContainersManipulator.PlaceUnitsToContainer(player.SupplyContainerId, notPlacedUnits);
                         }
                     }
+                    else
+                    {
+                        var createData = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
+                        var units = await GlobalUnitsService.CreateUnits(createData);
+                        unitsGiven = units.ToArray();
 
-                    try
-                    {
-                        await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId,
-                            unitsGiven);
-                    }
-                    catch (InvalidUnitSlotsOperationException e)
-                    {
-                        await ContainersManipulator.PlaceUnitsToContainer(player.SupplyContainerId, unitsGiven);
+                        if (!priceToPay.IsEmpty())
+                        {
+                            var payed = await GameResourcesRepository.PayIfEnough(priceToPay, playerId);
+                            if (!payed)
+                            {
+                                await GlobalUnitsService.RemoveUnits(units);
+                                throw new NotEnoughResourcesToPayException();
+                            }
+                        }
+
+                        try
+                        {
+                            await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId,
+                                unitsGiven);
+                        }
+                        catch (InvalidUnitSlotsOperationException)
+                        {
+                            await ContainersManipulator.PlaceUnitsToContainer(player.SupplyContainerId, unitsGiven);
+                        }
                     }
                 }
 
@@ -186,7 +240,8 @@ namespace Epic.Core.Services.Rewards
                 case RewardType.None:
                     break;
                 case RewardType.UnitsGain:
-                case RewardType.UnitToBuy:
+                case RewardType.UnitsToBuy:
+                case RewardType.UnitsToUpgrade:
                     rewardObject.UnitTypes = (await UnitTypesService.GetUnitTypesByIdsAsync(entity.Ids)).ToArray();
                     break;
                 case RewardType.ResourcesGain:

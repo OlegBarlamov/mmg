@@ -1,12 +1,12 @@
 import './rewardDialog.css'
 import React, { PureComponent } from "react";
-import { IRewardToAccept } from "../rewards/IRewardToAccept";
+import { IRewardToAccept, IPriceResource } from "../rewards/IRewardToAccept";
 import { RewardType } from "../rewards/RewardType";
 import { IResourceInfo } from "../services/serverAPI";
 
 export interface IRewardDialogProps {
     reward: IRewardToAccept
-    onAccept: (result?: any) => Promise<void>
+    onAccept: (affectedSlots: number[]) => Promise<void>
     onDecline: () => Promise<void>
     serviceLocator?: any
 }
@@ -16,6 +16,27 @@ interface IRewardDialogState {
     availableResources: { [resourceId: string]: number }
     isSubmitting: boolean
     errorMessage: string | null
+    upgradableUnits: IUpgradableUnit[] | null
+    upgradeQuantities: number[]
+}
+
+interface IUpgradableUnit {
+    id: string
+    typeId: string
+    name: string
+    dashboardImgUrl: string
+    count: number
+    containerName: string
+    slotIndex: number
+    originalPrice: IPriceResource
+    upgradeOptions: IUnitInfo[]
+}
+
+interface IUnitInfo {
+    id: string
+    name: string
+    dashboardImgUrl: string
+    price: IPriceResource
 }
 
 export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialogState> {
@@ -25,7 +46,9 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
             unitQuantities: [],
             availableResources: {},
             isSubmitting: false,
-            errorMessage: null
+            errorMessage: null,
+            upgradableUnits: null,
+            upgradeQuantities: []
         }
     }
 
@@ -34,14 +57,28 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
         
         try {
             // For UnitToBuy, we need to pass the selected quantities
-            if (this.props.reward.rewardType === RewardType.UnitToBuy) {
+            if (this.props.reward.rewardType === RewardType.UnitsToBuy) {
                 // The amounts array should contain the quantities for each unit
                 const amounts = this.state.unitQuantities
                 // Update the reward amounts before calling onAccept
                 this.props.reward.amounts = amounts
             }
             
-            const result = await this.props.onAccept()
+            let affectedSlots: number[] = []
+            // For UnitsToUpgrade, we need to pass the selected upgrade quantities and affected slots
+            if (this.props.reward.rewardType === RewardType.UnitsToUpgrade) {
+                // The amounts array should contain the quantities for each upgrade
+                const amounts = this.state.upgradeQuantities
+                // The affectedSlots array should contain the slot indices of units being upgraded
+                affectedSlots = this.state.upgradableUnits
+                    ?.map((unit, index) => amounts[index] > 0 ? unit.slotIndex : -1)
+                    .filter(slotIndex => slotIndex !== -1) || []
+                
+                // Update the reward amounts before calling onAccept
+                this.props.reward.amounts = amounts
+            }
+            
+            const result = await this.props.onAccept(affectedSlots)
             
             // Dialog will be closed by parent component when currentReward is set to null
         } catch (error) {
@@ -80,7 +117,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
 
     private initializeUnitBuyState = async () => {
         const { reward, serviceLocator } = this.props
-        if (reward.rewardType === RewardType.UnitToBuy) {
+        if (reward.rewardType === RewardType.UnitsToBuy) {
             // Initialize unit quantities to 0
             const unitQuantities = new Array(reward.unitsRewards?.length || 0).fill(0)
             
@@ -104,6 +141,97 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                 unitQuantities,
                 availableResources
             })
+        } else if (reward.rewardType === RewardType.UnitsToUpgrade) {
+            // Initialize upgradable units for UnitsToUpgrade case
+            if (serviceLocator) {
+                try {
+                    const serverAPI = serviceLocator.serverAPI()
+                    // Get the player info to access army and supply containers
+                    const userInfo = await serverAPI.getUserInfo()
+                    if (!userInfo.playerId) {
+                        throw new Error('No active player')
+                    }
+                    const playerInfo = await serverAPI.getPlayer(userInfo.playerId)
+                    
+                    // Get units from army container only
+                    const armyContainer = await serverAPI.getUnitsContainer(playerInfo.armyContainerId)
+                    
+                    // Get unit infos for the reward units to find what can be upgraded TO them
+                    const rewardUnitTypeIds = reward.unitsRewards?.map(unit => unit.id) || []
+                    const rewardUnitInfos = await serverAPI.getUnitTypesInfos(rewardUnitTypeIds)
+                    
+                    // Get unit infos for army units to get their prices
+                    const armyUnitTypeIds = armyContainer.units.map((u: any) => u.typeId)
+                    const armyUnitInfos = await serverAPI.getUnitTypesInfos(armyUnitTypeIds)
+                    
+                    // Find upgradable units by checking which army units can be upgraded TO the reward unit types
+                    const upgradableUnits: IUpgradableUnit[] = []
+                    
+                    // Check army units - find ones that can be upgraded TO the reward unit types
+                    armyContainer.units.forEach((unit: any) => {
+                        // Check if this unit can be upgraded to any of the reward unit types
+                        const canUpgradeTo = rewardUnitInfos.filter((rewardUnitInfo: any) => 
+                            rewardUnitInfo.upgradeForUnitTypeIds && 
+                            rewardUnitInfo.upgradeForUnitTypeIds.includes(unit.typeId)
+                        )
+                        
+                        if (canUpgradeTo.length > 0) {
+                            const unitInfo = armyUnitInfos.find((info: any) => info.id === unit.typeId)
+                            upgradableUnits.push({
+                                id: unit.id,
+                                typeId: unit.typeId,
+                                name: unit.name,
+                                dashboardImgUrl: unit.thumbnailUrl,
+                                count: unit.count,
+                                containerName: 'Army',
+                                slotIndex: unit.slotIndex,
+                                originalPrice: unitInfo ? unitInfo.price : { resources: [] },
+                                upgradeOptions: canUpgradeTo.map((rewardUnitInfo: any) => ({
+                                    id: rewardUnitInfo.id,
+                                    name: rewardUnitInfo.name,
+                                    dashboardImgUrl: rewardUnitInfo.dashboardImgUrl,
+                                    price: rewardUnitInfo.price || { resources: [] }
+                                }))
+                            })
+                        }
+                    })
+                    
+                    // Initialize upgrade quantities to 0
+                    const upgradeQuantities = new Array(upgradableUnits.length).fill(0)
+                    
+                    // Get available resources from the server
+                    let availableResources: { [resourceId: string]: number } = {}
+                    try {
+                        const resources: IResourceInfo[] = await serverAPI.getResources()
+                        resources.forEach((resource: IResourceInfo) => {
+                            availableResources[resource.id] = resource.amount
+                        })
+                    } catch (error) {
+                        console.error('Failed to fetch resources:', error)
+                        // Fallback to empty resources
+                    }
+                    
+                    this.setState({ 
+                        upgradableUnits,
+                        upgradeQuantities,
+                        availableResources
+                    })
+                } catch (error) {
+                    console.error('Failed to fetch upgradable units:', error)
+                    this.setState({ 
+                        upgradableUnits: [],
+                        upgradeQuantities: [],
+                        availableResources: {}
+                    })
+                }
+            } else {
+                // Reset upgrade quantities for non-upgrade rewards
+                this.setState({ 
+                    upgradableUnits: null,
+                    upgradeQuantities: [],
+                    availableResources: {}
+                })
+            }
         }
     }
 
@@ -270,6 +398,89 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
         return unitQuantities.reduce((total, quantity) => total + quantity, 0)
     }
 
+    // Upgrade-related methods
+    private handleUpgradeQuantityChange = (unitIndex: number, newQuantity: number) => {
+        const { upgradableUnits } = this.state
+        if (!upgradableUnits || unitIndex >= upgradableUnits.length) return
+        
+        const unit = upgradableUnits[unitIndex]
+        const maxAvailable = unit.count
+        const limitedQuantity = Math.min(newQuantity, maxAvailable)
+        
+        const newQuantities = [...this.state.upgradeQuantities]
+        newQuantities[unitIndex] = limitedQuantity
+        
+        this.setState({ upgradeQuantities: newQuantities })
+    }
+
+    private getUpgradeCost = (unitIndex: number): { [resourceId: string]: number } => {
+        const { upgradableUnits } = this.state
+        if (!upgradableUnits || unitIndex >= upgradableUnits.length) return {}
+        
+        const unit = upgradableUnits[unitIndex]
+        const quantity = this.state.upgradeQuantities[unitIndex] || 0
+        
+        if (quantity === 0) return {}
+        
+        // Calculate upgrade cost as difference between upgraded unit price and original unit price
+        const upgradeCost: { [resourceId: string]: number } = {}
+        
+        // Get the original unit price (from the unit in army/supply)
+        const originalUnitPrice = unit.originalPrice || { resources: [] }
+        
+        // For each upgrade option, calculate the cost difference
+        unit.upgradeOptions.forEach(upgradeOption => {
+            const upgradePrice = upgradeOption.price || { resources: [] }
+            
+            // Calculate the difference for each resource
+            upgradePrice.resources.forEach((upgradeResource: any) => {
+                const originalResource = originalUnitPrice.resources.find((r: any) => r.id === upgradeResource.id)
+                const originalAmount = originalResource ? originalResource.amount : 0
+                const upgradeAmount = upgradeResource.amount
+                
+                // Cost per unit is the difference in price
+                const costPerUnit = upgradeAmount - originalAmount
+                const totalCost = costPerUnit * quantity
+                
+                if (totalCost > 0) {
+                    upgradeCost[upgradeResource.id] = (upgradeCost[upgradeResource.id] || 0) + totalCost
+                }
+            })
+        })
+        
+        return upgradeCost
+    }
+
+    private getTotalUpgradeCost = (): { [resourceId: string]: number } => {
+        const { upgradableUnits } = this.state
+        if (!upgradableUnits) return {}
+        
+        const totalCost: { [resourceId: string]: number } = {}
+        
+        upgradableUnits.forEach((unit, index) => {
+            const unitCost = this.getUpgradeCost(index)
+            Object.entries(unitCost).forEach(([resourceId, cost]) => {
+                totalCost[resourceId] = (totalCost[resourceId] || 0) + cost
+            })
+        })
+        
+        return totalCost
+    }
+
+    private canAffordUpgrade = (): boolean => {
+        const { availableResources } = this.state
+        const totalCost = this.getTotalUpgradeCost()
+        
+        return Object.entries(totalCost).every(([resourceId, cost]) => {
+            const available = availableResources[resourceId] || 0
+            return available >= cost
+        })
+    }
+
+    private getTotalSelectedUpgrades = (): number => {
+        return this.state.upgradeQuantities.reduce((total, qty) => total + qty, 0)
+    }
+
     private getUnitCost = (unitIndex: number): Array<{resource: any, amount: number}> | null => {
         const { reward } = this.props
         const { unitQuantities } = this.state
@@ -432,7 +643,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     </div>
                 )
 
-            case RewardType.UnitToBuy:
+            case RewardType.UnitsToBuy:
                 const { unitQuantities } = this.state
                 const totalCost = this.getTotalCost()
                 const remainingResources = this.getRemainingResources()
@@ -614,6 +825,160 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                                 disabled={this.state.isSubmitting}
                             >
                                 {this.state.isSubmitting ? 'Starting Battle...' : 'Start Battle'}
+                            </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )
+
+            case RewardType.UnitsToUpgrade:
+                const { upgradeQuantities } = this.state
+                const totalUpgradeCost = this.getTotalUpgradeCost()
+                
+                return (
+                    <div className="reward-content">
+                        <div className="reward-message">{reward.message}</div>
+                        
+                        {/* Available Resources */}
+                        <div className="available-resources">
+                            <div className="resources-horizontal">
+                                {Object.entries(this.state.availableResources).map(([resourceId, amount]) => {
+                                    const cost = totalUpgradeCost[resourceId] || 0
+                                    const remaining = amount - cost
+                                    
+                                    // Find the resource info to get the icon and name
+                                    const resourceInfo = this.state.upgradableUnits?.flatMap(unit => 
+                                        [...unit.originalPrice.resources, ...unit.upgradeOptions.flatMap(opt => opt.price.resources)]
+                                    ).find(resource => resource.id === resourceId)
+                                    if (!resourceInfo) return null
+                                    
+                                    return (
+                                        <div key={resourceId} className="resource-horizontal-item">
+                                            <img 
+                                                src={resourceInfo?.iconUrl || "/placeholder-icon.png"} 
+                                                alt={resourceInfo?.name || "Resource"}
+                                                className="resource-icon"
+                                            />
+                                            <span className="resource-amount">{amount}</span>
+                                            {cost > 0 && (
+                                                <>
+                                                    <span className="resource-cost">-{cost}</span>
+                                                    <span className="resource-remaining">={remaining}</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                        
+                        {this.state.upgradableUnits && this.state.upgradableUnits.length > 0 ? (
+                            <div className="reward-units">
+                                <h4>Units that can be upgraded:</h4>
+                                <div className="units-list">
+                                    {this.state.upgradableUnits.map((unit: any, index: number) => {
+                                        const currentQuantity = upgradeQuantities[index] || 0
+                                        const unitCost = this.getUpgradeCost(index)
+                                        
+                                        return (
+                                            <div key={index} className="unit-upgrade-item">
+                                                <div className="unit-info">
+                                                    <img 
+                                                        src={unit.dashboardImgUrl} 
+                                                        alt={unit.name}
+                                                        className="unit-thumbnail"
+                                                    />
+                                                    <span className="unit-name">{unit.name}</span>
+                                                    <span className="unit-quantity">{currentQuantity}</span>
+                                                    <span className="unit-available">/ {unit.count}</span>
+                                                    <span className="unit-container">({unit.containerName})</span>
+                                                </div>
+                                                
+                                                <div className="unit-upgrade-info">
+                                                    <span className="upgrade-label">Upgrade to:</span>
+                                                    <div className="upgrade-options">
+                                                        {unit.upgradeOptions.map((upgradeOption: any, upgradeIndex: number) => (
+                                                            <div key={upgradeIndex} className="upgrade-option">
+                                                                <img 
+                                                                    src={upgradeOption.dashboardImgUrl} 
+                                                                    alt={upgradeOption.name}
+                                                                    className="unit-thumbnail small"
+                                                                />
+                                                                <span className="upgrade-name">{upgradeOption.name}</span>
+                                                            </div>
+                                                        ))}
+
+                                                        {Object.keys(unitCost).length > 0 && currentQuantity > 0 && (
+                                                            <div className="unit-cost">
+                                                                <div className="costs-horizontal">
+                                                                    {Object.entries(unitCost).map(([resourceId, cost]) => {
+                                                                        // Find the resource info to get the icon and name
+                                                                        const resourceInfo = [...unit.originalPrice.resources, ...unit.upgradeOptions.flatMap((opt: any) => opt.price.resources)]
+                                                                            .find(resource => resource.id === resourceId)
+                                                                        
+                                                                        return (
+                                                                            <div key={resourceId} className="cost-horizontal-item">
+                                                                                <img 
+                                                                                    src={resourceInfo?.iconUrl || "/placeholder-icon.png"} 
+                                                                                    alt={resourceInfo?.name || "Resource"}
+                                                                                    className="cost-icon"
+                                                                                />
+                                                                                <span className="cost-amount">{cost}</span>
+                                                                            </div>
+                                                                        )
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="unit-slider-container">
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max={unit.count}
+                                                        value={currentQuantity}
+                                                        onChange={(e) => this.handleUpgradeQuantityChange(index, parseInt(e.target.value))}
+                                                        className="unit-slider"
+                                                    />
+                                                    <div className="slider-labels">
+                                                        <span>0</span>
+                                                        <span>{unit.count}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="no-upgradable-units">
+                                <p>No units found that can be upgraded with this reward.</p>
+                            </div>
+                        )}
+                        
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+                        
+                        <div className="reward-actions">
+                            <button 
+                                className="reward-button accept-button" 
+                                onClick={this.handleAccept}
+                                disabled={this.state.isSubmitting || this.getTotalSelectedUpgrades() < 1 || !this.canAffordUpgrade()}
+                            >
+                                {this.state.isSubmitting ? 'Upgrading...' : 'Upgrade'}
                             </button>
                             {reward.canDecline && (
                                 <button 

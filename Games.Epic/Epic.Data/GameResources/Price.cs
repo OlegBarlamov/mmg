@@ -17,6 +17,14 @@ namespace Epic.Data.GameResources
                 PerResourcePrice[key] *= multiplier;
             });
         }
+
+        public void Invert()
+        {
+            PerResourcePrice.Keys.ToList().ForEach(key =>
+            {
+                PerResourcePrice[key] = -PerResourcePrice[key];
+            });
+        }
         
         public static Price Empty()
         {
