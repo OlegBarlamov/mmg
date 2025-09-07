@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Epic.Core.Services.Players;
 
 namespace Epic.Core.Services.BattleDefinitions
 {
     public interface IBattleDefinitionsService
     {
-        Task<int> GetBattlesCountForPlayer(Guid playerId);
+        Task<int> GetBattlesCountForPlayer(IPlayerObject player);
         Task<IReadOnlyCollection<IBattleDefinitionObject>> GetNotExpiredActiveBattleDefinitionsByPlayerAsync(Guid playerId);
         
         Task<IBattleDefinitionObject> GetBattleDefinitionById(Guid battleDefinitionId);

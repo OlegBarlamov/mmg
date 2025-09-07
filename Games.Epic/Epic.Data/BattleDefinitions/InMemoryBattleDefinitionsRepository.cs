@@ -76,10 +76,18 @@ namespace Epic.Data.BattleDefinitions
             return Task.CompletedTask;
         }
 
-        public Task<int> CountBattles(Guid playerId)
+        public Task<int> CountBattles(Guid playerId, int? day = null)
         {
-            return Task.FromResult(_playerBattleDefinitions.Count(x => x.PlayerId == playerId &&
-                                                                       !_battleDefinitions.First(b => b.Id == x.BattleDefinitionId).Finished));
+            var targetDay = day ?? 0;
+            return Task.FromResult(_playerBattleDefinitions
+                .Count(x => x.PlayerId == playerId &&
+                            !IsFinishedOrExpired(_battleDefinitions.First(b => b.Id == x.BattleDefinitionId),
+                                targetDay)));
+        }
+
+        private static bool IsFinishedOrExpired(IBattleDefinitionEntity battleDefinition, int day)
+        {
+            return battleDefinition.Finished || battleDefinition.ExpireAtDay <= day;
         }
     }
 }

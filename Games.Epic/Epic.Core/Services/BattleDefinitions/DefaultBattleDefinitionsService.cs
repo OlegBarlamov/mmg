@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.BattleDefinitions;
@@ -30,9 +31,9 @@ namespace Epic.Core.Services.BattleDefinitions
             PlayersRepository = playersRepository ?? throw new ArgumentNullException(nameof(playersRepository));
         }
 
-        public Task<int> GetBattlesCountForPlayer(Guid playerId)
+        public Task<int> GetBattlesCountForPlayer(IPlayerObject player)
         {
-            return BattleDefinitionsRepository.CountBattles(playerId);
+            return BattleDefinitionsRepository.CountBattles(player.Id, player.Day);
         }
 
         public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetNotExpiredActiveBattleDefinitionsByPlayerAsync(Guid playerId)

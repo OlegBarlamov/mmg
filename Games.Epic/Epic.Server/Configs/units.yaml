@@ -2266,8 +2266,8 @@ Units:
 
   MagicElemental:
     Name: "Magic Elemental"
-    BattleImgUrl: "/resources/MagicElemental_portrait.png"
-    DashboardImgUrl: "/resources/MagicElemental_portrait.png"
+    BattleImgUrl: "/resources/Magic_Elemental_portrait.png"
+    DashboardImgUrl: "/resources/Magic_Elemental_portrait.png"
     Value: 1200
     Speed: 9
     Health: 80
@@ -2366,6 +2366,7 @@ Units:
     UpgradeOf:
       - StoneGolem
       - IronGolem
+      - SteelGolem
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 8
@@ -2385,6 +2386,7 @@ Units:
       - StoneGolem
       - IronGolem
       - GoldGolem
+      - SteelGolem
     Attacks:
       - <<: *MeleeAttack
         MinDamage: 10
@@ -2468,3 +2470,138 @@ Units:
     ResourcesDistribution:
       Gold: 100
       Mercury: 5
+      
+  Sharpshooter:
+    Name: "Sharpshooter"
+    BattleImgUrl: "/resources/Sharpshooter_portrait.png"
+    DashboardImgUrl: "/resources/Sharpshooter_portrait.png"
+    Value: 400
+    Speed: 9
+    Health: 15
+    Attack: 12
+    Defense: 10
+    ToTrainAmount: 8
+    UpgradeOf:
+      - WoodElf
+      - GrandElf
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 8
+        MaxDamage: 10
+        RangePenalty: false
+        AttackMaxRange: 32
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 5
+    
+  Leprechaun:
+    Name: "Leprechaun"
+    BattleImgUrl: "/resources/Leprechaun_portrait.png"
+    DashboardImgUrl: "/resources/Leprechaun_portrait.png"
+    Value: 100
+    Speed: 5
+    Health: 15
+    Attack: 8
+    Defense: 5
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  Boar:
+    Name: "Boar"
+    BattleImgUrl: "/resources/Boar_portrait.png"
+    DashboardImgUrl: "/resources/Boar_portrait.png"
+    Value: 150
+    Speed: 6
+    Health: 15
+    Attack: 6
+    Defense: 5
+    ToTrainAmount: 16
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 3
+
+  Mummy:
+    Name: "Mummy"
+    BattleImgUrl: "/resources/Mummy_portrait.png"
+    DashboardImgUrl: "/resources/Mummy_portrait.png"
+    Value: 300
+    Speed: 5
+    Health: 30
+    Attack: 7
+    Defense: 7
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+  
+  Satyr:
+    Name: "Satyr"
+    BattleImgUrl: "/resources/Satyr_portrait.png"
+    DashboardImgUrl: "/resources/Satyr_portrait.png"
+    Value: 300
+    Speed: 7
+    Health: 35
+    Attack: 10
+    Defense: 11
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 10
+
+  SteelGolem:
+    Name: "Steel Golem"
+    BattleImgUrl: "/resources/Steel_Golem_portrait.png"
+    DashboardImgUrl: "/resources/Steel_Golem_portrait.png"
+    Value: 400
+    Speed: 6
+    Health: 45
+    Attack: 10
+    Defense: 11
+    ToTrainAmount: 8
+    UpgradeOf:
+      - StoneGolem
+      - IronGolem
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 8
+
+  Fangarm:
+    Name: "Fangarm"
+    BattleImgUrl: "/resources/Fangarm_portrait.png"
+    DashboardImgUrl: "/resources/Fangarm_portrait.png"
+    Value: 600
+    Speed: 6
+    Health: 50
+    Attack: 12
+    Defense: 12
+    ToTrainAmount: 6
+    Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 8
+        MaxDamage: 12
+
+  Enchanter:
+    Name: "Enchanter"
+    BattleImgUrl: "/resources/Enchanter_portrait.png"
+    DashboardImgUrl: "/resources/Enchanter_portrait.png"
+    Value: 750
+    Speed: 9
+    Health: 30
+    Attack: 17
+    Defense: 12
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 14
+        MaxDamage: 14
+      - <<: *MeleeAttack
+        MinDamage: 14
+        MaxDamage: 14

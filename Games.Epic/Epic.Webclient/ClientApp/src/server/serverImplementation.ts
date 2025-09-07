@@ -11,9 +11,9 @@ import {OddRGrid} from "../hexogrid/oddRGrid";
 import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
-//export const SERVER_BASE_URL = "http://localhost:5000"
+export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-export const SERVER_BASE_URL = "https://7cf1c29ae217.ngrok-free.app"
+//export const SERVER_BASE_URL = "https://334e57829b0f.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {

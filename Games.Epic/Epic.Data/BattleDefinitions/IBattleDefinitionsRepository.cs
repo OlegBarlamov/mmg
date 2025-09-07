@@ -11,6 +11,6 @@ namespace Epic.Data.BattleDefinitions
         Task<IBattleDefinitionEntity> GetByPlayerAndId(Guid playerId, Guid battleDefinitionId);
         Task<IBattleDefinitionEntity> GetById(Guid battleDefinitionId);
         Task SetFinished(Guid battleDefinitionId);
-        Task<int> CountBattles(Guid playerId);
+        Task<int> CountBattles(Guid playerId, int? day = null);
     }
 }

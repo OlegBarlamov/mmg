@@ -66,7 +66,7 @@ namespace Epic.Logic.Generator
             if (player.PlayerType == PlayerObjectType.Computer)
                 return;
             
-            var battlesCount = await BattleDefinitionsService.GetBattlesCountForPlayer(playerId);
+            var battlesCount = await BattleDefinitionsService.GetBattlesCountForPlayer(player);
             var currentDay = player.Day;
             
             await PlayersService.SetGenerationInProgress(playerId, true);
