@@ -14,15 +14,19 @@ namespace Epic.Logic.Generator
         public static DifficultyMarker GenerateFromDay(Random random, int day)
         {
             var difficultyFactor = 1;
-            var minDifficulty = 3 * MathExtended.Sqr(day) + 100;
-            var maxDifficulty = 30 * difficultyFactor * MathExtended.Sqr(day) + 1000;
+            var minDifficulty = 2 * MathExtended.Sqr(day) + 100;
+            var maxDifficulty = 20 * difficultyFactor * MathExtended.Sqr(day) + 1000;
             
             var range = maxDifficulty - minDifficulty;
-
+            
             var normalizedMean = 1.0 / 4.0; // Bias toward lower part
-            var stdDev = 0.15; // how chaotic the output
+            var narrowStd = 0.12; // how chaotic the output
+            var wideStd = 0.45;
+            var wideStdChance = 0.05;
+            
+            var isWideStd = random.NextDouble() < wideStdChance; 
 
-            var sample = RandomDistributions.GetBoundedNormal(random, normalizedMean, stdDev, 0, 1);
+            var sample = RandomDistributions.GetBoundedNormal(random, normalizedMean, isWideStd ? wideStd : narrowStd, 0, 1);
 
             var idealSample = (int)(minDifficulty + normalizedMean * (maxDifficulty - minDifficulty));
             var targetDifficulty = (int)(minDifficulty + sample * range);

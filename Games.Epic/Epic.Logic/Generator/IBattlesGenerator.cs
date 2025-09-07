@@ -81,7 +81,7 @@ namespace Epic.Logic.Generator
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
             
-            Logger.LogInformation($"Generated Difficulty day {day}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
+            Logger.LogInformation($"Generated Difficulty day {day+1}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
 
             var maxWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + difficulty.TargetDifficulty / 300);
             var maxHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + difficulty.TargetDifficulty / 300);
@@ -180,26 +180,26 @@ namespace Epic.Logic.Generator
             }
 
             double t = ((double)difficulty.TargetDifficulty - difficulty.MinDifficulty) /
-                       ((double)difficulty.MaxDifficulty - difficulty.MinDifficulty);
-            int duration = Math.Max(1, (int)Math.Round(1 + t * 12) + _random.Next(-2, 3));
+                       ((double)difficulty.IdealDifficulty - difficulty.MinDifficulty);
+            int duration = Math.Max(1, (int)Math.Round(1 + t * 3) + _random.Next(-2, 3));
 
             var rewardVisibility = 0;
             if (difficulty.IdealDifficulty > 1000)
             {
-                var rewardVisibilityChance = _random.Next(101);
-                if (rewardVisibilityChance < 10)
+                var rewardVisibilityChance = _random.NextDouble();
+                if (rewardVisibilityChance < 0.09)
                     rewardVisibility = -1;
-                if (rewardVisibilityChance < 3)
+                if (rewardVisibilityChance < 0.03)
                     rewardVisibility = -2;
             }
 
             var guardVisibility = 0;
             if (difficulty.IdealDifficulty > 2000)
             {
-                var guardVisibilityChance = _random.Next(101);
-                if (guardVisibilityChance < 10)
+                var guardVisibilityChance = _random.NextDouble();
+                if (guardVisibilityChance < 0.09)
                     guardVisibility = -1;
-                if (guardVisibilityChance < 3)
+                if (guardVisibilityChance < 0.03)
                     guardVisibility = -2;
             }
             

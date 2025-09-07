@@ -7,6 +7,9 @@ namespace Epic.Server.Middleware
 {
     public class RequestResponseLoggingMiddleware
     {
+        const bool SHOW_RESPONSE = false;
+        const bool SHOW_BODY = true;
+        
         private readonly RequestDelegate _next;
         private readonly ILogger<RequestResponseLoggingMiddleware> _logger;
 
@@ -24,17 +27,17 @@ namespace Epic.Server.Middleware
                 await _next(context);
                 return;
             }
-            
+
             // Skip static file requests based on path or extension
             if (IsStaticAssetRequest(context.Request.Path))
             {
                 await _next(context); // No logging
                 return;
             }
-            
+
             // Log Request
             context.Request.EnableBuffering(); // Important!
-            var requestBody = await ReadStreamAsync(context.Request.Body);
+            var requestBody = SHOW_BODY ? await ReadStreamAsync(context.Request.Body) : "{Body}";
             _logger.LogInformation($"Request: {context.Request.Method} {context.Request.Path} - Body: {requestBody}");
             context.Request.Body.Position = 0;
 
@@ -49,18 +52,20 @@ namespace Epic.Server.Middleware
             // Skip logging if switching protocols (like WebSocket)
             if (context.Response.StatusCode == StatusCodes.Status101SwitchingProtocols)
                 return;
-            
+
             // Read and log response
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            if (IsTextOrJson(context.Response.ContentType))
+            if (IsTextOrJson(context.Response.ContentType) && SHOW_BODY && SHOW_RESPONSE)
             {
                 var responseText = await new StreamReader(context.Response.Body).ReadToEndAsync();
                 _logger.LogInformation($"Response: {context.Response.StatusCode} - Body: {responseText}");
             }
             else
             {
-                _logger.LogInformation($"Response: {context.Response.StatusCode} - [Skipped non-text content]");
+                if (SHOW_RESPONSE)
+                    _logger.LogInformation($"Response: {context.Response.StatusCode} - [Skipped non-text content]");
             }
+
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
             // Copy response back to original stream
