@@ -9,6 +9,7 @@ export interface IBattleDefinitionReward {
     name: string
     thumbnailUrl: string
     amount: string
+    description: string
 }
 
 export interface IBattleDefinition {

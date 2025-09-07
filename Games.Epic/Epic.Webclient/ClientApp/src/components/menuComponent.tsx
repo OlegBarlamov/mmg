@@ -35,6 +35,12 @@ interface IMenuComponentState {
     rewards: IRewardToAccept[] | null
     currentReward: IRewardToAccept | null
     currentRewardIndex: number
+    tooltip: {
+        visible: boolean
+        text: string
+        x: number
+        y: number
+    }
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -61,7 +67,13 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             isPlayerBattleLoading: false,
             rewards: null,
             currentReward: null,
-            currentRewardIndex: 0
+            currentRewardIndex: 0,
+            tooltip: {
+                visible: false,
+                text: '',
+                x: 0,
+                y: 0
+            }
         }
 
         // Initialize reward manager with callbacks
@@ -130,6 +142,29 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
 
     private handleBeginGuardBattle = async (rewardId: string) => {
         await this.rewardManager.beginGuardBattle(rewardId)
+    }
+
+    private handleRewardMouseEnter = (event: React.MouseEvent, description: string) => {
+        const rect = event.currentTarget.getBoundingClientRect()
+        this.setState({
+            tooltip: {
+                visible: true,
+                text: description,
+                x: rect.left + rect.width / 2,
+                y: rect.top - 60
+            }
+        })
+    }
+
+    private handleRewardMouseLeave = () => {
+        this.setState({
+            tooltip: {
+                visible: false,
+                text: '',
+                x: 0,
+                y: 0
+            }
+        })
     }
 
     public setBattlesGenerationInProgress(battlesGenerationInProgress: boolean) {
@@ -311,7 +346,6 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         return (
             <div className="menu-container">
                 <div className="battles-section">
-                    <h1 className="battles-title">Select a Battle</h1>
                     {
                         this.state.isLoading ? (
                             <div className="loading">Loading battles...</div>
@@ -336,28 +370,33 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                 onMouseLeave={() => this.handleBattleRowHover(null)}
                                             >
                                                 <td className="battle-size">{battle.width}x{battle.height}</td>
-                                                <td className="battle-units">
-                                                    <div className="units-horizontal">
+                                                <td className="menu-battle-units">
+                                                    <div className="menu-units-horizontal">
                                                         {battle.units.map((unit, unitIndex) => (
-                                                            <div key={unitIndex} className="unit-horizontal-item">
+                                                            <div key={unitIndex} className="menu-unit-horizontal-item">
                                                                 <img 
                                                                     src={unit.thumbnailUrl} 
                                                                     alt={unit.name}
                                                                     className="unit-thumbnail"
                                                                 />
                                                                 {unit.count ? (
-                                                                    <span className="unit-count">{unit.count}</span>
+                                                                    <span className="menu-unit-count">{unit.count}</span>
                                                                 ) : (
-                                                                    <span className="unit-count">?</span>
+                                                                    <span className="menu-unit-count">?</span>
                                                                 )}
                                                             </div>
                                                         ))}
                                                     </div>
                                                 </td>
-                                                <td className="battle-rewards">
+                                                <td className="menu-battle-rewards">
                                                     <div className="rewards-horizontal">
                                                         {battle.rewards.map((reward, rewardIndex) => (
-                                                            <div key={rewardIndex} className="reward-horizontal-item">
+                                                            <div 
+                                                                key={rewardIndex} 
+                                                                className="reward-horizontal-item"
+                                                                onMouseEnter={(e) => this.handleRewardMouseEnter(e, reward.description)}
+                                                                onMouseLeave={this.handleRewardMouseLeave}
+                                                            >
                                                                 <img 
                                                                     src={reward.thumbnailUrl} 
                                                                     alt={reward.name}
@@ -466,6 +505,20 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                         onBeginGuardBattle={this.handleBeginGuardBattle}
                         serviceLocator={this.props.serviceLocator}
                     />
+                )}
+
+                {/* Custom Tooltip */}
+                {this.state.tooltip.visible && (
+                    <div 
+                        className="custom-tooltip"
+                        style={{
+                            left: this.state.tooltip.x,
+                            top: this.state.tooltip.y,
+                            transform: 'translateX(-50%)'
+                        }}
+                    >
+                        {this.state.tooltip.text}
+                    </div>
                 )}
             </div>
         )

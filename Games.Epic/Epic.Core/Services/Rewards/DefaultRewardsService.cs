@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Epic.Core.Objects.Rewards;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.GameResources;
 using Epic.Core.Services.GameResources.Errors;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards.Errors;
@@ -31,6 +32,7 @@ namespace Epic.Core.Services.Rewards
         public IGameResourcesRepository GameResourcesRepository { get; }
         public IBattleDefinitionsService BattleDefinitionsService { get; }
         public IBattlesService BattlesService { get; }
+        public IGameResourcesService GameResourcesService { get; }
 
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
@@ -41,7 +43,8 @@ namespace Epic.Core.Services.Rewards
             [NotNull] IContainersManipulator containersManipulator,
             [NotNull] IGameResourcesRepository gameResourcesRepository,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
-            [NotNull] IBattlesService battlesService)
+            [NotNull] IBattlesService battlesService,
+            [NotNull] IGameResourcesService gameResourcesService)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
@@ -52,6 +55,7 @@ namespace Epic.Core.Services.Rewards
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
+            GameResourcesService = gameResourcesService ?? throw new ArgumentNullException(nameof(gameResourcesService));
         }
         public async Task<IRewardObject[]> GetNotAcceptedPlayerRewards(Guid playerId)
         {
@@ -255,9 +259,13 @@ namespace Epic.Core.Services.Rewards
                 case RewardType.None:
                     break;
                 case RewardType.UnitsGain:
+                    rewardObject.UnitTypes = (await UnitTypesService.GetUnitTypesByIdsAsync(entity.Ids)).ToArray();
+                    break;
                 case RewardType.UnitsToBuy:
                 case RewardType.UnitsToUpgrade:
                     rewardObject.UnitTypes = (await UnitTypesService.GetUnitTypesByIdsAsync(entity.Ids)).ToArray();
+                    var prices = await UnitTypesService.GetPrices(rewardObject.UnitTypes);
+                    rewardObject.Prices = await GameResourcesService.GetResourcesAmountsFromPrices(prices);
                     break;
                 case RewardType.ResourcesGain:
                     rewardObject.Resources = await GameResourcesRepository.GetByIds(entity.Ids);

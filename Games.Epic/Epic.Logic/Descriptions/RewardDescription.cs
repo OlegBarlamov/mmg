@@ -29,11 +29,12 @@ namespace Epic.Logic.Descriptions
                 if (!string.IsNullOrWhiteSpace(reward.Title))
                 {
                     description.Name = reward.Title;
-                    description.Amount = "$";
                 }
 
                 if (!string.IsNullOrWhiteSpace(reward.IconUrl))
+                {
                     description.IconUrl = reward.IconUrl;
+                }
             }
 
             return descriptions;
@@ -63,55 +64,6 @@ namespace Epic.Logic.Descriptions
                             Name = "None",
                             Amount = string.Empty,
                         } };
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
-                }
-            }
-
-            if (reward.RewardType == RewardType.UnitsGain)
-            {
-                switch (visibility)
-                {
-                    case DescriptionVisibility.None:
-                        return new [] { new RewardDescription
-                        {
-                            Name = "Unknown",
-                            Amount = string.Empty,
-                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
-                            Tooltip = $"Secret reward",
-                        } };
-                    case DescriptionVisibility.TypeOnly:
-                        return reward.UnitTypes.Select(x => new RewardDescription
-                        {
-                            Name = x.Name,
-                            Amount = string.Empty,
-                            IconUrl = x.BattleImgUrl ?? string.Empty,
-                            Tooltip = $"Gain {x.Name}",
-                        }).ToArray();
-                    case DescriptionVisibility.MaskedSize:
-                        return reward.UnitTypes.Select((x, i) => new RewardDescription
-                        {
-                            Name = x.Name,
-                            Amount = ArmySizeDescription.MaskArmySize(reward.Amounts[i]),
-                            IconUrl = x.BattleImgUrl ?? string.Empty,
-                            Tooltip = $"Gain {x.Name}",
-                        }).ToArray();
-                    case DescriptionVisibility.ApproximateSize:
-                        return reward.UnitTypes.Select((x, i) => new RewardDescription
-                        {
-                            Name = x.Name,
-                            Amount = ArmySizeDescription.ApproximateArmySize(reward.Amounts[i]),
-                            IconUrl = x.BattleImgUrl ?? string.Empty,
-                            Tooltip = $"Gain {x.Name}",
-                        }).ToArray();
-                    case DescriptionVisibility.Full:
-                        return reward.UnitTypes.Select((x, i) => new RewardDescription
-                        {
-                            Name = x.Name,
-                            Amount = reward.Amounts[i].ToString(),
-                            IconUrl = x.BattleImgUrl ?? string.Empty,
-                            Tooltip = $"Gain {x.Name}",
-                        }).ToArray();
                     default:
                         throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
                 }
@@ -165,8 +117,57 @@ namespace Epic.Logic.Descriptions
                         throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
                 }
             }
+            
+            if (reward.RewardType == RewardType.UnitsGain)
+            {
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = $"Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                        return reward.UnitTypes.Select(x => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = string.Empty,
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Gain {x.Name}",
+                        }).ToArray();
+                    case DescriptionVisibility.MaskedSize:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = ArmySizeDescription.MaskArmySize(reward.Amounts[i]),
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Gain {x.Name}",
+                        }).ToArray();
+                    case DescriptionVisibility.ApproximateSize:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = ArmySizeDescription.ApproximateArmySize(reward.Amounts[i]),
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Gain {x.Name}",
+                        }).ToArray();
+                    case DescriptionVisibility.Full:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = reward.Amounts[i].ToString(),
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Gain {x.Name}",
+                        }).ToArray();
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
 
-            if (reward.RewardType == RewardType.UnitsToBuy || reward.RewardType == RewardType.UnitsToUpgrade)
+            if (reward.RewardType == RewardType.UnitsToBuy)
             {
                 switch (visibility)
                 {
@@ -184,6 +185,7 @@ namespace Epic.Logic.Descriptions
                             Name = x.Name,
                             Amount = "$",
                             IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
                     case DescriptionVisibility.MaskedSize:
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
@@ -191,6 +193,7 @@ namespace Epic.Logic.Descriptions
                             Name = x.Name,
                             Amount = "$",
                             IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
                     case DescriptionVisibility.ApproximateSize:
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
@@ -198,6 +201,7 @@ namespace Epic.Logic.Descriptions
                             Name = x.Name,
                             Amount = "$",
                             IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
                     case DescriptionVisibility.Full:
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
@@ -205,6 +209,56 @@ namespace Epic.Logic.Descriptions
                             Name = x.Name,
                             Amount = "$",
                             IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
+                        }).ToArray();
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
+            
+            if (reward.RewardType == RewardType.UnitsToUpgrade)
+            {
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = $"Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = "^",
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Upgrade to {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
+                        }).ToArray();
+                    case DescriptionVisibility.MaskedSize:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = "^",
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Upgrade to {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
+                        }).ToArray();
+                    case DescriptionVisibility.ApproximateSize:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = "^",
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Upgrade to {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
+                        }).ToArray();
+                    case DescriptionVisibility.Full:
+                        return reward.UnitTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = "^",
+                            IconUrl = x.BattleImgUrl ?? string.Empty,
+                            Tooltip = $"Upgrade to {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
                     default:
                         throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
@@ -212,6 +266,11 @@ namespace Epic.Logic.Descriptions
             }
 
             throw new NotImplementedException();
+        }
+
+        private static string DescribeResourcesAmounts(ResourceAmount[] resourceAmounts)
+        {
+            return string.Join(", ", resourceAmounts.Select(x => x.Name));
         }
 
         private static string MaskResourcesAmount(IGameResourceEntity resourceEntity, int amount, Guid goldResourceId)

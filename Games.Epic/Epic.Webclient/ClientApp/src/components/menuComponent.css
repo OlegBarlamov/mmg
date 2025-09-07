@@ -12,14 +12,6 @@
     overflow-y: auto;
 }
 
-.battles-title {
-    color: #f1c40f;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
 .battle-actions {
     display: flex;
     justify-content: center;
@@ -95,7 +87,6 @@
 .battles-table td {
     padding: 12px 8px;
     border-bottom: 1px solid #34495e;
-    vertical-align: top;
     font-size: 0.85rem;
 }
 
@@ -119,14 +110,14 @@
     overflow-y: auto;
 }
 
-.battle-units .units-horizontal {
+.menu-battle-units .menu-units-horizontal {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
 }
 
-.battle-units .unit-horizontal-item {
+.menu-battle-units .menu-unit-horizontal-item {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -137,7 +128,7 @@
     position: relative;
 }
 
-.battle-units .unit-horizontal-item .unit-count {
+.menu-battle-units .menu-unit-horizontal-item .menu-unit-count {
     position: static;
 }
 
@@ -173,7 +164,7 @@
     text-overflow: ellipsis;
 }
 
-.unit-count {
+.menu-unit-count {
     color: #e74c3c;
     font-weight: bold;
     font-size: 0.8rem;
@@ -194,14 +185,14 @@
     overflow-y: auto;
 }
 
-.battle-rewards .rewards-horizontal {
+.menu-battle-rewards .rewards-horizontal {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
 }
 
-.battle-rewards .reward-horizontal-item {
+.menu-battle-rewards .reward-horizontal-item {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -212,7 +203,7 @@
     position: relative;
 }
 
-.battle-rewards .reward-horizontal-item .reward-amount {
+.menu-battle-rewards .reward-horizontal-item .reward-amount {
     position: static;
 }
 
@@ -228,8 +219,8 @@
 }
 
 .reward-thumbnail {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     object-fit: cover;
     border-radius: 3px;
     border: 1px solid #27ae60;
@@ -374,8 +365,8 @@
     
     .unit-thumbnail,
     .reward-thumbnail {
-        width: 20px;
-        height: 20px;
+        width: 32px;
+        height: 32px;
     }
     
     .unit-name,
@@ -387,4 +378,35 @@
         padding: 6px 12px;
         font-size: 0.8rem;
     }
+}
+
+/* Custom Tooltip Styles */
+.custom-tooltip {
+    position: fixed;
+    background: linear-gradient(145deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #1f4e79;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+    max-width: 300px;
+    word-wrap: break-word;
+    z-index: 10000;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+}
+
+.custom-tooltip::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #1f4e79;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
