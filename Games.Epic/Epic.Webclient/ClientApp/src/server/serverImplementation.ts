@@ -13,12 +13,12 @@ import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
 export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-//export const SERVER_BASE_URL = "https://334e57829b0f.ngrok-free.app"
+//export const SERVER_BASE_URL = "https://7cf1c29ae217.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
         super(baseUrl)
-    }    
+    }
     getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]> {
         const query = unitTypeIds.map(id => `ids=${encodeURIComponent(id)}`).join("&");
         return this.fetchResource<IUnitTypeInfo[]>(
@@ -91,15 +91,17 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         return new BattleServerConnection(webSocket, handler)
     }
     async acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward> {
-        const result = await this.fetchResource<IAcceptedReward>(`api/rewards/${id}`, "POST", 'accept_reward', body)
-        if (result.nextBattle) {
-            this.fillMapCells(result.nextBattle)
-        }
-        return result
+        return await this.fetchResource<IAcceptedReward>(`api/rewards/${id}`, "POST", 'accept_reward', body)
     }
 
     getMyRewards(): Promise<IRewardToAccept[]> {
         return this.fetchResource("api/rewards", "GET", "rewards")
+    }
+
+    async beginGuardBattle(rewardId: string): Promise<BattleMap> {
+        const battleMap = await this.fetchResource<BattleMap>(`api/rewards/${rewardId}/guard`, "POST", "begin_guard_battle")
+        this.fillMapCells(battleMap)
+        return battleMap
     }
 
     private fillMapCells(battleMap: BattleMap) {

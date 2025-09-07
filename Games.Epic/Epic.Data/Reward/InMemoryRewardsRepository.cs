@@ -40,6 +40,12 @@ namespace Epic.Data.Reward
             return Task.FromResult<IRewardEntity>(_rewards.First(x => x.Id == rewardId));
         }
 
+        public Task<IRewardEntity> GetRewardForPlayer(Guid playerId, Guid rewardId)
+        {
+            var playerRewardEntity = _playerRewards.First(x => x.PlayerId == playerId && x.RewardId == rewardId);
+            return Task.FromResult<IRewardEntity>(_rewards.First(x => x.Id == playerRewardEntity.RewardId));
+        }
+
         public Task<IRewardEntity> CreateRewardAsync(Guid battleDefinitionId, IRewardEntityFields fields)
         {
             var newReward = new MutableRewardEntity(Guid.NewGuid(), battleDefinitionId);

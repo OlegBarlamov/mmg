@@ -107,7 +107,7 @@ namespace Epic.Server
             
             await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero.ArmyContainerId, true, 0);
             await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero.ArmyContainerId, true, 1);
-            // await GlobalUnitsRepository.Create(archangelUnitType.Id, 1, hero.ArmyContainerId, true, 2);
+            //await GlobalUnitsRepository.Create(archangelUnitType.Id, 1, hero.ArmyContainerId, true, 2);
             
             await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero1.ArmyContainerId, true, 0);
             await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero1.ArmyContainerId, true, 1);

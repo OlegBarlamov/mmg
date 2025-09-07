@@ -12,9 +12,11 @@ namespace Epic.Core.Services.Rewards
         public int[] Amounts { get; protected set; }
         public string Message { get; protected set; }
         public bool CanDecline { get; set; }
-        public Guid? NextBattleDefinitionId { get; set; }
-        public string CustomIconUrl { get; set; }
-        public string CustomTitle { get; set; }
+        public string GuardMessage { get; set; }
+        public Guid? GuardBattleDefinitionId { get; set; }
+        public string IconUrl { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
 
         protected BaseRewardObject(IRewardEntity entity)
         {
@@ -25,9 +27,11 @@ namespace Epic.Core.Services.Rewards
             RewardType = entity.RewardType;
             Ids = entity.Ids;
             CanDecline = entity.CanDecline;
-            NextBattleDefinitionId = entity.NextBattleDefinitionId;
-            CustomIconUrl = entity.CustomIconUrl;
-            CustomTitle = entity.CustomTitle;
+            GuardBattleDefinitionId = entity.GuardBattleDefinitionId;
+            IconUrl = entity.IconUrl;
+            Title = entity.Title;
+            Description = entity.Description;
+            GuardMessage = entity.GuardMessage;
         }
         
         public IRewardEntity ToEntity()

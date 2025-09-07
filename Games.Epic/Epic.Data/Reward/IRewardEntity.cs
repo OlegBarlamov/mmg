@@ -16,9 +16,11 @@ namespace Epic.Data.Reward
         int[] Amounts { get; }
         string Message { get; }
         bool CanDecline { get; }
-        Guid? NextBattleDefinitionId { get; }
-        [CanBeNull] string CustomIconUrl { get; }
-        [CanBeNull] string CustomTitle { get; }
+        [CanBeNull] string GuardMessage { get; }
+        Guid? GuardBattleDefinitionId { get; }
+        [CanBeNull] string IconUrl { get; }
+        [CanBeNull] string Title { get; }
+        [CanBeNull] string Description { get; } 
     }
 
     public class MutableRewardFields : IRewardEntityFields
@@ -28,9 +30,11 @@ namespace Epic.Data.Reward
         public int[] Amounts { get; set; }
         public string Message { get; set; }
         public bool CanDecline { get; set; }
-        public Guid? NextBattleDefinitionId { get; set; }
-        public string CustomIconUrl { get; set; }
-        public string CustomTitle { get; set; }
+        public string GuardMessage { get; set; }
+        public Guid? GuardBattleDefinitionId { get; set; }
+        public string IconUrl { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
 
         public MutableRewardFields() { }
     }
@@ -53,9 +57,11 @@ namespace Epic.Data.Reward
             Amounts = fields.Amounts;
             Message = fields.Message;
             CanDecline = fields.CanDecline;
-            CustomIconUrl = fields.CustomIconUrl;
-            CustomTitle = fields.CustomTitle;
-            NextBattleDefinitionId = fields.NextBattleDefinitionId;
+            IconUrl = fields.IconUrl;
+            Title = fields.Title;
+            GuardBattleDefinitionId = fields.GuardBattleDefinitionId;
+            Description = fields.Description;
+            GuardMessage = fields.GuardMessage;
         }
     }
 }

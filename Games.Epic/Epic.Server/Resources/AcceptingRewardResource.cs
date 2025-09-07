@@ -19,7 +19,8 @@ namespace Epic.Server.Resources
         public UnitRewardResource[] UnitsRewards { get; }
         public ResourceDashboardResource[] ResourcesRewards { get; }
         public PriceResource[] Prices { get; }
-        public BattleDefinitionResource NextBattle { get; }
+        public string GuardMessage { get; }
+        public BattleDefinitionResource GuardBattle { get; }
         public bool CanDecline { get; }
 
         public AcceptingRewardResource(IRewardObject reward, IReadOnlyList<ResourceAmount[]> prices, Guid goldResourceId)
@@ -30,8 +31,8 @@ namespace Epic.Server.Resources
             Message = reward.Message;
             Amounts = reward.Amounts;
             CanDecline = reward.CanDecline;
-            IconUrl = reward.CustomIconUrl;
-            Title = reward.CustomTitle;
+            IconUrl = reward.IconUrl;
+            Title = reward.Title;
 
             UnitsRewards = reward.UnitTypes
                 .Select((x, i) => new UnitRewardResource(x, reward.Amounts[i]))
@@ -41,13 +42,16 @@ namespace Epic.Server.Resources
                 .Select((x, i) => new ResourceDashboardResource(ResourceAmount.Create(x, reward.Amounts[i])))
                 .ToArray();
 
-            if (reward.NextBattleDefinition != null)
-                NextBattle = new BattleDefinitionResource(
-                    reward.NextBattleDefinition,
-                    Array.Empty<IRewardObject>(), 
-                    DescriptionVisibility.Full,
-                    DescriptionVisibility.Full,
+            if (reward.GuardBattleDefinition != null)
+            {
+                GuardMessage = reward.GuardMessage;
+                GuardBattle = new BattleDefinitionResource(
+                    reward.GuardBattleDefinition,
+                    Array.Empty<IRewardObject>(),
+                    DescriptionVisibility.MaskedSize,
+                    DescriptionVisibility.MaskedSize,
                     goldResourceId);
+            }
 
             Prices = prices.Select(x => new PriceResource(x)).ToArray();
         }

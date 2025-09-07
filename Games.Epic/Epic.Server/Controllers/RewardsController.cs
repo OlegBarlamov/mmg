@@ -70,5 +70,15 @@ namespace Epic.Server.Controllers
             var rejectResult = await RewardsService.RejectRewardAsync(id, playerId);
             return Ok(new AcceptedRewardResource(rejectResult));
         }
+
+        [HttpPost("{rewardId}/guard")]
+        public async Task<IActionResult> BeginRewardGuardBattle(Guid rewardId)
+        {
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            
+            var battleObject = await RewardsService.BeginRewardGuardBattle(rewardId, playerId);
+            return Ok(new BattleResource(battleObject));
+        }
     }
 }

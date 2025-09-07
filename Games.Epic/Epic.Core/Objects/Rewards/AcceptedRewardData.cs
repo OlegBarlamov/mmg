@@ -1,8 +1,6 @@
 using System;
-using Epic.Core.Services.Battles;
 using Epic.Core.Services.Units;
 using Epic.Data.GameResources;
-using JetBrains.Annotations;
 
 namespace Epic.Core.Objects.Rewards
 {
@@ -13,7 +11,6 @@ namespace Epic.Core.Objects.Rewards
         public IGlobalUnitObject[] UnitsGiven { get; set; }
         public ResourceAmount[] ResourcesGiven { get; set; }
         public Price PricePayed { get; set; }
-        [CanBeNull] public IBattleObject NextBattle { get; set; }
 
         public static AcceptedRewardData Empty(Guid rewardId, Guid playerId)
         {
@@ -24,7 +21,6 @@ namespace Epic.Core.Objects.Rewards
                 UnitsGiven = Array.Empty<IGlobalUnitObject>(),
                 ResourcesGiven = Array.Empty<ResourceAmount>(),
                 PricePayed = Price.Empty(),
-                NextBattle = null,
             };
         }
     }

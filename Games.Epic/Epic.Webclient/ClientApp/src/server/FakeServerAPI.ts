@@ -28,7 +28,7 @@ class ServerSideBattle implements IBattleDefinition {
     readonly rewards: IBattleDefinitionReward[] = []
     readonly expiresAfterDays: number = 10
     readonly enemyUnits: IUserUnit[]
-
+    readonly isFinished: boolean = false
     constructor(battleId: string, mapWidth: number, mapHeight: number, enemyUnits: IUserUnit[]) {
         this.id = battleId
         this.width = mapWidth
@@ -41,6 +41,9 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    beginGuardBattle(rewardId: string): Promise<BattleMap> {
+        throw new Error("Method not implemented.");
+    }
     getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]> {
         throw new Error("Method not implemented.");
     }

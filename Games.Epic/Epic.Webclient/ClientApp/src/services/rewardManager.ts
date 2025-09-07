@@ -1,10 +1,10 @@
+import { BattleMap } from "../battleMap/battleMap";
 import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import { IServerAPI } from "./serverAPI";
-import { IBattleDefinition } from "../battle/IBattleDefinition";
 
 export interface IRewardManagerCallbacks {
     onRewardComplete?: () => void;
-    onBattleReward?: (battleMap: any) => void;
+    onGuardBattleBegins?: (battleMap: BattleMap) => void;
     onRewardError?: (error: Error) => void;
 }
 
@@ -79,12 +79,7 @@ export class RewardManager {
                 affectedSlots: affectedSlots || [],
             });
 
-            // If this was a Battle reward and we got a new battle map, notify callback
-            if (currentReward.rewardType === 'Battle' && result.nextBattle) {
-                this.callbacks.onBattleReward?.(result.nextBattle);
-            } else {
-                this.showNextReward();
-            }
+            this.showNextReward();
         } catch (error) {
             console.error('Failed to accept reward:', error);
             this.callbacks.onRewardError?.(error as Error);
@@ -143,6 +138,14 @@ export class RewardManager {
      */
     updateCallbacks(callbacks: IRewardManagerCallbacks): void {
         this.callbacks = { ...this.callbacks, ...callbacks };
+    }
+
+    /**
+     * Begin a guard battle
+     */
+    async beginGuardBattle(rewardId: string): Promise<void> {
+        const battleMap = await this.serverAPI.beginGuardBattle(rewardId);
+        this.callbacks.onGuardBattleBegins?.(battleMap);
     }
 }
 

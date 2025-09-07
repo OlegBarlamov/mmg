@@ -94,6 +94,9 @@ namespace Epic.Core.Services.Rewards
 
             try
             {
+                if (rewardObject.GuardBattleDefinition is { IsFinished: false })
+                    throw new RewardGuardBattleIsNotFinishedException();
+
                 var unitTypes = rewardObject.UnitTypes;
                 if (unitTypes.Count > 0)
                 {
@@ -115,7 +118,9 @@ namespace Epic.Core.Services.Rewards
                     if (rewardObject.RewardType == RewardType.UnitsToUpgrade)
                     {
                         int maxSlot = affectedSlots.Any() ? affectedSlots.Max() : 0;
-                        var armyUnitsInSlots = await GlobalUnitsService.GetAliveUnitFromContainerPerSlots(player.ActiveHero.ArmyContainerId, 0, maxSlot);
+                        var armyUnitsInSlots =
+                            await GlobalUnitsService.GetAliveUnitFromContainerPerSlots(
+                                player.ActiveHero.ArmyContainerId, 0, maxSlot);
                         var upgradeUnitsData = new List<UpgradeUnitData>();
                         for (int i = 0; i < affectedSlots.Length; i++)
                         {
@@ -123,35 +128,36 @@ namespace Epic.Core.Services.Rewards
                             var targetUnit = armyUnitsInSlots[targetSlotIndex];
                             if (targetUnit == null)
                                 throw new InvalidOperationException($"Target slot {targetSlotIndex} is empty");
-                            
+
                             var upgradeTo = unitTypes.FirstOrDefault(x => x.IsUpgradeFor(targetUnit.UnitType));
                             if (upgradeTo == null)
                                 throw new UnitCantBeUpgradedInTheReward(targetUnit, rewardObject);
-                            
+
                             upgradeUnitsData.Add(new UpgradeUnitData(targetUnit, upgradeTo, amounts[i]));
                         }
 
                         var prices = await Task.WhenAll(upgradeUnitsData.Select(x =>
                             UnitTypesService.GetPriceForUpgrade(x.Unit.UnitType, x.UpgradeToType)));
-                        
-                        prices.For((x,i) =>
+
+                        prices.For((x, i) =>
                         {
                             x.MultiplyBy(amounts[i]);
                             return false;
                         });
                         priceToPay = Price.Combine(prices);
-                        
+
                         var enoughResources = await GameResourcesRepository.IsEnoughToPay(priceToPay, playerId);
                         if (!enoughResources)
                             throw new NotEnoughResourcesToPayException();
 
                         var units = await GlobalUnitsService.UpgradeUnits(upgradeUnitsData);
-                        
+
                         var payed = await GameResourcesRepository.PayIfEnough(priceToPay, playerId);
                         if (!payed)
                             throw new NotEnoughResourcesToPayException();
 
-                        var notPlacedUnits = units.Where(x => x.ContainerId != player.ActiveHero.ArmyContainerId).ToArray();
+                        var notPlacedUnits = units.Where(x => x.ContainerId != player.ActiveHero.ArmyContainerId)
+                            .ToArray();
                         try
                         {
                             await ContainersManipulator.PlaceUnitsToContainer(player.ActiveHero.ArmyContainerId,
@@ -164,7 +170,8 @@ namespace Epic.Core.Services.Rewards
                     }
                     else
                     {
-                        var createData = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count)).ToArray();
+                        var createData = amounts.Select((count, i) => new CreateUnitData(unitTypes[i].Id, count))
+                            .ToArray();
                         var units = await GlobalUnitsService.CreateUnits(createData);
                         unitsGiven = units.ToArray();
 
@@ -197,14 +204,6 @@ namespace Epic.Core.Services.Rewards
                     await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
                 }
 
-                IBattleObject battleObject = null;
-                if (rewardObject.NextBattleDefinition != null)
-                {
-                    var battleDefinition = await BattleDefinitionsService.GetBattleDefinitionById(rewardObject.NextBattleDefinition.Id);
-                    battleObject = await BattlesService.CreateBattleFromDefinition(playerId, battleDefinition, false);
-                    battleObject = await BattlesService.BeginBattle(playerId, battleObject);
-                }
-
                 return new AcceptedRewardData
                 {
                     RewardId = rewardId,
@@ -212,8 +211,12 @@ namespace Epic.Core.Services.Rewards
                     UnitsGiven = unitsGiven,
                     ResourcesGiven = resourcesGiven,
                     PricePayed = priceToPay,
-                    NextBattle = battleObject,
                 };
+            }
+            catch (RewardGuardBattleIsNotFinishedException)
+            {
+                await RewardsRepository.GiveRewardsToPlayerAsync(new[] { rewardId }, playerId);
+                throw;
             }
             catch (NotEnoughResourcesToPayException)
             {
@@ -232,9 +235,21 @@ namespace Epic.Core.Services.Rewards
             return AcceptedRewardData.Empty(rewardId, playerId);
         }
 
+        public async Task<IBattleObject> BeginRewardGuardBattle(Guid rewardId, Guid playerId)
+        {
+            var rewardEntity = await RewardsRepository.GetRewardForPlayer(playerId, rewardId);
+            if (!rewardEntity.GuardBattleDefinitionId.HasValue)
+                throw new InvalidOperationException("The reward guard battle definition is null.");
+            
+            var guardBattleDefinition = await BattleDefinitionsService.GetBattleDefinitionById(rewardEntity.GuardBattleDefinitionId.Value);
+            var battleObject = await BattlesService.CreateBattleFromDefinition(playerId, guardBattleDefinition, false);
+            return await BattlesService.BeginBattle(playerId, battleObject);
+        }
+
         private async Task<IRewardObject> ToRewardObject(IRewardEntity entity)
         {
             var rewardObject = new CompositeRewardObject(entity);
+            
             switch (entity.RewardType)
             {
                 case RewardType.None:
@@ -247,12 +262,12 @@ namespace Epic.Core.Services.Rewards
                 case RewardType.ResourcesGain:
                     rewardObject.Resources = await GameResourcesRepository.GetByIds(entity.Ids);
                     break;
-                case RewardType.Battle:
-                    rewardObject.NextBattleDefinition = await BattleDefinitionsService.GetBattleDefinitionById(rewardObject.NextBattleDefinitionId.Value);
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            
+            if (rewardObject.GuardBattleDefinitionId.HasValue)
+                rewardObject.GuardBattleDefinition = await BattleDefinitionsService.GetBattleDefinitionById(rewardObject.GuardBattleDefinitionId.Value);
 
             return rewardObject;
         }

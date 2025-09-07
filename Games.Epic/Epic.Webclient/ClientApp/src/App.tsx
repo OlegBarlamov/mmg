@@ -206,7 +206,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
     }
 
     render() {
-        const showMenuComponent = !this.state.isLoading || (!this.state.selectedBattle && this.state.userInfo)
+        const showMenuComponent = !this.state.isLoading && (!this.state.selectedBattle && this.state.userInfo)
         const showBattleComponent = this.state.selectedBattle
         
         if (this.state.isLoading) {

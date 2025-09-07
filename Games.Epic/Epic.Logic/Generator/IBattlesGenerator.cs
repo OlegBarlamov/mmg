@@ -227,9 +227,9 @@ namespace Epic.Logic.Generator
                     RewardType = RewardType.ResourcesGain,
                     Amounts = new[] { goldAmount * rewardFactor },
                     CanDecline = true,
-                    NextBattleDefinitionId = null,
-                    CustomIconUrl = null,
-                    CustomTitle = null,
+                    GuardBattleDefinitionId = null,
+                    IconUrl = null,
+                    Title = null,
                     Ids = new[] { GameResourcesRepository.GoldResourceId },
                 });
             }
@@ -260,9 +260,9 @@ namespace Epic.Logic.Generator
                     RewardType = RewardType.ResourcesGain,
                     Amounts = resourcesAmounts.ToArray(),
                     CanDecline = true,
-                    NextBattleDefinitionId = null,
-                    CustomIconUrl = null,
-                    CustomTitle = null,
+                    GuardBattleDefinitionId = null,
+                    IconUrl = null,
+                    Title = null,
                     Ids = resourceTypes.Select(x => x.Id).ToArray(),
                 });
             }
@@ -292,9 +292,9 @@ namespace Epic.Logic.Generator
                     RewardType = RewardType.UnitsGain,
                     Amounts = new[] { unitsGainAmount * rewardFactor },
                     CanDecline = true,
-                    NextBattleDefinitionId = null,
-                    CustomIconUrl = null,
-                    CustomTitle = null,
+                    GuardBattleDefinitionId = null,
+                    IconUrl = null,
+                    Title = null,
                     Ids = new[] { unitToGain.Id },
                 });
             } else if (rewardType == GeneratedRewardTypes.UnitsToBuy)
@@ -331,41 +331,34 @@ namespace Epic.Logic.Generator
                     
                 var isGuarded = !upgradeOnly && unitToBuy.Value >= 400;
                 var rewardedBattleDefinition = battleDefinition;
+                
+                var rewardFields = new MutableRewardFields
+                {
+                    RewardType = upgradeOnly ? RewardType.UnitsToUpgrade : RewardType.UnitsToBuy,
+                    Amounts = upgradeOnly ? new[] { 0 } : new[] { unitToBuy.ToTrainAmount * rewardFactor },
+                    Message = upgradeOnly ? "You can upgrade units now" : "You can train units now",
+                    CanDecline = true,
+                    GuardBattleDefinitionId = null,
+                    IconUrl = dwellingIcon,
+                    Title = $"Dwelling of {unitToBuy.Name}",
+                    Ids = new[] { unitToBuy.Id },
+                };
+                
                 if (isGuarded)
                 {
                     var guardBattleWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + (unitToBuy.Value * unitToBuy.ToTrainAmount / 2) / 300);
                     var guardBattleHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + (unitToBuy.Value * unitToBuy.ToTrainAmount / 2) / 300);
                     
                     var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
-                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
-                    {
-                        RewardType = RewardType.Battle,
-                        Ids = Array.Empty<Guid>(),
-                        Amounts = Array.Empty<int>(),
-                        Message = $"You need to defeat guards to train {unitToBuy.Name}",
-                        CanDecline = true,
-                        NextBattleDefinitionId = guardBattleDefinition.Id,
-                        CustomIconUrl = dwellingIcon,
-                        CustomTitle = $"Dwelling of {unitToBuy.Name}",
-                    });
                     
                     await GlobalUnitsRepository.Create(unitToBuy.Id, unitToBuy.ToTrainAmount / 2,
                         guardBattleDefinition.ContainerId, true, guardBattleDefinition.Height / 2);
                     
-                    rewardedBattleDefinition = guardBattleDefinition;
+                    rewardFields.GuardBattleDefinitionId = guardBattleDefinition.Id;
+                    rewardFields.GuardMessage = $"You need to defeat guards to train {unitToBuy.Name}";
                 }
                 
-                await RewardsRepository.CreateRewardAsync(rewardedBattleDefinition.Id, new MutableRewardFields
-                {
-                    RewardType = upgradeOnly ? RewardType.UnitsToUpgrade : RewardType.UnitsToBuy,
-                    Amounts = upgradeOnly ? new [] { 0 } : new[] { unitToBuy.ToTrainAmount * rewardFactor },
-                    Message = upgradeOnly ?  "You can upgrade units now" : "You can train units now",
-                    CanDecline = true,
-                    NextBattleDefinitionId = null,
-                    CustomIconUrl = dwellingIcon,
-                    CustomTitle = $"Dwelling of {unitToBuy.Name}",
-                    Ids = new[] { unitToBuy.Id },
-                });
+                await RewardsRepository.CreateRewardAsync(rewardedBattleDefinition.Id, rewardFields);
             }
         }
 

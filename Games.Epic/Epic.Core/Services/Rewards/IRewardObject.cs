@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Epic.Core.Objects;
-using Epic.Core.Objects.Rewards;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
@@ -19,12 +18,13 @@ namespace Epic.Core.Services.Rewards
         int[] Amounts { get; }
         string Message { get; }
         bool CanDecline { get; }
-        [CanBeNull] string CustomIconUrl { get; }
-        [CanBeNull] string CustomTitle { get; }
+        [CanBeNull] string IconUrl { get; }
+        [CanBeNull] string Title { get; }
+        [CanBeNull] string GuardMessage { get; }
         
         IReadOnlyList<IUnitTypeObject> UnitTypes { get; }
         IReadOnlyList<IGameResourceEntity> Resources { get; }
         
-        [CanBeNull] IBattleDefinitionObject NextBattleDefinition { get; }
+        [CanBeNull] IBattleDefinitionObject GuardBattleDefinition { get; }
     }
 }

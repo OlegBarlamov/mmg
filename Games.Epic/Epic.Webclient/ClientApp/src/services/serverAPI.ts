@@ -54,7 +54,6 @@ export interface IResourceInfo {
 
 export interface IAcceptedReward {
     readonly rewardId: string
-    readonly nextBattle: BattleMap | null
 }
 
 export interface IReportInfo {
@@ -96,6 +95,7 @@ export interface IServerAPI {
 
     getMyRewards(): Promise<IRewardToAccept[]>
     acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward>
+    beginGuardBattle(rewardId: string): Promise<BattleMap>
     
     moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo>
 

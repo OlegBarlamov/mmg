@@ -18,4 +18,5 @@ export interface IBattleDefinition {
     readonly units: IBattleDefinitionUnit[]
     readonly rewards: IBattleDefinitionReward[]
     readonly expiresAfterDays: number
+    readonly isFinished: boolean
 }

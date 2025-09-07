@@ -69,7 +69,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             this.props.serviceLocator.serverAPI(),
             {
                 onRewardComplete: this.handleRewardComplete,
-                onBattleReward: this.handleBattleReward,
+                onGuardBattleBegins: this.handleGuardBattleBegins,
                 onRewardError: this.handleRewardError
             }
         );
@@ -100,8 +100,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         })
     }
 
-    private handleBattleReward = (battleMap: any) => {
-        // For Battle rewards, we need to use the onPlayerBattleSelected method
+    private handleGuardBattleBegins = (battleMap: any) => {
         this.props.onPlayerBattleSelected(battleMap)
     }
 
@@ -127,6 +126,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
             currentReward: state.currentReward,
             currentRewardIndex: state.currentRewardIndex
         })
+    }
+
+    private handleBeginGuardBattle = async (rewardId: string) => {
+        await this.rewardManager.beginGuardBattle(rewardId)
     }
 
     public setBattlesGenerationInProgress(battlesGenerationInProgress: boolean) {
@@ -460,6 +463,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                         reward={this.state.currentReward}
                         onAccept={this.handleRewardAccept}
                         onDecline={this.handleRewardDecline}
+                        onBeginGuardBattle={this.handleBeginGuardBattle}
                         serviceLocator={this.props.serviceLocator}
                     />
                 )}

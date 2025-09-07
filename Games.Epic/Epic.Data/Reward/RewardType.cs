@@ -7,6 +7,5 @@ namespace Epic.Data.Reward
         UnitsGain, 
         UnitsToBuy,
         UnitsToUpgrade,
-        Battle,
     }
 }

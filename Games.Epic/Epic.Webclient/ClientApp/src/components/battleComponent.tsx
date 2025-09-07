@@ -67,7 +67,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             this.props.serviceLocator.serverAPI(),
             {
                 onRewardComplete: this.handleRewardComplete,
-                onBattleReward: this.handleBattleReward,
+                onGuardBattleBegins: this.handleGuardBattleBegins,
                 onRewardError: this.handleRewardError
             }
         );
@@ -207,7 +207,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         this.props.onBattleFinished()
     }
 
-    private handleBattleReward = (battleMap: any) => {
+    private handleGuardBattleBegins = (battleMap: any) => {
         // Pass the new battle map to the parent component
         this.props.onBattleFinished(battleMap)
     }
@@ -235,6 +235,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             currentReward: state.currentReward,
             currentRewardIndex: state.currentRewardIndex
         })
+    }
+
+    private handleBeginGuardBattle = async (rewardId: string) => {
+        await this.rewardManager.beginGuardBattle(rewardId)
     }
 
     async componentWillUnmount() {
@@ -339,6 +343,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         reward={this.state.currentReward}
                         onAccept={this.handleRewardAccept}
                         onDecline={this.handleRewardDecline}
+                        onBeginGuardBattle={this.handleBeginGuardBattle}
                         serviceLocator={this.props.serviceLocator}
                     />
                 )}

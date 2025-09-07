@@ -17,7 +17,6 @@ namespace Epic.Core.Services.Rewards
         public IReadOnlyList<IUnitTypeObject> UnitTypes { get; set; } = Array.Empty<IUnitTypeObject>();
         public IReadOnlyList<IGameResourceEntity> Resources { get; set; } = Array.Empty<IGameResourceEntity>();
         
-        [CanBeNull] 
-        public IBattleDefinitionObject NextBattleDefinition { get; set; } 
+        [CanBeNull] public IBattleDefinitionObject GuardBattleDefinition { get; set; } 
     }
 }

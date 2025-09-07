@@ -5,6 +5,7 @@ Tech:
 - Have real DB based on profile
 
 Product:
+- Show tooltips for rewards
 - Show hero stats in battle
 - Battle map obstacles
 - In battle special abilities

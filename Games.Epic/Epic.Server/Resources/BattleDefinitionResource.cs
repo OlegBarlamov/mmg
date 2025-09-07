@@ -16,7 +16,7 @@ namespace Epic.Server.Resources
         
         public BattleDefinitionRewardResource[] Rewards { get; }
         public BattleDefinitionUnitResource[] Units { get; }
-        
+        public bool IsFinished { get; }
         public int? ExpiresAfterDays { get; }
         
         public BattleDefinitionResource(
@@ -28,6 +28,7 @@ namespace Epic.Server.Resources
             IPlayerObject playerObject = null)
         {
             Id = battleDefinitionObject.Id.ToString();
+            IsFinished = battleDefinitionObject.IsFinished;
             Width = battleDefinitionObject.Width;
             Height = battleDefinitionObject.Height;
             Rewards = rewards.SelectMany(x => BattleDefinitionRewardResource.CreateFromComposite((CompositeRewardObject)x, rewardVisibility, goldResourceId))
@@ -52,12 +53,14 @@ namespace Epic.Server.Resources
         public string Name { get; }
         public string ThumbnailUrl { get; }
         public string Amount { get; }
+        public string Description { get; }
 
         public BattleDefinitionRewardResource(RewardDescription description)
         {
             Name = description.Name;
             ThumbnailUrl = description.IconUrl;
             Amount = description.Amount;
+            Description = description.Tooltip;
         }
 
         public static BattleDefinitionRewardResource[] CreateFromComposite(CompositeRewardObject rewardObject, DescriptionVisibility visibility, Guid goldResourceId)

@@ -7,6 +7,7 @@ import { IResourceInfo } from "../services/serverAPI";
 export interface IRewardDialogProps {
     reward: IRewardToAccept
     onAccept: (affectedSlots: number[]) => Promise<void>
+    onBeginGuardBattle: (rewardId: string) => Promise<void>
     onDecline: () => Promise<void>
     serviceLocator?: any
 }
@@ -49,6 +50,19 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
             errorMessage: null,
             upgradableUnits: null,
             upgradeQuantities: []
+        }
+    }
+
+    private handleGuardBattleBegin = async () => {
+        this.setState({ isSubmitting: true, errorMessage: null })
+        try {
+            await this.props.onBeginGuardBattle(this.props.reward.id)
+        } catch (error) {
+            console.error('Error beginning guard battle:', error)
+            this.setState({ 
+                errorMessage: error instanceof Error ? error.message : 'Failed to begin guard battle. Please try again.',
+                isSubmitting: false 
+            })
         }
     }
 
@@ -106,16 +120,16 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
     }
 
     componentDidMount() {
-        this.initializeUnitBuyState()
+        this.preInitializeRewardState()
     }
 
     componentDidUpdate(prevProps: IRewardDialogProps) {
         if (prevProps.reward.id !== this.props.reward.id) {
-            this.initializeUnitBuyState()
+            this.preInitializeRewardState()
         }
     }
 
-    private initializeUnitBuyState = async () => {
+    private preInitializeRewardState = async () => {
         const { reward, serviceLocator } = this.props
         if (reward.rewardType === RewardType.UnitsToBuy) {
             // Initialize unit quantities to 0
@@ -509,10 +523,59 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
         }))
     }
 
-
-
     private renderRewardContent() {
         const { reward } = this.props
+
+        if (reward.guardBattle && !reward.guardBattle.isFinished) {
+            return (
+                <div className="reward-content">
+                    <div className="reward-message">{reward.guardMessage}</div>
+                    
+                    {reward.guardBattle && reward.guardBattle.units && reward.guardBattle.units.length > 0 && (
+                        <div className="battle-units">
+                            <h4>Battle Units:</h4>
+                            <div className="units-horizontal">
+                                {reward.guardBattle.units.map((unit, index) => (
+                                    <div key={index} className="unit-horizontal-item">
+                                        <img 
+                                            src={unit.thumbnailUrl} 
+                                            alt={unit.name}
+                                            className="unit-thumbnail"
+                                        />
+                                        <span className="unit-amount">{unit.count}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {this.state.errorMessage && (
+                        <div className="error-message">
+                            {this.state.errorMessage}
+                        </div>
+                    )}
+                    
+                    <div className="reward-actions">
+                        <button 
+                            className="reward-button accept-button" 
+                            onClick={this.handleGuardBattleBegin}
+                            disabled={this.state.isSubmitting}
+                        >
+                            {this.state.isSubmitting ? 'Starting Battle...' : 'Start Battle'}
+                        </button>
+                        {reward.canDecline && (
+                            <button 
+                                className="reward-button decline-button" 
+                                onClick={this.handleDecline}
+                                disabled={this.state.isSubmitting}
+                            >
+                                {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )
+        }
 
         switch (reward.rewardType) {
             case RewardType.None:
@@ -783,56 +846,6 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                                     disabled={this.state.isSubmitting}
                                 >
                                     {this.state.isSubmitting ? 'Cancelling...' : 'Cancel'}
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )
-
-            case RewardType.Battle:
-                return (
-                    <div className="reward-content">
-                        <div className="reward-message">{reward.message}</div>
-                        
-                        {reward.nextBattle && reward.nextBattle.units && reward.nextBattle.units.length > 0 && (
-                            <div className="battle-units">
-                                <h4>Battle Units:</h4>
-                                <div className="units-horizontal">
-                                    {reward.nextBattle.units.map((unit, index) => (
-                                        <div key={index} className="unit-horizontal-item">
-                                            <img 
-                                                src={unit.thumbnailUrl} 
-                                                alt={unit.name}
-                                                className="unit-thumbnail"
-                                            />
-                                            <span className="unit-amount">{unit.count}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        
-                        {this.state.errorMessage && (
-                            <div className="error-message">
-                                {this.state.errorMessage}
-                            </div>
-                        )}
-                        
-                        <div className="reward-actions">
-                            <button 
-                                className="reward-button accept-button" 
-                                onClick={this.handleAccept}
-                                disabled={this.state.isSubmitting}
-                            >
-                                {this.state.isSubmitting ? 'Starting Battle...' : 'Start Battle'}
-                            </button>
-                            {reward.canDecline && (
-                                <button 
-                                    className="reward-button decline-button" 
-                                    onClick={this.handleDecline}
-                                    disabled={this.state.isSubmitting}
-                                >
-                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
                                 </button>
                             )}
                         </div>
