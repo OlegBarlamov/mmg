@@ -73,7 +73,8 @@ namespace Epic.Logic.Generator
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
-            var rewardFactor = 1;
+            var rewardFactor = 3;
+            
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
             var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;
             var resources = ResourcesRegistry.GetAll();
@@ -81,7 +82,7 @@ namespace Epic.Logic.Generator
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
             
-            Logger.LogInformation($"Generated Difficulty day {day+1}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
+            Logger.LogInformation($"Generated Difficulty day {day}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
 
             var maxWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + difficulty.TargetDifficulty / 300);
             var maxHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + difficulty.TargetDifficulty / 300);
@@ -325,18 +326,19 @@ namespace Epic.Logic.Generator
                     unitToBuy = availableDesiredUnits[_random.Next(availableDesiredUnits.Count)];
 
                 var upgradeOnly = unitToBuy.ToTrainAmount < 1 && unitToBuy.UpgradeForUnitTypeIds.Any();
+                var isUpgrade = upgradeOnly || (unitToBuy.UpgradeForUnitTypeIds.Any() && _random.Next(100) < 50);
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
                     ? unitToBuy.BattleImgUrl 
                     : unitToBuy.DwellingImgUrl;
                     
-                var isGuarded = !upgradeOnly && unitToBuy.Value >= 400;
+                var isGuarded = !isUpgrade && unitToBuy.Value >= 400;
                 var rewardedBattleDefinition = battleDefinition;
                 
                 var rewardFields = new MutableRewardFields
                 {
-                    RewardType = upgradeOnly ? RewardType.UnitsToUpgrade : RewardType.UnitsToBuy,
-                    Amounts = upgradeOnly ? new[] { 0 } : new[] { unitToBuy.ToTrainAmount * rewardFactor },
-                    Message = upgradeOnly ? "You can upgrade units now" : "You can train units now",
+                    RewardType = isUpgrade ? RewardType.UnitsToUpgrade : RewardType.UnitsToBuy,
+                    Amounts = isUpgrade ? new[] { 0 } : new[] { unitToBuy.ToTrainAmount * rewardFactor },
+                    Message = isUpgrade ? "You can upgrade units now" : "You can train units now",
                     CanDecline = true,
                     GuardBattleDefinitionId = null,
                     IconUrl = dwellingIcon,

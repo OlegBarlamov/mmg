@@ -2,7 +2,9 @@ using Epic.Core.Logic;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Units;
+using Epic.Data.GameResources;
 using FrameworkSDK.Common;
 
 namespace Epic.Logic.Battle.Commands
@@ -13,11 +15,12 @@ namespace Epic.Logic.Battle.Commands
         public TurnInfo ExpectedTurn { get; }
         public IBattleUnitsService BattleUnitsService { get; }
         public BattleUnitsCarousel UnitsCarousel { get; }
-        
         public IBattleMessageBroadcaster MessageBroadcaster { get; }
         public IGlobalUnitsService GlobalUnitsService { get; }
         public IRandomService RandomProvider { get; }
         public IBattleClientConnection Connection { get; }
+        public IBattlesService BattlesService { get; }
+        public IGameResourcesRepository GameResourcesRepository { get; }
 
         public CommandExecutionContext(
             MutableBattleObject battleObject,
@@ -27,7 +30,9 @@ namespace Epic.Logic.Battle.Commands
             BattleUnitsCarousel unitsCarousel,
             IGlobalUnitsService globalUnitsService,
             IRandomService randomProvider,
-            IBattleClientConnection connection)
+            IBattleClientConnection connection,
+            IBattlesService battlesService,
+            IGameResourcesRepository gameResourcesRepository)
         {
             BattleObject = battleObject;
             ExpectedTurn = expectedTurn;
@@ -37,6 +42,8 @@ namespace Epic.Logic.Battle.Commands
             Connection = connection;
             RandomProvider = randomProvider;
             GlobalUnitsService = globalUnitsService;
+            BattlesService = battlesService;
+            GameResourcesRepository = gameResourcesRepository;
         }
     }
 }

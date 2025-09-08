@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Epic.Data.BattleDefinitions;
 using Epic.Data.Exceptions;
 using JetBrains.Annotations;
 
@@ -72,6 +71,7 @@ namespace Epic.Data.Battles
                 Id = Guid.NewGuid(),
                 BattleId = newBattleId,
                 PlayerId = id,
+                ClaimedRansom = false,
             });
             _playerBattles.AddRange(playerRelations);
 
@@ -93,10 +93,10 @@ namespace Epic.Data.Battles
             return Task.CompletedTask;
         }
 
-        public Task<Guid[]> GetBattlePlayers(Guid battleId)
+        public Task<IPlayerToBattleEntity[]> GetBattlePlayers(Guid battleId)
         {
-            var userIds = _playerBattles.Where(x => x.BattleId == battleId).Select(x => x.PlayerId).ToArray();
-            return Task.FromResult(userIds);
+            var playerToBattles = _playerBattles.Where(x => x.BattleId == battleId).ToArray();
+            return Task.FromResult(playerToBattles);
         }
     }
 }

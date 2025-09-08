@@ -6,12 +6,14 @@ namespace Epic.Logic.Battle.Commands
 {
     internal class UnitMovesHandler : BaseTypedCommandHandler<UnitMoveClientBattleMessage>
     {
-        public override void Validate(CommandExecutionContext context, UnitMoveClientBattleMessage command)
+        public override Task Validate(CommandExecutionContext context, UnitMoveClientBattleMessage command)
         {
             ValidateTargetActor(context, command.ActorId);
             ValidateExpectedTurn(context, command.TurnIndex, command.Player);
             
             //TODO Check if it is reachable
+            
+            return Task.CompletedTask;
         }
 
         public override async Task<ICmdExecutionResult> Execute(CommandExecutionContext context, UnitMoveClientBattleMessage command)

@@ -10,14 +10,14 @@ namespace Epic.Logic.Battle.Commands
 
     internal interface ICommandsHandler
     {
-        void Validate(CommandExecutionContext context, IClientBattleMessage command);
+        Task Validate(CommandExecutionContext context, IClientBattleMessage command);
         
         Task<ICmdExecutionResult> Execute(CommandExecutionContext context, IClientBattleMessage command);
     } 
     
     internal interface ITypedCommandHandler<in TCommand> : ICommandsHandler where TCommand : IClientBattleMessage 
     {
-        void Validate(CommandExecutionContext context, TCommand command);
+        Task Validate(CommandExecutionContext context, TCommand command);
         
         Task<ICmdExecutionResult> Execute(CommandExecutionContext context, TCommand command);
     }

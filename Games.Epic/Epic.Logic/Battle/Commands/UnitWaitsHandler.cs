@@ -7,13 +7,15 @@ namespace Epic.Logic.Battle.Commands
 {
     internal class UnitWaitsHandler : BaseTypedCommandHandler<UnitWaitClientBattleMessage>
     {
-        public override void Validate(CommandExecutionContext context, UnitWaitClientBattleMessage command)
+        public override Task Validate(CommandExecutionContext context, UnitWaitClientBattleMessage command)
         {
             ValidateTargetActor(context, command.ActorId);
             ValidateExpectedTurn(context, command.TurnIndex, command.Player);
             
             if (TargetActor.Waited)
                 throw new BattleLogicException("Unit already performed wait command in the current round");
+            
+            return Task.CompletedTask;
         }
 
         public override async Task<ICmdExecutionResult> Execute(CommandExecutionContext context, UnitWaitClientBattleMessage command)

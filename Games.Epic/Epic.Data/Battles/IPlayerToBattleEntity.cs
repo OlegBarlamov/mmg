@@ -2,11 +2,12 @@ using System;
 
 namespace Epic.Data.Battles
 {
-    internal interface IPlayerToBattleEntity
+    public interface IPlayerToBattleEntity
     {
         Guid Id { get; }
         Guid PlayerId { get; }
         Guid BattleId { get; }
+        bool ClaimedRansom { get; }
     }
 
     internal class PlayerToBattleEntity : IPlayerToBattleEntity
@@ -14,5 +15,6 @@ namespace Epic.Data.Battles
         public Guid Id { get; set; }
         public Guid PlayerId { get; set; }
         public Guid BattleId { get; set; }
+        public bool ClaimedRansom { get; set; }
     }
 }

@@ -17,6 +17,7 @@ namespace Epic.Core.Services.Battles
         int RoundNumber { get; }
         
         IReadOnlyList<Guid> PlayersIds { get; }
+        IReadOnlyList<Guid> ClaimedRansomPlayerIds { get; }
         
         IReadOnlyCollection<IBattleUnitObject> Units { get; }
 

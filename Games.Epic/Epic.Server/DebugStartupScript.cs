@@ -89,15 +89,15 @@ namespace Epic.Server
 
             await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, userPlayer.Id, 500);
             await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, user1Player.Id, 500);
-            // var resourcesByKeys = await ResourcesRepository.GetAllResourcesByKeys();
-            // await Task.WhenAll(resourcesByKeys.Values.Select(async x =>
-            // {
-            //     if (x.Id != ResourcesRepository.GoldResourceId)
-            //     {
-            //         await ResourcesRepository.GiveResource(x.Id, userPlayer.Id, 1);
-            //         await ResourcesRepository.GiveResource(x.Id, user1Player.Id, 1);
-            //     }
-            // }));
+            var resourcesByKeys = await ResourcesRepository.GetAllResourcesByKeys();
+            await Task.WhenAll(resourcesByKeys.Values.Select(async x =>
+            {
+                if (x.Id != ResourcesRepository.GoldResourceId)
+                {
+                    await ResourcesRepository.GiveResource(x.Id, userPlayer.Id, 1);
+                    await ResourcesRepository.GiveResource(x.Id, user1Player.Id, 1);
+                }
+            }));
             
             var hero = await HeroesService.CreateNew(userPlayer.Name, userPlayer.Id);
             await PlayersService.SetActiveHero(userPlayer.Id, hero.Id);

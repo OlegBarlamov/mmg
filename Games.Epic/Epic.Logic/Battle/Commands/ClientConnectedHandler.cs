@@ -39,8 +39,9 @@ namespace Epic.Logic.Battle.Commands
             return _awaitFirstClientConnectedCompletionSource.Task;
         }
         
-        public override void Validate(CommandExecutionContext context, ClientConnectedBattleMessage command)
+        public override Task Validate(CommandExecutionContext context, ClientConnectedBattleMessage command)
         {
+            return Task.CompletedTask;
         }
         
         public Task BroadcastMessageToClientAndSaveAsync(IServerBattleMessage message)

@@ -79,6 +79,27 @@ namespace Epic.Server.Controllers
             return Ok(new BattleResource(battleObject));
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRansomInfoBattle(Guid id)
+        {
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+            
+            var battleObject = await BattlesService.GetBattleById(id);
+            if (!battleObject.PlayersIds.Contains(playerId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = "You are not authorized to see this battle."
+                });
+            }
+            if (!battleObject.IsActive)
+                return BadRequest("Battle is not active");
+
+            var goldValue = await BattlesService.CalculateRansomValueForPlayer(playerId, battleObject);
+            return Ok(new BattleRansomValueResource(goldValue));
+        } 
+
         [HttpPost("player")]
         public async Task<IActionResult> StartBattle([FromBody] StartBattleWithPlayerRequestBody body)
         {

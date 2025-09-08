@@ -6,6 +6,7 @@ using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
+using Epic.Data.GameResources;
 using Epic.Logic.Generator;
 using FrameworkSDK.Common;
 using JetBrains.Annotations;
@@ -25,6 +26,7 @@ namespace Epic.Logic.Battle
         public ILoggerFactory LoggerFactory { get; }
         public IRandomService RandomProvider { get; }
         public IHeroesService HeroesService { get; }
+        public IGameResourcesRepository ResourcesRepository { get; }
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
@@ -35,7 +37,8 @@ namespace Epic.Logic.Battle
             [NotNull] IPlayersService playersService,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IRandomService randomProvider,
-            [NotNull] IHeroesService heroesService)
+            [NotNull] IHeroesService heroesService,
+            [NotNull] IGameResourcesRepository resourcesRepository)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
@@ -46,6 +49,7 @@ namespace Epic.Logic.Battle
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
+            ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
         }
         
         public IBattleLogic Create(MutableBattleObject battleObject, IBattleMessageBroadcaster broadcaster)
@@ -60,7 +64,8 @@ namespace Epic.Logic.Battle
                 PlayersService,
                 LoggerFactory.CreateLogger<BattleLogic>(),
                 RandomProvider,
-                HeroesService);
+                HeroesService,
+                ResourcesRepository);
         }
     }
 }

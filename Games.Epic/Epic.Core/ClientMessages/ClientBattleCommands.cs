@@ -10,6 +10,7 @@ namespace Epic.Core.ClientMessages
         public const string UNIT_MOVE = "UNIT_MOVE";
         public const string UNIT_WAIT = "UNIT_WAIT";
         public const string UNIT_PASS = "UNIT_PASS";
+        public const string PLAYER_RANSOM = "PLAYER_RANSOM";
         
         public static IReadOnlyDictionary<string, Type> CommandTypes { get; } = new Dictionary<string, Type>
         {
@@ -18,6 +19,7 @@ namespace Epic.Core.ClientMessages
             { UNIT_ATTACK, typeof(UnitAttackClientBattleMessage) },
             { UNIT_WAIT, typeof(UnitWaitClientBattleMessage) },
             { UNIT_PASS, typeof(UnitPassClientBattleMessage) },
+            { PLAYER_RANSOM, typeof(PlayerRansomClientBattleMessage) },
         };
     }
 }

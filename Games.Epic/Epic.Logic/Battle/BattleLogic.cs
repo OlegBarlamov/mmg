@@ -14,6 +14,7 @@ using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
+using Epic.Data.GameResources;
 using Epic.Logic.Battle.Commands;
 using Epic.Logic.Generator;
 using FrameworkSDK.Common;
@@ -35,6 +36,7 @@ namespace Epic.Logic.Battle
         private ILogger<BattleLogic> Logger { get; }
         private IRandomService RandomProvider { get; }
         private IHeroesService HeroesService { get; }
+        public IGameResourcesRepository ResourcesRepository { get; }
 
         private BattleResultLogic BattleResultLogic { get; }
         private BattleUnitsCarousel BattleUnitsCarousel { get; }
@@ -49,6 +51,7 @@ namespace Epic.Logic.Battle
                 { typeof(UnitWaitClientBattleMessage), new UnitWaitsHandler() },
                 { typeof(UnitMoveClientBattleMessage), new UnitMovesHandler() },
                 { typeof(UnitAttackClientBattleMessage), new UnitAttacksHandler() },
+                {typeof(PlayerRansomClientBattleMessage), new PlayerRansomHandler() },
             };
         
         private bool _isDisposed;
@@ -64,7 +67,8 @@ namespace Epic.Logic.Battle
             [NotNull] IPlayersService playersService,
             [NotNull] ILogger<BattleLogic> logger,
             [NotNull] IRandomService randomProvider,
-            [NotNull] IHeroesService heroesService)
+            [NotNull] IHeroesService heroesService,
+            [NotNull] IGameResourcesRepository resourcesRepository)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -77,8 +81,9 @@ namespace Epic.Logic.Battle
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
+            ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
 
-            
+
             ClientConnectedHandler = new ClientConnectedHandler(Broadcaster);
             CommandsHandlers.Add(typeof(ClientConnectedBattleMessage), ClientConnectedHandler);
             
@@ -205,9 +210,11 @@ namespace Epic.Logic.Battle
                 BattleUnitsCarousel,
                 GlobalUnitsService,
                 RandomProvider,
-                connection);
+                connection,
+                BattlesService,
+                ResourcesRepository);
             
-            handler.Validate(context, command);
+            await handler.Validate(context, command);
             
             await connection.SendMessageAsync(new CommandApproved(command));
             

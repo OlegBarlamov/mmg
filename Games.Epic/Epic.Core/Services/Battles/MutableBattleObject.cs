@@ -19,9 +19,11 @@ namespace Epic.Core.Services.Battles
 
         public List<Guid> PlayerIds { get; set; }
         public List<MutableBattleUnitObject> Units { get; set; }
+        public List<Guid> ClaimedRansomPlayerIds { get; set; }
 
         IReadOnlyList<Guid> IBattleObject.PlayersIds => PlayerIds;
         IReadOnlyCollection<IBattleUnitObject> IBattleObject.Units => Units;
+        IReadOnlyList<Guid> IBattleObject.ClaimedRansomPlayerIds => ClaimedRansomPlayerIds;
 
         private MutableBattleObject()
         {

@@ -13,6 +13,7 @@ namespace Epic.Data.Battles
         int LastTurnUnitIndex { get; }
         bool ProgressDays { get; }
         int RoundNumber { get; }
+        
     }
 
     public class MutableBattleEntity : IBattleEntity

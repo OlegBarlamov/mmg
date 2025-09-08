@@ -6,6 +6,7 @@ using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
+using Epic.Core.Services.UnitTypes;
 using Epic.Data.BattleReports;
 using Epic.Data.Battles;
 using JetBrains.Annotations;
@@ -23,6 +24,7 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IPlayersService PlayersService { get; }
         [NotNull] private IBattleReportsRepository BattleReportsRepository { get; }
         [NotNull] private IBattleUnitsPlacer BattleUnitsPlacer { get; }
+        public IUnitTypesService UnitTypesService { get; }
 
         public DefaultBattlesService(
             [NotNull] IBattlesRepository battlesRepository,
@@ -32,7 +34,8 @@ namespace Epic.Core.Services.Battles
             [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IPlayersService playersService,
             [NotNull] IBattleReportsRepository battleReportsRepository,
-            [NotNull] IBattleUnitsPlacer battleUnitsPlacer)
+            [NotNull] IBattleUnitsPlacer battleUnitsPlacer,
+            [NotNull] IUnitTypesService unitTypesService)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -42,6 +45,7 @@ namespace Epic.Core.Services.Battles
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             BattleReportsRepository = battleReportsRepository ?? throw new ArgumentNullException(nameof(battleReportsRepository));
             BattleUnitsPlacer = battleUnitsPlacer ?? throw new ArgumentNullException(nameof(battleUnitsPlacer));
+            UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
         }
 
         public async Task<IBattleObject> GetBattleById(Guid battleId)
@@ -185,6 +189,20 @@ namespace Epic.Core.Services.Battles
             );
         }
 
+        public Task<int> CalculateRansomValueForPlayer(Guid playerId, IBattleObject battleObject)
+        {
+            var playerIndex = Array.IndexOf(battleObject.PlayersIds.ToArray(), playerId);
+            if (playerIndex < 0)
+                throw new InvalidOperationException($"Player {playerId} is not present in the battle {battleObject.Id}");
+
+            var playerAliveUnits = battleObject.Units
+                .Where(x => x.PlayerIndex == playerIndex && x.GlobalUnit.IsAlive)
+                .ToArray();
+            
+            return Task.FromResult(playerAliveUnits
+                .Sum(x => x.GlobalUnit.UnitType.Value * x.GlobalUnit.Count));
+        }
+
         private async Task FillUnits(MutableBattleObject battleObject)
         {
             var battleUnits = await BattleUnitsService.GetBattleUnits(battleObject.Id);
@@ -194,8 +212,12 @@ namespace Epic.Core.Services.Battles
 
         private async Task FillPlayers(MutableBattleObject battleObject)
         {
-            var playerIds = await BattlesRepository.GetBattlePlayers(battleObject.Id);
-            battleObject.PlayerIds = new List<Guid>(playerIds);
+            var playerToBattles = await BattlesRepository.GetBattlePlayers(battleObject.Id);
+            battleObject.PlayerIds = playerToBattles.Select(x => x.PlayerId).ToList();
+            battleObject.ClaimedRansomPlayerIds = playerToBattles
+                .Where(x => x.ClaimedRansom)
+                .Select(x => x.PlayerId)
+                .ToList();
         }
 
         private MutableBattleObject ToMutableObject(IBattleObject battleObject)

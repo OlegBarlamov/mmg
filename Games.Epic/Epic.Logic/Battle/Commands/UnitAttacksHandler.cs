@@ -19,7 +19,7 @@ namespace Epic.Logic.Battle.Commands
         private IAttackFunctionType _attackFunction;
         private int _range;
         
-        public override void Validate(CommandExecutionContext context, UnitAttackClientBattleMessage command)
+        public override Task Validate(CommandExecutionContext context, UnitAttackClientBattleMessage command)
         {
             ValidateTargetActor(context, command.ActorId);
             ValidateExpectedTurn(context, command.TurnIndex, command.Player);
@@ -47,6 +47,8 @@ namespace Epic.Logic.Battle.Commands
             if (TargetActor.AttackFunctionsData[command.AttackIndex].BulletsCount < 1)
                 throw new BattleLogicException(
                     $"The attack does not have enough bullets {_attackFunction.EnemyInRangeDisablesAttack}");
+            
+            return Task.CompletedTask;
         }
 
         public override async Task<ICmdExecutionResult> Execute(CommandExecutionContext context, UnitAttackClientBattleMessage command)
