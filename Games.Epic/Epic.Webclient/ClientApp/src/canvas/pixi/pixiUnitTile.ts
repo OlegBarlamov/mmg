@@ -59,7 +59,7 @@ export class PixiUnitTile implements IUnitTile {
         this.onMouseDown = undefined!
         this.onMouseUp = undefined!
         
-        this.container.parent.removeChild(this.container)
+        this.container.parent?.removeChild(this.container)
         
         this.container.removeChild(this.textGraphics)
         this.container.removeChild(this.textSprite)

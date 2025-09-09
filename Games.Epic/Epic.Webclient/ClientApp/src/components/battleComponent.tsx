@@ -42,7 +42,7 @@ interface IBattleComponentState {
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
     private battleController: IBattleController | null = null
-    private controlPanelRef: React.RefObject<BattleControlPanel> = React.createRef()
+    private controlPanelRef: React.RefObject<BattleControlPanel | null> = React.createRef()
     private contextMenuHandler: ((e: Event) => void) | null = null
     private rewardManager: RewardManager
 

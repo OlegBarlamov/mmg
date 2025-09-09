@@ -46,7 +46,7 @@ interface IMenuComponentState {
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
     private retryTimeoutId: number | null = null;
     private readonly RETRY_DELAY_MS = 2000; // 2 seconds
-    private armyDisplayRef: React.RefObject<ArmyDisplay> = React.createRef();
+    private armyDisplayRef: React.RefObject<ArmyDisplay | null> = React.createRef();
     private rewardManager: RewardManager;
     
     constructor(props: IMenuComponentProps) {

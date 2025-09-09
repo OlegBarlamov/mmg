@@ -44,7 +44,7 @@ export class PixiHexagon implements IHexagon {
         this.onMouseDown = undefined!
         this.onMouseUp = undefined!
         this.onMouseMove = undefined!
-        this.graphics.parent.removeChild(this.graphics)
+        this.graphics.parent?.removeChild(this.graphics)
         this.graphics.destroy()
     }
     

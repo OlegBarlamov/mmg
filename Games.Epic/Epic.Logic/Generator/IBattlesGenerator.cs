@@ -322,11 +322,15 @@ namespace Epic.Logic.Generator
                     .Select(UnitTypesRegistry.ById);
                 
                 var availableDesiredUnits = desiredUnits.Where(x => x.Value <= difficulty.TargetDifficulty).ToList();
+                var desiredUnit = false;
                 if (availableDesiredUnits.Any() && _random.Next(100) > 66)
+                {
                     unitToBuy = availableDesiredUnits[_random.Next(availableDesiredUnits.Count)];
+                    desiredUnit = true;
+                }
 
                 var upgradeOnly = unitToBuy.ToTrainAmount < 1 && unitToBuy.UpgradeForUnitTypeIds.Any();
-                var isUpgrade = upgradeOnly || (unitToBuy.UpgradeForUnitTypeIds.Any() && _random.Next(100) < 50);
+                var isUpgrade = upgradeOnly || (desiredUnit && unitToBuy.UpgradeForUnitTypeIds.Any() && _random.Next(100) < 50);
                 var dwellingIcon = string.IsNullOrWhiteSpace(unitToBuy.DwellingImgUrl) 
                     ? unitToBuy.BattleImgUrl 
                     : unitToBuy.DwellingImgUrl;

@@ -2484,6 +2484,8 @@ Units:
     UpgradeOf:
       - WoodElf
       - GrandElf
+      - Archer
+      - Marksman
     Attacks:
       - <<: *RangeAttack
         MinDamage: 8
@@ -2598,6 +2600,9 @@ Units:
     Attack: 17
     Defense: 12
     ToTrainAmount: 4
+    UpgradeOf:
+      - Mage
+      - ArchMage
     Attacks:
       - <<: *RangeAttack
         MinDamage: 14
