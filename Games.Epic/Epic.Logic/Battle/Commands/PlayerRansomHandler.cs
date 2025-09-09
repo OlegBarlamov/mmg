@@ -28,6 +28,8 @@ namespace Epic.Logic.Battle.Commands
             var playerInfo = context.BattleObject.PlayerInfos.First(x => x.PlayerId == _playerId);
             if (playerInfo.RansomClaimed)
                 throw new BattleLogicException($"Player {command.Player} has already claimed ransom");
+            if (playerInfo.RunClaimed)
+                throw new BattleLogicException($"Player {command.Player} has already claimed run");
             
             var ransomToPay = await context.BattlesService.CalculateRansomValueForPlayer(_playerId, context.BattleObject);
             _priceToPay = Price.Create(new Dictionary<Guid, int>

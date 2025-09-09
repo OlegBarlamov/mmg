@@ -26,6 +26,7 @@ export type InBattlePlayerInfo = {
     playerNumber: BattlePlayerNumber
     index: number
     ransomClaimed: boolean
+    runClaimed: boolean
 }
 
 export type BattleMap = {

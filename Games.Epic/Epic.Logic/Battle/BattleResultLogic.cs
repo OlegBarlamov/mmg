@@ -49,7 +49,7 @@ namespace Epic.Logic.Battle
                 if (battleUnitObject.GlobalUnit.IsAlive)
                 {
                     noAliveUnits = false;
-                    if (targetPlayer == null || !targetPlayer.RansomClaimed)
+                    if (targetPlayer == null || (!targetPlayer.RansomClaimed && !PlayerRunFinished(targetPlayer)))
                     {
                         var player = (InBattlePlayerNumber)battleUnitObject.PlayerIndex;
                         if (winner == null)
@@ -91,6 +91,14 @@ namespace Epic.Logic.Battle
                 Winner = BattleResult.Winner?.ToString() ?? string.Empty,
                 ReportId = reportEntity.Id.ToString(),
             };
+        }
+
+        private bool PlayerRunFinished(IPlayerInBattleInfoObject playerInfo)
+        {
+            if (!playerInfo.RunClaimed)
+                return false;
+
+            return playerInfo.RunInfo.RunRoundsRemaining <= 0;
         }
 
         private async Task OnPlayerWon(IBattleObject battleObject, InBattlePlayerNumber inBattlePlayerNumber)

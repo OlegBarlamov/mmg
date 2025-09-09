@@ -127,7 +127,7 @@ export class BattleController implements IBattleController {
     }
 
     private canPlayerAct(): boolean {
-        return this.currentPlayerInfo?.ransomClaimed !== true
+        return this.currentPlayerInfo?.ransomClaimed !== true && this.currentPlayerInfo?.runClaimed !== true
     }
 
     private isAbleToControlNpc() : boolean {

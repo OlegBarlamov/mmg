@@ -8,6 +8,7 @@ public class PlayerInBattleInfoResource
 {
     public Guid PlayerId { get; }
     public bool RansomClaimed { get; }
+    public bool RunClaimed { get; }
     public string PlayerNumber { get; }
     public int Index { get; }
     
@@ -17,5 +18,6 @@ public class PlayerInBattleInfoResource
         RansomClaimed = playerInBattleInfoObject.RansomClaimed;
         PlayerNumber = playerNumber.ToString();
         Index = (int)playerNumber;
+        RunClaimed = playerInBattleInfoObject.RunClaimed;
     }
 }

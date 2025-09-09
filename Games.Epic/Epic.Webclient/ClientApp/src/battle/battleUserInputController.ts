@@ -78,6 +78,14 @@ export class BattleUserInputController {
                         player: originalUnit.player,
                     })
             }
+
+            this.panelController.onRunPressed = () => {
+                    this.dispose()
+                    resolve({
+                        command: 'PLAYER_RUN',
+                        player: originalUnit.player,
+                    })
+            }
         })
     }
 
@@ -87,5 +95,6 @@ export class BattleUserInputController {
         this.panelController.onWaitPressed = null
         this.panelController.onPassPressed = null
         this.panelController.onRansomPressed = null
+        this.panelController.onRunPressed = null
     }
 }

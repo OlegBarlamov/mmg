@@ -484,6 +484,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     playerNumber: BattlePlayerNumber.Player1,
                     index: 0,
                     ransomClaimed: false,
+                    runClaimed: false,
                 },
             ],
         })

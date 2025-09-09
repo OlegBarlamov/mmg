@@ -59,6 +59,10 @@ export interface PlayerRansomCommandFromServer extends PlayerCommandFromServer {
     command: 'PLAYER_RANSOM'
 }
 
+export interface PlayerRunCommandFromServer extends PlayerCommandFromServer {
+    command: 'PLAYER_RUN'
+}
+
 export type BattleCommandFromServer = 
     UnitMoveCommandFromServer
     | UnitAttackCommandFromServer
@@ -68,3 +72,4 @@ export type BattleCommandFromServer =
     | NextTurnCommandFromServer
     | BattleFinishedCommandFromServer
     | PlayerRansomCommandFromServer
+    | PlayerRunCommandFromServer

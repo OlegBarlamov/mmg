@@ -16,11 +16,12 @@
     flex: 1;
 }
 
-.ransom-button-container {
+.left-buttons-container {
     background: rgba(0, 0, 0, 0.8);
     padding: 15px;
     display: flex;
     align-items: center;
+    gap: 15px;
 }
 
 .control-button {
@@ -63,6 +64,17 @@
 
 .ransom-button:hover:not(:disabled) {
     background: linear-gradient(135deg, #F57C00, #E65100);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.run-button {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.run-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c0392b, #a93226);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

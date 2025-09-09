@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Epic.Core;
@@ -52,6 +53,7 @@ namespace Epic.Logic.Battle
                 { typeof(UnitMoveClientBattleMessage), new UnitMovesHandler() },
                 { typeof(UnitAttackClientBattleMessage), new UnitAttacksHandler() },
                 { typeof(PlayerRansomClientBattleMessage), new PlayerRansomHandler() },
+                { typeof(PlayerRunClientBattleMessage), new PlayerRunHandler() },
             };
         
         private bool _isDisposed;
@@ -146,11 +148,19 @@ namespace Epic.Logic.Battle
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (IsHumanControlled(BattleUnitsCarousel.ActiveUnit))
+                    if (IsHumanControlled(BattleUnitsCarousel.ActiveUnit, out var runClaimed))
                     {
-                        Logger.LogInformation(
-                            $"Await player turn: {BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber()} - {BattleObject.TurnNumber}");
-                        await TurnAwaiter.WaitForClientTurn(BattleUnitsCarousel.ActiveUnit.PlayerIndex, BattleObject.TurnNumber);
+                        if (runClaimed)
+                        {
+                            TurnAwaiter.WaitForAiTurn(BattleUnitsCarousel.ActiveUnit.PlayerIndex, BattleObject.TurnNumber);
+                            await AI.ProcessAutoSkip(BattleUnitsCarousel.ActiveUnit);
+                        }
+                        else
+                        {
+                            Logger.LogInformation(
+                                $"Await player turn: {BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber()} - {BattleObject.TurnNumber}");
+                            await TurnAwaiter.WaitForClientTurn(BattleUnitsCarousel.ActiveUnit.PlayerIndex, BattleObject.TurnNumber);
+                        }
                     }
                     else
                     {
@@ -163,7 +173,10 @@ namespace Epic.Logic.Battle
                     Logger.LogInformation($"Turn finished: {BattleObject.TurnNumber}");
 
                     if (BattleUnitsCarousel.IsNextRound())
+                    {
                         await BattleUnitsCarousel.OnNextRound();
+                        await UpdateRunPlayers();
+                    }
 
                     await BattleUnitsCarousel.OnNextTurn();
 
@@ -188,11 +201,22 @@ namespace Epic.Logic.Battle
             return BattleResultLogic.BattleResult;
         }
 
-        private bool IsHumanControlled(IBattleUnitObject unit)
+        private bool IsHumanControlled(IBattleUnitObject unit, out bool runClaimed)
         {
-            var player = BattleObject.FindPlayerId(unit.PlayerIndex.ToInBattlePlayerNumber());
-            return player != null;
+            var playerInfo = BattleObject.FindPlayerInfo(unit.PlayerIndex.ToInBattlePlayerNumber());
+            runClaimed = playerInfo is { RunClaimed: true };
+            return playerInfo != null;;
         }
+
+        private async Task UpdateRunPlayers()
+        {
+            var runPlayers = BattleObject.PlayerInfos.Where(x => x.RunClaimed);
+            await Task.WhenAll(runPlayers.Select(x =>
+            {
+                x.RunInfo.RunRoundsRemaining--;
+                return BattlesService.UpdateInBattlePlayerInfo(x);
+            }));
+        } 
 
         public async Task OnClientMessage(IBattleClientConnection connection, IClientBattleMessage command)
         {

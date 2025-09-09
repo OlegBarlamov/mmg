@@ -177,6 +177,38 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
     }
 
+    private handleRunAction = async () => {
+        if (!this.battleController) return;
+        
+        try {
+            const playerService = this.props.serviceLocator.playerService();
+            
+            // Find the current player's battle info
+            const currentPlayer = this.props.battleMap.players.find(
+                player => player.playerId === playerService.currentPlayerInfo.id
+            );
+            
+            if (!currentPlayer) {
+                console.error('Current player not found in battle');
+                return;
+            }
+            
+            // Create run action
+            const runAction = {
+                command: 'PLAYER_RUN' as const,
+                player: currentPlayer.playerNumber
+            };
+            
+            // Process the action directly through the battle action processor
+            const battleActionProcessor = (this.battleController as any).battleActionProcessor;
+            if (battleActionProcessor) {
+                await battleActionProcessor.processAction(runAction);
+            }
+        } catch (error) {
+            console.error('Failed to process run action:', error);
+        }
+    }
+
     private async startBattle() {
         const battleResult = await this.battleController!.startBattle()
 
@@ -362,7 +394,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         activeUnit={this.state.activeUnit}
                         serviceLocator={this.props.serviceLocator}
                         battleId={this.props.battleMap.id}
+                        battleMap={this.props.battleMap}
+                        currentPlayerId={this.props.serviceLocator.playerService().currentPlayerInfo.id}
                         onRansomAction={this.handleRansomAction}
+                        onRunAction={this.handleRunAction}
                     />
                 </div>
 

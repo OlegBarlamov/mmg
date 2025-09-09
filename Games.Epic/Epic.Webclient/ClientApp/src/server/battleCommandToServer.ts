@@ -40,6 +40,10 @@ interface PlayerRansomCommandToServer extends BaseCommandToServer {
     command: 'PLAYER_RANSOM'
 }
 
+interface PlayerRunCommandToServer extends BaseCommandToServer {
+    command: 'PLAYER_RUN'
+}
+
 export type BattleCommandToServer = 
     UnitMoveCommandToServer 
     | UnitAttackCommandToServer
@@ -47,3 +51,4 @@ export type BattleCommandToServer =
     | UnitWaitCommandToServer 
     | ClientConnectedCommandToServer 
     | PlayerRansomCommandToServer
+    | PlayerRunCommandToServer

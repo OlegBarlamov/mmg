@@ -56,6 +56,7 @@ export class BattleMapsService implements IBattleMapsService {
                     playerNumber: BattlePlayerNumber.Player1,
                     index: 0,
                     ransomClaimed: false,
+                    runClaimed: false,
                 },
             ],
         }

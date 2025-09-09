@@ -31,6 +31,17 @@ namespace Epic.Logic.Battle
             _fakeConnection = new FakeClientConnection(Battle);
         }
 
+        public Task ProcessAutoSkip(IBattleUnitObject unit)
+        {
+            return BattleLogic.OnClientMessage(_fakeConnection, new UnitPassClientBattleMessage
+            {
+                Player = unit.PlayerIndex.ToInBattlePlayerNumber(),
+                TurnIndex = Battle.TurnNumber,
+                ActorId = unit.Id.ToString(),
+                CommandId = Guid.NewGuid().ToString(),
+            });
+        }
+
         public async Task ProcessAction(IBattleUnitObject unit)
         {
             var enemies = Battle.Units.Where(x => x.PlayerIndex != unit.PlayerIndex && x.GlobalUnit.IsAlive).ToList();

@@ -71,7 +71,6 @@ namespace Epic.Data.Battles
                 Id = Guid.NewGuid(),
                 BattleId = newBattleId,
                 PlayerId = id,
-                RansomClaimed = false,
             });
             _playerBattles.AddRange(playerRelations);
 
@@ -105,10 +104,7 @@ namespace Epic.Data.Battles
         public Task UpdatePlayerToBattle(IPlayerToBattleEntity playerToBattleEntity)
         {
             var entity = _playerBattles.First(x => x.Id == playerToBattleEntity.Id);
-            entity.PlayerId = playerToBattleEntity.PlayerId;
-            entity.BattleId = playerToBattleEntity.BattleId;
-            entity.RansomClaimed = playerToBattleEntity.RansomClaimed;
-            
+            entity.UpdateFrom(playerToBattleEntity);
             return Task.CompletedTask;
         }
     }

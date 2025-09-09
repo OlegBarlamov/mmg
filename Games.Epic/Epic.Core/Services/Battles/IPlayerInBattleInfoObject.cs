@@ -9,6 +9,8 @@ namespace Epic.Core.Services.Battles
         Guid Id { get; }
         Guid PlayerId { get; }
         bool RansomClaimed { get; }
+        bool RunClaimed { get; }
+        PlayerRunInfo RunInfo { get; }
     }
 
     public class MutablePlayerInBattleInfoObject : IPlayerInBattleInfoObject
@@ -16,6 +18,9 @@ namespace Epic.Core.Services.Battles
         public Guid Id { get; set; }
         public Guid PlayerId { get; set; }
         public bool RansomClaimed { get; set; }
+        
+        public bool RunClaimed { get; set; }
+        public PlayerRunInfo RunInfo { get; set; }
 
         private MutablePlayerInBattleInfoObject(Guid id)
         {
@@ -27,16 +32,13 @@ namespace Epic.Core.Services.Battles
             return new MutablePlayerInBattleInfoObject(entity.Id)
             {
                 PlayerId = entity.PlayerId,
-                RansomClaimed = entity.RansomClaimed
-            };
-        }
-
-        public static MutablePlayerInBattleInfoObject CopyFrom(IPlayerInBattleInfoObject instance)
-        {
-            return new MutablePlayerInBattleInfoObject(instance.Id)
-            {
-                PlayerId = instance.PlayerId,
-                RansomClaimed = instance.RansomClaimed
+                RansomClaimed = entity.RansomClaimed,
+                RunClaimed = entity.RunClaimed,
+                RunInfo = entity.RunClaimed ? new PlayerRunInfo
+                {
+                    RunClaimedUnitIndex = entity.RunClaimedUnitIndex.Value,
+                    RunRoundsRemaining = entity.RunRoundsRemaining.Value,
+                } : null
             };
         }
 
@@ -47,6 +49,9 @@ namespace Epic.Core.Services.Battles
                 Id = Id,
                 PlayerId = PlayerId,
                 RansomClaimed = RansomClaimed,
+                RunClaimed = RunClaimed,
+                RunClaimedUnitIndex = RunInfo?.RunClaimedUnitIndex,
+                RunRoundsRemaining = RunInfo?.RunRoundsRemaining,
             };
         }
     }
