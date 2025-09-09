@@ -78,6 +78,10 @@ export interface IUnitTypeInfo extends UnitProperties {
     readonly price: IPriceResource
 }
 
+export interface IRansomPrice {
+    gold: number
+}
+
 export interface IServerAPI {
     login(): Promise<void>
     getUserInfo(): Promise<IUserInfo>
@@ -92,6 +96,7 @@ export interface IServerAPI {
     beginBattleWithPlayer(playerName: string): Promise<BattleMap>
     getActiveBattle(): Promise<BattleMap | null>
     establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
+    getRansomPrice(battleId: string): Promise<IRansomPrice>
 
     getMyRewards(): Promise<IRewardToAccept[]>
     acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward>

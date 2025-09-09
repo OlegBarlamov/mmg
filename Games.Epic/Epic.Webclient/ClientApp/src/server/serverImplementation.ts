@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -11,9 +11,9 @@ import {OddRGrid} from "../hexogrid/oddRGrid";
 import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
-//export const SERVER_BASE_URL = "http://localhost:5000"
+export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-export const SERVER_BASE_URL = "https://93e23128b4e8.ngrok-free.app"
+//export const SERVER_BASE_URL = "https://93e23128b4e8.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
@@ -89,6 +89,9 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     async establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> {
         const webSocket = await this.establishWS(`api/battle/${battleId}`)
         return new BattleServerConnection(webSocket, handler)
+    }
+    async getRansomPrice(battleId: string): Promise<IRansomPrice> {
+        return await this.fetchResource<IRansomPrice>(`api/battle/${battleId}/ransom-info`, "GET", "ransom-info")
     }
     async acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward> {
         return await this.fetchResource<IAcceptedReward>(`api/rewards/${id}`, "POST", 'accept_reward', body)

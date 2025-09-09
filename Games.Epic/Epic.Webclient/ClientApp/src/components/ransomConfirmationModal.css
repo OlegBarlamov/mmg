@@ -1,0 +1,170 @@
+/* Ransom Confirmation Modal */
+.ransom-confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.ransom-confirmation-modal {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    border: 2px solid #f39c12;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.ransom-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.ransom-header h3 {
+    color: #ecf0f1;
+    margin: 0;
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ransom-content {
+    margin-bottom: 25px;
+}
+
+.ransom-loading,
+.ransom-error {
+    color: #bdc3c7;
+    text-align: center;
+    font-size: 1rem;
+    padding: 20px 0;
+}
+
+.ransom-error {
+    color: #e74c3c;
+}
+
+.ransom-price-display {
+    text-align: center;
+}
+
+.ransom-price-display p {
+    color: #bdc3c7;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+.ransom-price-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid #f39c12;
+}
+
+.ransom-price-label {
+    color: #bdc3c7;
+    font-size: 1rem;
+}
+
+.ransom-price-amount {
+    color: #f39c12;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ransom-player-gold {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    border: 1px solid #34495e;
+}
+
+.ransom-gold-label {
+    color: #bdc3c7;
+    font-size: 0.9rem;
+}
+
+.ransom-gold-amount {
+    color: #f1c40f;
+    font-size: 1rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ransom-insufficient-funds {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid #e74c3c;
+    border-radius: 6px;
+    color: #e74c3c;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.ransom-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.ransom-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 80px;
+}
+
+.ransom-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.ransom-cancel-button {
+    background: linear-gradient(145deg, #95a5a6, #7f8c8d);
+    color: white;
+    border: 2px solid #6c7b7d;
+}
+
+.ransom-cancel-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #7f8c8d, #6c7b7d);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ransom-confirm-button {
+    background: linear-gradient(145deg, #f39c12, #e67e22);
+    color: white;
+    border: 2px solid #d68910;
+}
+
+.ransom-confirm-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #e67e22, #d68910);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}

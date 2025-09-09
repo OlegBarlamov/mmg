@@ -68,7 +68,7 @@ namespace Epic.Server.Controllers
                 return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
 
             var battleObject = await BattlesService.GetBattleById(id);
-            if (!battleObject.PlayersIds.Contains(playerId))
+            if (battleObject.PlayerInfos.All(x => x.PlayerId != playerId))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
@@ -79,14 +79,14 @@ namespace Epic.Server.Controllers
             return Ok(new BattleResource(battleObject));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}/ransom-info")]
         public async Task<IActionResult> GetRansomInfoBattle(Guid id)
         {
             if (!User.TryGetPlayerId(out var playerId))
                 return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
             
             var battleObject = await BattlesService.GetBattleById(id);
-            if (!battleObject.PlayersIds.Contains(playerId))
+            if (battleObject.PlayerInfos.All(x => x.PlayerId != playerId))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
@@ -185,7 +185,7 @@ namespace Epic.Server.Controllers
                 return;
             }
 
-            if (!battleObject.PlayersIds.Contains(playerId))
+            if (battleObject.PlayerInfos.All(x => x.PlayerId != playerId))
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await HttpContext.Response.WriteAsync("No access to the battle");

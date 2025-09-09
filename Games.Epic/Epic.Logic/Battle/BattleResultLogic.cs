@@ -45,18 +45,21 @@ namespace Epic.Logic.Battle
             InBattlePlayerNumber? winner = null;
             foreach (var battleUnitObject in battleObject.Units)
             {
+                var targetPlayer = battleObject.FindPlayerInfo(battleUnitObject.PlayerIndex.ToInBattlePlayerNumber());
                 if (battleUnitObject.GlobalUnit.IsAlive)
                 {
-                    var player = (InBattlePlayerNumber)battleUnitObject.PlayerIndex;
                     noAliveUnits = false;
-                    if (winner == null)
-                        winner = player;
-                    else if (player != winner)
+                    if (targetPlayer == null || !targetPlayer.RansomClaimed)
                     {
-                        winner = null;
-                        break;
+                        var player = (InBattlePlayerNumber)battleUnitObject.PlayerIndex;
+                        if (winner == null)
+                            winner = player;
+                        else if (player != winner)
+                        {
+                            winner = null;
+                            break;
+                        }
                     }
-                        
                 }
             }
 
@@ -78,7 +81,9 @@ namespace Epic.Logic.Battle
             // TODO kill the heroes
 
             if (battleObject.ProgressDays)
-                await DaysProcessor.ProcessNewDay(battleObject.PlayersIds);
+                await DaysProcessor.ProcessNewDay(battleObject.PlayerInfos
+                    .Select(x => x.PlayerId)
+                    .ToArray());
 
             var reportEntity = await BattlesService.FinishBattle(battleObject, BattleResult);
             return new BattleFinishedCommandFromServer(battleObject.TurnNumber)
@@ -90,7 +95,7 @@ namespace Epic.Logic.Battle
 
         private async Task OnPlayerWon(IBattleObject battleObject, InBattlePlayerNumber inBattlePlayerNumber)
         {
-            var winnerId = battleObject.GetPlayerId(inBattlePlayerNumber);
+            var winnerId = battleObject.FindPlayerId(inBattlePlayerNumber);
             if (winnerId.HasValue)
             {
                 var winnerPlayerId = winnerId.Value;

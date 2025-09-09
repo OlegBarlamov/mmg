@@ -73,7 +73,7 @@ namespace Epic.Logic.Generator
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
-            var rewardFactor = 3;
+            var rewardFactor = 1;
             
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
             var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;

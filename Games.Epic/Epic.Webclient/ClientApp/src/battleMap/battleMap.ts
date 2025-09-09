@@ -21,6 +21,13 @@ export type BattleTurnInfo = {
     roundNumber: number
 }
 
+export type InBattlePlayerInfo = {
+    playerId: string
+    playerNumber: BattlePlayerNumber
+    index: number
+    ransomClaimed: boolean
+}
+
 export type BattleMap = {
     id: string
     
@@ -32,4 +39,6 @@ export type BattleMap = {
     units: BattleMapUnit[]
     
     turnInfo: BattleTurnInfo
+
+    players: InBattlePlayerInfo[]
 }

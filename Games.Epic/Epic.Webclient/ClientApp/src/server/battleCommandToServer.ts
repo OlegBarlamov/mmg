@@ -36,4 +36,14 @@ interface UnitWaitCommandToServer extends UnitCommandToServer {
     command: 'UNIT_WAIT'
 }
 
-export type BattleCommandToServer = UnitMoveCommandToServer | UnitAttackCommandToServer | UnitPassCommandToServer | UnitWaitCommandToServer | ClientConnectedCommandToServer
+interface PlayerRansomCommandToServer extends BaseCommandToServer {
+    command: 'PLAYER_RANSOM'
+}
+
+export type BattleCommandToServer = 
+    UnitMoveCommandToServer 
+    | UnitAttackCommandToServer
+    | UnitPassCommandToServer 
+    | UnitWaitCommandToServer 
+    | ClientConnectedCommandToServer 
+    | PlayerRansomCommandToServer

@@ -145,6 +145,38 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         })
     }
 
+    private handleRansomAction = async () => {
+        if (!this.battleController) return;
+        
+        try {
+            const playerService = this.props.serviceLocator.playerService();
+            
+            // Find the current player's battle info
+            const currentPlayer = this.props.battleMap.players.find(
+                player => player.playerId === playerService.currentPlayerInfo.id
+            );
+            
+            if (!currentPlayer) {
+                console.error('Current player not found in battle');
+                return;
+            }
+            
+            // Create ransom action
+            const ransomAction = {
+                command: 'PLAYER_RANSOM' as const,
+                player: currentPlayer.playerNumber
+            };
+            
+            // Process the action directly through the battle action processor
+            const battleActionProcessor = (this.battleController as any).battleActionProcessor;
+            if (battleActionProcessor) {
+                await battleActionProcessor.processAction(ransomAction);
+            }
+        } catch (error) {
+            console.error('Failed to process ransom action:', error);
+        }
+    }
+
     private async startBattle() {
         const battleResult = await this.battleController!.startBattle()
 
@@ -328,6 +360,9 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         isVisible={this.state.battleLoaded}
                         isPlayerTurn={this.state.isPlayerTurn}
                         activeUnit={this.state.activeUnit}
+                        serviceLocator={this.props.serviceLocator}
+                        battleId={this.props.battleMap.id}
+                        onRansomAction={this.handleRansomAction}
                     />
                 </div>
 

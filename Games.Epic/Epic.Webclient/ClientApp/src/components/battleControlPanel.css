@@ -1,3 +1,11 @@
+.battle-control-panel-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+}
+
 .battle-control-panel {
     background: rgba(0, 0, 0, 0.8);
     padding: 15px;
@@ -5,6 +13,14 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
+    flex: 1;
+}
+
+.ransom-button-container {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    display: flex;
+    align-items: center;
 }
 
 .control-button {
@@ -36,6 +52,17 @@
 
 .wait-button:hover:not(:disabled) {
     background: linear-gradient(135deg, #1976D2, #1565C0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ransom-button {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
+}
+
+.ransom-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #F57C00, #E65100);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

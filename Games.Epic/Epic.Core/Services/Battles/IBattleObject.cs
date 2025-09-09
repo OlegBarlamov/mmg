@@ -16,11 +16,8 @@ namespace Epic.Core.Services.Battles
         bool ProgressDays { get; }
         int RoundNumber { get; }
         
-        IReadOnlyList<Guid> PlayersIds { get; }
-        IReadOnlyList<Guid> ClaimedRansomPlayerIds { get; }
+        IReadOnlyList<IPlayerInBattleInfoObject> PlayerInfos { get; }
         
         IReadOnlyCollection<IBattleUnitObject> Units { get; }
-
-        Guid? GetPlayerId(InBattlePlayerNumber playerNumber);
     }
 }

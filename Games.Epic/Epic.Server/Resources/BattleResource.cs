@@ -12,6 +12,7 @@ namespace Epic.Server.Resources
         public int Height { get; }
         public IReadOnlyCollection<BattleUnitResource> Units { get; }
         public TurnInfoResource TurnInfo { get; }
+        public IReadOnlyList<PlayerInBattleInfoResource> Players { get; }
         
         public BattleResource(IBattleObject battleObject)
         {
@@ -20,6 +21,9 @@ namespace Epic.Server.Resources
             Height = battleObject.Height;
             Units = battleObject.Units.Select(x => new BattleUnitResource(x)).ToList();
             TurnInfo = new TurnInfoResource(battleObject.TurnNumber, battleObject.TurnPlayerIndex, battleObject.RoundNumber);
+            Players = battleObject.PlayerInfos
+                .Select(x => new PlayerInBattleInfoResource(x, battleObject.FindPlayerNumber(x).Value))
+                .ToList();
         }
     }
 }

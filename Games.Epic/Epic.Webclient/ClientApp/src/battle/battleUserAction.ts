@@ -31,4 +31,8 @@ interface UnitWaitAction extends UnitAction {
     command: 'UNIT_WAIT'
 }
 
-export type BattleUserAction = UnitMoveAction | UnitAttackAction | UnitPassAction | UnitWaitAction
+interface PlayerRansomAction extends BaseUserAction {
+    command: 'PLAYER_RANSOM'
+}
+
+export type BattleUserAction = UnitMoveAction | UnitAttackAction | UnitPassAction | UnitWaitAction | PlayerRansomAction

@@ -70,6 +70,14 @@ export class BattleUserInputController {
                         actor: originalUnit,
                     })
             }
+
+            this.panelController.onRansomPressed = () => {
+                    this.dispose()
+                    resolve({
+                        command: 'PLAYER_RANSOM',
+                        player: originalUnit.player,
+                    })
+            }
         })
     }
 
@@ -78,5 +86,6 @@ export class BattleUserInputController {
         this.mapController.onUnitMouseClick = null
         this.panelController.onWaitPressed = null
         this.panelController.onPassPressed = null
+        this.panelController.onRansomPressed = null
     }
 }

@@ -55,6 +55,10 @@ export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {
     reportId: string
 }
 
+export interface PlayerRansomCommandFromServer extends PlayerCommandFromServer {
+    command: 'PLAYER_RANSOM'
+}
+
 export type BattleCommandFromServer = 
     UnitMoveCommandFromServer
     | UnitAttackCommandFromServer
@@ -63,3 +67,4 @@ export type BattleCommandFromServer =
     | UnitTakeDamageCommandFromServer
     | NextTurnCommandFromServer
     | BattleFinishedCommandFromServer
+    | PlayerRansomCommandFromServer

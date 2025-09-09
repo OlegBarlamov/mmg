@@ -5,6 +5,7 @@ import {IServerAPI} from "./serverAPI";
 import {BattleActionsProcessor} from "../battle/battleActionsProcessor";
 import {BattleServerMessagesHandler} from "../battle/battleServerMessagesHandler";
 import {IBattlePanelActionsController} from "../battle/IBattlePanelActionsController";
+import { IPlayerService } from "./playerService";
 
 export interface IBattlesService {
     createBattle(map: BattleMap, panelController: IBattlePanelActionsController): Promise<IBattleController>
@@ -12,7 +13,8 @@ export interface IBattlesService {
 
 export class BattlesService implements IBattlesService {
     constructor(private readonly battleMapService: IBattleMapsService,
-                private readonly serverAPI: IServerAPI) {
+                private readonly serverAPI: IServerAPI,
+                private readonly playerService: IPlayerService) {
     }
     async createBattle(map: BattleMap, panelController: IBattlePanelActionsController): Promise<IBattleController> {
         const mapController = await this.battleMapService.load(map)
@@ -20,6 +22,6 @@ export class BattlesService implements IBattlesService {
         const serverConnection = await this.serverAPI.establishBattleConnection(map.id, serverMessagesHandler)
         const battleActionsProcessor = new BattleActionsProcessor(mapController, serverConnection)
         
-        return new BattleController(mapController, battleActionsProcessor, serverMessagesHandler, panelController)
+        return new BattleController(mapController, battleActionsProcessor, serverMessagesHandler, panelController, this.playerService)
     }
 }

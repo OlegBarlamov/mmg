@@ -167,6 +167,10 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
+        } else if (message.command === 'PLAYER_RANSOM') {
+            this.cancelCurrentUserActionPending(message)
+            this.mapController.map.players.find(player => player.playerNumber === message.player)!.ransomClaimed = true
+            return
         }
 
         throw Error("Unknown or invalid command from server")

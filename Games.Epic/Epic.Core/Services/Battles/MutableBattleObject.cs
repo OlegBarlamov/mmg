@@ -17,26 +17,15 @@ namespace Epic.Core.Services.Battles
         public bool ProgressDays { get; set; }
         public int RoundNumber { get; set; }
 
-        public List<Guid> PlayerIds { get; set; }
+        public List<MutablePlayerInBattleInfoObject> PlayerInfos { get; set; }
         public List<MutableBattleUnitObject> Units { get; set; }
-        public List<Guid> ClaimedRansomPlayerIds { get; set; }
 
-        IReadOnlyList<Guid> IBattleObject.PlayersIds => PlayerIds;
+        IReadOnlyList<IPlayerInBattleInfoObject> IBattleObject.PlayerInfos => PlayerInfos;
         IReadOnlyCollection<IBattleUnitObject> IBattleObject.Units => Units;
-        IReadOnlyList<Guid> IBattleObject.ClaimedRansomPlayerIds => ClaimedRansomPlayerIds;
 
         private MutableBattleObject()
         {
             
-        }
-        
-        public Guid? GetPlayerId(InBattlePlayerNumber playerNumber)
-        {
-            int index = (int)playerNumber - 1;
-            if (index < 0 || index >= PlayerIds.Count)
-                return null;
-            
-            return PlayerIds[index];
         }
         
         internal static MutableBattleObject FromEntity(IBattleEntity entity)

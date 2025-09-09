@@ -51,7 +51,7 @@ namespace Epic.Logic.Battle
                 { typeof(UnitWaitClientBattleMessage), new UnitWaitsHandler() },
                 { typeof(UnitMoveClientBattleMessage), new UnitMovesHandler() },
                 { typeof(UnitAttackClientBattleMessage), new UnitAttacksHandler() },
-                {typeof(PlayerRansomClientBattleMessage), new PlayerRansomHandler() },
+                { typeof(PlayerRansomClientBattleMessage), new PlayerRansomHandler() },
             };
         
         private bool _isDisposed;
@@ -190,7 +190,7 @@ namespace Epic.Logic.Battle
 
         private bool IsHumanControlled(IBattleUnitObject unit)
         {
-            var player = BattleObject.GetPlayerId(unit.PlayerIndex.ToInBattlePlayerNumber());
+            var player = BattleObject.FindPlayerId(unit.PlayerIndex.ToInBattlePlayerNumber());
             return player != null;
         }
 

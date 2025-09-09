@@ -25,5 +25,7 @@ namespace Epic.Core.Services.Battles
         Task<IBattleReportEntity> FinishBattle(IBattleObject battleObject, BattleResult result);
         
         Task<int> CalculateRansomValueForPlayer(Guid playerId, IBattleObject battleObject);
+        
+        Task UpdateInBattlePlayerInfo(IPlayerInBattleInfoObject playerInBattleInfoObject);
     }
 }

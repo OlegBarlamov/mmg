@@ -4,8 +4,8 @@ import {IBattlesProvider, ServerBattlesProvider} from "./battlesProvider";
 import {IBattleLoader, ServerBattleLoader} from "./battleLoader";
 import {BattlesService, IBattlesService} from "./battlesService";
 import {IServerAPI} from "./serverAPI";
-import {FakeServerAPI} from "../server/FakeServerAPI";
 import {SERVER_BASE_URL, ServerImplementation} from "../server/serverImplementation";
+import { IPlayerService, PlayerService } from "./playerService";
 
 export interface IServiceLocator {
     canvasService() : ICanvasService
@@ -14,6 +14,7 @@ export interface IServiceLocator {
     battleLoader(): IBattleLoader
     battlesService(): IBattlesService
     serverAPI(): IServerAPI
+    playerService(): IPlayerService
 }
 
 export class ExplicitServiceLocator implements IServiceLocator {
@@ -53,12 +54,17 @@ export class ExplicitServiceLocator implements IServiceLocator {
     battlesService(): IBattlesService {
         return this.getSingletoneService("BattlesService", () => new BattlesService(
             this.battleMapService(),
-            this.serverAPI()
+            this.serverAPI(),
+            this.playerService()
         ))
     }
 
     serverAPI(): IServerAPI {
         //return this.getSingletoneService("ServerAPI", () => new FakeServerAPI())
         return this.getSingletoneService("ServerAPI", () => new ServerImplementation(SERVER_BASE_URL))
+    }
+
+    playerService(): IPlayerService {
+        return this.getSingletoneService("PlayerService", () => new PlayerService())
     }
 }

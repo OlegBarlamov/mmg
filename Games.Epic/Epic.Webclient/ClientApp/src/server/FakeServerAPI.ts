@@ -1,6 +1,6 @@
 import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -41,6 +41,9 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    getRansomPrice(): Promise<IRansomPrice> {
+        throw new Error("Method not implemented.");
+    }
     beginGuardBattle(rewardId: string): Promise<BattleMap> {
         throw new Error("Method not implemented.");
     }
@@ -461,7 +464,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             cells.push(row)
         }
         return Promise.resolve({
-            id: battleDefinition.id,
+            id: getRandomStringKey(7),
             width: battleDefinition.width,
             height: battleDefinition.height,
             grid: new OddRGrid(cells),
@@ -474,7 +477,15 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 index: 0,
                 roundNumber: 0,
                 nextTurnUnitId: undefined,
-            }
+            },
+            players: [
+                {
+                    playerId: getRandomStringKey(7),
+                    playerNumber: BattlePlayerNumber.Player1,
+                    index: 0,
+                    ransomClaimed: false,
+                },
+            ],
         })
     }
     

@@ -7,14 +7,14 @@ namespace Epic.Data.Battles
         Guid Id { get; }
         Guid PlayerId { get; }
         Guid BattleId { get; }
-        bool ClaimedRansom { get; }
+        bool RansomClaimed { get; }
     }
 
-    internal class PlayerToBattleEntity : IPlayerToBattleEntity
+    public class PlayerToBattleEntity : IPlayerToBattleEntity
     {
         public Guid Id { get; set; }
         public Guid PlayerId { get; set; }
         public Guid BattleId { get; set; }
-        public bool ClaimedRansom { get; set; }
+        public bool RansomClaimed { get; set; }
     }
 }

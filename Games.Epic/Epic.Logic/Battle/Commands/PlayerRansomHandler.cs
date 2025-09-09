@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.ClientMessages;
 using Epic.Core.Logic.Erros;
 using Epic.Core.ServerMessages;
+using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameResources.Errors;
 using Epic.Data.GameResources;
 
@@ -13,15 +15,20 @@ namespace Epic.Logic.Battle.Commands
     {
         private Guid _playerId;
         private Price _priceToPay;
+        
         public override async Task Validate(CommandExecutionContext context, PlayerRansomClientBattleMessage command)
         {
             ValidateExpectedTurn(context, command.TurnIndex, command.Player);
             
-            var playerId = context.BattleObject.GetPlayerId(command.Player);
+            var playerId = context.BattleObject.FindPlayerId(command.Player);
             if (!playerId.HasValue)
                 throw new BattleLogicException($"Unknown player {command.Player}");
 
             _playerId = playerId.Value;
+            var playerInfo = context.BattleObject.PlayerInfos.First(x => x.PlayerId == _playerId);
+            if (playerInfo.RansomClaimed)
+                throw new BattleLogicException($"Player {command.Player} has already claimed ransom");
+            
             var ransomToPay = await context.BattlesService.CalculateRansomValueForPlayer(_playerId, context.BattleObject);
             _priceToPay = Price.Create(new Dictionary<Guid, int>
             {
@@ -36,6 +43,11 @@ namespace Epic.Logic.Battle.Commands
         {
             await context.GameResourcesRepository.Pay(_priceToPay, _playerId);
 
+            var playerInfo = context.BattleObject.PlayerInfos.First(x => x.PlayerId == _playerId);
+            playerInfo.RansomClaimed = true;
+            
+            await context.BattlesService.UpdateInBattlePlayerInfo(playerInfo);
+            
             var serverCommand = new PlayerRansomCommandFromServer(command.TurnIndex, command.Player);
             await context.MessageBroadcaster.BroadcastMessageAsync(serverCommand);
 

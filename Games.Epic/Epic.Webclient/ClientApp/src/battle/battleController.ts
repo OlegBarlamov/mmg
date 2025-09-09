@@ -1,6 +1,6 @@
 import { IBattleMapController } from "../battleMap/battleMapController";
 import { BattleMapUnit } from "../battleMap/battleMapUnit";
-import { BattleMap, BattleTurnInfo } from "../battleMap/battleMap";
+import { BattleMap, BattleTurnInfo, InBattlePlayerInfo } from "../battleMap/battleMap";
 import { BattleUserAction } from "./battleUserAction";
 import { wait } from "../common/wait";
 import { BattlePlayerNumber } from "../player/playerNumber";
@@ -11,6 +11,7 @@ import { ITurnAwaiter } from "./battleServerMessagesHandler";
 import { SignalBasedCancellationToken, TaskCancelledError } from "../common/cancellationToken";
 import { Signal } from "typed-signals";
 import { IBattlePanelActionsController } from "./IBattlePanelActionsController";
+import { IPlayerService } from "../services/playerService";
 
 export interface IBattleController {
     readonly mapController: IBattleMapController
@@ -30,8 +31,10 @@ export class BattleController implements IBattleController {
     private currentTurnIndex: number = -1
     private currentRoundNumber: number = 0
     private winnerPlayer: BattlePlayerNumber | null = null
+    private currentPlayerInfo: InBattlePlayerInfo | null = null
 
     private readonly map: BattleMap
+    private readonly playerService: IPlayerService
 
     private readonly battleUserInputController: BattleUserInputController
     private readonly battleActionProcessor: IBattleActionsProcessor
@@ -42,13 +45,16 @@ export class BattleController implements IBattleController {
         mapController: IBattleMapController,
         battleActionProcessor: IBattleActionsProcessor,
         turnAwaiter: ITurnAwaiter,
-        panelController: IBattlePanelActionsController) {
+        panelController: IBattlePanelActionsController,
+        playerService: IPlayerService) {
 
         this.mapController = mapController
         this.battleActionProcessor = battleActionProcessor
         this.turnAwaiter = turnAwaiter
-
+        this.playerService = playerService
         this.map = mapController.map
+
+        this.currentPlayerInfo = this.map.players.find(player => player.playerId === this.playerService.currentPlayerInfo.id) ?? null
 
         this.battleUserInputController = new BattleUserInputController(mapController, panelController)
 
@@ -79,7 +85,9 @@ export class BattleController implements IBattleController {
             try {
                 this.onNextTurn.emit(this.map.turnInfo)
 
-                if (this.isPlayerControlled(this.map.turnInfo.player)) {
+                this.currentPlayerInfo = this.map.players.find(player => player.playerId === this.playerService.currentPlayerInfo.id) ?? null
+
+                if (this.isPlayerControlled(this.map.turnInfo.player) && this.canPlayerAct()) {
                     const currentUnit = this.getActiveUnit(this.map.turnInfo.nextTurnUnitId!)
                     if (currentUnit) {
                         await this.processStep(currentUnit)
@@ -115,7 +123,11 @@ export class BattleController implements IBattleController {
     }
 
     isPlayerControlled(player: BattlePlayerNumber): boolean {
-        return player == BattlePlayerNumber.Player1 || (player == BattlePlayerNumber.Player2 && this.npcControl)
+        return player === this.currentPlayerInfo?.playerNumber || this.npcControl
+    }
+
+    private canPlayerAct(): boolean {
+        return this.currentPlayerInfo?.ransomClaimed !== true
     }
 
     private isAbleToControlNpc() : boolean {

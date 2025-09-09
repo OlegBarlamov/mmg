@@ -14,7 +14,7 @@ namespace Epic.Data.Battles
         public string EntityName => "Battle";
         
         private readonly List<IBattleEntity> _battles = new List<IBattleEntity>();
-        private readonly List<IPlayerToBattleEntity> _playerBattles = new List<IPlayerToBattleEntity>();
+        private readonly List<PlayerToBattleEntity> _playerBattles = new List<PlayerToBattleEntity>();
         private readonly List<IBattleDefinitionToBattleEntity> _battleDefinitionToBattleEntities = new List<IBattleDefinitionToBattleEntity>();
 
         public Task<IBattleEntity> GetBattleByIdAsync(Guid id)
@@ -71,7 +71,7 @@ namespace Epic.Data.Battles
                 Id = Guid.NewGuid(),
                 BattleId = newBattleId,
                 PlayerId = id,
-                ClaimedRansom = false,
+                RansomClaimed = false,
             });
             _playerBattles.AddRange(playerRelations);
 
@@ -95,8 +95,21 @@ namespace Epic.Data.Battles
 
         public Task<IPlayerToBattleEntity[]> GetBattlePlayers(Guid battleId)
         {
-            var playerToBattles = _playerBattles.Where(x => x.BattleId == battleId).ToArray();
+            var playerToBattles = _playerBattles
+                .Where(x => x.BattleId == battleId)
+                .ToArray<IPlayerToBattleEntity>();
+            
             return Task.FromResult(playerToBattles);
+        }
+
+        public Task UpdatePlayerToBattle(IPlayerToBattleEntity playerToBattleEntity)
+        {
+            var entity = _playerBattles.First(x => x.Id == playerToBattleEntity.Id);
+            entity.PlayerId = playerToBattleEntity.PlayerId;
+            entity.BattleId = playerToBattleEntity.BattleId;
+            entity.RansomClaimed = playerToBattleEntity.RansomClaimed;
+            
+            return Task.CompletedTask;
         }
     }
 }

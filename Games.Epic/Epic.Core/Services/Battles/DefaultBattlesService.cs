@@ -184,23 +184,33 @@ namespace Epic.Core.Services.Battles
             return await BattleReportsRepository.Create(new MutableBattleReportFields(
                 battleObject.Id, 
                 result.Winner.HasValue ? (int?)result.Winner.Value : null,
-                battleObject.PlayersIds.ToArray(),
-                result.Winner.HasValue ? battleObject.GetPlayerId(result.Winner.Value) : null)
+                battleObject.PlayerInfos.Select(x => x.PlayerId).ToArray(),
+                result.Winner.HasValue ? battleObject.FindPlayerId(result.Winner.Value) : null)
             );
         }
 
         public Task<int> CalculateRansomValueForPlayer(Guid playerId, IBattleObject battleObject)
         {
-            var playerIndex = Array.IndexOf(battleObject.PlayersIds.ToArray(), playerId);
-            if (playerIndex < 0)
+            var playerInfo = battleObject.PlayerInfos.FirstOrDefault(x  => x.PlayerId == playerId);
+            if (playerInfo == null)
                 throw new InvalidOperationException($"Player {playerId} is not present in the battle {battleObject.Id}");
 
+            var battlePlayerNumber = battleObject.FindPlayerNumber(playerInfo);
+            if (!battlePlayerNumber.HasValue)
+                throw new InvalidOperationException($"Player {playerId} is not present in the battle {battleObject.Id}");
+                
             var playerAliveUnits = battleObject.Units
-                .Where(x => x.PlayerIndex == playerIndex && x.GlobalUnit.IsAlive)
+                .Where(x => x.PlayerIndex == (int)battlePlayerNumber && x.GlobalUnit.IsAlive)
                 .ToArray();
             
             return Task.FromResult(playerAliveUnits
                 .Sum(x => x.GlobalUnit.UnitType.Value * x.GlobalUnit.Count));
+        }
+
+        public Task UpdateInBattlePlayerInfo(IPlayerInBattleInfoObject playerInBattleInfoObject)
+        {
+            var entity = playerInBattleInfoObject.ToEntity();
+            return BattlesRepository.UpdatePlayerToBattle(entity);
         }
 
         private async Task FillUnits(MutableBattleObject battleObject)
@@ -213,11 +223,7 @@ namespace Epic.Core.Services.Battles
         private async Task FillPlayers(MutableBattleObject battleObject)
         {
             var playerToBattles = await BattlesRepository.GetBattlePlayers(battleObject.Id);
-            battleObject.PlayerIds = playerToBattles.Select(x => x.PlayerId).ToList();
-            battleObject.ClaimedRansomPlayerIds = playerToBattles
-                .Where(x => x.ClaimedRansom)
-                .Select(x => x.PlayerId)
-                .ToList();
+            battleObject.PlayerInfos = playerToBattles.Select(MutablePlayerInBattleInfoObject.FromEntity).ToList();
         }
 
         private MutableBattleObject ToMutableObject(IBattleObject battleObject)
