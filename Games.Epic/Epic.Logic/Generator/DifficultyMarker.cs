@@ -21,13 +21,17 @@ namespace Epic.Logic.Generator
             var range = maxDifficulty - minDifficulty;
             
             var normalizedMean = 1.0 / 4.0; // Bias toward lower part
+            var normalizedWideMean = 1.0 / 2.0;
             var narrowStd = 0.12; // how chaotic the output
-            var wideStd = 0.45;
-            var wideStdChance = 0.05;
+            var wideStd = 0.6;
+            var wideStdChance = 0.1;
             
             var isWideStd = random.NextDouble() < wideStdChance; 
 
-            var sample = RandomDistributions.GetBoundedNormal(random, normalizedMean, isWideStd ? wideStd : narrowStd, 0, 1);
+            var mean = isWideStd ? normalizedWideMean : normalizedMean;
+            var std = isWideStd ? wideStd : narrowStd;
+            var min = isWideStd ? normalizedMean : 0;
+            var sample = RandomDistributions.GetBoundedNormal(random, mean, std , min, 1);
 
             var idealSample = (int)(minDifficulty + normalizedMean * (maxDifficulty - minDifficulty));
             var targetDifficulty = (int)(minDifficulty + sample * range);

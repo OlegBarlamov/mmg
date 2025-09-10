@@ -188,9 +188,9 @@ namespace Epic.Logic.Generator
             if (difficulty.IdealDifficulty > 1000)
             {
                 var rewardVisibilityChance = _random.NextDouble();
-                if (rewardVisibilityChance < 0.09)
+                if (rewardVisibilityChance < 0.06)
                     rewardVisibility = -1;
-                if (rewardVisibilityChance < 0.03)
+                if (rewardVisibilityChance < 0.02)
                     rewardVisibility = -2;
             }
 
@@ -198,9 +198,9 @@ namespace Epic.Logic.Generator
             if (difficulty.IdealDifficulty > 2000)
             {
                 var guardVisibilityChance = _random.NextDouble();
-                if (guardVisibilityChance < 0.09)
+                if (guardVisibilityChance < 0.06)
                     guardVisibility = -1;
-                if (guardVisibilityChance < 0.03)
+                if (guardVisibilityChance < 0.02)
                     guardVisibility = -2;
             }
             
