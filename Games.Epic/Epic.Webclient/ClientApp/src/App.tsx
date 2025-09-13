@@ -50,7 +50,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
             playerInfo = await serverAPI.getPlayer(userInfo.playerId)
         }
 
-        this.props.serviceLocator.playerService().setCurrentPlayerInfo(playerInfo!)
+        this.props.serviceLocator.playerService().setCurrentPlayerInfo(playerInfo)
 
         const activeBattle = await serverAPI.getActiveBattle()
         if (activeBattle) {

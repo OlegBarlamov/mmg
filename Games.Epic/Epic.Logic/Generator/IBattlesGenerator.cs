@@ -370,7 +370,7 @@ namespace Epic.Logic.Generator
 
         public async Task Generate(Guid playerId, int day, int currentBattlesCount)
         {
-            int count = currentBattlesCount <= 5 ? _random.Next(3, 7) : _random.Next(1, 4);
+            int count = currentBattlesCount <= Math.Max(5, day / 2) ? _random.Next(3, 7) : _random.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
                 await GenerateSingle(playerId, day);

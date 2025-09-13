@@ -16,18 +16,18 @@ namespace Epic.Logic.Generator
             var difficultyFactor = 1;
             
             var minDifficulty = 2 * difficultyFactor * MathExtended.Sqr(day) + 100;
-            var maxDifficulty = 20 * difficultyFactor * MathExtended.Sqr(day) + 1000;
+            var maxDifficulty = 24 * difficultyFactor * MathExtended.Sqr(day) + 1000;
             
             var range = maxDifficulty - minDifficulty;
             
             var normalizedMean = 1.0 / 4.0; // Bias toward lower part
             var normalizedWideMean = 1.0 / 2.0;
-            var narrowStd = 0.12; // how chaotic the output
-            var wideStd = 0.6;
+            var narrowStd = 0.3; // how chaotic the output
+            var wideStd = 0.7;
             var wideStdChance = 0.1;
             
-            var isWideStd = random.NextDouble() < wideStdChance; 
-
+            var isWideStd = random.NextDouble() < wideStdChance;
+            
             var mean = isWideStd ? normalizedWideMean : normalizedMean;
             var std = isWideStd ? wideStd : narrowStd;
             var min = isWideStd ? normalizedMean : 0;

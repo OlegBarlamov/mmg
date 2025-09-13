@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Server.Authentication;
 using Epic.Server.Resources;
