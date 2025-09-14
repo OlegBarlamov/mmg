@@ -100,8 +100,10 @@ export class BattleMapHighlighter implements IBattleMapHighlighter {
                                 const restoringColor = target.cells.indexOf(superHighlightedCell) >= 0 ? this.cellAttackFromHighlightColor : undefined
                                 this.setCellCustomColor(superHighlightedCell.r, superHighlightedCell.c, restoringColor)
                             }
-                            superHighlightedCell = closestHexagon
-                            this.setCellCustomColor(superHighlightedCell.r, superHighlightedCell.c, this.cellsAttackFromHoverColor)
+                            if (!closestHexagon.isObstacle) {
+                                superHighlightedCell = closestHexagon
+                                this.setCellCustomColor(superHighlightedCell.r, superHighlightedCell.c, this.cellsAttackFromHoverColor)
+                            }
                         }
                     }
                 }

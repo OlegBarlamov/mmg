@@ -13,6 +13,7 @@ namespace Epic.Server.Resources
         public IReadOnlyCollection<BattleUnitResource> Units { get; }
         public TurnInfoResource TurnInfo { get; }
         public IReadOnlyList<PlayerInBattleInfoResource> Players { get; }
+        public IReadOnlyList<BattleObstacleResource> Obstacles { get; }
         
         public BattleResource(IBattleObject battleObject)
         {
@@ -24,6 +25,7 @@ namespace Epic.Server.Resources
             Players = battleObject.PlayerInfos
                 .Select(x => new PlayerInBattleInfoResource(x, battleObject.FindPlayerNumber(x).Value))
                 .ToList();
+            Obstacles = battleObject.Obstacles.Select(x => new BattleObstacleResource(x)).ToList();
         }
     }
 }

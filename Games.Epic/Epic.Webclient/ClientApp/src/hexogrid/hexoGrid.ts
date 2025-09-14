@@ -19,7 +19,7 @@ export interface IHexoGrid<T extends IHexoPoint> {
     getCellsInRange(row: number, col: number, range: number): T[]
     getNeighborCells(row: number, col: number): T[]
     
-    getDistance(point1: T, point2: T): number
+    getDistance(point1: IHexoPoint, point2: IHexoPoint): number
 }
 
 export abstract class HexoGrid<T extends IHexoPoint> implements IHexoGrid<T> {

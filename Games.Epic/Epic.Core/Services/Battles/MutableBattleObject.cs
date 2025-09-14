@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Epic.Core.Services.BattleObstacles;
 using Epic.Data.Battles;
 
 namespace Epic.Core.Services.Battles
@@ -19,6 +20,7 @@ namespace Epic.Core.Services.Battles
 
         public List<MutablePlayerInBattleInfoObject> PlayerInfos { get; set; }
         public List<MutableBattleUnitObject> Units { get; set; }
+        public IReadOnlyCollection<IBattleObstacleObject> Obstacles { get; set; }
 
         IReadOnlyList<IPlayerInBattleInfoObject> IBattleObject.PlayerInfos => PlayerInfos;
         IReadOnlyCollection<IBattleUnitObject> IBattleObject.Units => Units;

@@ -205,7 +205,7 @@ namespace Epic.Logic.Battle
         {
             var playerInfo = BattleObject.FindPlayerInfo(unit.PlayerIndex.ToInBattlePlayerNumber());
             runClaimed = playerInfo is { RunClaimed: true };
-            return playerInfo != null;;
+            return playerInfo != null;
         }
 
         private async Task UpdateRunPlayers()

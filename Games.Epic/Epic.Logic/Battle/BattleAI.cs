@@ -48,7 +48,7 @@ namespace Epic.Logic.Battle
             var attacks = unit.GlobalUnit.UnitType.Attacks;
 
             Tuple<IBattleUnitObject, int> closestTarget = null;
-            var cellsToMove = MapUtils.GetCellsForUnitMove(Battle, unit, unit.GlobalUnit.UnitType.Movement);
+            var cellsToMove = MapUtils.GetCellsForUnitMove(Battle, Battle.Obstacles, unit, unit.GlobalUnit.UnitType.Movement);
             var possibleAttacksWithTargets = new List<Tuple<IBattleUnitObject, IAttackFunctionType, HexoPoint, int>>();
             
             foreach (var enemy in enemies)

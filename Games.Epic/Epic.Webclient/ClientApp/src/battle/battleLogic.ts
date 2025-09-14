@@ -35,7 +35,7 @@ export function getAttackTargets(map: BattleMap, unit: BattleMapUnit, reachableC
         for (const target of possibleTargets) {
             const cellsToAttackFrom: BattleMapCell[] = []
 
-            const potentialCellsToAttackFrom = attackType.stayOnly ? [unit.position] : reachableCells
+            const potentialCellsToAttackFrom = attackType.stayOnly ? [{...unit.position, isObstacle: false}] : reachableCells
             for (const cell of potentialCellsToAttackFrom) {
                 const targetPosition = map.grid.getCell(target.position.r, target.position.c)
                 const distance = map.grid.getDistance(targetPosition, cell)
@@ -67,13 +67,13 @@ export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit, movemen
     const visited: Set<string> = new Set()
 
     // BFS queue for cells to explore; each entry is [cell, distance]
-    const queue: [BattleMapCell, number][] = [[start, 0]]
+    const queue: [BattleMapCell, number][] = [[{...start, isObstacle: false}, 0]]
 
     // Convert a cell to a unique string representation
     const cellToString = (cell: BattleMapCell) => `${cell.r},${cell.c}`
 
     const isCellBlocked = (cell: BattleMapCell) => {
-        return getUnit(map, cell.r, cell.c)
+        return getUnit(map, cell.r, cell.c) || cell.isObstacle
     }
 
     // Start BFS
@@ -87,7 +87,7 @@ export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit, movemen
         // Mark this cell as visited
         visited.add(key)
 
-        if (currentCell !== start) {
+        if (currentCell.c !== start.c || currentCell.r !== start.r) {
             if (movementType === MovementType.Fly) {
                 if (!isCellBlocked(currentCell)) {
                     availableCells.push(currentCell)

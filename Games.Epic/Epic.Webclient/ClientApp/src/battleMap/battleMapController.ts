@@ -211,6 +211,8 @@ export class BattleMapController implements IBattleMapController {
             const row: IHexagon[] = [];
             for (let c = 0; c < this.map.grid.width; c++) {
                 const cell = this.map.grid.getCell(r, c)
+
+                const alpha = cell.isObstacle ? 0 : 1.0
                 const center = this.map.grid.getCellCenterPoint(r, c, this.cellRadius)
                 const hexagonView = this.canvasService.createHexagon({
                     x: center.x + this.visualOffset.x,
@@ -218,8 +220,9 @@ export class BattleMapController implements IBattleMapController {
                     radius: this.cellRadius,
                     strokeColor: this.defaultCellsStrokeColor,
                     fillColor: this.defaultCellsFillColor,
-                    strokeLine: 2,
-                    fillAlpha: 1.0,
+                    strokeLine: cell.isObstacle ? 0 : 2,
+                    fillAlpha: alpha,
+                    strokeAlpha: alpha,
                 })
 
                 hexagonView.onMouseEnters = (sender, event) => this.onCellMouseEnter?.(cell, this.translatePointerEvent(event, this.canvasService))
@@ -253,6 +256,7 @@ export class BattleMapController implements IBattleMapController {
                     fillColor: getPlayerColor(unit.player),
                     strokeLine: 2,
                     fillAlpha: 1,
+                    strokeAlpha: 1,
                 },
                 text: unit.count.toString(),
                 textBackgroundImgSrc: this.unitsNumberBackgroundImgSrc,

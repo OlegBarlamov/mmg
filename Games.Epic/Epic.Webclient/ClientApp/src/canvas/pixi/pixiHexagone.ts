@@ -11,6 +11,7 @@ export class PixiHexagon implements IHexagon {
     fillColor: number = 0
     fillAlpha: number = 0
     strokeLine: number = 0
+    strokeAlpha: number = 0
 
     customFillColor: number | undefined
 

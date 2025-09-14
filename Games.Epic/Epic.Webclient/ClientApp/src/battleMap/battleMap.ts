@@ -5,6 +5,7 @@ import {BattlePlayerNumber} from "../player/playerNumber";
 export type BattleMapCell = {
     r: number
     c: number
+    isObstacle: boolean
 }
 
 export type BattleResult = {
@@ -29,6 +30,14 @@ export type InBattlePlayerInfo = {
     runClaimed: boolean
 }
 
+export type IBattleObstacle = {
+    column: number
+    row: number
+    width: number
+    height: number
+    mask: boolean[][]
+}
+
 export type BattleMap = {
     id: string
     
@@ -42,4 +51,6 @@ export type BattleMap = {
     turnInfo: BattleTurnInfo
 
     players: InBattlePlayerInfo[]
+
+    obstacles: IBattleObstacle[]
 }

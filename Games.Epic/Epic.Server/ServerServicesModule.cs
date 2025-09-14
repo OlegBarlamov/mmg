@@ -4,6 +4,7 @@ using Console.FrameworkAdapter;
 using Epic.Core.Logic;
 using Epic.Core.Services;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.BattleObstacles;
 using Epic.Core.Services.BattleReports;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
@@ -18,6 +19,7 @@ using Epic.Core.Services.UnitTypes;
 using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.BattleDefinitions;
+using Epic.Data.BattleObstacles;
 using Epic.Data.BattleReports;
 using Epic.Data.Battles;
 using Epic.Data.BattleUnits;
@@ -29,6 +31,7 @@ using Epic.Data.Reward;
 using Epic.Data.UnitsContainers;
 using Epic.Data.UnitTypes;
 using Epic.Logic.Battle;
+using Epic.Logic.Battle.Obstacles;
 using Epic.Logic.Generator;
 using Epic.Logic.Heroes;
 using Epic.Server.Services;
@@ -74,6 +77,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterFactory<IUnitTypesRegistry>((locator, _) => locator.Resolve<DefaultUnitTypesRegistry>());
             serviceRegistrator.RegisterType<DefaultGameResourcesRegistry, DefaultGameResourcesRegistry>();
             serviceRegistrator.RegisterFactory<IGameResourcesRegistry>((locator, _) => locator.Resolve<DefaultGameResourcesRegistry>());
+            serviceRegistrator.RegisterType<IBattleObstaclesService, DefaultBattleObstaclesService>();
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();
@@ -88,12 +92,14 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IHeroEntitiesRepository, InMemoryHeroEntitiesRepository>();
             serviceRegistrator.RegisterType<IGameResourcesRepository, InMemoryGameResourcesRepository>();
             serviceRegistrator.RegisterType<IBattleReportsRepository, InMemoryBattleReportsRepository>();
+            serviceRegistrator.RegisterType<IBattleObstaclesRepository, InMemoryBattleObstaclesRepository>();
             
             serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
             serviceRegistrator.RegisterType<IBattlesGenerator, BattleGenerator>();
             serviceRegistrator.RegisterType<IBattleUnitsPlacer, BattleUnitsPlacer>();
             serviceRegistrator.RegisterType<IHeroesLevelsCalculator, HeroesLevelsCalculator>();
+            serviceRegistrator.RegisterType<IBattleObstaclesGenerator, BattleObstaclesGenerator>();
 
             PredefinedStaticResources.QuestionIconUrl = "/resources/question.png";
         }

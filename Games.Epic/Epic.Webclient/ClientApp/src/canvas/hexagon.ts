@@ -4,6 +4,7 @@ export interface IHexagonProps {
     readonly radius: number
     readonly strokeColor: number
     readonly strokeLine: number
+    readonly strokeAlpha: number
     readonly fillColor: number
     readonly fillAlpha: number
 }

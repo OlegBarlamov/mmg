@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.BattleObstacles;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitTypes;
@@ -25,6 +26,8 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IBattleReportsRepository BattleReportsRepository { get; }
         [NotNull] private IBattleUnitsPlacer BattleUnitsPlacer { get; }
         public IUnitTypesService UnitTypesService { get; }
+        public IBattleObstaclesService BattleObstaclesService { get; }
+        public IBattleObstaclesGenerator BattleObstaclesGenerator { get; }
 
         public DefaultBattlesService(
             [NotNull] IBattlesRepository battlesRepository,
@@ -35,7 +38,9 @@ namespace Epic.Core.Services.Battles
             [NotNull] IPlayersService playersService,
             [NotNull] IBattleReportsRepository battleReportsRepository,
             [NotNull] IBattleUnitsPlacer battleUnitsPlacer,
-            [NotNull] IUnitTypesService unitTypesService)
+            [NotNull] IUnitTypesService unitTypesService,
+            [NotNull] IBattleObstaclesService battleObstaclesService,
+            [NotNull] IBattleObstaclesGenerator battleObstaclesGenerator)
         {
             BattlesRepository = battlesRepository ?? throw new ArgumentNullException(nameof(battlesRepository));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -46,6 +51,8 @@ namespace Epic.Core.Services.Battles
             BattleReportsRepository = battleReportsRepository ?? throw new ArgumentNullException(nameof(battleReportsRepository));
             BattleUnitsPlacer = battleUnitsPlacer ?? throw new ArgumentNullException(nameof(battleUnitsPlacer));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
+            BattleObstaclesService = battleObstaclesService ?? throw new ArgumentNullException(nameof(battleObstaclesService));
+            BattleObstaclesGenerator = battleObstaclesGenerator ?? throw new ArgumentNullException(nameof(battleObstaclesGenerator));
         }
 
         public async Task<IBattleObject> GetBattleById(Guid battleId)
@@ -58,6 +65,7 @@ namespace Epic.Core.Services.Battles
             var battleObject = MutableBattleObject.FromEntity(battleEntity);
             await FillUnits(battleObject);
             await FillPlayers(battleObject);
+            await FillObstacles(battleObject);
 
             return battleObject;
         }
@@ -75,6 +83,7 @@ namespace Epic.Core.Services.Battles
             var battleObject = MutableBattleObject.FromEntity(battleEntity);
             await FillUnits(battleObject);
             await FillPlayers(battleObject);
+            await FillObstacles(battleObject);
             
             return battleObject;
         }
@@ -110,6 +119,9 @@ namespace Epic.Core.Services.Battles
             
             var battleObject = MutableBattleObject.FromEntity(battleEntity);
             
+            var obstacles = await BattleObstaclesGenerator.GenerateForBattle(battleObject);
+            battleObject.Obstacles = obstacles;
+            
             var battleInitialUnits = await BattleUnitsService.CreateUnitsFromBattleDefinition(battleDefinitionObject, battleObject.Id);
             battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
             
@@ -136,6 +148,9 @@ namespace Epic.Core.Services.Battles
                 InBattlePlayerNumber.Player2, 
                 battleObject.Id,
                 enemyPlayer.ActiveHero);
+            
+            var obstacles = await BattleObstaclesGenerator.GenerateForBattle(battleObject);
+            battleObject.Obstacles = obstacles;
             
             battleObject.Units = new List<MutableBattleUnitObject>(battleInitialUnits.Select(MutableBattleUnitObject.CopyFrom));
             
@@ -218,6 +233,12 @@ namespace Epic.Core.Services.Battles
             var battleUnits = await BattleUnitsService.GetBattleUnits(battleObject.Id);
             var mutableBattleUnits = battleUnits.Select(MutableBattleUnitObject.CopyFrom);
             battleObject.Units = new List<MutableBattleUnitObject>(mutableBattleUnits);
+        }
+
+        private async Task FillObstacles(MutableBattleObject battleObject)
+        {
+            var obstacles = await BattleObstaclesService.GetForBattle(battleObject.Id);
+            battleObject.Obstacles = obstacles;
         }
 
         private async Task FillPlayers(MutableBattleObject battleObject)

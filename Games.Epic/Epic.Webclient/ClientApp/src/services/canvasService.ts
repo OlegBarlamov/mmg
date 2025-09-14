@@ -192,6 +192,7 @@ export class CanvasService implements ICanvasService {
             radius: props.hexagon.radius,
             strokeColor: props.hexagon.strokeColor,
             strokeLine: props.hexagon.strokeLine,
+            strokeAlpha: props.hexagon.strokeAlpha,
         }
         const hexGraphics = new PIXI.Graphics()
         this.setHexagonGraphic(hexGraphics, hexProps)
@@ -264,7 +265,7 @@ export class CanvasService implements ICanvasService {
     }
     
     private setHexagonGraphic(hex: PIXI.Graphics, props: IHexagonProps): void {
-        hex.lineStyle(props.strokeLine, props.strokeColor)
+        hex.lineStyle(props.strokeLine, props.strokeColor, props.strokeAlpha)
         hex.beginFill(props.fillColor, props.fillAlpha)
 
         const vertices: number[] = []

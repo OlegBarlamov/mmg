@@ -1,5 +1,5 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
-import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
+import {BattleMap, BattleMapCell, IBattleObstacle as IBattleMapObstacle} from "../battleMap/battleMap";
 import {IAcceptedReward, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
@@ -11,9 +11,9 @@ import {OddRGrid} from "../hexogrid/oddRGrid";
 import { IRewardToAccept } from "../rewards/IRewardToAccept";
 import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
-//export const SERVER_BASE_URL = "http://localhost:5000"
+export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-export const SERVER_BASE_URL = "https://3004c0ec19ad.ngrok-free.app"
+//export const SERVER_BASE_URL = "https://3004c0ec19ad.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
@@ -112,13 +112,29 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
         for (let i = 0; i < battleMap.height; i++) {
             const row: BattleMapCell[] = []
             for (let j = 0; j < battleMap.width; j++) {
-                const cell: BattleMapCell = { c: j, r: i }
+                const cell: BattleMapCell = { c: j, r: i, isObstacle: false }
+                cell.isObstacle = this.isCellObstacle(cell, battleMap.obstacles)
                 row.push(cell);
             }
             cells.push(row)
         }
         
         battleMap.grid = new OddRGrid(cells)
+    }
+
+    isCellObstacle(cell: BattleMapCell, obstacles: IBattleMapObstacle[]): boolean {
+        return obstacles.some(obstacle => {
+            const dx = cell.c - obstacle.column;
+            const dy = cell.r - obstacle.row;
+    
+            // Check if inside obstacle bounds
+            if (dx < 0 || dy < 0 || dx >= obstacle.width || dy >= obstacle.height) {
+                return false;
+            }
+    
+            // Check mask
+            return obstacle.mask[dx][dy];
+        });
     }
     
 }

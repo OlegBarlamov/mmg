@@ -37,7 +37,7 @@ namespace Epic.Logic.Generator
         public IGameResourcesRegistry ResourcesRegistry { get; }
         public IUnitTypesRegistry UnitTypesRegistry { get; }
 
-        private readonly Random _random = new Random();
+        private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
         
         public BattleGenerator(
             [NotNull] IBattleDefinitionsService battleDefinitionsService,

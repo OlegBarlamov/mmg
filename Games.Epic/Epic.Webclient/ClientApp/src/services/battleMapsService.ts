@@ -29,7 +29,7 @@ export class BattleMapsService implements IBattleMapsService {
         for (let i = 0; i < height; i++) {
             const row: BattleMapCell[] = []
             for (let j = 0; j < width; j++) {
-                const cell: BattleMapCell = { c: j, r: i }
+                const cell: BattleMapCell = { c: j, r: i, isObstacle: false }
                 row.push(cell);
             }
             cells.push(row)
@@ -59,6 +59,7 @@ export class BattleMapsService implements IBattleMapsService {
                     runClaimed: false,
                 },
             ],
+            obstacles: [],
         }
     }
 }

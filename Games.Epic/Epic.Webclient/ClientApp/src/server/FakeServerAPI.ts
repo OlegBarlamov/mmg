@@ -458,7 +458,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         for (let i = 0; i < battleDefinition.height; i++) {
             const row: BattleMapCell[] = []
             for (let j = 0; j < battleDefinition.width; j++) {
-                const cell: BattleMapCell = { c: j, r: i }
+                const cell: BattleMapCell = { c: j, r: i, isObstacle: false }
                 row.push(cell);
             }
             cells.push(row)
@@ -487,6 +487,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     runClaimed: false,
                 },
             ],
+            obstacles: [],
         })
     }
     
