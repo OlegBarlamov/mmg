@@ -19,6 +19,7 @@ namespace Epic.Logic.Rewards
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         public IBattleDefinitionsService BattleDefinitionsService { get; }
         public IGlobalUnitsRepository GlobalUnitsRepository { get; }
+        [NotNull] public GlobalUnitsForBattleGenerator GlobalUnitsForBattleGenerator { get; }
 
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
 
@@ -26,12 +27,14 @@ namespace Epic.Logic.Rewards
             [NotNull] IRewardsRepository repository,
             [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
-            [NotNull] IGlobalUnitsRepository globalUnitsRepository)
+            [NotNull] IGlobalUnitsRepository globalUnitsRepository,
+            [NotNull] GlobalUnitsForBattleGenerator globalUnitsForBattleGenerator)
         {
             Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
+            GlobalUnitsForBattleGenerator = globalUnitsForBattleGenerator ?? throw new ArgumentNullException(nameof(globalUnitsForBattleGenerator));
         }
         
         public async Task<IRewardEntity[]> CreateRewardsFromDefinition(IRewardDefinitionEntity rewardDefinitionEntity, Guid battleDefinitionId, int rewardFactor)
@@ -70,13 +73,34 @@ namespace Epic.Logic.Rewards
                 
                 guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
 
-                await Task.WhenAll(rewardDefinitionEntity.GuardUnitTypeIds.Select((id, i) =>
+                if (rewardDefinitionEntity.GuardUnitTypeIds.Length == 1)
                 {
-                    var minAmount = rewardDefinitionEntity.GuardUnitMinAmounts[i];
-                    var maxAmount = rewardDefinitionEntity.GuardUnitMaxAmounts[i];
+                    var minAmount = rewardDefinitionEntity.GuardUnitMinAmounts[0];
+                    var maxAmount = rewardDefinitionEntity.GuardUnitMaxAmounts[0];
                     var amount = _random.Next(minAmount, maxAmount + 1);
-                    return GlobalUnitsRepository.Create(id, amount, guardBattleDefinition.ContainerId, true, i);
-                }));
+                    
+                    await GlobalUnitsForBattleGenerator.Generate(
+                        guardBattleDefinition.UnitsContainerObject,
+                        _random,
+                        rewardDefinitionEntity.GuardUnitTypeIds[0],
+                        amount,
+                        false);
+                }
+                else
+                {
+                    var slotsDistribution = UnitsSlotsDistribution.FindSlotIndices(
+                        rewardDefinitionEntity.GuardUnitTypeIds.Length,
+                        guardBattleDefinition.Height);
+                    
+                    await Task.WhenAll(rewardDefinitionEntity.GuardUnitTypeIds.Select((id, i) =>
+                    {
+                        var minAmount = rewardDefinitionEntity.GuardUnitMinAmounts[i];
+                        var maxAmount = rewardDefinitionEntity.GuardUnitMaxAmounts[i];
+                        var amount = _random.Next(minAmount, maxAmount + 1);
+                        
+                        return GlobalUnitsRepository.Create(id, amount, guardBattleDefinition.ContainerId, true, slotsDistribution[i]);
+                    }));
+                }
             }
 
             var reward = await Repository.CreateRewardAsync(battleDefinitionId, new MutableRewardFields

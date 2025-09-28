@@ -39,6 +39,7 @@ namespace Epic.Logic.Generator
         public IUnitTypesRegistry UnitTypesRegistry { get; }
         public IRewardDefinitionsService RewardDefinitionsService { get; }
         public IRewardDefinitionsRegistry RewardDefinitionsRegistry { get; }
+        public GlobalUnitsForBattleGenerator GlobalUnitsForBattleGenerator { get; }
 
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
         
@@ -54,7 +55,8 @@ namespace Epic.Logic.Generator
             [NotNull] IGameResourcesRegistry resourcesRegistry,
             [NotNull] IUnitTypesRegistry unitTypesRegistry,
             [NotNull] IRewardDefinitionsService rewardDefinitionsService,
-            [NotNull] IRewardDefinitionsRegistry rewardDefinitionsRegistry)
+            [NotNull] IRewardDefinitionsRegistry rewardDefinitionsRegistry,
+            [NotNull] GlobalUnitsForBattleGenerator globalUnitsForBattleGenerator)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -68,15 +70,8 @@ namespace Epic.Logic.Generator
             UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
             RewardDefinitionsService = rewardDefinitionsService ?? throw new ArgumentNullException(nameof(rewardDefinitionsService));
             RewardDefinitionsRegistry = rewardDefinitionsRegistry ?? throw new ArgumentNullException(nameof(rewardDefinitionsRegistry));
+            GlobalUnitsForBattleGenerator = globalUnitsForBattleGenerator ?? throw new ArgumentNullException(nameof(globalUnitsForBattleGenerator));
         }
-
-        private enum SlotsDistributionPattern
-        {
-            Single,
-            Few,
-            Partially,
-            Full,
-        } 
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
@@ -106,87 +101,11 @@ namespace Epic.Logic.Generator
             var targetUnit = orderedUnitTypes[targetIndex];
 
             var unitsCount = Math.Max(1, (int)Math.Round((double)difficulty.TargetDifficulty / targetUnit.Value));
-
+            
             var container = await UnitsContainersService.Create(height, Guid.Empty);
 
-            var slotsDistribution = (SlotsDistributionPattern)_random.Next(0, 4);
-
-            var maxSlotsCount = int.MaxValue;
-            var minSlotsCount = 1;
-            switch (slotsDistribution)
-            {
-                case SlotsDistributionPattern.Single:
-                    maxSlotsCount = 1;
-                    maxSlotsCount = 1;
-                    break;
-                case SlotsDistributionPattern.Few:
-                    minSlotsCount = 2;
-                    maxSlotsCount = 3;
-                    break;
-                case SlotsDistributionPattern.Partially:
-                    minSlotsCount = 4;
-                    maxSlotsCount = 6;
-                    break;
-                case SlotsDistributionPattern.Full:
-                    minSlotsCount = int.MaxValue;
-                    maxSlotsCount = int.MaxValue;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            var slotsCountLimit = Math.Min(unitsCount, height);
-            maxSlotsCount = Math.Min(maxSlotsCount, slotsCountLimit);
-            minSlotsCount = Math.Min(minSlotsCount, slotsCountLimit);
+            await GlobalUnitsForBattleGenerator.Generate(container, _random, targetUnit.Id, unitsCount, true);
             
-            var targetSlotsCount = _random.Next(minSlotsCount, maxSlotsCount + 1);
-
-            // 1. Create the unit distribution
-            var slotDistributions = new List<int>();
-            var baseUnitsPerSlot = unitsCount / targetSlotsCount;
-            var extraUnits = unitsCount % targetSlotsCount;
-            for (var i = 0; i < targetSlotsCount; i++)
-            {
-                // Distribute one of the extras to the first few slots
-                var unitsInSlot = baseUnitsPerSlot + (i < extraUnits ? 1 : 0);
-                slotDistributions.Add(unitsInSlot);
-            }
-
-            // 2. Spread filled slots evenly across the container height
-            List<int> slotIndices = new List<int>();
-            for (int i = 0; i < targetSlotsCount; i++)
-            {
-                if (targetSlotsCount == 1)
-                {
-                    // Just place the single slot in the middle
-                    slotIndices.Add(height / 2);
-                }
-                else
-                {
-                    int slotIndex = (int)Math.Round(i * (height - 1.0) / (targetSlotsCount - 1));
-                    slotIndices.Add(slotIndex);
-                }
-            }
-
-            // Optional: Make sure indices are unique (in case of rounding)
-            slotIndices = slotIndices.Distinct().ToList();
-
-            
-            IUnitTypeEntity upgradedType = null;
-            if (targetSlotsCount > 2 && _random.Next(100) < 15)
-            {
-                var upgradeTypes = await UnitTypesRepository.GetUpgradesFor(targetUnit.Id);
-                var orderedUpgrades = upgradeTypes.OrderBy(x => x.Value).ToList();
-                upgradedType = orderedUpgrades.FirstOrDefault();
-            }
-            var upgradedSlot = upgradedType != null ? targetSlotsCount / 2 : -1;
-
-            for (int i = 0; i < slotIndices.Count && i < slotDistributions.Count; i++)
-            {
-                var typeId = i == upgradedSlot && upgradedType != null ? upgradedType.Id : targetUnit.Id;
-                await GlobalUnitsRepository.Create(typeId, slotDistributions[i], container.Id, true,
-                    slotIndices[i]);
-            }
-
             double t = ((double)difficulty.TargetDifficulty - difficulty.MinDifficulty) /
                        ((double)difficulty.IdealDifficulty - difficulty.MinDifficulty);
             int duration = Math.Max(1, (int)Math.Round(1 + t * 3) + _random.Next(-2, 3));
@@ -226,6 +145,7 @@ namespace Epic.Logic.Generator
                 .Max() + 1);
 
             var rewardType = (GeneratedRewardTypes)rewardTypeIndex;
+            rewardType = GeneratedRewardTypes.Template;
 
             if (rewardType == GeneratedRewardTypes.Gold)
             {

@@ -38,7 +38,7 @@ namespace Epic.Logic.Generator
 
             return new DifficultyMarker
             {
-                TargetDifficulty = targetDifficulty,
+                TargetDifficulty = targetDifficulty * 50,
                 IdealDifficulty = idealSample,
                 MinDifficulty = (int)minDifficulty,
                 MaxDifficulty = (int)maxDifficulty,

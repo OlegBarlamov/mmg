@@ -107,6 +107,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IHeroesLevelsCalculator, HeroesLevelsCalculator>();
             serviceRegistrator.RegisterType<IBattleObstaclesGenerator, BattleObstaclesGenerator>();
             serviceRegistrator.RegisterType<IRewardDefinitionsService, DefaultRewardDefinitionsService>();
+            serviceRegistrator.RegisterType<GlobalUnitsForBattleGenerator, GlobalUnitsForBattleGenerator>();
 
             PredefinedStaticResources.QuestionIconUrl = "/resources/question.png";
         }

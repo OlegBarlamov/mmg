@@ -123,7 +123,7 @@ namespace Epic.Logic.Battle.Obstacles
                 }
             }
             
-            for (int i = 0; i < _random.Next(minSmallObstaclesCount, maxSmallObstaclesCount + 1); i++)
+            for (int i = 0; i < _random.Next(minMiddleObstaclesCount, maxMiddleObstaclesCount + 1); i++)
             {
                 try
                 {
@@ -166,7 +166,7 @@ namespace Epic.Logic.Battle.Obstacles
                 }
             }
             
-            for (int i = 0; i < _random.Next(minSmallObstaclesCount, maxSmallObstaclesCount + 1); i++)
+            for (int i = 0; i < _random.Next(minLargeObstaclesCount, maxLargeObstaclesCount + 1); i++)
             {
                 try
                 {
@@ -176,7 +176,7 @@ namespace Epic.Logic.Battle.Obstacles
                     var width = _random.Next(largeObstacleMinWidth, maxWidth + 1);
                     var height = _random.Next(largeObstacleMinHeight, maxHeight + 1);
 
-                    var maxColumn = closeToArmy ? battleObject.Width - width - 1 : battleObject.Width - width - 2;
+                    var maxColumn = closeToArmy ? battleObject.Width - width - 2 : battleObject.Width - width - 3;
                     var maxRow = battleObject.Height - height;
                 
                     var column = _random.Next(minColumn, maxColumn + 1);
