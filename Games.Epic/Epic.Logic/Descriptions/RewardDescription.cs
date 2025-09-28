@@ -22,6 +22,34 @@ namespace Epic.Logic.Descriptions
         {
             if (reward == null)
                 return new []{ new RewardDescription() } ;
+
+            if (!string.IsNullOrWhiteSpace(reward.Description) && !string.IsNullOrWhiteSpace(reward.IconUrl) && !string.IsNullOrWhiteSpace(reward.Title))
+            {
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = $"Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                    case DescriptionVisibility.MaskedSize:
+                    case DescriptionVisibility.ApproximateSize:
+                    case DescriptionVisibility.Full:
+                        return new [] { new RewardDescription
+                        {
+                            Name = reward.Title,
+                            Amount = string.Empty,
+                            IconUrl = reward.IconUrl,
+                            Tooltip = reward.Description,
+                        } };
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
             
             var descriptions = GetRawDescriptions(reward, visibility, goldResourceId);
             foreach (var description in descriptions)
@@ -34,6 +62,12 @@ namespace Epic.Logic.Descriptions
                 if (!string.IsNullOrWhiteSpace(reward.IconUrl))
                 {
                     description.IconUrl = reward.IconUrl;
+                }
+                
+                if (!string.IsNullOrWhiteSpace(reward.Description))
+                {
+                    description.Amount = "";
+                    description.Tooltip = reward.Description;
                 }
             }
 

@@ -54,7 +54,11 @@ namespace Epic.Server
                 
             var config = deserializer.Deserialize<UnitsConfig>(new MergingParser(new Parser(file)));
             
-            var createdUnits = await UnitTypesRepository.CreateBatch(config.Units.Select(x => x.Value));
+            var createdUnits = await UnitTypesRepository.CreateBatch(config.Units.Select(x =>
+            {
+                x.Value.Key = x.Key; 
+                return x.Value;
+            }));
             var createdUnitsByNames = createdUnits.ToDictionary(x => x.Name, x => x);
             
             FillUpgradedUnitsData(config, createdUnitsByNames, out var updatedUnits);

@@ -12,6 +12,7 @@ using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
+using Epic.Core.Services.RewardDefinitions;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
@@ -28,12 +29,14 @@ using Epic.Data.GlobalUnits;
 using Epic.Data.Heroes;
 using Epic.Data.Players;
 using Epic.Data.Reward;
+using Epic.Data.RewardDefinitions;
 using Epic.Data.UnitsContainers;
 using Epic.Data.UnitTypes;
 using Epic.Logic.Battle;
 using Epic.Logic.Battle.Obstacles;
 using Epic.Logic.Generator;
 using Epic.Logic.Heroes;
+using Epic.Logic.Rewards;
 using Epic.Server.Services;
 using FrameworkSDK.Common;
 using FrameworkSDK.DependencyInjection;
@@ -78,6 +81,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<DefaultGameResourcesRegistry, DefaultGameResourcesRegistry>();
             serviceRegistrator.RegisterFactory<IGameResourcesRegistry>((locator, _) => locator.Resolve<DefaultGameResourcesRegistry>());
             serviceRegistrator.RegisterType<IBattleObstaclesService, DefaultBattleObstaclesService>();
+            serviceRegistrator.RegisterType<DefaultRewardDefinitionsRegistry, DefaultRewardDefinitionsRegistry>();
+            serviceRegistrator.RegisterFactory<IRewardDefinitionsRegistry>((locator, _) => locator.Resolve<DefaultRewardDefinitionsRegistry>());
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();
@@ -93,6 +98,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IGameResourcesRepository, InMemoryGameResourcesRepository>();
             serviceRegistrator.RegisterType<IBattleReportsRepository, InMemoryBattleReportsRepository>();
             serviceRegistrator.RegisterType<IBattleObstaclesRepository, InMemoryBattleObstaclesRepository>();
+            serviceRegistrator.RegisterType<IRewardDefinitionsRepository, InMemoryRewardDefinitionsRepository>();
             
             serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
@@ -100,6 +106,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleUnitsPlacer, BattleUnitsPlacer>();
             serviceRegistrator.RegisterType<IHeroesLevelsCalculator, HeroesLevelsCalculator>();
             serviceRegistrator.RegisterType<IBattleObstaclesGenerator, BattleObstaclesGenerator>();
+            serviceRegistrator.RegisterType<IRewardDefinitionsService, DefaultRewardDefinitionsService>();
 
             PredefinedStaticResources.QuestionIconUrl = "/resources/question.png";
         }

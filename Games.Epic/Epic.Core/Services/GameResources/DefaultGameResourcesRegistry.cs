@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Epic.Data.GameResources;
@@ -22,6 +23,11 @@ namespace Epic.Core.Services.GameResources
         public IReadOnlyCollection<IGameResourceEntity> GetAll()
         {
             return _resources;
+        }
+
+        public IGameResourceEntity GetByKey(string key)
+        {
+            return _resources.First(x => x.Key == key);
         }
 
         public async Task Load(CancellationToken cancellationToken)

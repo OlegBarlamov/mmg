@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
+using Epic.Core.Services.RewardDefinitions;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
@@ -36,6 +37,8 @@ namespace Epic.Logic.Generator
         public ILogger<BattleGenerator> Logger { get; }
         public IGameResourcesRegistry ResourcesRegistry { get; }
         public IUnitTypesRegistry UnitTypesRegistry { get; }
+        public IRewardDefinitionsService RewardDefinitionsService { get; }
+        public IRewardDefinitionsRegistry RewardDefinitionsRegistry { get; }
 
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
         
@@ -49,7 +52,9 @@ namespace Epic.Logic.Generator
             [NotNull] IPlayersService playersService,
             [NotNull] ILogger<BattleGenerator> logger,
             [NotNull] IGameResourcesRegistry resourcesRegistry,
-            [NotNull] IUnitTypesRegistry unitTypesRegistry)
+            [NotNull] IUnitTypesRegistry unitTypesRegistry,
+            [NotNull] IRewardDefinitionsService rewardDefinitionsService,
+            [NotNull] IRewardDefinitionsRegistry rewardDefinitionsRegistry)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -61,6 +66,8 @@ namespace Epic.Logic.Generator
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ResourcesRegistry = resourcesRegistry ?? throw new ArgumentNullException(nameof(resourcesRegistry));
             UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
+            RewardDefinitionsService = rewardDefinitionsService ?? throw new ArgumentNullException(nameof(rewardDefinitionsService));
+            RewardDefinitionsRegistry = rewardDefinitionsRegistry ?? throw new ArgumentNullException(nameof(rewardDefinitionsRegistry));
         }
 
         private enum SlotsDistributionPattern
@@ -365,6 +372,50 @@ namespace Epic.Logic.Generator
                 }
                 
                 await RewardsRepository.CreateRewardAsync(rewardedBattleDefinition.Id, rewardFields);
+            } else if (rewardType == GeneratedRewardTypes.Template)
+            {
+                var maxRewardIndex = BinarySearch.FindClosestNotExceedingIndex(RewardDefinitionsRegistry.AllOrdered,
+                    group => group.First().Value, difficulty.TargetDifficulty);
+                var rewardGroup = RewardDefinitionsRegistry.AllOrdered[_random.Next(maxRewardIndex + 1)];
+
+                var rewardTemplates = rewardGroup.ToArray();
+                var targetRewardTemplate = rewardTemplates[_random.Next(rewardTemplates.Length)];
+                await RewardDefinitionsService.CreateRewardsFromDefinition(targetRewardTemplate, battleDefinition.Id, rewardFactor);
+                
+                var remainingValue = difficulty.TargetDifficulty - rewardGroup.First().Value;
+                if (remainingValue > 500)
+                {
+                    var resourcesValue = remainingValue;
+                    var resourceTypes = new List<IGameResourceEntity>();
+                    var resourcesAmounts = new List<int>();
+                    var resourceTypesCount = resourcesValue > resources.Sum(x => x.Price) / 2
+                        ? _random.Next(1, resources.Count) : 1;
+                    var valuePerResource = (double)resourcesValue / resourceTypesCount;
+                    var availableResources = new List<IGameResourceEntity>(resources);
+                    for (var i = 0; i < resourceTypesCount; i++)
+                    {
+                        var resourceType = availableResources[_random.Next(0, availableResources.Count)];
+                        availableResources.Remove(resourceType);
+                    
+                        var resourceAmount = Math.Max(1,
+                            (int)Math.Ceiling(valuePerResource / resourceType.Price));
+                        resourceAmount = RoundToFriendlyNumber(resourceAmount);
+                    
+                        resourceTypes.Add(resourceType);
+                        resourcesAmounts.Add(resourceAmount * rewardFactor);
+                    }
+                
+                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                    {
+                        RewardType = RewardType.ResourcesGain,
+                        Amounts = resourcesAmounts.ToArray(),
+                        CanDecline = true,
+                        GuardBattleDefinitionId = null,
+                        IconUrl = null,
+                        Title = null,
+                        Ids = resourceTypes.Select(x => x.Id).ToArray(),
+                    });
+                }
             }
         }
 
@@ -383,6 +434,7 @@ namespace Epic.Logic.Generator
             Resource,
             UnitsGain,
             UnitsToBuy,
+            Template,
         }
         
         public static int RoundToFriendlyNumber(int value)

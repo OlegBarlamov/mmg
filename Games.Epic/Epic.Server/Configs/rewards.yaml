@@ -1,9 +1,83 @@
+BeholdersSanctuaryBase: &BeholdersSanctuaryBase
+  Key: BeholdersSanctuary
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Beholders'_Sanctuary.gif"
+  Title: "Beholders' Sanctuary"
+  CanDecline: true
+  Value: 5000
+  Resources: [ Gold ]
+  Guard:
+    Units: [ Beholder ]
+
+CampfireBase: &CampfireBase
+  Key: Campfire
+  Value: 2000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Campfire.gif"
+  Title: "Campfire"
+  CanDecline: true
+  AmountsMin: [ 400, 4 ]
+  AmountsMax: [ 600, 6 ]
+
+
 Rewards:
-  Campfire:
-    Variants:
-      Data:
-        RewardType: ResourcesGain
-        Resources: Gold
-        Amount: 40
-      
+  AncientLamp:
+    Key: AncientLamp
+    Value: 5000
+    RewardType: UnitsToBuy
+    Units:
+      - MasterGenie
+    AmountsMin: [ 4 ]
+    AmountsMax: [ 7 ]
+    IconUrl: "/resources/Ancient_Lamp.gif"
+    Title: "Ancient Lamp"
+    CanDecline: true
+    
+  BeholdersSanctuary_Small:
+    <<: *BeholdersSanctuaryBase
+    Amounts: [ 10000 ]
+    Guard:
+      Units: [ Beholder ]
+      AmountsMin: [ 40 ]
+      AmountsMax: [ 60 ]
+  BeholdersSanctuary_Medium:
+    <<: *BeholdersSanctuaryBase
+    Amounts: [ 15000 ]
+    Guard:
+      Units: [ Beholder ]
+      AmountsMin: [ 70 ]
+      AmountsMax: [ 80 ]
+  BeholdersSanctuary_High:
+    <<: *BeholdersSanctuaryBase
+    Amounts: [ 20000 ]
+    Guard:
+      Units: [ Beholder ]
+      AmountsMin: [ 90 ]
+      AmountsMax: [ 110 ]
+  BeholdersSanctuary_Max:
+    <<: *BeholdersSanctuaryBase
+    Amounts: [ 25000 ]
+    Guard:
+      Units: [ Beholder ]
+      AmountsMin: [ 140 ]
+      AmountsMax: [ 160 ]
+  
+  Campfire_1:
+    <<: *CampfireBase
+    Resources: [ Gold, Wood ]
+  Campfire_2:
+    <<: *CampfireBase
+    Resources: [ Gold, Stone ]
+  Campfire_3:
+    <<: *CampfireBase
+    Resources: [ Gold, Mercury ]
+  Campfire_4:
+    <<: *CampfireBase
+    Resources: [ Gold, Sulfur ]
+  Campfire_5:
+    <<: *CampfireBase
+    Resources: [ Gold, Crystal ]
+  Campfire_6:
+    <<: *CampfireBase
+    Resources: [ Gold, Gems ]
     

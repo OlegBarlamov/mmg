@@ -41,10 +41,7 @@ export class BattleUserInputController {
                     this.dispose()
                     const mouseCoordinates = {x: event.x, y: event.y}
                     const closestCell = this.mapController.getClosestCellToPoint(target.cells, mouseCoordinates)
-                    if (closestCell.isObstacle) {
-                        return
-                    }
-                    
+
                     resolve({
                         command: 'UNIT_ATTACK',
                         player: originalUnit.player,

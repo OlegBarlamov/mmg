@@ -10,6 +10,7 @@ namespace Epic.Core.Services.UnitTypes
         IReadOnlyList<IUnitTypeEntity> ToTrainOrderedByValue { get; }
         
         IUnitTypeEntity ById(Guid typeId);
+        IUnitTypeEntity ByKey(string key);
 
         IReadOnlyList<IUnitTypeEntity> GetUpgradesFor(Guid typeId);
         IReadOnlyList<IUnitTypeEntity> GetSourceTypeFromUpgraded(Guid upgradedTypeId);

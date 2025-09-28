@@ -20,6 +20,7 @@ namespace Epic.Core.Services.UnitTypes
         private readonly List<IUnitTypeEntity> _orderedUnitTypes = new List<IUnitTypeEntity>();
         private readonly List<IUnitTypeEntity> _toTrainOrderedUnitTypes = new List<IUnitTypeEntity>();
         private readonly Dictionary<Guid, IUnitTypeEntity> _unitTypesByIds = new Dictionary<Guid, IUnitTypeEntity>();
+        private readonly Dictionary<string, IUnitTypeEntity> _unitTypesByKey = new Dictionary<string, IUnitTypeEntity>();
         private readonly Dictionary<Guid, List<Guid>> _upgrades = new Dictionary<Guid, List<Guid>>();
         
         public DefaultUnitTypesRegistry([NotNull] IUnitTypesRepository repository)
@@ -30,6 +31,11 @@ namespace Epic.Core.Services.UnitTypes
         public IUnitTypeEntity ById(Guid typeId)
         {
             return _unitTypesByIds[typeId];
+        }
+
+        public IUnitTypeEntity ByKey(string key)
+        {
+            return _unitTypesByKey[key];
         }
 
         public IReadOnlyList<IUnitTypeEntity> GetUpgradesFor(Guid typeId)
@@ -51,6 +57,7 @@ namespace Epic.Core.Services.UnitTypes
             _upgrades.Clear();
             _orderedUnitTypes.Clear();
             _toTrainOrderedUnitTypes.Clear();
+            _unitTypesByKey.Clear();
             
             
             var allUnits = await UnitTypesRepository.GetAll();
@@ -63,6 +70,7 @@ namespace Epic.Core.Services.UnitTypes
             allUnits.ForEach(x =>
             {
                 _unitTypesByIds.Add(x.Id, x);
+                _unitTypesByKey.Add(x.Key, x);
                 
                 foreach (var upgradeForId in x.UpgradeForUnitTypeIds)
                 {

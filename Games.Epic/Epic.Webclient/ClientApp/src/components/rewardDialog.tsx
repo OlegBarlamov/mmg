@@ -130,6 +130,12 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
     }
 
     private preInitializeRewardState = async () => {
+        // Reset submission state when showing a new reward
+        this.setState({ 
+            isSubmitting: false, 
+            errorMessage: null 
+        })
+        
         const { reward, serviceLocator } = this.props
         if (reward.rewardType === RewardType.UnitsToBuy) {
             // Initialize unit quantities to 0

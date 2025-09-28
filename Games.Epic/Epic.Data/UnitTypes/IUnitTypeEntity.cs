@@ -17,6 +17,7 @@ namespace Epic.Data.UnitTypes
     
     public interface IUnitTypeProperties : IUnitProps
     {
+        string Key { get; }
         string Name { get; }
         string BattleImgUrl { get; }
         string DashboardImgUrl { get; }
@@ -42,6 +43,7 @@ namespace Epic.Data.UnitTypes
     } 
     
     public class UnitTypeProperties : UnitTypeProps, IUnitTypeProperties {
+        public string Key { get; set; }
         public string Name { get; set; }
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
@@ -74,6 +76,7 @@ namespace Epic.Data.UnitTypes
 
         internal void FillProperties(IUnitTypeProperties properties)
         {
+            Key = properties.Key;
             Name = properties.Name;
             BattleImgUrl = properties.BattleImgUrl;
             DashboardImgUrl = properties.DashboardImgUrl;

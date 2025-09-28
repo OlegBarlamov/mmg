@@ -599,7 +599,7 @@ Units:
     Name: "Pegasus"
     BattleImgUrl: "/resources/Pegasus_portrait.png"
     DashboardImgUrl: "/resources/Pegasus_portrait.png"
-    Value: 300
+    Value: 250
     Speed: 8
     Health: 30
     Attack: 9

@@ -402,10 +402,8 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                                     alt={reward.name}
                                                                     className="reward-thumbnail"
                                                                 />
-                                                                {reward.amount ? (
+                                                                {reward.amount && (
                                                                     <span className="reward-amount">{reward.amount}</span>
-                                                                ) : (
-                                                                    <span className="reward-amount">?</span>
                                                                 )}
                                                             </div>
                                                         ))}
