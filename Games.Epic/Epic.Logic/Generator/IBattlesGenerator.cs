@@ -11,10 +11,12 @@ using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
+using Epic.Data.RewardDefinitions;
 using Epic.Data.UnitTypes;
 using Epic.Logic.Utils;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NetExtensions.Collections;
 
 namespace Epic.Logic.Generator
 {
@@ -80,7 +82,6 @@ namespace Epic.Logic.Generator
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
             var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;
             var resources = ResourcesRegistry.GetAll();
-            
             var player = await PlayersService.GetById(playerId);
             var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
             
@@ -145,7 +146,6 @@ namespace Epic.Logic.Generator
                 .Max() + 1);
 
             var rewardType = (GeneratedRewardTypes)rewardTypeIndex;
-            rewardType = GeneratedRewardTypes.Template;
 
             if (rewardType == GeneratedRewardTypes.Gold)
             {
@@ -284,7 +284,7 @@ namespace Epic.Logic.Generator
                     
                     var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
                     
-                    await GlobalUnitsRepository.Create(unitToBuy.Id, unitToBuy.ToTrainAmount / 2,
+                    await GlobalUnitsRepository.Create(unitToBuy.Id, Math.Max(1, unitToBuy.ToTrainAmount / 2),
                         guardBattleDefinition.ContainerId, true, guardBattleDefinition.Height / 2);
                     
                     rewardFields.GuardBattleDefinitionId = guardBattleDefinition.Id;
@@ -296,10 +296,23 @@ namespace Epic.Logic.Generator
             {
                 var maxRewardIndex = BinarySearch.FindClosestNotExceedingIndex(RewardDefinitionsRegistry.AllOrdered,
                     group => group.First().Value, difficulty.TargetDifficulty);
+                
+                maxRewardIndex = Math.Max(0, maxRewardIndex);
+                var maxRewardGroupValue = RewardDefinitionsRegistry.AllOrdered[maxRewardIndex].First().Value;
+                for (var i = maxRewardIndex + 1; i < RewardDefinitionsRegistry.AllOrdered.Count; i++)
+                {
+                    if (RewardDefinitionsRegistry.AllOrdered[i].First().Value <= maxRewardGroupValue)
+                        maxRewardIndex++;
+                }
+                
                 var rewardGroup = RewardDefinitionsRegistry.AllOrdered[_random.Next(maxRewardIndex + 1)];
 
                 var rewardTemplates = rewardGroup.ToArray();
-                var targetRewardTemplate = rewardTemplates[_random.Next(rewardTemplates.Length)];
+                var variation = _random.Next(rewardTemplates.Length);
+                var targetRewardTemplate = rewardTemplates[variation];
+                
+                Logger.LogInformation($"Generating reward template: {targetRewardTemplate.Name}; variant: {variation + 1}");;
+                
                 await RewardDefinitionsService.CreateRewardsFromDefinition(targetRewardTemplate, battleDefinition.Id, rewardFactor);
                 
                 var remainingValue = difficulty.TargetDifficulty - rewardGroup.First().Value;

@@ -373,7 +373,12 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                 <td className="menu-battle-units">
                                                     <div className="menu-units-horizontal">
                                                         {battle.units.map((unit, unitIndex) => (
-                                                            <div key={unitIndex} className="menu-unit-horizontal-item">
+                                                            <div 
+                                                                key={unitIndex} 
+                                                                className="menu-unit-horizontal-item"
+                                                                onMouseEnter={(e) => this.handleRewardMouseEnter(e, `${unit.name} (${unit.count || '?'})`)}
+                                                                onMouseLeave={this.handleRewardMouseLeave}
+                                                            >
                                                                 <img 
                                                                     src={unit.thumbnailUrl} 
                                                                     alt={unit.name}

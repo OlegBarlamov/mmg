@@ -104,8 +104,8 @@ public class InitializeRewardDefinitionsScript : IAppComponent
                 Title = x.Title,
                 IconUrl = x.IconUrl,
                 Message = x.Message,
-                MaxAmounts = x.Amounts ?? x.AmountsMax,
-                MinAmounts = x.Amounts ?? x.AmountsMin,
+                MaxAmounts = x.Amounts ?? x.AmountsMax ?? Array.Empty<int>(),
+                MinAmounts = x.Amounts ?? x.AmountsMin ?? Array.Empty<int>(),
                 CanDecline = x.CanDecline,
                 Ids = x.Units?.Select(GetUnitIdByName).ToArray() 
                       ?? x.Resources?.Select(GetResourceIdByName).ToArray()

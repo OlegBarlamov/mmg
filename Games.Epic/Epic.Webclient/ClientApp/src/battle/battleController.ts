@@ -98,6 +98,7 @@ export class BattleController implements IBattleController {
 
                 console.log("Waiting for turn " + (this.currentTurnIndex + 1))
                 const turnInfo = await this.turnAwaiter.waitForTurn(this.currentTurnIndex + 1)
+                this.map.turnInfo = turnInfo
                 if (turnInfo.roundNumber > this.currentRoundNumber) {
                     this.onNextRound()
                 }

@@ -11,14 +11,187 @@ BeholdersSanctuaryBase: &BeholdersSanctuaryBase
 
 CampfireBase: &CampfireBase
   Key: Campfire
-  Value: 2000
+  Value: 1000
   RewardType: ResourcesGain
   IconUrl: "/resources/Campfire.gif"
   Title: "Campfire"
   CanDecline: true
   AmountsMin: [ 400, 4 ]
   AmountsMax: [ 600, 6 ]
+  
+BlackTowerBase: &BlackTowerBase
+  Key: BlackTower
+  Value: 1500
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Black_Tower.gif"
+  Title: "Black Tower"
+  CanDecline: true
+  Resources: [ Gold ]
+  
+ChurchyardBase: &ChurchyardBase
+  Key: Churchyard
+  Value: 1500
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Churchyard.gif"
+  Title: "ChurchyardBase"
+  CanDecline: true
+  Resources: [ Gold ]
 
+CryptBase: &CryptBase
+  Key: Crypt
+  Value: 1000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Crypt.gif"
+  Title: "Crypt"
+  CanDecline: true
+  Resources: [ Gold ]
+
+CyclopsStockpileBase: &CyclopsStockpileBase
+  Key: CyclopsStockpile
+  RewardType: ResourcesGain
+  Value: 3000
+  IconUrl: "/resources/Cyclops_Stockpile.gif"
+  Title: "Cyclops Stockpile"
+  CanDecline: true
+  Resources: [ Wood, Stone, Mercury, Sulfur, Crystal, Gems ]
+
+DerelictShipBase: &DerelictShipBase
+  Key: DerelictShip
+  Value: 4000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Derelict_Ship.gif"
+  Title: "Derelict Ship"
+  CanDecline: true
+  Resources: [ Gold ]
+
+DragonFlyHiveBase: &DragonFlyHiveBase
+  Key: DragonFlyHive
+  RewardType: UnitsGain
+  Value: 8000
+  IconUrl: "/resources/Dragon_Fly_Hive.gif"
+  Title: "Dragon Fly Hive"
+  CanDecline: true
+  Units: [ Wyvern ]
+
+DragonUtopiaBase: &DragonUtopiaBase
+  Key: DragonUtopia
+  RewardType: ResourcesGain
+  Value: 10000
+  IconUrl: "/resources/Dragon_Utopia.gif"
+  Title: "Dragon Utopia"
+  CanDecline: true
+  Resources: [ Gold ]
+
+DwarvenTreasuryBase: &DwarvenTreasuryBase
+  Key: DwarvenTreasury
+  RewardType: ResourcesGain
+  Value: 2000
+  IconUrl: "/resources/Dwarven_Treasury.gif"
+  Title: "Dwarven Treasury"
+  CanDecline: true
+  Resources: [ Gold, Crystal ]
+  
+ExperimentalShopBase: &ExperimentalShopBase
+  Key: ExperimentalShop
+  Value: 3500
+  RewardType: UnitsGain
+  IconUrl: "/resources/Experimental_Shop.gif"
+  Title: "Experimental Shop"
+  CanDecline: true
+  Units: [ Giant ]
+
+FlotsamBase: &FlotsamBase
+  Key: Flotsam
+  Value: 500
+  IconUrl: "/resources/Flotsam.gif"
+  Title: "Flotsam"
+  CanDecline: true
+
+LeanToBase: &LeanToBase
+  Key: LeanTo
+  Value: 500
+  IconUrl: "/resources/Lean_To.gif"
+  Title: "Lean To"
+  CanDecline: true
+  AmountsMin: [ 1 ]
+  AmountsMax: [ 10 ]
+  
+MysticalGardenBase: &MysticalGardenBase
+  Key: MysticalGarden
+  Value: 500
+  IconUrl: "/resources/Mystical_Garden.gif"
+  Title: "Mystical Garden"
+  CanDecline: true
+
+JetsamBase: &JetsamBase
+  Key: Flotsam
+  Value: 500
+  IconUrl: "/resources/Jetsam.gif"
+  Title: "Jetsam"
+  CanDecline: true
+
+GriffinConservatoryBase: &GriffinConservatoryBase
+  Key: GriffinConservatory
+  RewardType: UnitsGain
+  IconUrl: "/resources/Griffin_Conservatory.gif"
+  Title: "Griffin Conservatory"
+  CanDecline: true
+  Value: 2000
+  Units: [ Angel ]
+
+ImpCacheBase: &ImpCacheBase
+  Key: ImpCache
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Imp_Cache.gif"
+  Title: "Imp Cache"
+  CanDecline: true
+  Value: 5000
+  Resources: [ Gold, Mercury ]
+  
+IvoryTowerBase: &IvoryTowerBase
+  Key: IvoryTower
+  RewardType: UnitsGain
+  IconUrl: "/resources/Ivory_Tower.gif"
+  Title: "Ivory Tower"
+  CanDecline: true
+  Value: 7000
+  Units: [ Enchanter ]
+
+MansionBase: &MansionBase
+  Key: Mansion
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Mansion.gif"
+  Title: "Mansion"
+  CanDecline: true
+  Value: 5000
+  Resources: [ Gold, Mercury, Sulfur, Crystal, Gems ]
+
+MedusaStoresBase: &MedusaStoresBase
+  Key: MedusaStores
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Medusa_Stores.gif"
+  Title: "Medusa Stores"
+  CanDecline: true
+  Value: 1500
+  Resources: [ Gold, Sulfur ]
+
+NagaBankBase: &NagaBankBase
+  Key: NagaBank
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Naga_Bank.gif"
+  Title: "Naga Bank"
+  CanDecline: true
+  Value: 3000
+  Resources: [ Gold, Gems ]
+
+#PirateCavernBase: &PirateCavernBase
+#  Key: PirateCavern
+#  RewardType: UnitsGain
+#  IconUrl: "/resources/Pirate_Cavern.gif"
+#  Title: "Pirate Cavern"
+#  CanDecline: true
+#  Value: 3500
+#  Units: [ SeaSerpent ]
 
 Rewards:
   AncientLamp:
@@ -35,28 +208,28 @@ Rewards:
     
   BeholdersSanctuary_Small:
     <<: *BeholdersSanctuaryBase
-    Amounts: [ 10000 ]
+    Amounts: [ 6000 ]
     Guard:
       Units: [ Beholder ]
       AmountsMin: [ 40 ]
       AmountsMax: [ 60 ]
   BeholdersSanctuary_Medium:
     <<: *BeholdersSanctuaryBase
-    Amounts: [ 15000 ]
+    Amounts: [ 10000 ]
     Guard:
       Units: [ Beholder ]
       AmountsMin: [ 70 ]
       AmountsMax: [ 80 ]
   BeholdersSanctuary_High:
     <<: *BeholdersSanctuaryBase
-    Amounts: [ 20000 ]
+    Amounts: [ 12000 ]
     Guard:
       Units: [ Beholder ]
       AmountsMin: [ 90 ]
       AmountsMax: [ 110 ]
   BeholdersSanctuary_Max:
     <<: *BeholdersSanctuaryBase
-    Amounts: [ 25000 ]
+    Amounts: [ 18000 ]
     Guard:
       Units: [ Beholder ]
       AmountsMin: [ 140 ]
@@ -80,4 +253,569 @@ Rewards:
   Campfire_6:
     <<: *CampfireBase
     Resources: [ Gold, Gems ]
+  
+  BlackTower_1:
+    <<: *BlackTowerBase
+    Amounts: [3000]
+    Guard:
+      Units: [ GreenDragon ]
+      Amounts: [ 1 ]
+  BlackTower_2:
+    <<: *BlackTowerBase
+    Amounts: [ 4000 ]
+    Guard:
+      Units: [ RedDragon ]
+      Amounts: [ 1 ]
+  BlackTower_3:
+    <<: *BlackTowerBase
+    Amounts: [ 5000 ]
+    Guard:
+      Units: [ GoldDragon ]
+      Amounts: [ 1 ]
+  BlackTower_4:
+    <<: *BlackTowerBase
+    Amounts: [ 6000 ]
+    Guard:
+      Units: [ BlackDragon ]
+      Amounts: [ 1 ]
+  
+  Churchyard_1:
+    <<: *ChurchyardBase
+    Amounts: [ 4000 ]
+    Guard:
+      Units: [ Zombie ]
+      Amounts: [ 90 ]
+  
+  Crypt_1000g:
+    <<: *CryptBase
+    Amounts: [ 3000 ]
+    Guard:
+      Units: [ Skeleton, WalkingDead ]
+      Amounts: [ 30, 20 ]
+
+  Crypt_2000g:
+    <<: *CryptBase
+    Amounts: [ 4000 ]
+    Guard:
+      Units: [ Skeleton, WalkingDead, Wight ]
+      Amounts: [ 25, 20, 5 ]
+
+  Crypt_2500g_Artifact:
+    <<: *CryptBase
+    Amounts: [ 5000 ]
+    Guard:
+      Units: [ Skeleton, WalkingDead, Wight, Vampire ]
+      Amounts: [ 20, 20, 10, 5 ]
+
+  Crypt_5000g_Artifact:
+    <<: *CryptBase
+    Chance: 0.1
+    Amounts: [ 10000 ]
+    Guard:
+      Units: [ Skeleton, WalkingDead, Wight, Vampire ]
+      Amounts: [ 20, 20, 10, 10 ]
+
+  CyclopsStockpile_4x:
+    <<: *CyclopsStockpileBase
+    Amounts: [ 6, 6, 6, 6, 6, 6 ]
+    Guard:
+      Units: [ Cyclops ]
+      Amounts: [ 20 ]
+
+  CyclopsStockpile_6x:
+    <<: *CyclopsStockpileBase
+    Amounts: [ 8, 8, 8, 8, 8, 8 ]
+    Guard:
+      Units: [ Cyclops ]
+      Amounts: [ 30 ]
+
+  CyclopsStockpile_8x:
+    <<: *CyclopsStockpileBase
+    Amounts: [ 10, 10, 10, 10, 10, 10 ]
+    Guard:
+      Units: [ Cyclops ]
+      Amounts: [ 40 ]
+
+  CyclopsStockpile_10x:
+    <<: *CyclopsStockpileBase
+    Amounts: [ 12, 12, 12, 12, 12, 12 ]
+    Guard:
+      Units: [ Cyclops ]
+      Amounts: [ 50 ]
+  
+  DerelictShip_3000g:
+    <<: *DerelictShipBase
+    Chance: 0.3
+    Amounts: [ 3000 ]
+    Guard:
+      Units: [ WaterElemental ]
+      Amounts: [ 20 ]
+
+  DerelictShip_3000g_ArtifactT:
+    <<: *DerelictShipBase
+    Amounts: [ 5000 ]
+    Guard:
+      Units: [ WaterElemental ]
+      Amounts: [ 30 ]
+
+  DerelictShip_4000g_ArtifactT:
+    <<: *DerelictShipBase
+    Amounts: [ 7000 ]
+    Guard:
+      Units: [ WaterElemental ]
+      Amounts: [ 40 ]
+
+  DerelictShip_6000g_ArtifactM:
+    <<: *DerelictShipBase
+    Amounts: [ 9000 ]
+    Guard:
+      Units: [ WaterElemental ]
+      Amounts: [ 60 ]
+  
+  Derrick:
+    Key: Derrick
+    Value: 750
+    RewardType: ResourcesGain
+    IconUrl: "/resources/Campfire.gif"
+    Title: "Derrick"
+    CanDecline: true
+    Resources: [ Gold ]
+    AmountsMin: [ 500 ]
+    AmountsMax: [ 1500 ]
+  
+  DragonFlyHive_30_4Wyverns:
+    <<: *DragonFlyHiveBase
+    Guard:
+      Units: [ DragonFly ]
+      Amounts: [ 30 ]
+    Amounts: [ 6 ]
+
+  DragonFlyHive_45_6Wyverns:
+    <<: *DragonFlyHiveBase
+    Guard:
+      Units: [ DragonFly ]
+      Amounts: [ 45 ]
+    Amounts: [ 8 ]
+
+  DragonFlyHive_60_8Wyverns:
+    <<: *DragonFlyHiveBase
+    Guard:
+      Units: [ DragonFly ]
+      Amounts: [ 60 ]
+    Amounts: [ 10 ]
+
+  DragonFlyHive_90_12Wyverns:
+    <<: *DragonFlyHiveBase
+    Guard:
+      Units: [ DragonFly ]
+      Amounts: [ 90 ]
+    Amounts: [ 15 ]
+  
+  DragonUtopia_20000g:
+    <<: *DragonUtopiaBase
+    Amounts: [ 40000 ]
+    Guard:
+      Units: [ GreenDragon, RedDragon, GoldDragon, BlackDragon ]
+      Amounts: [ 8, 5, 2, 1 ]
+
+  DragonUtopia_30000g:
+    <<: *DragonUtopiaBase
+    Amounts: [ 60000 ]
+    Guard:
+      Units: [ GreenDragon, RedDragon, GoldDragon, BlackDragon ]
+      Amounts: [ 8, 6, 3, 2 ]
+
+  DragonUtopia_40000g:
+    <<: *DragonUtopiaBase
+    Amounts: [ 80000 ]
+    Guard:
+      Units: [ GreenDragon, RedDragon, GoldDragon, BlackDragon ]
+      Amounts: [ 8, 6, 4, 3 ]
+
+  DragonUtopia_50000g:
+    <<: *DragonUtopiaBase
+    Amounts: [ 1000000 ]
+    Guard:
+      Units: [ GreenDragon, RedDragon, GoldDragon, BlackDragon ]
+      Amounts: [ 8, 7, 6, 5 ]
+  
+  DwarvenTreasury_2500g_2Crystal:
+    <<: *DwarvenTreasuryBase
+    Amounts: [ 3000, 3 ]
+    Guard:
+      Units: [ Dwarf ]
+      Amounts: [ 50 ]
+
+  DwarvenTreasury_4000g_3Crystal:
+    <<: *DwarvenTreasuryBase
+    Chance: 0.3
+    Amounts: [ 5000, 5 ]
+    Guard:
+      Units: [ Dwarf ]
+      Amounts: [ 75 ]
+
+  DwarvenTreasury_5000g_5Crystal:
+    <<: *DwarvenTreasuryBase
+    Chance: 0.3
+    Amounts: [ 7500, 7 ]
+    Guard:
+      Units: [ Dwarf ]
+      Amounts: [ 100 ]
+
+  DwarvenTreasury_7500g_10Crystal:
+    <<: *DwarvenTreasuryBase
+    Chance: 0.1
+    Amounts: [ 10000, 10 ]
+    Guard:
+      Units: [ Dwarf ]
+      Amounts: [ 150 ]
+  
+  ExperimentalShop_1Giant:
+    <<: *ExperimentalShopBase
+    Chance: 0.3
+    Guard:
+      Units: [ SteelGolem ]
+      Amounts: [ 25 ]
+    Amounts: [ 1 ]
+
+  ExperimentalShop_2Giants:
+    <<: *ExperimentalShopBase
+    Chance: 0.3
+    Guard:
+      Units: [ SteelGolem ]
+      Amounts: [ 50 ]
+    Amounts: [ 2 ]
+
+  ExperimentalShop_3Giants:
+    <<: *ExperimentalShopBase
+    Guard:
+      Units: [ SteelGolem ]
+      Amounts: [ 75 ]
+    Amounts: [ 3 ]
+
+  ExperimentalShop_4Giants:
+    <<: *ExperimentalShopBase
+    Guard:
+      Units: [ SteelGolem ]
+      Amounts: [ 100 ]
+    Amounts: [ 4 ]
+  
+  Flotsam_1:
+    <<: *FlotsamBase
+    RewardType: None
     
+  Flotsam_2:
+    <<: *FlotsamBase
+    RewardType: ResourcesGain
+    Resources: [ Wood ]
+    Amounts: [ 5 ]
+  
+  Flotsam_3:
+    <<: *FlotsamBase
+    RewardType: ResourcesGain
+    Resources: [ Gold, Wood ]
+    Amounts: [ 200, 5 ]
+  
+  Flotsam_4:
+    <<: *FlotsamBase
+    RewardType: ResourcesGain
+    Resources: [ Gold, Wood ]
+    Amounts: [ 500, 10 ]
+  
+  GriffinConservatory_2Angels:
+    <<: *GriffinConservatoryBase
+    Chance: 0.3
+    Guard:
+      Units: [ Griffin ]
+      Amounts: [ 50 ]
+    Amounts: [ 2 ]
+
+  GriffinConservatory_4Angels:
+    <<: *GriffinConservatoryBase
+    Chance: 0.3
+    Guard:
+      Units: [ Griffin ]
+      Amounts: [ 100 ]
+    Amounts: [ 4 ]
+
+  GriffinConservatory_6Angels:
+    <<: *GriffinConservatoryBase
+    Chance: 0.3
+    Guard:
+      Units: [ Griffin ]
+      Amounts: [ 150 ]
+    Amounts: [ 6 ]
+
+  GriffinConservatory_8Angels:
+    <<: *GriffinConservatoryBase
+    Chance: 0.1
+    Guard:
+      Units: [ Griffin ]
+      Amounts: [ 200 ]
+    Amounts: [ 8 ]
+  
+  ImpCache_1000g_2Mercury:
+    <<: *ImpCacheBase
+    Chance: 0.3
+    Amounts: [ 1000, 2 ]
+    Guard:
+      Units: [ Imp ]
+      Amounts: [ 100 ]
+
+  ImpCache_1500g_3Mercury:
+    <<: *ImpCacheBase
+    Chance: 0.3
+    Amounts: [ 1500, 3 ]
+    Guard:
+      Units: [ Imp ]
+      Amounts: [ 150 ]
+
+  ImpCache_2000g_4Mercury:
+    <<: *ImpCacheBase
+    Chance: 0.3
+    Amounts: [ 2000, 4 ]
+    Guard:
+      Units: [ Imp ]
+      Amounts: [ 200 ]
+
+  ImpCache_3000g_6Mercury:
+    <<: *ImpCacheBase
+    Chance: 0.1
+    Amounts: [ 3000, 6 ]
+    Guard:
+      Units: [ Imp ]
+      Amounts: [ 300 ]
+  
+  IvoryTower_3Enchanters:
+    <<: *IvoryTowerBase
+    Chance: 0.3
+    Guard:
+      Units: [ ArchMage ]
+      Amounts: [ 35 ]
+    Amounts: [ 3 ]
+
+  IvoryTower_6Enchanters:
+    <<: *IvoryTowerBase
+    Chance: 0.3
+    Guard:
+      Units: [ ArchMage ]
+      Amounts: [ 50 ]
+    Amounts: [ 6 ]
+
+  IvoryTower_9Enchanters:
+    <<: *IvoryTowerBase
+    Chance: 0.3
+    Guard:
+      Units: [ ArchMage ]
+      Amounts: [ 65 ]
+    Amounts: [ 9 ]
+
+  IvoryTower_12Enchanters:
+    <<: *IvoryTowerBase
+    Chance: 0.1
+    Guard:
+      Units: [ ArchMage ]
+      Amounts: [ 80 ]
+    Amounts: [ 12 ]
+  
+  Jetsam_1:
+    <<: *JetsamBase
+    RewardType: None
+
+  Jetsam_2:
+    <<: *JetsamBase
+    RewardType: ResourcesGain
+    Resources: [ Stone ]
+    Amounts: [ 5 ]
+
+  Jetsam_3:
+    <<: *JetsamBase
+    RewardType: ResourcesGain
+    Resources: [ Gold, Stone ]
+    Amounts: [ 200, 5 ]
+
+  Jetsam_4:
+    <<: *JetsamBase
+    RewardType: ResourcesGain
+    Resources: [ Gold, Stone ]
+    Amounts: [ 500, 10 ]
+    
+  LeanTo_1:
+    <<: *LeanToBase
+    RewardType: ResourcesGain
+    Resources: [ Stone ]
+  
+  LeanTo_2:
+    <<: *LeanToBase
+    RewardType: ResourcesGain
+    Resources: [ Wood ]
+  
+  LeanTo_3:
+    <<: *LeanToBase
+    RewardType: ResourcesGain
+    Resources: [ Mercury ]
+  
+  LeanTo_4:
+    <<: *LeanToBase
+    RewardType: ResourcesGain
+    Resources: [ Sulfur ]
+    
+  LeanTo_5:
+    <<: *LeanToBase
+    RewardType: ResourcesGain
+    Resources: [ Crystal ]
+    
+  LeanTo_6:
+    <<: *LeanToBase
+    RewardType: ResourcesGain
+    Resources: [ Gems ]
+    
+  Mansion_2500g_2gems:
+    <<: *MansionBase
+    Chance: 0.3
+    Amounts: [ 2500, 1, 1, 1, 2 ]
+    Artifact: true
+    ArtifactClass: "M"
+    Guard:
+      Units: [ VampireLord ]
+      Amounts: [ 40 ]
+
+  Mansion_5000g_3gems:
+    <<: *MansionBase
+    Chance: 0.3
+    Amounts: [ 5000, 1, 1, 1, 3 ]
+    Artifact: true
+    ArtifactClass: "M"
+    Guard:
+      Units: [ VampireLord ]
+      Amounts: [ 60 ]
+
+  Mansion_7500g_4gems:
+    <<: *MansionBase
+    Chance: 0.3
+    Amounts: [ 7500, 1, 1, 1, 4 ]
+    Artifact: true
+    ArtifactClass: "M"
+    Guard:
+      Units: [ VampireLord ]
+      Amounts: [ 80 ]
+
+  Mansion_10000g_5gems:
+    <<: *MansionBase
+    Chance: 0.1
+    Amounts: [ 10000, 1, 1, 1, 5 ]
+    Artifact: true
+    ArtifactClass: "M"
+    Guard:
+      Units: [ VampireLord ]
+      Amounts: [ 100 ]
+  
+  MedusaStores_2000g_5Sulfur:
+    <<: *MedusaStoresBase
+    Chance: 0.3
+    Amounts: [ 2000, 5 ]
+    Guard:
+      Units: [ Medusa ]
+      Amounts: [ 20 ]
+    MedusaQueenChance: 0.5
+
+  MedusaStores_3000g_6Sulfur:
+    <<: *MedusaStoresBase
+    Chance: 0.3
+    Amounts: [ 3000, 6 ]
+    Guard:
+      Units: [ Medusa ]
+      Amounts: [ 30 ]
+    MedusaQueenChance: 0.5
+
+  MedusaStores_4000g_8Sulfur:
+    <<: *MedusaStoresBase
+    Chance: 0.3
+    Amounts: [ 4000, 8 ]
+    Guard:
+      Units: [ Medusa ]
+      Amounts: [ 40 ]
+
+  MedusaStores_5000g_10Sulfur:
+    <<: *MedusaStoresBase
+    Chance: 0.1
+    Amounts: [ 5000, 10 ]
+    Guard:
+      Units: [ Medusa ]
+      Amounts: [ 50 ]
+  
+  NagaBank_4000g_8Gems:
+    <<: *NagaBankBase
+    Chance: 0.3
+    Amounts: [ 4000, 8 ]
+    Guard:
+      Units: [ Naga ]
+      Amounts: [ 10 ]
+
+  NagaBank_6000g_12Gems:
+    <<: *NagaBankBase
+    Chance: 0.3
+    Amounts: [ 6000, 12 ]
+    Guard:
+      Units: [ Naga ]
+      Amounts: [ 15 ]
+
+  NagaBank_8000g_16Gems:
+    <<: *NagaBankBase
+    Chance: 0.3
+    Amounts: [ 8000, 16 ]
+    Guard:
+      Units: [ Naga ]
+      Amounts: [ 20 ]
+
+  NagaBank_12000g_24Gems:
+    <<: *NagaBankBase
+    Chance: 0.1
+    Amounts: [ 12000, 24 ]
+    Guard:
+      Units: [ Naga ]
+      Amounts: [ 30 ]
+  
+#  PirateCavern_1SeaSerpent:
+#    <<: *PirateCavernBase
+#    Chance: 0.3
+#    Guard:
+#      Units: [ Pirate, Corsair ]
+#      Amounts: [ 20, 20 ]
+#    Amounts: [ 1 ]
+#
+#  PirateCavern_2SeaSerpents:
+#    <<: *PirateCavernBase
+#    Chance: 0.3
+#    Guard:
+#      Units: [ Pirate, Corsair ]
+#      Amounts: [ 40, 40 ]
+#    Amounts: [ 2 ]
+#
+#  PirateCavern_3SeaSerpents:
+#    <<: *PirateCavernBase
+#    Chance: 0.3
+#    Guard:
+#      Units: [ Pirate, Corsair ]
+#      Amounts: [ 60, 60 ]
+#    Amounts: [ 3 ]
+#
+#  PirateCavern_4SeaSerpents:
+#    <<: *PirateCavernBase
+#    Chance: 0.1
+#    Guard:
+#      Units: [ Pirate, Corsair ]
+#      Amounts: [ 80, 80 ]
+#    Amounts: [ 4 ]
+  
+  MysticalGarden_1:
+    <<: *MysticalGardenBase
+    RewardType: ResourcesGain
+    Resources: [ Gold ]
+    Amounts: [ 700 ]
+  
+  MysticalGarden_2:
+    <<: *MysticalGardenBase
+    RewardType: ResourcesGain
+    Resources: [ Gems ]
+    Amounts: [ 7 ]
