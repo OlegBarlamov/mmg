@@ -21,6 +21,7 @@ namespace Epic.Server
                  .AddComponent<InitializeResourcesScript>()
                  .AddComponent<InitializeUnitsScript>()
                  .AddComponent<InitializeRewardDefinitionsScript>()
+                 .AddComponent<InitializeGameModesScript>()
                  .AddComponent<DebugStartupScript>()
                  .Construct()
                  .Asp();

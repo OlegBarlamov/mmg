@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
@@ -42,6 +43,7 @@ namespace Epic.Logic.Generator
         public IRewardDefinitionsService RewardDefinitionsService { get; }
         public IRewardDefinitionsRegistry RewardDefinitionsRegistry { get; }
         public GlobalUnitsForBattleGenerator GlobalUnitsForBattleGenerator { get; }
+        public IGameModeProvider GameModeProvider { get; }
 
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
         
@@ -58,7 +60,8 @@ namespace Epic.Logic.Generator
             [NotNull] IUnitTypesRegistry unitTypesRegistry,
             [NotNull] IRewardDefinitionsService rewardDefinitionsService,
             [NotNull] IRewardDefinitionsRegistry rewardDefinitionsRegistry,
-            [NotNull] GlobalUnitsForBattleGenerator globalUnitsForBattleGenerator)
+            [NotNull] GlobalUnitsForBattleGenerator globalUnitsForBattleGenerator,
+            [NotNull] IGameModeProvider gameModeProvider)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -73,17 +76,20 @@ namespace Epic.Logic.Generator
             RewardDefinitionsService = rewardDefinitionsService ?? throw new ArgumentNullException(nameof(rewardDefinitionsService));
             RewardDefinitionsRegistry = rewardDefinitionsRegistry ?? throw new ArgumentNullException(nameof(rewardDefinitionsRegistry));
             GlobalUnitsForBattleGenerator = globalUnitsForBattleGenerator ?? throw new ArgumentNullException(nameof(globalUnitsForBattleGenerator));
+            GameModeProvider = gameModeProvider ?? throw new ArgumentNullException(nameof(gameModeProvider));
         }
 
         public async Task GenerateSingle(Guid playerId, int day)
         {
-            var rewardFactor = 1;
+            var gameMode = GameModeProvider.GetGameMode();
+            var gameStage = gameMode.Stages[0];
+            var rewardFactor = gameStage.RewardsFactor;
             
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
             var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;
             var resources = ResourcesRegistry.GetAll();
             var player = await PlayersService.GetById(playerId);
-            var difficulty = DifficultyMarker.GenerateFromDay(_random, day);
+            var difficulty = DifficultyMarker.GenerateFromDay(_random, gameStage, day);
             
             Logger.LogInformation($"Generated Difficulty day {day}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
 
@@ -153,7 +159,7 @@ namespace Epic.Logic.Generator
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.ResourcesGain,
-                    Amounts = new[] { goldAmount * rewardFactor },
+                    Amounts = new[] { (int)(goldAmount * rewardFactor) },
                     CanDecline = true,
                     GuardBattleDefinitionId = null,
                     IconUrl = null,
@@ -180,7 +186,7 @@ namespace Epic.Logic.Generator
                     resourceAmount = RoundToFriendlyNumber(resourceAmount);
                     
                     resourceTypes.Add(resourceType);
-                    resourcesAmounts.Add(resourceAmount * rewardFactor);
+                    resourcesAmounts.Add((int)(resourceAmount * rewardFactor));
                 }
                 
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
@@ -218,7 +224,7 @@ namespace Epic.Logic.Generator
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.UnitsGain,
-                    Amounts = new[] { unitsGainAmount * rewardFactor },
+                    Amounts = new[] { (int)(unitsGainAmount * rewardFactor) },
                     CanDecline = true,
                     GuardBattleDefinitionId = null,
                     IconUrl = null,
@@ -268,7 +274,7 @@ namespace Epic.Logic.Generator
                 var rewardFields = new MutableRewardFields
                 {
                     RewardType = isUpgrade ? RewardType.UnitsToUpgrade : RewardType.UnitsToBuy,
-                    Amounts = isUpgrade ? new[] { 0 } : new[] { unitToBuy.ToTrainAmount * rewardFactor },
+                    Amounts = isUpgrade ? new[] { 0 } : new[] { (int)(unitToBuy.ToTrainAmount * rewardFactor) },
                     Message = isUpgrade ? "You can upgrade units now" : "You can train units now",
                     CanDecline = true,
                     GuardBattleDefinitionId = null,
@@ -335,7 +341,7 @@ namespace Epic.Logic.Generator
                         resourceAmount = RoundToFriendlyNumber(resourceAmount);
                     
                         resourceTypes.Add(resourceType);
-                        resourcesAmounts.Add(resourceAmount * rewardFactor);
+                        resourcesAmounts.Add((int)(resourceAmount * rewardFactor));
                     }
                 
                     await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Epic.Core.Services.GameResources;
 using Epic.Data.GameResources;
 using FrameworkSDK;
 using JetBrains.Annotations;
-using YamlDotNet.Serialization;
 
 namespace Epic.Server
 {
@@ -38,10 +36,9 @@ namespace Epic.Server
                 "Gold", 
                 "https://heroes.thelazy.net//images/9/9f/Gold_%28leather%29.gif", 
                 1);
-            
-            var yaml = await File.ReadAllTextAsync("Configs/resources.yaml");
-            var deserializer = new DeserializerBuilder().Build();
-            var dict = deserializer.Deserialize<Dictionary<string, MutableGameResourceEntity>>(yaml);
+
+            var dict = YamlConfigParser<Dictionary<string, MutableGameResourceEntity>>
+                .Parse("Configs/resources.yaml");
 
             await GameResourcesRepository.Create(dict.Select(x =>
             {

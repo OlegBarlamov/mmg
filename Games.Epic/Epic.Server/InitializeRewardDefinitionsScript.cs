@@ -84,13 +84,8 @@ public class InitializeRewardDefinitionsScript : IAppComponent
 
     private async Task ProcessAsync()
     {
-        using var file = File.OpenText("Configs/rewards.yaml");
-            
-        var deserializer = new DeserializerBuilder()
-            .IgnoreUnmatchedProperties()
-            .Build();
-                
-        var config = deserializer.Deserialize<RewardDefinitionsConfig>(new MergingParser(new Parser(file)));
+        var config = YamlConfigParser<RewardDefinitionsConfig>
+            .Parse("Configs/rewards.yaml");
 
         var rewardDefinitionFields = config.Rewards.Select(keyValue =>
         {

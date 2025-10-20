@@ -37,7 +37,7 @@ namespace Epic.Logic.Rewards
             GlobalUnitsForBattleGenerator = globalUnitsForBattleGenerator ?? throw new ArgumentNullException(nameof(globalUnitsForBattleGenerator));
         }
         
-        public async Task<IRewardEntity[]> CreateRewardsFromDefinition(IRewardDefinitionEntity rewardDefinitionEntity, Guid battleDefinitionId, int rewardFactor)
+        public async Task<IRewardEntity[]> CreateRewardsFromDefinition(IRewardDefinitionEntity rewardDefinitionEntity, Guid battleDefinitionId, double rewardFactor)
         {
             var amounts = rewardDefinitionEntity.MaxAmounts.Select((x,i) => 
                 _random.Next(rewardDefinitionEntity.MinAmounts[i], rewardDefinitionEntity.MaxAmounts[i]))
@@ -46,7 +46,7 @@ namespace Epic.Logic.Rewards
             if (rewardDefinitionEntity.RewardType == RewardType.ResourcesGain)
                 amounts = amounts.Select(BattleGenerator.RoundToFriendlyNumber).ToArray();
             
-            amounts = amounts.Select(x => x * rewardFactor).ToArray();
+            amounts = amounts.Select(x => (int)(x * rewardFactor)).ToArray();
 
             IBattleDefinitionObject guardBattleDefinition = null;
             if (rewardDefinitionEntity.GuardUnitTypeIds.Length > 0)

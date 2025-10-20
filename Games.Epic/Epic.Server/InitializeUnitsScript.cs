@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,8 +7,6 @@ using Epic.Core.Services.UnitTypes;
 using Epic.Data.UnitTypes;
 using FrameworkSDK;
 using JetBrains.Annotations;
-using YamlDotNet.Core;
-using YamlDotNet.Serialization;
 
 namespace Epic.Server
 {
@@ -46,13 +43,8 @@ namespace Epic.Server
 
         private async Task ProcessAsync()
         {
-            using var file = File.OpenText("Configs/units.yaml");
-            
-            var deserializer = new DeserializerBuilder()
-                .IgnoreUnmatchedProperties()
-                .Build();
-                
-            var config = deserializer.Deserialize<UnitsConfig>(new MergingParser(new Parser(file)));
+            var config = YamlConfigParser<UnitsConfig>
+                .Parse("Configs/units.yaml");
             
             var createdUnits = await UnitTypesRepository.CreateBatch(config.Units.Select(x =>
             {

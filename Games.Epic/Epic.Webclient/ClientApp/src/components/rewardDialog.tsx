@@ -587,7 +587,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
             case RewardType.None:
                 return (
                     <div className="reward-content">
-                        <div className="reward-message">{reward.message}</div>
+                        <div className="reward-message">{reward.message || "Nothing here unfortunately"}</div>
                         {this.state.errorMessage && (
                             <div className="error-message">
                                 {this.state.errorMessage}

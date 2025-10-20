@@ -7,6 +7,6 @@ namespace Epic.Core.Services.RewardDefinitions
 {
     public interface IRewardDefinitionsService
     {
-        Task<IRewardEntity[]> CreateRewardsFromDefinition(IRewardDefinitionEntity rewardDefinitionEntity, Guid battleDefinitionId, int rewardFactor); 
+        Task<IRewardEntity[]> CreateRewardsFromDefinition(IRewardDefinitionEntity rewardDefinitionEntity, Guid battleDefinitionId, double rewardFactor); 
     }
 }

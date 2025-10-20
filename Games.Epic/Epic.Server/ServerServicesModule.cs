@@ -83,6 +83,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleObstaclesService, DefaultBattleObstaclesService>();
             serviceRegistrator.RegisterType<DefaultRewardDefinitionsRegistry, DefaultRewardDefinitionsRegistry>();
             serviceRegistrator.RegisterFactory<IRewardDefinitionsRegistry>((locator, _) => locator.Resolve<DefaultRewardDefinitionsRegistry>());
+            serviceRegistrator.RegisterType<FixedGameModeProvider, FixedGameModeProvider>();
+            serviceRegistrator.RegisterFactory<IGameModeProvider>((locator, _) => locator.Resolve<FixedGameModeProvider>());
             
             serviceRegistrator.RegisterType<ISessionsRepository, InMemorySessionsRepository>();
             serviceRegistrator.RegisterType<IUsersRepository, InMemoryUsersRepository>();

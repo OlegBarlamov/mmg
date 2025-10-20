@@ -5,12 +5,9 @@ Tech:
 - Have real DB based on profile
 
 Product:
-- Show tooltips for rewards
 - Show hero stats in battle
-- Battle map obstacles
 - In battle special abilities
 - Choose in battle attack type
-- Objects rewards
 - Proper login/logout, new game
 - Game types (long, battle etc)
 - More complex multi step battles

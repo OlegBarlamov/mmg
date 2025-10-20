@@ -1,4 +1,5 @@
 using System;
+using Epic.Core.Logic;
 using Epic.Logic.Utils;
 using NetExtensions.Helpers;
 
@@ -11,12 +12,12 @@ namespace Epic.Logic.Generator
         public int TargetDifficulty { get; private set; }
         public int IdealDifficulty { get; private set; }
 
-        public static DifficultyMarker GenerateFromDay(Random random, int day)
+        public static DifficultyMarker GenerateFromDay(Random random, IGameModeStage stage, int day)
         {
-            var difficultyFactor = 1;
+            var difficultyFactor = stage.DifficultyFactor;
             
-            var minDifficulty = 2 * difficultyFactor * MathExtended.Sqr(day) + 100;
-            var maxDifficulty = 20 * difficultyFactor * MathExtended.Sqr(day) + 1000;
+            var minDifficulty = stage.MinDifficultyFactor * difficultyFactor * MathExtended.Sqr(day) + stage.StartMinDifficulty;
+            var maxDifficulty = stage.MaxDifficultyFactor * difficultyFactor * MathExtended.Sqr(day) + stage.StartMaxDifficulty;
             
             var range = maxDifficulty - minDifficulty;
             
@@ -24,7 +25,7 @@ namespace Epic.Logic.Generator
             var normalizedWideMean = 1.0 / 2.0;
             var narrowStd = 0.2; // how chaotic the output
             var wideStd = 0.6;
-            var wideStdChance = 0.1;
+            var wideStdChance = (double)stage.WideStdChance / 100;
             
             var isWideStd = random.NextDouble() < wideStdChance;
             
