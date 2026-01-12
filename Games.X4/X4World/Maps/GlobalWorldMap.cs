@@ -39,7 +39,7 @@ namespace X4World.Maps
             if (!Cells.ContainsKey(point))
             {
                 // TODO multithreading??
-                var mapDataPoint = new Point3D(point.X + MapData.GetLength(0) / 2, point.Y + MapData.GetLength(1) / 2, point.Z + + MapData.GetLength(2) / 2);
+                var mapDataPoint = new Point3D(point.X + MapData.GetLength(0) / 2, point.Y + MapData.GetLength(1) / 2, point.Z + MapData.GetLength(2) / 2);
 
                 byte cellData = 0;
                 if (mapDataPoint.X >= 0 && mapDataPoint.X < MapData.GetLength(0) &&

@@ -1,4 +1,4 @@
-Active: "Classic"
+Active: "Days_PVP"
 
 Modes:
   - Name: "Classic"
@@ -12,10 +12,9 @@ Modes:
         StartMaxDifficulty: 1000
         PvpBattles: false
         BattlesLimit: 0
-        GoldenBattles: false
-        GoldenBattlesLimit: 0
         DaysLimit: 0
         WideStdChance: 10
+        BattlesCountFactor: 0.5
   
   - Name: "Days_PVP"
     SynchronizedPlayers: false
@@ -24,14 +23,13 @@ Modes:
         DifficultyFactor: 1
         MinDifficultyFactor: 2
         StartMinDifficulty: 100
-        MaxDifficultyFactor: 20
-        StartMaxDifficulty: 1000
+        MaxDifficultyFactor: 100
+        StartMaxDifficulty: 500
         PvpBattles: false
         BattlesLimit: 0
-        GoldenBattles: false
-        GoldenBattlesLimit: 0
-        DaysLimit: 20
-        WideStdChance: 10
+        DaysLimit: 30
+        WideStdChance: 15
+        BattlesCountFactor: 3
 
   - Name: "Jebus"
     SynchronizedPlayers: true
@@ -44,8 +42,6 @@ Modes:
         StartMaxDifficulty: 500
         PvpBattles: false
         BattlesLimit: 30
-        GoldenBattles: true
-        GoldenBattlesLimit: 1
         DaysLimit: 20
         WideStdChance: 10
       - RewardsFactor: 4
@@ -56,7 +52,5 @@ Modes:
         StartMaxDifficulty: 2000
         PvpBattles: true
         BattlesLimit: 0
-        GoldenBattles: false
-        GoldenBattlesLimit: 0
         DaysLimit: 0
         WideStdChance: 10

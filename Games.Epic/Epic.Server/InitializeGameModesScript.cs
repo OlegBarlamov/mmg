@@ -30,10 +30,9 @@ internal class GameModesConfigDeclaration
         
         public bool PvpBattles { get; set; } = false;
         public int BattlesLimit { get; set; } = 0;
-        public bool GoldenBattles { get; set; } = false;
-        public int GoldenBattlesLimit { get; set; } = 0;
         public int DaysLimit { get; set; } = 0;
         public int WideStdChance { get; set; } = 0;
+        public double BattlesCountFactor { get; set; } = 1;
     }
     
     public string Active { get; set; }

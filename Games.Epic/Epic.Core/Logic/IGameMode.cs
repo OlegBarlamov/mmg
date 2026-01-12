@@ -16,9 +16,8 @@ namespace Epic.Core.Logic
         int StartMaxDifficulty { get; }
         bool PvpBattles { get; }
         int BattlesLimit { get; }
-        bool GoldenBattles { get; }
-        int GoldenBattlesLimit { get; }
         int DaysLimit { get; }
         int WideStdChance { get; }
+        double BattlesCountFactor { get; }
     }
 }

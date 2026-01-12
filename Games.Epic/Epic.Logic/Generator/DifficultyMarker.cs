@@ -22,7 +22,7 @@ namespace Epic.Logic.Generator
             var range = maxDifficulty - minDifficulty;
             
             var normalizedMean = 1.0 / 4.0; // Bias toward lower part
-            var normalizedWideMean = 1.0 / 2.0;
+            var normalizedWideMean = 1.25 / 2.0;
             var narrowStd = 0.2; // how chaotic the output
             var wideStd = 0.6;
             var wideStdChance = (double)stage.WideStdChance / 100;

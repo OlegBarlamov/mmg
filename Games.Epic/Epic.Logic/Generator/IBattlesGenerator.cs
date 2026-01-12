@@ -12,12 +12,10 @@ using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
 using Epic.Data.GlobalUnits;
 using Epic.Data.Reward;
-using Epic.Data.RewardDefinitions;
 using Epic.Data.UnitTypes;
 using Epic.Logic.Utils;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NetExtensions.Collections;
 
 namespace Epic.Logic.Generator
 {
@@ -360,7 +358,10 @@ namespace Epic.Logic.Generator
 
         public async Task Generate(Guid playerId, int day, int currentBattlesCount)
         {
-            int count = currentBattlesCount <= Math.Max(5, day / 2) ? _random.Next(3, 7) : _random.Next(1, 4);
+            var gameMode = GameModeProvider.GetGameMode();
+            var gameStage = gameMode.Stages[0];
+            
+            int count = currentBattlesCount <= Math.Max(7, day * gameStage.BattlesCountFactor) ? _random.Next(3, 7) : _random.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
                 await GenerateSingle(playerId, day);
