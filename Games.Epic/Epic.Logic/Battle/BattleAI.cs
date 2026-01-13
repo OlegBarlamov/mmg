@@ -94,7 +94,10 @@ namespace Epic.Logic.Battle
             int maxAttackIndex = -1;
             var maxDamage = 0;
             var maxKilled = 0;
-            for (var index = 0; index < possibleAttacksWithTargets.Count; index++)
+            // Iterate in reverse order so that when damage/kills are equal, attacks that appear earlier 
+            // in the list (earlier attack types) are checked later and overwrite the selection, 
+            // giving priority to earlier attack types in the unit's attack list.
+            for (var index = possibleAttacksWithTargets.Count - 1; index >= 0; index--)
             {
                 var attacksWithTarget = possibleAttacksWithTargets[index];
                 var potentialDamage = UnitTakesDamageData.FromUnitAndTarget(
