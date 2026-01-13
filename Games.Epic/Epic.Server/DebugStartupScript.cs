@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
@@ -36,6 +38,7 @@ namespace Epic.Server
         [NotNull] public ISessionsRepository SessionsRepository { get; }
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         [NotNull] public IUnitTypesRepository UnitTypesRepository { get; set; }
+        [NotNull] public IGameModeProvider GameModeProvider { get; }
         
         public DebugStartupScript(
             [NotNull] IUsersRepository usersRepository,
@@ -50,7 +53,8 @@ namespace Epic.Server
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IHeroesService heroesService,
             [NotNull] IGameResourcesRepository resourcesRepository,
-            [NotNull] IBattlesGenerator battlesGenerator)
+            [NotNull] IBattlesGenerator battlesGenerator,
+            [NotNull] IGameModeProvider gameModeProvider)
         {
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
@@ -65,6 +69,7 @@ namespace Epic.Server
             SessionsRepository = sessionsRepository ?? throw new ArgumentNullException(nameof(sessionsRepository));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
             UnitTypesRepository = unitTypesRepository ?? throw new ArgumentNullException(nameof(unitTypesRepository));
+            GameModeProvider = gameModeProvider ?? throw new ArgumentNullException(nameof(gameModeProvider));
         }
         
         public void Dispose()
@@ -73,9 +78,9 @@ namespace Epic.Server
 
         public async void Configure()
         {
-            var pickerUnitType = await UnitTypesRepository.GetByName("Pikeman");
-            var archerUnitType = await UnitTypesRepository.GetByName("Archer");
-            var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
+            // Get initial army score from active game mode (already loaded in GameModeProvider)
+            var gameMode = GameModeProvider.GetGameMode();
+            var targetScore = gameMode.InitialArmyScore;
             
             var user = await UsersRepository.CreateUserAsync("admin",
                 BasicAuthentication.GetHashFromCredentials("admin", "123"));
@@ -105,12 +110,23 @@ namespace Epic.Server
             var hero1 = await HeroesService.CreateNew(user1Player.Name, user1Player.Id);
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
             
-            await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero.ArmyContainerId, true, 0);
-            await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero.ArmyContainerId, true, 1);
-            //await GlobalUnitsRepository.Create(archangelUnitType.Id, 3, hero.ArmyContainerId, true, 2);
+            // Generate random presets for both heroes
+            var preset1 = await GenerateRandomPreset(targetScore);
+            var preset2 = await GenerateRandomPreset(targetScore);
             
-            await GlobalUnitsRepository.Create(pickerUnitType.Id, 10, hero1.ArmyContainerId, true, 0);
-            await GlobalUnitsRepository.Create(archerUnitType.Id, 6, hero1.ArmyContainerId, true, 1);
+            int slot = 0;
+            foreach (var (unitType, count) in preset1)
+            {
+                await GlobalUnitsRepository.Create(unitType.Id, count, hero.ArmyContainerId, true, slot);
+                slot++;
+            }
+            
+            slot = 0;
+            foreach (var (unitType, count) in preset2)
+            {
+                await GlobalUnitsRepository.Create(unitType.Id, count, hero1.ArmyContainerId, true, slot);
+                slot++;
+            }
 
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
@@ -128,6 +144,171 @@ namespace Epic.Server
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
         }
+
+        private async Task<List<(IUnitTypeEntity UnitType, int Count)>> GenerateRandomPreset(int targetScore)
+        {
+            var allUnits = await UnitTypesRepository.GetAll();
+            
+            // Filter to only trainable units (exclude upgrades)
+            var trainableUnits = allUnits.Where(u => u.ToTrainAmount > 0).ToList();
+            
+            // Group units by fraction
+            var unitsByFraction = GroupUnitsByFraction(trainableUnits);
+            
+            // Get available fractions
+            var fractions = unitsByFraction.Keys.ToList();
+            if (fractions.Count == 0)
+            {
+                throw new InvalidOperationException("No units found in any fraction");
+            }
+            
+            var random = new Random();
+            var preset = new List<(IUnitTypeEntity UnitType, int Count)>();
+            
+            // Select a single random fraction - all units will be from this fraction
+            var selectedFraction = fractions[random.Next(fractions.Count)];
+            var fractionUnits = unitsByFraction[selectedFraction];
+            
+            if (fractionUnits.Count == 0)
+            {
+                throw new InvalidOperationException($"No units found in fraction: {selectedFraction}");
+            }
+            
+            var currentScore = 0;
+            
+            // Allow some tolerance in score (within 10% of target)
+            const double tolerance = 0.1;
+            var minScore = (int)(targetScore * (1 - tolerance));
+            var maxScore = (int)(targetScore * (1 + tolerance));
+            
+            // Select units only from the chosen fraction
+            int attempts = 0;
+            const int maxAttempts = 1000;
+            
+            while (currentScore < minScore && attempts < maxAttempts)
+            {
+                attempts++;
+                
+                if (fractionUnits.Count == 0)
+                    break;
+                
+                var selectedUnit = fractionUnits[random.Next(fractionUnits.Count)];
+                var unitValue = selectedUnit.Value;
+                
+                // Calculate how many of this unit we can add without exceeding maxScore
+                var remainingScore = maxScore - currentScore;
+                if (remainingScore < unitValue)
+                    continue;
+                
+                // Add 1-5 units of this type (or as many as we can fit)
+                var maxCount = Math.Min(5, remainingScore / unitValue);
+                if (maxCount < 1)
+                    continue;
+                
+                var count = random.Next(1, maxCount + 1);
+                var addedScore = unitValue * count;
+                
+                if (currentScore + addedScore <= maxScore)
+                {
+                    preset.Add((selectedUnit, count));
+                    currentScore += addedScore;
+                }
+            }
+            
+            // If we're still below minScore, try to add more units from the same fraction
+            if (currentScore < minScore)
+            {
+                // Try adding smaller units to reach the target (only from the selected fraction)
+                var availableUnits = fractionUnits.OrderBy(u => u.Value).ToList();
+                    
+                foreach (var unit in availableUnits)
+                {
+                    if (currentScore >= minScore)
+                        break;
+                    
+                    var remainingScore = maxScore - currentScore;
+                    if (remainingScore < unit.Value)
+                        continue;
+                    
+                    var maxCount = Math.Min(3, remainingScore / unit.Value);
+                    if (maxCount < 1)
+                        continue;
+                    
+                    var count = random.Next(1, maxCount + 1);
+                    var addedScore = unit.Value * count;
+                    
+                    if (currentScore + addedScore <= maxScore)
+                    {
+                        preset.Add((unit, count));
+                        currentScore += addedScore;
+                    }
+                }
+            }
+            
+            return preset;
+        }
+        
+        private Dictionary<string, List<IUnitTypeEntity>> GroupUnitsByFraction(List<IUnitTypeEntity> units)
+        {
+            var fractionMapping = GetFractionMapping();
+            var result = new Dictionary<string, List<IUnitTypeEntity>>();
+            
+            foreach (var unit in units)
+            {
+                var fraction = GetUnitFraction(unit.Key, fractionMapping);
+                if (fraction == null)
+                    continue; // Skip units that don't belong to any known fraction (only tiers 1-3 are in the mapping)
+                
+                if (!result.ContainsKey(fraction))
+                {
+                    result[fraction] = new List<IUnitTypeEntity>();
+                }
+                
+                result[fraction].Add(unit);
+            }
+            
+            return result;
+        }
+        
+        private Dictionary<string, string> GetFractionMapping()
+        {
+            // Map unit keys to their fractions - only tiers 1-3 are included
+            return new Dictionary<string, string>
+            {
+                // Castle (tiers 1-3)
+                { "Pikeman", "Castle" }, { "Archer", "Castle" }, { "Griffin", "Castle" },
+                
+                // Necropolis (tiers 1-3)
+                { "Skeleton", "Necropolis" }, { "WalkingDead", "Necropolis" }, { "Wight", "Necropolis" },
+                
+                // Rampart (tiers 1-3)
+                { "Centaur", "Rampart" }, { "Dwarf", "Rampart" }, { "WoodElf", "Rampart" },
+                
+                // Tower (tiers 1-3)
+                { "Gremlin", "Tower" }, { "StoneGargoyle", "Tower" }, { "StoneGolem", "Tower" },
+                
+                // Inferno (tiers 1-3)
+                { "Imp", "Inferno" }, { "Gog", "Inferno" }, { "HellHound", "Inferno" },
+                
+                // Dungeon (tiers 1-3)
+                { "Troglodyte", "Dungeon" }, { "Harpy", "Dungeon" }, { "Beholder", "Dungeon" },
+                
+                // Stronghold (tiers 1-3)
+                { "Goblin", "Stronghold" }, { "WolfRider", "Stronghold" }, { "Orc", "Stronghold" },
+                
+                // Fortress (tiers 1-3)
+                { "Gnoll", "Fortress" }, { "Lizardman", "Fortress" }, { "SerpentFly", "Fortress" },
+                
+                // Conflux (tiers 1-3)
+                { "Pixie", "Conflux" }, { "AirElemental", "Conflux" }, { "WaterElemental", "Conflux" }
+            };
+        }
+        
+        private string GetUnitFraction(string unitKey, Dictionary<string, string> fractionMapping)
+        {
+            return fractionMapping.TryGetValue(unitKey, out var fraction) ? fraction : null;
+        }
+        
 
         private class SessionData : ISessionData
         {

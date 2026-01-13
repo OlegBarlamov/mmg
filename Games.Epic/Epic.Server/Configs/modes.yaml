@@ -3,6 +3,7 @@ Active: "Days_PVP"
 Modes:
   - Name: "Classic"
     SynchronizedPlayers: false
+    InitialArmyScore: 1200
     Stages: 
       - RewardsFactor: 1
         DifficultyFactor: 1
@@ -18,6 +19,7 @@ Modes:
   
   - Name: "Days_PVP"
     SynchronizedPlayers: false
+    InitialArmyScore: 1200
     Stages:
       - RewardsFactor: 3
         DifficultyFactor: 1
@@ -33,6 +35,7 @@ Modes:
 
   - Name: "Jebus"
     SynchronizedPlayers: true
+    InitialArmyScore: 1200
     Stages:
       - RewardsFactor: 3
         DifficultyFactor: 1

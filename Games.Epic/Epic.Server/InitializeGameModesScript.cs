@@ -13,6 +13,7 @@ internal class GameModesConfigDeclaration
         public string Name { get; set; }
 
         public bool SynchronizedPlayers { get; set; } = false;
+        public int InitialArmyScore { get; set; } = 1200;
         public GameModeStageDeclaration[] Stages { get; set; } = Array.Empty<GameModeStageDeclaration>();
         
         IGameModeStage[] IGameMode.Stages => Stages;

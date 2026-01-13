@@ -4,6 +4,7 @@ namespace Epic.Core.Logic
     {
         bool SynchronizedPlayers { get; }
         IGameModeStage[] Stages { get; }
+        int InitialArmyScore { get; }
     }
 
     public interface IGameModeStage
