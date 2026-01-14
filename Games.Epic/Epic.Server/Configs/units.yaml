@@ -2610,3 +2610,820 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 14
         MaxDamage: 14
+
+  # Cove
+  Nymph:
+    Name: "Nymph"
+    BattleImgUrl: "/resources/Nymph_portrait.png"
+    DashboardImgUrl: "/resources/Nymph_portrait.png"
+    Value: 35
+    Speed: 6
+    Health: 4
+    Attack: 5
+    Defense: 2
+    ToTrainAmount: 32
+    Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  Oceanid:
+    Name: "Oceanid"
+    BattleImgUrl: "/resources/Oceanid_portrait.png"
+    DashboardImgUrl: "/resources/Oceanid_portrait.png"
+    Value: 45
+    Speed: 8
+    Health: 4
+    Attack: 6
+    Defense: 2
+    ToTrainAmount: 0
+    Movement: Fly
+    UpgradeOf:
+      - Nymph
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 3
+
+  CrewMate:
+    Name: "Crew Mate"
+    BattleImgUrl: "/resources/Crew_Mate_portrait.png"
+    DashboardImgUrl: "/resources/Crew_Mate_portrait.png"
+    Value: 110
+    Speed: 5
+    Health: 15
+    Attack: 7
+    Defense: 4
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 2
+        MaxDamage: 4
+
+  Seaman:
+    Name: "Seaman"
+    BattleImgUrl: "/resources/Seaman_portrait.png"
+    DashboardImgUrl: "/resources/Seaman_portrait.png"
+    Value: 140
+    Speed: 6
+    Health: 15
+    Attack: 8
+    Defense: 6
+    ToTrainAmount: 0
+    UpgradeOf:
+      - CrewMate
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 4
+
+  Pirate:
+    Name: "Pirate"
+    BattleImgUrl: "/resources/Pirate_portrait.png"
+    DashboardImgUrl: "/resources/Pirate_portrait.png"
+    Value: 225
+    Speed: 6
+    Health: 15
+    Attack: 8
+    Defense: 6
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 7
+        AttacksCount: 4
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 7
+
+  Corsair:
+    Name: "Corsair"
+    BattleImgUrl: "/resources/Corsair_portrait.png"
+    DashboardImgUrl: "/resources/Corsair_portrait.png"
+    Value: 275
+    Speed: 7
+    Health: 15
+    Attack: 10
+    Defense: 8
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Pirate
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 7
+        AttacksCount: 4
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 7
+
+  SeaDog:
+    Name: "Sea Dog"
+    BattleImgUrl: "/resources/Sea_Dog_portrait.png"
+    DashboardImgUrl: "/resources/Sea_Dog_portrait.png"
+    Value: 375
+    Speed: 8
+    Health: 15
+    Attack: 12
+    Defense: 11
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Pirate
+      - Corsair
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 3
+        MaxDamage: 7
+        AttacksCount: 4
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 7
+
+  Stormbird:
+    Name: "Stormbird"
+    BattleImgUrl: "/resources/Stormbird_portrait.png"
+    DashboardImgUrl: "/resources/Stormbird_portrait.png"
+    Value: 275
+    Speed: 9
+    Health: 30
+    Attack: 10
+    Defense: 8
+    ToTrainAmount: 8
+    Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 9
+
+  Ayssid:
+    Name: "Ayssid"
+    BattleImgUrl: "/resources/Ayssid_portrait.png"
+    DashboardImgUrl: "/resources/Ayssid_portrait.png"
+    Value: 325
+    Speed: 11
+    Health: 30
+    Attack: 11
+    Defense: 8
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Stormbird
+    Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 6
+        MaxDamage: 10
+
+  SeaWitch:
+    Name: "Sea Witch"
+    BattleImgUrl: "/resources/Sea_Witch_portrait.png"
+    DashboardImgUrl: "/resources/Sea_Witch_portrait.png"
+    Value: 515
+    Speed: 6
+    Health: 35
+    Attack: 12
+    Defense: 7
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 10
+        MaxDamage: 14
+        AttacksCount: 12
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 7
+
+  Sorceress:
+    Name: "Sorceress"
+    BattleImgUrl: "/resources/Sorceress_portrait.png"
+    DashboardImgUrl: "/resources/Sorceress_portrait.png"
+    Value: 565
+    Speed: 7
+    Health: 35
+    Attack: 12
+    Defense: 9
+    ToTrainAmount: 0
+    UpgradeOf:
+      - SeaWitch
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 10
+        MaxDamage: 16
+        AttacksCount: 12
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 8
+
+  Nix:
+    Name: "Nix"
+    BattleImgUrl: "/resources/Nix_portrait.png"
+    DashboardImgUrl: "/resources/Nix_portrait.png"
+    Value: 1000
+    Speed: 6
+    Health: 80
+    Attack: 13
+    Defense: 16
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 18
+        MaxDamage: 22
+    ResourcesDistribution:
+      Gold: 3
+      Wood: 1
+
+  NixWarrior:
+    Name: "Nix Warrior"
+    BattleImgUrl: "/resources/Nix_Warrior_portrait.png"
+    DashboardImgUrl: "/resources/Nix_Warrior_portrait.png"
+    Value: 1700
+    Speed: 7
+    Health: 90
+    Attack: 14
+    Defense: 17
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Nix
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 18
+        MaxDamage: 22
+    ResourcesDistribution:
+      Gold: 3
+      Crystal: 1
+
+  SeaSerpent:
+    Name: "Sea Serpent"
+    BattleImgUrl: "/resources/Sea_Serpent_portrait.png"
+    DashboardImgUrl: "/resources/Sea_Serpent_portrait.png"
+    Value: 4700
+    Speed: 9
+    Health: 180
+    Attack: 22
+    Defense: 16
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 55
+    ResourcesDistribution:
+      Gold: 5
+      Mercury: 1
+
+  Haspid:
+    Name: "Haspid"
+    BattleImgUrl: "/resources/Haspid_portrait.png"
+    DashboardImgUrl: "/resources/Haspid_portrait.png"
+    Value: 9000
+    Speed: 12
+    Health: 300
+    Attack: 29
+    Defense: 20
+    ToTrainAmount: 0
+    UpgradeOf:
+      - SeaSerpent
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 30
+        MaxDamage: 55
+    ResourcesDistribution:
+      Gold: 5
+      Mercury: 1
+
+  # Factory
+  Halfling:
+    Name: "Halfling"
+    BattleImgUrl: "/resources/Halfling_portrait.png"
+    DashboardImgUrl: "/resources/Halfling_portrait.png"
+    Value: 40
+    Speed: 5
+    Health: 4
+    Attack: 4
+    Defense: 2
+    ToTrainAmount: 30
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 1
+        MaxDamage: 3
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  HalflingGrenadier:
+    Name: "Halfling Grenadier"
+    BattleImgUrl: "/resources/Halfling_Grenadier_portrait.png"
+    DashboardImgUrl: "/resources/Halfling_Grenadier_portrait.png"
+    Value: 60
+    Speed: 6
+    Health: 4
+    Attack: 5
+    Defense: 2
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Halfling
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 2
+        MaxDamage: 4
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  Mechanic:
+    Name: "Mechanic"
+    BattleImgUrl: "/resources/Mechanic_portrait.png"
+    DashboardImgUrl: "/resources/Mechanic_portrait.png"
+    Value: 140
+    Speed: 6
+    Health: 14
+    Attack: 6
+    Defense: 5
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 4
+
+  Engineer:
+    Name: "Engineer"
+    BattleImgUrl: "/resources/Engineer_portrait.png"
+    DashboardImgUrl: "/resources/Engineer_portrait.png"
+    Value: 170
+    Speed: 7
+    Health: 16
+    Attack: 7
+    Defense: 5
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Mechanic
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  Armadillo:
+    Name: "Armadillo"
+    BattleImgUrl: "/resources/Armadillo_portrait.png"
+    DashboardImgUrl: "/resources/Armadillo_portrait.png"
+    Value: 200
+    Speed: 4
+    Health: 25
+    Attack: 5
+    Defense: 10
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  BellwetherArmadillo:
+    Name: "Bellwether Armadillo"
+    BattleImgUrl: "/resources/Bellwether_Armadillo_portrait.png"
+    DashboardImgUrl: "/resources/Bellwether_Armadillo_portrait.png"
+    Value: 230
+    Speed: 6
+    Health: 25
+    Attack: 6
+    Defense: 11
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Armadillo
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 5
+
+  Automaton:
+    Name: "Automaton"
+    BattleImgUrl: "/resources/Automaton_portrait.png"
+    DashboardImgUrl: "/resources/Automaton_portrait.png"
+    Value: 350
+    Speed: 8
+    Health: 30
+    Attack: 12
+    Defense: 10
+    ToTrainAmount: 10
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 7
+
+  SentinelAutomaton:
+    Name: "Sentinel Automaton"
+    BattleImgUrl: "/resources/Sentinel_Automaton_portrait.png"
+    DashboardImgUrl: "/resources/Sentinel_Automaton_portrait.png"
+    Value: 450
+    Speed: 9
+    Health: 30
+    Attack: 12
+    Defense: 10
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Automaton
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 9
+        MaxDamage: 10
+
+  Sandworm:
+    Name: "Sandworm"
+    BattleImgUrl: "/resources/Sandworm_portrait.png"
+    DashboardImgUrl: "/resources/Sandworm_portrait.png"
+    Value: 575
+    Speed: 8
+    Health: 50
+    Attack: 13
+    Defense: 12
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 12
+        MaxDamage: 16
+
+  OlgoiKhorkhoi:
+    Name: "Olgoi-Khorkhoi"
+    BattleImgUrl: "/resources/Olgoi_Khorkhoi_portrait.png"
+    DashboardImgUrl: "/resources/Olgoi_Khorkhoi_portrait.png"
+    Value: 650
+    Speed: 10
+    Health: 60
+    Attack: 15
+    Defense: 12
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Sandworm
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 12
+        MaxDamage: 16
+
+  Gunslinger:
+    Name: "Gunslinger"
+    BattleImgUrl: "/resources/Gunslinger_portrait.png"
+    DashboardImgUrl: "/resources/Gunslinger_portrait.png"
+    Value: 800
+    Speed: 8
+    Health: 45
+    Attack: 17
+    Defense: 12
+    ToTrainAmount: 4
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 14
+        MaxDamage: 24
+        AttacksCount: 16
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 12
+    ResourcesDistribution:
+      Gold: 3
+      Stone: 1
+
+  BountyHunter:
+    Name: "Bounty Hunter"
+    BattleImgUrl: "/resources/Bounty_Hunter_portrait.png"
+    DashboardImgUrl: "/resources/Bounty_Hunter_portrait.png"
+    Value: 1100
+    Speed: 8
+    Health: 45
+    Attack: 18
+    Defense: 14
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Gunslinger
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 14
+        MaxDamage: 24
+        AttacksCount: 24
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 12
+    ResourcesDistribution:
+      Gold: 3
+      Stone: 1
+
+  Couatl:
+    Name: "Couatl"
+    BattleImgUrl: "/resources/Couatl_portrait.png"
+    DashboardImgUrl: "/resources/Couatl_portrait.png"
+    Value: 2000
+    Speed: 11
+    Health: 160
+    Attack: 17
+    Defense: 17
+    ToTrainAmount: 2
+    Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 45
+    ResourcesDistribution:
+      Gold: 5
+      Gems: 1
+
+  CrimsonCouatl:
+    Name: "Crimson Couatl"
+    BattleImgUrl: "/resources/Crimson_Couatl_portrait.png"
+    DashboardImgUrl: "/resources/Crimson_Couatl_portrait.png"
+    Value: 6000
+    Speed: 15
+    Health: 200
+    Attack: 21
+    Defense: 21
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Couatl
+    Movement: Fly
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 25
+        MaxDamage: 45
+    ResourcesDistribution:
+      Gold: 5
+      Gems: 1
+
+  Dreadnought:
+    Name: "Dreadnought"
+    BattleImgUrl: "/resources/Dreadnought_portrait.png"
+    DashboardImgUrl: "/resources/Dreadnought_portrait.png"
+    Value: 5700
+    Speed: 6
+    Health: 200
+    Attack: 18
+    Defense: 20
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 5
+      Crystal: 1
+
+  Juggernaut:
+    Name: "Juggernaut"
+    BattleImgUrl: "/resources/Juggernaut_portrait.png"
+    DashboardImgUrl: "/resources/Juggernaut_portrait.png"
+    Value: 8500
+    Speed: 7
+    Health: 300
+    Attack: 23
+    Defense: 23
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Dreadnought
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+    ResourcesDistribution:
+      Gold: 5
+      Crystal: 1
+
+  # Bulwark
+  Kobold:
+    Name: "Kobold"
+    BattleImgUrl: "/resources/Kobold_portrait.png"
+    DashboardImgUrl: "/resources/Kobold_portrait.png"
+    Value: 40
+    Speed: 3
+    Health: 8
+    Attack: 3
+    Defense: 4
+    ToTrainAmount: 30
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  KoboldForeman:
+    Name: "Kobold Foreman"
+    BattleImgUrl: "/resources/Kobold_Foreman_portrait.png"
+    DashboardImgUrl: "/resources/Kobold_Foreman_portrait.png"
+    Value: 60
+    Speed: 5
+    Health: 8
+    Attack: 5
+    Defense: 6
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Kobold
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 1
+        MaxDamage: 2
+
+  MountainRam:
+    Name: "Mountain Ram"
+    BattleImgUrl: "/resources/Mountain_Ram_portrait.png"
+    DashboardImgUrl: "/resources/Mountain_Ram_portrait.png"
+    Value: 135
+    Speed: 7
+    Health: 18
+    Attack: 7
+    Defense: 6
+    ToTrainAmount: 18
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 4
+
+  Argali:
+    Name: "Argali"
+    BattleImgUrl: "/resources/Argali_portrait.png"
+    DashboardImgUrl: "/resources/Argali_portrait.png"
+    Value: 170
+    Speed: 8
+    Health: 18
+    Attack: 8
+    Defense: 6
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Argali
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 3
+        MaxDamage: 4
+
+  SnowElf:
+    Name: "Snow Elf"
+    BattleImgUrl: "/resources/Snow_Elf_portrait.png"
+    DashboardImgUrl: "/resources/Snow_Elf_portrait.png"
+    Value: 230
+    Speed: 6
+    Health: 21
+    Attack: 9
+    Defense: 8
+    ToTrainAmount: 14
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 4
+        MaxDamage: 6
+        AttacksCount: 4
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 6
+
+  SteelElf:
+    Name: "Steel Elf"
+    BattleImgUrl: "/resources/Steel_Elf_portrait.png"
+    DashboardImgUrl: "/resources/Steel_Elf_portrait.png"
+    Value: 260
+    Speed: 7
+    Health: 24
+    Attack: 9
+    Defense: 10
+    ToTrainAmount: 0
+    UpgradeOf:
+      - SnowElf
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 4
+        MaxDamage: 6
+        AttacksCount: 8
+      - <<: *MeleeAttack
+        MinDamage: 4
+        MaxDamage: 6
+
+  Yeti:
+    Name: "Yeti"
+    BattleImgUrl: "/resources/Yeti_portrait.png"
+    DashboardImgUrl: "/resources/Yeti_portrait.png"
+    Value: 325
+    Speed: 6
+    Health: 40
+    Attack: 10
+    Defense: 8
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 9
+
+  YetiRunemaster:
+    Name: "Yeti Runemaster"
+    BattleImgUrl: "/resources/Yeti_Runemaster_portrait.png"
+    DashboardImgUrl: "/resources/Yeti_Runemaster_portrait.png"
+    Value: 400
+    Speed: 7
+    Health: 45
+    Attack: 11
+    Defense: 9
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Yeti
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 7
+        MaxDamage: 9
+
+  Shaman:
+    Name: "Shaman"
+    BattleImgUrl: "/resources/Shaman_portrait.png"
+    DashboardImgUrl: "/resources/Shaman_portrait.png"
+    Value: 450
+    Speed: 5
+    Health: 35
+    Attack: 11
+    Defense: 8
+    ToTrainAmount: 8
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 11
+        MaxDamage: 13
+        AttacksCount: 12
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 7
+
+  GreatShaman:
+    Name: "Great Shaman"
+    BattleImgUrl: "/resources/Great_Shaman_portrait.png"
+    DashboardImgUrl: "/resources/Great_Shaman_portrait.png"
+    Value: 600
+    Speed: 6
+    Health: 35
+    Attack: 12
+    Defense: 11
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Shaman
+    Attacks:
+      - <<: *RangeAttack
+        MinDamage: 11
+        MaxDamage: 13
+        AttacksCount: 24
+      - <<: *MeleeAttack
+        MinDamage: 5
+        MaxDamage: 7
+
+  Mammoth:
+    Name: "Mammoth"
+    BattleImgUrl: "/resources/Mammoth_portrait.png"
+    DashboardImgUrl: "/resources/Mammoth_portrait.png"
+    Value: 850
+    Speed: 5
+    Health: 120
+    Attack: 12
+    Defense: 16
+    ToTrainAmount: 6
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 14
+        MaxDamage: 20
+    ResourcesDistribution:
+      Gold: 3
+      Wood: 1
+
+  WarMammoth:
+    Name: "War Mammoth"
+    BattleImgUrl: "/resources/War_Mammoth_portrait.png"
+    DashboardImgUrl: "/resources/War_Mammoth_portrait.png"
+    Value: 1000
+    Speed: 6
+    Health: 135
+    Attack: 14
+    Defense: 18
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Mammoth
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 14
+        MaxDamage: 20
+    ResourcesDistribution:
+      Gold: 3
+      Wood: 1
+
+  Jotunn:
+    Name: "Jotunn"
+    BattleImgUrl: "/resources/Jotunn_portrait.png"
+    DashboardImgUrl: "/resources/Jotunn_portrait.png"
+    Value: 2000
+    Speed: 8
+    Health: 165
+    Attack: 18
+    Defense: 18
+    ToTrainAmount: 2
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
+
+  JotunnWarlord:
+    Name: "Jotunn Warlord"
+    BattleImgUrl: "/resources/Jotunn_Warlord_portrait.png"
+    DashboardImgUrl: "/resources/Jotunn_Warlord_portrait.png"
+    Value: 6000
+    Speed: 10
+    Health: 300
+    Attack: 20
+    Defense: 20
+    ToTrainAmount: 0
+    UpgradeOf:
+      - Jotunn
+    Attacks:
+      - <<: *MeleeAttack
+        MinDamage: 40
+        MaxDamage: 50
