@@ -84,42 +84,49 @@ public class InitializeRewardDefinitionsScript : IAppComponent
 
     private async Task ProcessAsync()
     {
-        var config = YamlConfigParser<RewardDefinitionsConfig>
-            .Parse("Configs/rewards.yaml");
-
-        var rewardDefinitionFields = config.Rewards.Select(keyValue =>
+        try
         {
-            var x = keyValue.Value;
-            return new RewardDefinitionFields
-            {
-                Key = x.Key,
-                RewardType = x.RewardType,
-                Value = x.Value,
-                Name = x.Key,
-                Title = x.Title,
-                IconUrl = x.IconUrl,
-                Message = x.Message,
-                MaxAmounts = x.Amounts ?? x.AmountsMax ?? Array.Empty<int>(),
-                MinAmounts = x.Amounts ?? x.AmountsMin ?? Array.Empty<int>(),
-                CanDecline = x.CanDecline,
-                Ids = x.Units?.Select(GetUnitIdByName).ToArray() 
-                      ?? x.Resources?.Select(GetResourceIdByName).ToArray()
-                      ?? Array.Empty<Guid>(),
-                GuardMessage = x.Guard?.Message,
-                GuardUnitTypeIds = x.Guard?.Units.Select(GetUnitIdByName).ToArray() 
-                                   ?? Array.Empty<Guid>(),
-                GuardUnitMinAmounts = x.Guard?.Amounts ?? x.Guard?.AmountsMin,
-                GuardUnitMaxAmounts = x.Guard?.Amounts ?? x.Guard?.AmountsMax,
-                GuardBattleMinWidth = x.Guard?.BattleWidth ?? x.Guard?.BattleMinWidth ?? 0,
-                GuardBattleMaxWidth = x.Guard?.BattleHeight ?? x.Guard?.BattleMaxWidth ?? 0,
-                GuardBattleMaxHeight = x.Guard?.BattleHeight ?? x.Guard?.BattleMaxHeight ?? 0,
-                GuardBattleMinHeight = x.Guard?.BattleMinHeight ?? x.Guard?.BattleMinHeight ?? 0,
-            };
-        });
-        
-        await Repository.CreateBatch(rewardDefinitionFields);
+            var config = YamlConfigParser<RewardDefinitionsConfig>
+                .Parse("Configs/rewards.yaml");
 
-        await RewardDefinitionsRegistry.Load();
+            var rewardDefinitionFields = config.Rewards.Select(keyValue =>
+            {
+                var x = keyValue.Value;
+                return new RewardDefinitionFields
+                {
+                    Key = x.Key,
+                    RewardType = x.RewardType,
+                    Value = x.Value,
+                    Name = x.Key,
+                    Title = x.Title,
+                    IconUrl = x.IconUrl,
+                    Message = x.Message,
+                    MaxAmounts = x.Amounts ?? x.AmountsMax ?? Array.Empty<int>(),
+                    MinAmounts = x.Amounts ?? x.AmountsMin ?? Array.Empty<int>(),
+                    CanDecline = x.CanDecline,
+                    Ids = x.Units?.Select(GetUnitIdByName).ToArray() 
+                          ?? x.Resources?.Select(GetResourceIdByName).ToArray()
+                          ?? Array.Empty<Guid>(),
+                    GuardMessage = x.Guard?.Message,
+                    GuardUnitTypeIds = x.Guard?.Units.Select(GetUnitIdByName).ToArray() 
+                                       ?? Array.Empty<Guid>(),
+                    GuardUnitMinAmounts = x.Guard?.Amounts ?? x.Guard?.AmountsMin,
+                    GuardUnitMaxAmounts = x.Guard?.Amounts ?? x.Guard?.AmountsMax,
+                    GuardBattleMinWidth = x.Guard?.BattleWidth ?? x.Guard?.BattleMinWidth ?? 0,
+                    GuardBattleMaxWidth = x.Guard?.BattleHeight ?? x.Guard?.BattleMaxWidth ?? 0,
+                    GuardBattleMaxHeight = x.Guard?.BattleHeight ?? x.Guard?.BattleMaxHeight ?? 0,
+                    GuardBattleMinHeight = x.Guard?.BattleMinHeight ?? x.Guard?.BattleMinHeight ?? 0,
+                };
+            });
+        
+            await Repository.CreateBatch(rewardDefinitionFields);
+
+            await RewardDefinitionsRegistry.Load();
+        }
+        catch (Exception e)
+        {
+            System.Console.WriteLine(e);
+        }
     }
 
     private Guid GetUnitIdByName(string unitTypeName)

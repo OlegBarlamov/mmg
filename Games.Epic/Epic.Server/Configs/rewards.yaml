@@ -776,7 +776,7 @@ Rewards:
       Units: [ Naga ]
       Amounts: [ 30 ]
   
- PirateCavern_1SeaSerpent:
+  PirateCavern_1SeaSerpent:
    <<: *PirateCavernBase
    Chance: 0.3
    Guard:
@@ -784,23 +784,23 @@ Rewards:
      Amounts: [ 20, 20 ]
    Amounts: [ 1 ]
 
- PirateCavern_2SeaSerpents:
+  PirateCavern_2SeaSerpents:
    <<: *PirateCavernBase
    Chance: 0.3
    Guard:
      Units: [ Pirate, Corsair ]
      Amounts: [ 40, 40 ]
    Amounts: [ 2 ]
-
- PirateCavern_3SeaSerpents:
+  
+  PirateCavern_3SeaSerpents:
    <<: *PirateCavernBase
    Chance: 0.3
    Guard:
      Units: [ Pirate, Corsair ]
      Amounts: [ 60, 60 ]
    Amounts: [ 3 ]
-
- PirateCavern_4SeaSerpents:
+  
+  PirateCavern_4SeaSerpents:
    <<: *PirateCavernBase
    Chance: 0.1
    Guard:
@@ -819,7 +819,7 @@ Rewards:
     RewardType: ResourcesGain
     Resources: [ Gems ]
     Amounts: [ 7 ]
-
+  
   WindmillBase: &WindmillBase
     Key: Windmill
     Value: 2000
@@ -827,37 +827,37 @@ Rewards:
     IconUrl: "/resources/Windmill.webp"
     Title: "Windmill"
     CanDecline: true
-
+  
   Windmill_Stone:
     <<: *WindmillBase
     Resources: [ Stone ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   Windmill_Mercury:
     <<: *WindmillBase
     Resources: [ Mercury ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   Windmill_Sulfur:
     <<: *WindmillBase
     Resources: [ Sulfur ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   Windmill_Crystal:
     <<: *WindmillBase
     Resources: [ Crystal ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   Windmill_Gems:
     <<: *WindmillBase
     Resources: [ Gems ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   ShipwreckBase: &ShipwreckBase
     Key: Shipwreck
     Value: 2000
@@ -866,35 +866,35 @@ Rewards:
     Title: "Shipwreck"
     CanDecline: true
     Resources: [ Gold ]
-
+  
   Shipwreck_2000g:
     <<: *ShipwreckBase
     Amounts: [ 2000 ]
     Guard:
       Units: [ Wight ]
       Amounts: [ 10 ]
-
+  
   Shipwreck_3000g:
     <<: *ShipwreckBase
     Amounts: [ 3000 ]
     Guard:
       Units: [ Wight ]
       Amounts: [ 15 ]
-
+  
   Shipwreck_4000g:
     <<: *ShipwreckBase
     Amounts: [ 4000 ]
     Guard:
       Units: [ Wight ]
       Amounts: [ 25 ]
-
+  
   Shipwreck_5000g:
     <<: *ShipwreckBase
     Amounts: [ 6000 ]
     Guard:
       Units: [ Wight ]
       Amounts: [ 50 ]
-
+  
   SeaChestBase: &SeaChestBase
     Key: SeaChest
     Value: 1500
@@ -902,16 +902,16 @@ Rewards:
     IconUrl: "/resources/Sea_Chest.webp"
     Title: "Sea Chest"
     CanDecline: true
-
+  
   SeaChest_0g:
     <<: *SeaChestBase
     RewardType: None
-
+  
   SeaChest_1500_1:
     <<: *SeaChestBase
     Resources: [ Gold ]
     Amounts: [ 1500 ]
-
+  
   SeaChest_1500g_2:
     <<: *SeaChestBase
     Resources: [ Gold ]
@@ -926,7 +926,7 @@ Rewards:
     <<: *SeaChestBase
     Resources: [ Gold ]
     Amounts: [ 3000 ]
-
+  
   SeaBarrelBase: &SeaBarrelBase
     Key: SeaBarrel
     Value: 500
@@ -934,35 +934,35 @@ Rewards:
     IconUrl: "/resources/Sea_Barrel.webp"
     Title: "Sea Barrel"
     CanDecline: true
-
+  
   SeaBarrel_None:
     <<: *SeaBarrelBase
     RewardType: None
-
+  
   SeaBarrel_Mercury:
     <<: *SeaBarrelBase
     Resources: [ Mercury ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   SeaBarrel_Sulfur:
     <<: *SeaBarrelBase
     Resources: [ Sulfur ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   SeaBarrel_Crystal:
     <<: *SeaBarrelBase
     Resources: [ Crystal ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   SeaBarrel_Gems:
     <<: *SeaBarrelBase
     Resources: [ Gems ]
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
-
+  
   TreasureChestBase: &TreasureChestBase
     Key: TreasureChest
     Value: 1500
@@ -971,19 +971,19 @@ Rewards:
     Title: "Treasure Chest"
     CanDecline: true
     Resources: [ Gold ]
-
+  
   TreasureChest_1000g:
     <<: *TreasureChestBase
     Amounts: [ 1000 ]
-
+  
   TreasureChest_1500g:
     <<: *TreasureChestBase
     Amounts: [ 1500 ]
-
+  
   TreasureChest_2000g:
     <<: *TreasureChestBase
     Amounts: [ 2000 ]
-
+  
   PyramidBase: &PyramidBase
     Key: Pyramid
     Value: 5000
@@ -991,7 +991,7 @@ Rewards:
     IconUrl: "/resources/Pyramid.webp"
     Title: "Pyramid"
     CanDecline: true
-
+  
   Pyramid_10000g:
     <<: *PyramidBase
     Resources: [ Gold ]
@@ -999,7 +999,7 @@ Rewards:
     Guard:
       Units: [ DiamondGolem, GoldGolem ]
       Amounts: [ 20, 40 ]
-
+  
   RuinsBase: &RuinsBase
     Key: Ruins
     Value: 1000
@@ -1008,35 +1008,35 @@ Rewards:
     Title: "Ruins"
     CanDecline: true
     Resources: [ Gold ]
-
+  
   Ruins_1000g:
     <<: *RuinsBase
     Amounts: [ 1000 ]
     Guard:
       Units: [ Skeleton, Wight, Wraith, SkeletonWarrior, PowerLich ]
       Amounts: [ 20, 3, 3, 10, 1 ]
-
+  
   Ruins_2000g:
     <<: *RuinsBase
     Amounts: [ 2000 ]
     Guard:
       Units: [ Skeleton, Wight, Wraith, SkeletonWarrior, PowerLich ]
       Amounts: [ 30, 5, 5, 10, 1 ]
-
+  
   Ruins_3000g:
     <<: *RuinsBase
     Amounts: [ 3000 ]
     Guard:
       Units: [ Skeleton, Wight, Wraith, SkeletonWarrior, PowerLich ]
       Amounts: [ 40, 7, 7, 20, 2 ]
-
+  
   Ruins_4000g:
     <<: *RuinsBase
     Amounts: [ 4000 ]
     Guard:
       Units: [ Skeleton, Wight, Wraith, SkeletonWarrior, PowerLich ]
       Amounts: [ 50, 9, 9, 20, 3 ]
-
+  
   RedTowerBase: &RedTowerBase
     Key: RedTower
     Value: 4000
@@ -1045,63 +1045,63 @@ Rewards:
     Title: "Red Tower"
     CanDecline: true
     Units: [ Firebird ]
-
+  
   RedTower_1Firebird_35FireElemental:
     <<: *RedTowerBase
     Amounts: [ 1 ]
     Guard:
       Units: [ FireElemental ]
       Amounts: [ 35 ]
-
+  
   RedTower_1Firebird_28Fire_7Energy:
     <<: *RedTowerBase
     Amounts: [ 1 ]
     Guard:
       Units: [ FireElemental, EnergyElemental ]
       Amounts: [ 28, 7 ]
-
+  
   RedTower_2Firebird_70FireElemental:
     <<: *RedTowerBase
     Amounts: [ 2 ]
     Guard:
       Units: [ FireElemental ]
       Amounts: [ 70 ]
-
+  
   RedTower_2Firebird_56Fire_14Energy:
     <<: *RedTowerBase
     Amounts: [ 2 ]
     Guard:
       Units: [ FireElemental, EnergyElemental ]
       Amounts: [ 56, 14 ]
-
+  
   RedTower_3Firebird_105FireElemental:
     <<: *RedTowerBase
     Amounts: [ 3 ]
     Guard:
       Units: [ FireElemental ]
       Amounts: [ 105 ]
-
+  
   RedTower_3Firebird_84Fire_21Energy:
     <<: *RedTowerBase
     Amounts: [ 3 ]
     Guard:
       Units: [ FireElemental, EnergyElemental ]
       Amounts: [ 84, 21 ]
-
+  
   RedTower_4Firebird_140FireElemental:
     <<: *RedTowerBase
     Amounts: [ 4 ]
     Guard:
       Units: [ FireElemental ]
       Amounts: [ 140 ]
-
+  
   RedTower_4Firebird_112Fire_28Energy:
     <<: *RedTowerBase
     Amounts: [ 4 ]
     Guard:
       Units: [ FireElemental, EnergyElemental ]
       Amounts: [ 112, 28 ]
-
+  
   WolfRaiderPicketBase: &WolfRaiderPicketBase
     Key: WolfRaiderPicket
     Value: 4000
@@ -1110,35 +1110,35 @@ Rewards:
     Title: "Wolf Raider Picket"
     CanDecline: true
     Units: [ Cyclops ]
-
+  
   WolfRaiderPicket_4Cyclops_50WolfRaider:
     <<: *WolfRaiderPicketBase
     Amounts: [ 4 ]
     Guard:
       Units: [ WolfRaider ]
       Amounts: [ 50 ]
-
+  
   WolfRaiderPicket_6Cyclops_75WolfRaider:
     <<: *WolfRaiderPicketBase
     Amounts: [ 6 ]
     Guard:
       Units: [ WolfRaider ]
       Amounts: [ 75 ]
-
+  
   WolfRaiderPicket_8Cyclops_100WolfRaider:
     <<: *WolfRaiderPicketBase
     Amounts: [ 8 ]
     Guard:
       Units: [ WolfRaider ]
       Amounts: [ 100 ]
-
+  
   WolfRaiderPicket_12Cyclops_150WolfRaider:
     <<: *WolfRaiderPicketBase
     Amounts: [ 12 ]
     Guard:
       Units: [ WolfRaider ]
       Amounts: [ 150 ]
-
+  
   SpitBase: &SpitBase
     Key: Spit
     Value: 1500
@@ -1147,35 +1147,35 @@ Rewards:
     Title: "Spit"
     CanDecline: true
     Resources: [ Gold ]
-
+  
   Spit_3000g_16Basilisk:
     <<: *SpitBase
     Amounts: [ 3000 ]
     Guard:
       Units: [ Basilisk ]
       Amounts: [ 16 ]
-
+  
   Spit_4500g_24Basilisk:
     <<: *SpitBase
     Amounts: [ 4500 ]
     Guard:
       Units: [ Basilisk ]
       Amounts: [ 24 ]
-
+  
   Spit_6000g_32Basilisk:
     <<: *SpitBase
     Amounts: [ 6000 ]
     Guard:
       Units: [ Basilisk ]
       Amounts: [ 32 ]
-
+  
   Spit_9000g_48Basilisk:
     <<: *SpitBase
     Amounts: [ 9000 ]
     Guard:
       Units: [ Basilisk ]
       Amounts: [ 48 ]
-
+  
   TempleOfTheSeaBase: &TempleOfTheSeaBase
     Key: TempleOfTheSea
     Value: 10000
@@ -1184,35 +1184,35 @@ Rewards:
     Title: "Temple of the Sea"
     CanDecline: true
     Resources: [ Gold ]
-
+  
   TempleOfTheSea_30000g:
     <<: *TempleOfTheSeaBase
     Amounts: [ 30000 ]
     Guard:
       Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
       Amounts: [ 8, 6, 3, 2 ]
-
+  
   TempleOfTheSea_41000g:
     <<: *TempleOfTheSeaBase
     Amounts: [ 41000 ]
     Guard:
       Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
       Amounts: [ 8, 7, 4, 3 ]
-
+  
   TempleOfTheSea_52000g:
     <<: *TempleOfTheSeaBase
     Amounts: [ 52000 ]
     Guard:
       Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
       Amounts: [ 8, 7, 5, 4 ]
-
+  
   TempleOfTheSea_70000g:
     <<: *TempleOfTheSeaBase
     Amounts: [ 70000 ]
     Guard:
       Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
       Amounts: [ 10, 9, 6, 5 ]
-
+  
   WagonBase: &WagonBase
     Key: Wagon
     Value: 2000
@@ -1220,57 +1220,57 @@ Rewards:
     IconUrl: "/resources/Wagon.webp"
     Title: "Wagon"
     CanDecline: true
-
+  
   Wagon_None:
     <<: *WagonBase
     RewardType: None
-
+  
   Wagon_2000g_ArtifactT:
     <<: *WagonBase
     Resources: [ Gold ]
     Amounts: [ 1000 ]
-
+  
   Wagon_4000g_ArtifactM:
     <<: *WagonBase
     Resources: [ Gold ]
     Amounts: [ 2000 ]
-
+  
   Wagon_Wood:
     <<: *WagonBase
     Resources: [ Wood ]
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
-
+  
   Wagon_Stone:
     <<: *WagonBase
     Resources: [ Stone ]
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
-
+  
   Wagon_Mercury:
     <<: *WagonBase
     Resources: [ Mercury ]
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
-
+  
   Wagon_Sulfur:
     <<: *WagonBase
     Resources: [ Sulfur ]
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
-
+  
   Wagon_Crystal:
     <<: *WagonBase
     Resources: [ Crystal ]
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
-
+  
   Wagon_Gems:
     <<: *WagonBase
     Resources: [ Gems ]
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
-
+  
   WaterWheelBase: &WaterWheelBase
     Key: WaterWheel
     Value: 750
@@ -1279,11 +1279,11 @@ Rewards:
     Title: "Water Wheel"
     CanDecline: true
     Resources: [ Gold ]
-
+  
   WaterWheel_500g:
     <<: *WaterWheelBase
     Amounts: [ 500 ]
-
+  
   WaterWheel_1000g:
     <<: *WaterWheelBase
     Amounts: [ 1000 ]
