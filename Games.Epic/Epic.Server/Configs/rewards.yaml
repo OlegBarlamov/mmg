@@ -1138,3 +1138,152 @@ Rewards:
     Guard:
       Units: [ WolfRaider ]
       Amounts: [ 150 ]
+
+  SpitBase: &SpitBase
+    Key: Spit
+    Value: 1500
+    RewardType: ResourcesGain
+    IconUrl: "/resources/Spit.webp"
+    Title: "Spit"
+    CanDecline: true
+    Resources: [ Gold ]
+
+  Spit_3000g_16Basilisk:
+    <<: *SpitBase
+    Amounts: [ 3000 ]
+    Guard:
+      Units: [ Basilisk ]
+      Amounts: [ 16 ]
+
+  Spit_4500g_24Basilisk:
+    <<: *SpitBase
+    Amounts: [ 4500 ]
+    Guard:
+      Units: [ Basilisk ]
+      Amounts: [ 24 ]
+
+  Spit_6000g_32Basilisk:
+    <<: *SpitBase
+    Amounts: [ 6000 ]
+    Guard:
+      Units: [ Basilisk ]
+      Amounts: [ 32 ]
+
+  Spit_9000g_48Basilisk:
+    <<: *SpitBase
+    Amounts: [ 9000 ]
+    Guard:
+      Units: [ Basilisk ]
+      Amounts: [ 48 ]
+
+  TempleOfTheSeaBase: &TempleOfTheSeaBase
+    Key: TempleOfTheSea
+    Value: 10000
+    RewardType: ResourcesGain
+    IconUrl: "/resources/Temple_of_the_Sea.webp"
+    Title: "Temple of the Sea"
+    CanDecline: true
+    Resources: [ Gold ]
+
+  TempleOfTheSea_30000g:
+    <<: *TempleOfTheSeaBase
+    Amounts: [ 30000 ]
+    Guard:
+      Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
+      Amounts: [ 8, 6, 3, 2 ]
+
+  TempleOfTheSea_41000g:
+    <<: *TempleOfTheSeaBase
+    Amounts: [ 41000 ]
+    Guard:
+      Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
+      Amounts: [ 8, 7, 4, 3 ]
+
+  TempleOfTheSea_52000g:
+    <<: *TempleOfTheSeaBase
+    Amounts: [ 52000 ]
+    Guard:
+      Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
+      Amounts: [ 8, 7, 5, 4 ]
+
+  TempleOfTheSea_70000g:
+    <<: *TempleOfTheSeaBase
+    Amounts: [ 70000 ]
+    Guard:
+      Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
+      Amounts: [ 10, 9, 6, 5 ]
+
+  WagonBase: &WagonBase
+    Key: Wagon
+    Value: 2000
+    RewardType: ResourcesGain
+    IconUrl: "/resources/Wagon.webp"
+    Title: "Wagon"
+    CanDecline: true
+
+  Wagon_None:
+    <<: *WagonBase
+    RewardType: None
+
+  Wagon_2000g_ArtifactT:
+    <<: *WagonBase
+    Resources: [ Gold ]
+    Amounts: [ 1000 ]
+
+  Wagon_4000g_ArtifactM:
+    <<: *WagonBase
+    Resources: [ Gold ]
+    Amounts: [ 2000 ]
+
+  Wagon_Wood:
+    <<: *WagonBase
+    Resources: [ Wood ]
+    AmountsMin: [ 2 ]
+    AmountsMax: [ 5 ]
+
+  Wagon_Stone:
+    <<: *WagonBase
+    Resources: [ Stone ]
+    AmountsMin: [ 2 ]
+    AmountsMax: [ 5 ]
+
+  Wagon_Mercury:
+    <<: *WagonBase
+    Resources: [ Mercury ]
+    AmountsMin: [ 2 ]
+    AmountsMax: [ 5 ]
+
+  Wagon_Sulfur:
+    <<: *WagonBase
+    Resources: [ Sulfur ]
+    AmountsMin: [ 2 ]
+    AmountsMax: [ 5 ]
+
+  Wagon_Crystal:
+    <<: *WagonBase
+    Resources: [ Crystal ]
+    AmountsMin: [ 2 ]
+    AmountsMax: [ 5 ]
+
+  Wagon_Gems:
+    <<: *WagonBase
+    Resources: [ Gems ]
+    AmountsMin: [ 2 ]
+    AmountsMax: [ 5 ]
+
+  WaterWheelBase: &WaterWheelBase
+    Key: WaterWheel
+    Value: 750
+    RewardType: ResourcesGain
+    IconUrl: "/resources/Water_Wheel.webp"
+    Title: "Water Wheel"
+    CanDecline: true
+    Resources: [ Gold ]
+
+  WaterWheel_500g:
+    <<: *WaterWheelBase
+    Amounts: [ 500 ]
+
+  WaterWheel_1000g:
+    <<: *WaterWheelBase
+    Amounts: [ 1000 ]
