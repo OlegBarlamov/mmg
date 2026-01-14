@@ -300,7 +300,16 @@ namespace Epic.Server
                 { "Gnoll", "Fortress" }, { "Lizardman", "Fortress" }, { "SerpentFly", "Fortress" },
                 
                 // Conflux (tiers 1-3)
-                { "Pixie", "Conflux" }, { "AirElemental", "Conflux" }, { "WaterElemental", "Conflux" }
+                { "Pixie", "Conflux" }, { "AirElemental", "Conflux" }, { "WaterElemental", "Conflux" },
+                
+                // Cove (tiers 1-3)
+                { "Nymph", "Cove" }, { "CrewMate", "Cove" }, { "Pirate", "Cove" },
+                
+                // Factory (tiers 1-3)
+                { "Halfling", "Factory" }, { "Mechanic", "Factory" }, { "Armadillo", "Factory" },
+                
+                // Bulwark (tiers 1-3)
+                { "Kobold", "Bulwark" }, { "Argali", "Bulwark" }, { "SnowElf", "Bulwark" }
             };
         }
         
