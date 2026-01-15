@@ -58,6 +58,13 @@ namespace Epic.Data.Players
             return Task.CompletedTask;
         }
 
+        public Task StageIncrement(Guid playerId)
+        {
+            var player = _playerEntities.First(x => x.Id == playerId);
+            player.Stage++;
+            return Task.CompletedTask;
+        }
+
         public Task SetGenerationInProgress(Guid[] playerIds, bool isGenerationInProgress)
         {
             _playerEntities.Where(x => playerIds.Contains(x.Id)).ToList().ForEach(x => x.GenerationInProgress = isGenerationInProgress);

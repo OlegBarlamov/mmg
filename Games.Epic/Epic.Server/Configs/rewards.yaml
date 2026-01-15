@@ -1287,3 +1287,62 @@ Rewards:
   WaterWheel_1000g:
     <<: *WaterWheelBase
     Amounts: [ 1000 ]
+
+  MercenaryCampBase: &MercenaryCampBase
+    Key: MercenaryCamp
+    Value: 500
+    RewardType: Attack
+    IconUrl: "/resources/Mercenary_Camp.webp"
+    Title: "Mercenary Camp"
+    CanDecline: true
+  
+  MercenaryCamp_1Attack:
+    <<: *MercenaryCampBase
+    Amounts: [ 1 ]
+  
+  MercenaryCamp_2Attack:
+    <<: *MercenaryCampBase
+    Amounts: [ 2 ]
+
+  SchoolOfWarBase: &SchoolOfWarBase
+    Key: SchoolOfWar
+    Value: 500
+    RewardType: Defense
+    IconUrl: "/resources/School_of_War.webp"
+    Title: "School of War"
+    CanDecline: true
+  
+  SchoolOfWar_1Defense:
+    <<: *SchoolOfWarBase
+    Amounts: [ 1 ]
+  
+  SchoolOfWar_2Defense:
+    <<: *SchoolOfWarBase
+    Amounts: [ 2 ]
+
+  ArenaBase: &ArenaBase
+    Key: Arena
+    Value: 3000
+    IconUrl: "/resources/Arena.webp"
+    Title: "Arena"
+    CanDecline: true
+  
+  ArenaAttack_2:
+    <<: *ArenaBase
+    RewardType: Attack
+    Amounts: [ 2 ]
+  
+  ArenaAttack_3:
+    <<: *ArenaBase
+    RewardType: Attack
+    Amounts: [ 3 ]
+  
+  ArenaDefense_2:
+    <<: *ArenaBase
+    RewardType: Defense
+    Amounts: [ 2 ]
+  
+  ArenaDefense_3:
+    <<: *ArenaBase
+    RewardType: Defense
+    Amounts: [ 3 ]

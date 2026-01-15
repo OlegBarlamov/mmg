@@ -13,6 +13,7 @@ namespace Epic.Data.Players
         Task Update(IPlayerEntity entity);
         Task<IPlayerEntity> Create(IPlayerEntityFields fields);
         Task DayIncrement(IReadOnlyList<Guid> playerIds);
+        Task StageIncrement(Guid playerId);
         Task SetGenerationInProgress(Guid[] playerIds, bool isGenerationInProgress);
         Task SetActiveHero(Guid playerId, Guid heroId);
     }

@@ -1003,6 +1003,100 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     </div>
                 )
 
+            case RewardType.Attack:
+                const attackAmount = reward.amounts && reward.amounts.length > 0 ? reward.amounts[0] : 0
+                return (
+                    <div className="reward-content">
+                        <div className="reward-message">{reward.message}</div>
+                        {attackAmount > 0 && (
+                            <div className="reward-stats">
+                                <h4>Attack bonus:</h4>
+                                <div className="stat-item">
+                                    {reward.iconUrl && (
+                                        <img 
+                                            src={reward.iconUrl} 
+                                            alt="Attack"
+                                            className="stat-icon"
+                                        />
+                                    )}
+                                    <span className="stat-amount">+{attackAmount}</span>
+                                </div>
+                            </div>
+                        )}
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+                        
+                        <div className="reward-actions">
+                            <button 
+                                className="reward-button accept-button" 
+                                onClick={this.handleAccept}
+                                disabled={this.state.isSubmitting}
+                            >
+                                {this.state.isSubmitting ? 'Accepting...' : 'Accept'}
+                            </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )
+
+            case RewardType.Defense:
+                const defenseAmount = reward.amounts && reward.amounts.length > 0 ? reward.amounts[0] : 0
+                return (
+                    <div className="reward-content">
+                        <div className="reward-message">{reward.message}</div>
+                        {defenseAmount > 0 && (
+                            <div className="reward-stats">
+                                <h4>Defense bonus:</h4>
+                                <div className="stat-item">
+                                    {reward.iconUrl && (
+                                        <img 
+                                            src={reward.iconUrl} 
+                                            alt="Defense"
+                                            className="stat-icon"
+                                        />
+                                    )}
+                                    <span className="stat-amount">+{defenseAmount}</span>
+                                </div>
+                            </div>
+                        )}
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+                        
+                        <div className="reward-actions">
+                            <button 
+                                className="reward-button accept-button" 
+                                onClick={this.handleAccept}
+                                disabled={this.state.isSubmitting}
+                            >
+                                {this.state.isSubmitting ? 'Accepting...' : 'Accept'}
+                            </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )
+
             default:
                 return (
                     <div className="reward-content">

@@ -1,5 +1,4 @@
 using System;
-using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Data.Heroes;
 
@@ -10,6 +9,7 @@ namespace Epic.Server.Resources
         public Guid Id { get; }
         public Guid UserId { get; }
         public int Day { get; }
+        public int Stage { get; }
         public string Name { get; }
         public bool IsDefeated { get; }
         public bool BattlesGenerationInProgress { get; }
@@ -24,6 +24,7 @@ namespace Epic.Server.Resources
             Id = playerObject.Id;
             UserId = playerObject.UserId;
             Day = playerObject.Day;
+            Stage = playerObject.Stage;
             Name = playerObject.Name;
             IsDefeated = isDefeated;
             BattlesGenerationInProgress = playerObject.GenerationInProgress;

@@ -28,6 +28,7 @@ export interface IHeroStats {
 export interface IPlayerInfo {
     readonly id: string
     readonly day: number
+    readonly stage: number
     readonly name: string
     readonly isDefeated: boolean
     readonly battlesGenerationInProgress: boolean

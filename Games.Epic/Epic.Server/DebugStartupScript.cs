@@ -183,13 +183,13 @@ namespace Epic.Server
             
             // Sort units by Value (ascending) - start with lower tier units first
             var sortedUnits = fractionUnits.OrderBy(u => u.Value).ToList();
-            
+                
             // Fill army starting from lowest tier units, progressing to higher tiers
             // If higher tier units can't fit, go back to lower tiers to fill remaining space
             while (currentScore < minScore)
             {
                 var addedAnyUnit = false;
-                
+                    
                 foreach (var unit in sortedUnits)
                 {
                     var remainingScore = maxScore - currentScore;
@@ -218,7 +218,7 @@ namespace Epic.Server
                         else
                         {
                             // Add new entry
-                            preset.Add((unit, count));
+                        preset.Add((unit, count));
                         }
                         
                         currentScore += addedScore;

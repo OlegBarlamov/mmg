@@ -82,6 +82,28 @@ namespace Epic.Core.Services.Heroes
             }
         }
 
+        public async Task AddAttack(Guid heroId, int attackAmount)
+        {
+            if (attackAmount <= 0)
+                return;
+            
+            var heroObject = await GetById(heroId);
+            var mutableHeroObject = MutableHeroObject.CopyFrom(heroObject);
+            mutableHeroObject.Attack += attackAmount;
+            await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
+        }
+
+        public async Task AddDefense(Guid heroId, int defenseAmount)
+        {
+            if (defenseAmount <= 0)
+                return;
+            
+            var heroObject = await GetById(heroId);
+            var mutableHeroObject = MutableHeroObject.CopyFrom(heroObject);
+            mutableHeroObject.Defense += defenseAmount;
+            await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
+        }
+
         private async Task FillHeroObject(MutableHeroObject heroObject)
         {
             heroObject.ArmyContainer = await UnitsContainersService.GetById(heroObject.ArmyContainerId);

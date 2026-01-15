@@ -13,6 +13,7 @@ namespace Epic.Data.Players
         Guid SupplyContainerId { get; }
         Guid? ActiveHeroId { get; }
         int Day { get; }
+        int Stage { get; }
         string Name { get; }
         PlayerEntityType PlayerType { get; }
         bool GenerationInProgress { get; }
@@ -25,6 +26,7 @@ namespace Epic.Data.Players
         public Guid SupplyContainerId { get; set; }
         public Guid? ActiveHeroId { get; set; }
         public int Day { get; set; }
+        public int Stage { get; set; }
         public string Name { get; set; }
         public PlayerEntityType PlayerType { get; set; }
         public bool GenerationInProgress { get; set; }
@@ -47,6 +49,7 @@ namespace Epic.Data.Players
             UserId = entity.UserId;
             PlayerType = entity.PlayerType;
             Day = entity.Day;
+            Stage = entity.Stage;
             ActiveHeroId = entity.ActiveHeroId;
             GenerationInProgress = entity.GenerationInProgress;
             SupplyContainerId = entity.SupplyContainerId;
@@ -60,6 +63,7 @@ namespace Epic.Data.Players
                 UserId = fields.UserId,
                 PlayerType = fields.PlayerType,
                 Day = fields.Day,
+                Stage = fields.Stage,
                 ActiveHeroId = fields.ActiveHeroId,
                 GenerationInProgress = fields.GenerationInProgress,
                 SupplyContainerId = fields.SupplyContainerId,

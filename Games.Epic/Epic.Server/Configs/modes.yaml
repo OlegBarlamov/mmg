@@ -1,4 +1,5 @@
-Active: "Days_PVP"
+#Active: "Days_PVP"
+Active: "Classic"
 
 Modes:
   - Name: "Classic"

@@ -14,6 +14,7 @@ namespace Epic.Core.Services.Players
         Guid SupplyContainerId { get; }
         Guid? ActiveHeroId { get; }
         int Day { get; }
+        int Stage { get; }
         string Name { get; }
         PlayerObjectType PlayerType { get; }
         bool GenerationInProgress { get; }
@@ -30,6 +31,7 @@ namespace Epic.Core.Services.Players
         public Guid SupplyContainerId { get; set; }
         public Guid? ActiveHeroId { get; set; }
         public int Day { get; set; }
+        public int Stage { get; set; }
         public string Name { get; set; }
         public PlayerObjectType PlayerType { get; set; }
         public bool GenerationInProgress { get; set; }
@@ -47,6 +49,7 @@ namespace Epic.Core.Services.Players
                 Id = playerObject.Id,
                 UserId = playerObject.UserId,
                 Day = playerObject.Day,
+                Stage = playerObject.Stage,
                 Name = playerObject.Name,
                 PlayerType = playerObject.PlayerType,
                 GenerationInProgress = playerObject.GenerationInProgress,
@@ -65,6 +68,7 @@ namespace Epic.Core.Services.Players
                 Id = entity.Id,
                 UserId = entity.UserId,
                 Day = entity.Day,
+                Stage = entity.Stage,
                 Name = entity.Name,
                 PlayerType = entity.PlayerType.ToObjectType(),
                 GenerationInProgress = entity.GenerationInProgress,
@@ -79,6 +83,7 @@ namespace Epic.Core.Services.Players
             {
                 UserId = mutablePlayerObject.UserId,
                 Day = mutablePlayerObject.Day,
+                Stage = mutablePlayerObject.Stage,
                 Name = mutablePlayerObject.Name,
                 PlayerType = mutablePlayerObject.PlayerType.ToEntity(),
                 GenerationInProgress = mutablePlayerObject.GenerationInProgress,

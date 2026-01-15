@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Rewards;
 using Epic.Data.GameResources;
+using Epic.Data.Reward;
 using Epic.Logic.Descriptions;
 
 namespace Epic.Server.Resources
@@ -31,7 +32,7 @@ namespace Epic.Server.Resources
             Message = reward.Message;
             Amounts = reward.Amounts;
             CanDecline = reward.CanDecline;
-            IconUrl = reward.IconUrl;
+            IconUrl = GetIconUrl(reward);
             Title = reward.Title;
 
             UnitsRewards = reward.UnitTypes
@@ -54,6 +55,20 @@ namespace Epic.Server.Resources
             }
 
             Prices = prices.Select(x => new PriceResource(x)).ToArray();
+        }
+
+        private static string GetIconUrl(IRewardObject reward)
+        {
+            // Set default icons for Attack and Defense reward types
+            switch (reward.RewardType)
+            {
+                case Epic.Data.Reward.RewardType.Attack:
+                    return "/resources/Attack_skill.png";
+                case Epic.Data.Reward.RewardType.Defense:
+                    return "/resources/Defense_skill.png";
+                default:
+                    return reward.IconUrl;
+            }
         }
     }
 }

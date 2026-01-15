@@ -14,6 +14,7 @@ namespace Epic.Core.Services.Players
         Task<IPlayerObject[]> GetAllByUserId(Guid userId);
         Task<IPlayerObject[]> GetByIds(Guid[] playerIds);
         Task DayIncrement(IReadOnlyList<Guid> playerIds);
+        Task StageIncrement(Guid playerId);
         Task SetGenerationInProgress(Guid playerId, bool generationInProgress);
         Task SetActiveHero(Guid playerId, Guid heroId);
     }

@@ -48,6 +48,7 @@ namespace Epic.Core.Services.Players
             var entity = await PlayersRepository.Create(new MutablePlayerEntityFields
             {
                 Day = 1,
+                Stage = 0,
                 Name = name,
                 PlayerType = playerObjectType.ToEntity(),
                 UserId = user.Id,
@@ -86,6 +87,11 @@ namespace Epic.Core.Services.Players
         public Task DayIncrement(IReadOnlyList<Guid> playerIds)
         {
            return PlayersRepository.DayIncrement(playerIds);
+        }
+
+        public Task StageIncrement(Guid playerId)
+        {
+           return PlayersRepository.StageIncrement(playerId);
         }
 
         public Task SetGenerationInProgress(Guid playerId, bool generationInProgress)

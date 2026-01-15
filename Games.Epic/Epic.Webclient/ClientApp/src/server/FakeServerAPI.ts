@@ -156,6 +156,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         return Promise.resolve({
             id: id,
             day: 1,
+            stage: 0,
             name: "FakePlayer",
             isDefeated: false,
             battlesGenerationInProgress: false,

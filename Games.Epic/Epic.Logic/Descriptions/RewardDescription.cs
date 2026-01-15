@@ -299,6 +299,64 @@ namespace Epic.Logic.Descriptions
                 }
             }
 
+            if (reward.RewardType == RewardType.Attack)
+            {
+                var amount = reward.Amounts.Length > 0 ? reward.Amounts[0] : 0;
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = $"Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                    case DescriptionVisibility.MaskedSize:
+                    case DescriptionVisibility.ApproximateSize:
+                    case DescriptionVisibility.Full:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Attack",
+                            Amount = amount > 0 ? $"+{amount}" : string.Empty,
+                            IconUrl = string.Empty,
+                            Tooltip = $"Gain {amount} Attack",
+                        } };
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
+
+            if (reward.RewardType == RewardType.Defense)
+            {
+                var amount = reward.Amounts.Length > 0 ? reward.Amounts[0] : 0;
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = $"Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                    case DescriptionVisibility.MaskedSize:
+                    case DescriptionVisibility.ApproximateSize:
+                    case DescriptionVisibility.Full:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Defense",
+                            Amount = amount > 0 ? $"+{amount}" : string.Empty,
+                            IconUrl = string.Empty,
+                            Tooltip = $"Gain {amount} Defense",
+                        } };
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
+
             throw new NotImplementedException();
         }
 
