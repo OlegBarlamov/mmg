@@ -181,68 +181,54 @@ namespace Epic.Server
             var minScore = (int)(targetScore * (1 - tolerance));
             var maxScore = (int)(targetScore * (1 + tolerance));
             
-            // Select units only from the chosen fraction
-            int attempts = 0;
-            const int maxAttempts = 1000;
+            // Sort units by Value (ascending) - start with lower tier units first
+            var sortedUnits = fractionUnits.OrderBy(u => u.Value).ToList();
             
-            while (currentScore < minScore && attempts < maxAttempts)
+            // Fill army starting from lowest tier units, progressing to higher tiers
+            // If higher tier units can't fit, go back to lower tiers to fill remaining space
+            while (currentScore < minScore)
             {
-                attempts++;
+                var addedAnyUnit = false;
                 
-                if (fractionUnits.Count == 0)
-                    break;
-                
-                var selectedUnit = fractionUnits[random.Next(fractionUnits.Count)];
-                var unitValue = selectedUnit.Value;
-                
-                // Calculate how many of this unit we can add without exceeding maxScore
-                var remainingScore = maxScore - currentScore;
-                if (remainingScore < unitValue)
-                    continue;
-                
-                // Add 1-5 units of this type (or as many as we can fit)
-                var maxCount = Math.Min(5, remainingScore / unitValue);
-                if (maxCount < 1)
-                    continue;
-                
-                var count = random.Next(1, maxCount + 1);
-                var addedScore = unitValue * count;
-                
-                if (currentScore + addedScore <= maxScore)
+                foreach (var unit in sortedUnits)
                 {
-                    preset.Add((selectedUnit, count));
-                    currentScore += addedScore;
-                }
-            }
-            
-            // If we're still below minScore, try to add more units from the same fraction
-            if (currentScore < minScore)
-            {
-                // Try adding smaller units to reach the target (only from the selected fraction)
-                var availableUnits = fractionUnits.OrderBy(u => u.Value).ToList();
-                    
-                foreach (var unit in availableUnits)
-                {
-                    if (currentScore >= minScore)
-                        break;
-                    
                     var remainingScore = maxScore - currentScore;
                     if (remainingScore < unit.Value)
-                        continue;
+                        continue; // Can't fit even one of this unit, move to next
                     
-                    var maxCount = Math.Min(3, remainingScore / unit.Value);
+                    // Calculate how many of this unit we can add
+                    var maxCount = Math.Min(5, remainingScore / unit.Value);
                     if (maxCount < 1)
                         continue;
                     
+                    // Add 1 to maxCount units of this type
                     var count = random.Next(1, maxCount + 1);
                     var addedScore = unit.Value * count;
                     
                     if (currentScore + addedScore <= maxScore)
                     {
-                        preset.Add((unit, count));
+                        // Check if this unit type already exists in the preset
+                        var existingIndex = preset.FindIndex(p => p.UnitType.Id == unit.Id);
+                        if (existingIndex >= 0)
+                        {
+                            // Combine with existing entry - update count
+                            var existingEntry = preset[existingIndex];
+                            preset[existingIndex] = (existingEntry.UnitType, existingEntry.Count + count);
+                        }
+                        else
+                        {
+                            // Add new entry
+                            preset.Add((unit, count));
+                        }
+                        
                         currentScore += addedScore;
+                        addedAnyUnit = true;
                     }
                 }
+                
+                // If we couldn't add any unit in this iteration, break to avoid infinite loop
+                if (!addedAnyUnit)
+                    break;
             }
             
             return preset;

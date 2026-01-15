@@ -587,7 +587,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
             case RewardType.None:
                 return (
                     <div className="reward-content">
-                        <div className="reward-message">{reward.message || "Nothing here unfortunately"}</div>
+                        <div className="reward-message">{"Nothing here unfortunately"}</div>
                         {this.state.errorMessage && (
                             <div className="error-message">
                                 {this.state.errorMessage}
@@ -602,15 +602,6 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                             >
                                 {this.state.isSubmitting ? 'Processing...' : 'OK'}
                             </button>
-                            {reward.canDecline && (
-                                <button 
-                                    className="reward-button decline-button" 
-                                    onClick={this.handleDecline}
-                                    disabled={this.state.isSubmitting}
-                                >
-                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
-                                </button>
-                            )}
                         </div>
                     </div>
                 )
