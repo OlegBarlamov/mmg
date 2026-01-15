@@ -128,21 +128,21 @@ namespace Epic.Server
                 slot++;
             }
 
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day);
-            
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
         }
 
         private async Task<List<(IUnitTypeEntity UnitType, int Count)>> GenerateRandomPreset(int targetScore)

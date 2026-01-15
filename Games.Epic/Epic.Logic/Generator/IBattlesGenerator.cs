@@ -21,8 +21,8 @@ namespace Epic.Logic.Generator
 {
     public interface IBattlesGenerator
     {
-        Task Generate(Guid playerId, int day, int currentBattlesCount);
-        Task GenerateSingle(Guid playerId, int day);
+        Task Generate(Guid playerId, int day, int currentBattlesCount, int stage);
+        Task GenerateSingle(Guid playerId, int day, int stage);
     }
 
     [UsedImplicitly]
@@ -77,10 +77,10 @@ namespace Epic.Logic.Generator
             GameModeProvider = gameModeProvider ?? throw new ArgumentNullException(nameof(gameModeProvider));
         }
 
-        public async Task GenerateSingle(Guid playerId, int day)
+        public async Task GenerateSingle(Guid playerId, int day, int stage)
         {
             var gameMode = GameModeProvider.GetGameMode();
-            var gameStage = gameMode.Stages[0];
+            var gameStage = gameMode.Stages[Math.Min(stage, gameMode.Stages.Length - 1)];
             var rewardFactor = gameStage.RewardsFactor;
             
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
@@ -356,15 +356,15 @@ namespace Epic.Logic.Generator
             }
         }
 
-        public async Task Generate(Guid playerId, int day, int currentBattlesCount)
+        public async Task Generate(Guid playerId, int day, int currentBattlesCount, int stage)
         {
             var gameMode = GameModeProvider.GetGameMode();
-            var gameStage = gameMode.Stages[0];
+            var gameStage = gameMode.Stages[Math.Min(stage, gameMode.Stages.Length - 1)];
             
             int count = currentBattlesCount <= Math.Max(7, day * gameStage.BattlesCountFactor) ? _random.Next(3, 7) : _random.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
-                await GenerateSingle(playerId, day);
+                await GenerateSingle(playerId, day, stage);
             }
         }
 

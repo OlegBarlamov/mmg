@@ -30,7 +30,7 @@ Modes:
         StartMaxDifficulty: 500
         PvpBattles: false
         BattlesLimit: 0
-        DaysLimit: 30
+        DaysLimit: 0
         WideStdChance: 15
         BattlesCountFactor: 3
 
@@ -48,6 +48,7 @@ Modes:
         BattlesLimit: 30
         DaysLimit: 20
         WideStdChance: 10
+        BattlesCountFactor: 3
       - RewardsFactor: 4
         DifficultyFactor: 1
         MinDifficultyFactor: 10
@@ -58,3 +59,4 @@ Modes:
         BattlesLimit: 0
         DaysLimit: 0
         WideStdChance: 10
+        BattlesCountFactor: 3
