@@ -232,7 +232,7 @@ namespace Epic.Core.Services.Rewards
 
                 if (rewardObject.RewardType == RewardType.NextStage)
                 {
-                    await PlayersService.StageIncrement(playerId);
+                    // We intentionally do nothing here, as the stage increment is handled in the BattleResultLogic
                 }
 
                 return new AcceptedRewardData

@@ -8,6 +8,7 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
+using Epic.Data.Reward;
 using Epic.Logic.Generator;
 using JetBrains.Annotations;
 
@@ -109,6 +110,14 @@ namespace Epic.Logic.Battle
                 var winnerPlayerId = winnerId.Value;
                 await GiveExperience(winnerPlayerId, inBattlePlayerNumber, battleObject);
                 var rewards = await RewardsService.GetRewardsFromBattleDefinition(battleObject.BattleDefinitionId);
+                
+                // Handle NextStage rewards immediately when battle is won
+                var hasNextStageReward = rewards.Any(x => x.RewardType == RewardType.NextStage);
+                if (hasNextStageReward)
+                {
+                    await PlayersService.StageIncrement(winnerPlayerId);
+                }
+                
                 var rewardsIds = rewards.Select(x => x.Id).ToArray();
                 await RewardsService.GiveRewardsToPlayerAsync(rewardsIds, winnerPlayerId);
             }

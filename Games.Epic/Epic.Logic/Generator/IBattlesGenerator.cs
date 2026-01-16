@@ -99,7 +99,7 @@ namespace Epic.Logic.Generator
             if (hasNextStageAvailable)
             {
                 var nextStage = gameMode.Stages[stage + 1];
-                if (nextStage.GuardDifficulty > 0 && _random.NextDouble() < 0.7)
+                if (nextStage.GuardDifficulty > 0 && _random.NextDouble() < 0.07)
                 {
                     // Check if player already has battles with NextStage reward
                     var battlesWithNextStage = await BattleDefinitionsRepository.GetActiveBattlesDefinitionsWithRewardType(playerId, player.Day, RewardType.NextStage);
