@@ -99,14 +99,16 @@ namespace Epic.Logic.Generator
             if (hasNextStageAvailable)
             {
                 var nextStage = gameMode.Stages[stage + 1];
-                if (nextStage.GuardDifficulty > 0)
+                if (nextStage.GuardDifficulty > 0 && _random.NextDouble() < 0.7)
                 {
                     // Check if player already has battles with NextStage reward
                     var battlesWithNextStage = await BattleDefinitionsRepository.GetActiveBattlesDefinitionsWithRewardType(playerId, player.Day, RewardType.NextStage);
-                    battlesWithNextStage = Array.Empty<IBattleDefinitionEntity>();
                     
-                    // Generate NextStage battle if none exists and 25% chance
-                    if (battlesWithNextStage.Length == 0 && _random.NextDouble() < 0.25)
+                    // Check if player already has not accepted rewards with NextStage type
+                    var notAcceptedNextStageRewards = await RewardsRepository.FindNotAcceptedRewardsByPlayerIdAndRewardType(playerId, RewardType.NextStage);
+                    
+                    // Generate NextStage battle if none exists and no not accepted rewards
+                    if (battlesWithNextStage.Length == 0 && notAcceptedNextStageRewards.Length == 0)
                     {
                         isNextStageBattle = true;
                         fixedDifficulty = nextStage.GuardDifficulty;
@@ -406,7 +408,7 @@ namespace Epic.Logic.Generator
                 {
                     RewardType = RewardType.NextStage,
                     Amounts = Array.Empty<int>(),
-                    CanDecline = true,
+                    CanDecline = false,
                     GuardBattleDefinitionId = null,
                     IconUrl = null,
                     Title = "Stage Advancement",

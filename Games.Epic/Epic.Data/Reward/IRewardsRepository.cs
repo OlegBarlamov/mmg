@@ -10,6 +10,7 @@ namespace Epic.Data.Reward
         Task<IRewardEntity[]> GetRewardsByBattleDefinitionId(Guid battleDefinitionId);
         Task<IRewardEntity[]> GetRewardsByBattleDefinitionIds(IReadOnlyList<Guid> battleDefinitionIds);
         Task<IRewardEntity[]> FindNotAcceptedRewardsByPlayerId(Guid playerId);
+        Task<IRewardEntity[]> FindNotAcceptedRewardsByPlayerIdAndRewardType(Guid playerId, RewardType rewardType);
         Task<IRewardEntity> RemoveRewardFromPlayer(Guid playerId, Guid rewardId);
         Task<IRewardEntity> GetRewardForPlayer(Guid playerId, Guid rewardId);
         Task<IRewardEntity> CreateRewardAsync(Guid battleDefinitionId, IRewardEntityFields fields);

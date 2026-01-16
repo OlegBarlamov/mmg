@@ -193,6 +193,141 @@ PirateCavernBase: &PirateCavernBase
  Value: 3500
  Units: [ SeaSerpent ]
 
+WindmillBase: &WindmillBase
+  Key: Windmill
+  Value: 2000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Windmill.webp"
+  Title: "Windmill"
+  CanDecline: true
+
+ShipwreckBase: &ShipwreckBase
+  Key: Shipwreck
+  Value: 2000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Shipwreck.webp"
+  Title: "Shipwreck"
+  CanDecline: true
+  Resources: [ Gold ]
+
+SeaChestBase: &SeaChestBase
+  Key: SeaChest
+  Value: 1500
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Sea_Chest.webp"
+  Title: "Sea Chest"
+  CanDecline: true
+
+SeaBarrelBase: &SeaBarrelBase
+  Key: SeaBarrel
+  Value: 500
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Sea_Barrel.webp"
+  Title: "Sea Barrel"
+  CanDecline: true
+
+TreasureChestBase: &TreasureChestBase
+  Key: TreasureChest
+  Value: 1500
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Treasure_Chest.webp"
+  Title: "Treasure Chest"
+  CanDecline: true
+  Resources: [ Gold ]
+
+PyramidBase: &PyramidBase
+  Key: Pyramid
+  Value: 5000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Pyramid.webp"
+  Title: "Pyramid"
+  CanDecline: true
+
+RuinsBase: &RuinsBase
+  Key: Ruins
+  Value: 1000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Ruins.webp"
+  Title: "Ruins"
+  CanDecline: true
+  Resources: [ Gold ]
+
+RedTowerBase: &RedTowerBase
+  Key: RedTower
+  Value: 4000
+  RewardType: UnitsGain
+  IconUrl: "/resources/Red_Tower.webp"
+  Title: "Red Tower"
+  CanDecline: true
+  Units: [ Firebird ]
+
+WolfRaiderPicketBase: &WolfRaiderPicketBase
+  Key: WolfRaiderPicket
+  Value: 4000
+  RewardType: UnitsGain
+  IconUrl: "/resources/Wolf_Raider_Picket.webp"
+  Title: "Wolf Raider Picket"
+  CanDecline: true
+  Units: [ Cyclops ]
+
+SpitBase: &SpitBase
+  Key: Spit
+  Value: 1500
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Spit.webp"
+  Title: "Spit"
+  CanDecline: true
+  Resources: [ Gold ]
+
+TempleOfTheSeaBase: &TempleOfTheSeaBase
+  Key: TempleOfTheSea
+  Value: 10000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Temple_of_the_Sea.webp"
+  Title: "Temple of the Sea"
+  CanDecline: true
+  Resources: [ Gold ]
+
+WagonBase: &WagonBase
+  Key: Wagon
+  Value: 2000
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Wagon.webp"
+  Title: "Wagon"
+  CanDecline: true
+
+WaterWheelBase: &WaterWheelBase
+  Key: WaterWheel
+  Value: 750
+  RewardType: ResourcesGain
+  IconUrl: "/resources/Water_Wheel.webp"
+  Title: "Water Wheel"
+  CanDecline: true
+  Resources: [ Gold ]
+
+MercenaryCampBase: &MercenaryCampBase
+  Key: MercenaryCamp
+  Value: 500
+  RewardType: Attack
+  IconUrl: "/resources/Mercenary_Camp.webp"
+  Title: "Mercenary Camp"
+  CanDecline: true
+
+SchoolOfWarBase: &SchoolOfWarBase
+  Key: SchoolOfWar
+  Value: 500
+  RewardType: Defense
+  IconUrl: "/resources/School_of_War.webp"
+  Title: "School of War"
+  CanDecline: true
+
+ArenaBase: &ArenaBase
+  Key: Arena
+  Value: 3000
+  IconUrl: "/resources/Arena.webp"
+  Title: "Arena"
+  CanDecline: true
+
 Rewards:
   AncientLamp:
     Key: AncientLamp
@@ -820,14 +955,6 @@ Rewards:
     Resources: [ Gems ]
     Amounts: [ 7 ]
   
-  WindmillBase: &WindmillBase
-    Key: Windmill
-    Value: 2000
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Windmill.webp"
-    Title: "Windmill"
-    CanDecline: true
-  
   Windmill_Stone:
     <<: *WindmillBase
     Resources: [ Stone ]
@@ -858,15 +985,6 @@ Rewards:
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
   
-  ShipwreckBase: &ShipwreckBase
-    Key: Shipwreck
-    Value: 2000
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Shipwreck.webp"
-    Title: "Shipwreck"
-    CanDecline: true
-    Resources: [ Gold ]
-  
   Shipwreck_2000g:
     <<: *ShipwreckBase
     Amounts: [ 2000 ]
@@ -895,14 +1013,6 @@ Rewards:
       Units: [ Wight ]
       Amounts: [ 50 ]
   
-  SeaChestBase: &SeaChestBase
-    Key: SeaChest
-    Value: 1500
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Sea_Chest.webp"
-    Title: "Sea Chest"
-    CanDecline: true
-  
   SeaChest_0g:
     <<: *SeaChestBase
     RewardType: None
@@ -926,14 +1036,6 @@ Rewards:
     <<: *SeaChestBase
     Resources: [ Gold ]
     Amounts: [ 3000 ]
-  
-  SeaBarrelBase: &SeaBarrelBase
-    Key: SeaBarrel
-    Value: 500
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Sea_Barrel.webp"
-    Title: "Sea Barrel"
-    CanDecline: true
   
   SeaBarrel_None:
     <<: *SeaBarrelBase
@@ -963,15 +1065,6 @@ Rewards:
     AmountsMin: [ 3 ]
     AmountsMax: [ 6 ]
   
-  TreasureChestBase: &TreasureChestBase
-    Key: TreasureChest
-    Value: 1500
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Treasure_Chest.webp"
-    Title: "Treasure Chest"
-    CanDecline: true
-    Resources: [ Gold ]
-  
   TreasureChest_1000g:
     <<: *TreasureChestBase
     Amounts: [ 1000 ]
@@ -984,14 +1077,6 @@ Rewards:
     <<: *TreasureChestBase
     Amounts: [ 2000 ]
   
-  PyramidBase: &PyramidBase
-    Key: Pyramid
-    Value: 5000
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Pyramid.webp"
-    Title: "Pyramid"
-    CanDecline: true
-  
   Pyramid_10000g:
     <<: *PyramidBase
     Resources: [ Gold ]
@@ -999,15 +1084,6 @@ Rewards:
     Guard:
       Units: [ DiamondGolem, GoldGolem ]
       Amounts: [ 20, 40 ]
-  
-  RuinsBase: &RuinsBase
-    Key: Ruins
-    Value: 1000
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Ruins.webp"
-    Title: "Ruins"
-    CanDecline: true
-    Resources: [ Gold ]
   
   Ruins_1000g:
     <<: *RuinsBase
@@ -1036,15 +1112,6 @@ Rewards:
     Guard:
       Units: [ Skeleton, Wight, Wraith, SkeletonWarrior, PowerLich ]
       Amounts: [ 50, 9, 9, 20, 3 ]
-  
-  RedTowerBase: &RedTowerBase
-    Key: RedTower
-    Value: 4000
-    RewardType: UnitsGain
-    IconUrl: "/resources/Red_Tower.webp"
-    Title: "Red Tower"
-    CanDecline: true
-    Units: [ Firebird ]
   
   RedTower_1Firebird_35FireElemental:
     <<: *RedTowerBase
@@ -1102,15 +1169,6 @@ Rewards:
       Units: [ FireElemental, EnergyElemental ]
       Amounts: [ 112, 28 ]
   
-  WolfRaiderPicketBase: &WolfRaiderPicketBase
-    Key: WolfRaiderPicket
-    Value: 4000
-    RewardType: UnitsGain
-    IconUrl: "/resources/Wolf_Raider_Picket.webp"
-    Title: "Wolf Raider Picket"
-    CanDecline: true
-    Units: [ Cyclops ]
-  
   WolfRaiderPicket_4Cyclops_50WolfRaider:
     <<: *WolfRaiderPicketBase
     Amounts: [ 4 ]
@@ -1138,15 +1196,6 @@ Rewards:
     Guard:
       Units: [ WolfRaider ]
       Amounts: [ 150 ]
-  
-  SpitBase: &SpitBase
-    Key: Spit
-    Value: 1500
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Spit.webp"
-    Title: "Spit"
-    CanDecline: true
-    Resources: [ Gold ]
   
   Spit_3000g_16Basilisk:
     <<: *SpitBase
@@ -1176,15 +1225,6 @@ Rewards:
       Units: [ Basilisk ]
       Amounts: [ 48 ]
   
-  TempleOfTheSeaBase: &TempleOfTheSeaBase
-    Key: TempleOfTheSea
-    Value: 10000
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Temple_of_the_Sea.webp"
-    Title: "Temple of the Sea"
-    CanDecline: true
-    Resources: [ Gold ]
-  
   TempleOfTheSea_30000g:
     <<: *TempleOfTheSeaBase
     Amounts: [ 30000 ]
@@ -1212,14 +1252,6 @@ Rewards:
     Guard:
       Units: [ Hydra, SeaSerpent, ChaosHydra, Haspid ]
       Amounts: [ 10, 9, 6, 5 ]
-  
-  WagonBase: &WagonBase
-    Key: Wagon
-    Value: 2000
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Wagon.webp"
-    Title: "Wagon"
-    CanDecline: true
   
   Wagon_None:
     <<: *WagonBase
@@ -1271,15 +1303,6 @@ Rewards:
     AmountsMin: [ 2 ]
     AmountsMax: [ 5 ]
   
-  WaterWheelBase: &WaterWheelBase
-    Key: WaterWheel
-    Value: 750
-    RewardType: ResourcesGain
-    IconUrl: "/resources/Water_Wheel.webp"
-    Title: "Water Wheel"
-    CanDecline: true
-    Resources: [ Gold ]
-  
   WaterWheel_500g:
     <<: *WaterWheelBase
     Amounts: [ 500 ]
@@ -1288,14 +1311,6 @@ Rewards:
     <<: *WaterWheelBase
     Amounts: [ 1000 ]
 
-  MercenaryCampBase: &MercenaryCampBase
-    Key: MercenaryCamp
-    Value: 500
-    RewardType: Attack
-    IconUrl: "/resources/Mercenary_Camp.webp"
-    Title: "Mercenary Camp"
-    CanDecline: true
-  
   MercenaryCamp_1Attack:
     <<: *MercenaryCampBase
     Amounts: [ 1 ]
@@ -1304,14 +1319,6 @@ Rewards:
     <<: *MercenaryCampBase
     Amounts: [ 2 ]
 
-  SchoolOfWarBase: &SchoolOfWarBase
-    Key: SchoolOfWar
-    Value: 500
-    RewardType: Defense
-    IconUrl: "/resources/School_of_War.webp"
-    Title: "School of War"
-    CanDecline: true
-  
   SchoolOfWar_1Defense:
     <<: *SchoolOfWarBase
     Amounts: [ 1 ]
@@ -1320,13 +1327,6 @@ Rewards:
     <<: *SchoolOfWarBase
     Amounts: [ 2 ]
 
-  ArenaBase: &ArenaBase
-    Key: Arena
-    Value: 3000
-    IconUrl: "/resources/Arena.webp"
-    Title: "Arena"
-    CanDecline: true
-  
   ArenaAttack_2:
     <<: *ArenaBase
     RewardType: Attack

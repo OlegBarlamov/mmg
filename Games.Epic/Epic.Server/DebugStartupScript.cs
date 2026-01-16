@@ -116,7 +116,7 @@ namespace Epic.Server
             var preset1 = await GenerateRandomPreset(targetScore);
             var preset2 = await GenerateRandomPreset(targetScore);
             
-            await GlobalUnitsRepository.Create(archangelUnitType.Id, 5, hero.ArmyContainerId, true, 0);
+            // await GlobalUnitsRepository.Create(archangelUnitType.Id, 5, hero.ArmyContainerId, true, 0);
             
             int slot = 0;
             foreach (var (unitType, count) in preset1)

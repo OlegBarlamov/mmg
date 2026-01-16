@@ -37,6 +37,13 @@ namespace Epic.Data.Reward
             return Task.FromResult(rewards);
         }
 
+        public Task<IRewardEntity[]> FindNotAcceptedRewardsByPlayerIdAndRewardType(Guid playerId, RewardType rewardType)
+        {
+            var rewardIds = _playerRewards.Where(x => x.PlayerId == playerId && !x.Accepted).Select(x => x.RewardId);
+            var rewards = _rewards.Where(x => rewardIds.Contains(x.Id) && x.RewardType == rewardType).ToArray<IRewardEntity>();
+            return Task.FromResult(rewards);
+        }
+
         public Task<IRewardEntity> RemoveRewardFromPlayer(Guid playerId, Guid rewardId)
         {
             var reward = _playerRewards.First(x => x.PlayerId == playerId && x.RewardId == rewardId);
