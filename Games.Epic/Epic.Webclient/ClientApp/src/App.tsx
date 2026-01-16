@@ -185,6 +185,13 @@ export class App extends PureComponent<IAppProps, IAppState> {
                             Day {playerInfo.day}
                         </div>
                         
+                        {playerInfo.stage !== 0 && (
+                            <div className="stage-badge">
+                                <div className="stage-icon">S</div>
+                                Stage {playerInfo.stage + 1}
+                            </div>
+                        )}
+                        
                         {playerInfo.isDefeated && (
                             <div className="defeated-badge">
                                 DEFEATED

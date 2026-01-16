@@ -14,6 +14,7 @@ namespace Epic.Data.BattleDefinitions
         DateTime? ExpireAt { get; }
         int RewardVisibility { get; }
         int GuardVisibility { get; }
+        int Stage { get; }
     }
     
     public interface IBattleDefinitionEntity : IBattleDefinitionFields
@@ -32,6 +33,7 @@ namespace Epic.Data.BattleDefinitions
         public DateTime? ExpireAt { get; set; }
         public int RewardVisibility { get; set; }
         public int GuardVisibility { get; set; }
+        public int Stage { get; set; }
 
         public BattleDefinitionEntityFields()
         {
@@ -59,7 +61,8 @@ namespace Epic.Data.BattleDefinitions
                 ExpireAtDay = fields.ExpireAtDay,
                 ExpireAt = fields.ExpireAt,
                 RewardVisibility = fields.RewardVisibility,
-                GuardVisibility = fields.GuardVisibility
+                GuardVisibility = fields.GuardVisibility,
+                Stage = fields.Stage
             };
         }
     }

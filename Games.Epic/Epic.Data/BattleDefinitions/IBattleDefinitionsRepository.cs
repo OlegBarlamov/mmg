@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Epic.Data.Reward;
 
 namespace Epic.Data.BattleDefinitions
 {
@@ -12,5 +13,6 @@ namespace Epic.Data.BattleDefinitions
         Task<IBattleDefinitionEntity> GetById(Guid battleDefinitionId);
         Task SetFinished(Guid battleDefinitionId);
         Task<int> CountBattles(Guid playerId, int? day = null);
+        Task<IBattleDefinitionEntity[]> GetActiveBattlesDefinitionsWithRewardType(Guid playerId, int currentDay, RewardType rewardType);
     }
 }

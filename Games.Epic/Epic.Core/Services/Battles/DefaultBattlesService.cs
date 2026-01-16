@@ -132,7 +132,8 @@ namespace Epic.Core.Services.Battles
 
         public async Task<IBattleObject> CreateBattleFromPlayerEnemy(IPlayerObject player, IPlayerObject enemyPlayer)
         {
-            var battleDef = await BattleDefinitionsService.CreateBattleDefinition(14, 7);
+            var stage = player.Stage;
+            var battleDef = await BattleDefinitionsService.CreateBattleDefinition(14, 7, stage);
             var battleEntity = await BattlesRepository.CreateBattleAsync(
                 battleDef.Id,
                 new[] { player.Id, enemyPlayer.Id },

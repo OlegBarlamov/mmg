@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Data.Exceptions;
+using Epic.Data.Reward;
 using JetBrains.Annotations;
 
 namespace Epic.Data.BattleDefinitions
@@ -15,6 +16,12 @@ namespace Epic.Data.BattleDefinitions
         
         private readonly List<BattleDefinitionEntity> _battleDefinitions = new List<BattleDefinitionEntity>();
         private readonly List<IPlayerToBattleDefinitionEntity> _playerBattleDefinitions = new List<IPlayerToBattleDefinitionEntity>();
+        private readonly IRewardsRepository _rewardsRepository;
+
+        public InMemoryBattleDefinitionsRepository(IRewardsRepository rewardsRepository)
+        {
+            _rewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
+        }
 
         public Task<IBattleDefinitionEntity[]> GetActiveBattleDefinitionsByPlayer(Guid playerId, int day)
         {
@@ -83,6 +90,31 @@ namespace Epic.Data.BattleDefinitions
                 .Count(x => x.PlayerId == playerId &&
                             !IsFinishedOrExpired(_battleDefinitions.First(b => b.Id == x.BattleDefinitionId),
                                 targetDay)));
+        }
+
+        public async Task<IBattleDefinitionEntity[]> GetActiveBattlesDefinitionsWithRewardType(Guid playerId, int currentDay, RewardType rewardType)
+        {
+            // Get all active battle definitions for the player
+            var activeBattles = await GetActiveBattleDefinitionsByPlayer(playerId, currentDay);
+            
+            if (activeBattles.Length == 0)
+                return Array.Empty<IBattleDefinitionEntity>();
+            
+            // Get all rewards for all active battles in one bulk request
+            var battleDefinitionIds = activeBattles.Select(b => b.Id).ToList();
+            var allRewards = await _rewardsRepository.GetRewardsByBattleDefinitionIds(battleDefinitionIds);
+            
+            // Group rewards by battle definition ID and filter battles with the specified reward type
+            var rewardsByBattleId = allRewards
+                .Where(r => r.RewardType == rewardType)
+                .GroupBy(r => r.BattleDefinitionId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+            
+            var battlesWithRewardType = activeBattles
+                .Where(battle => rewardsByBattleId.ContainsKey(battle.Id))
+                .ToArray();
+            
+            return battlesWithRewardType;
         }
 
         private static bool IsFinishedOrExpired(IBattleDefinitionEntity battleDefinition, int day)

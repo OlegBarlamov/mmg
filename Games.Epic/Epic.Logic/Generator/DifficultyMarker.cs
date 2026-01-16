@@ -7,10 +7,10 @@ namespace Epic.Logic.Generator
 {
     public class DifficultyMarker
     {
-        public int MinDifficulty { get; private set; }
-        public int MaxDifficulty { get; private set; }
-        public int TargetDifficulty { get; private set; }
-        public int IdealDifficulty { get; private set; }
+        public int MinDifficulty { get; set; }
+        public int MaxDifficulty { get; set; }
+        public int TargetDifficulty { get; set; }
+        public int IdealDifficulty { get; set; }
 
         public static DifficultyMarker GenerateFromDay(Random random, IGameModeStage stage, int day)
         {
@@ -43,6 +43,17 @@ namespace Epic.Logic.Generator
                 IdealDifficulty = idealSample,
                 MinDifficulty = (int)minDifficulty,
                 MaxDifficulty = (int)maxDifficulty,
+            };
+        }
+
+        public static DifficultyMarker FromFixedDifficulty(int fixedDifficulty)
+        {
+            return new DifficultyMarker
+            {
+                TargetDifficulty = fixedDifficulty,
+                MinDifficulty = fixedDifficulty,
+                IdealDifficulty = fixedDifficulty,
+                MaxDifficulty = fixedDifficulty
             };
         }
     }

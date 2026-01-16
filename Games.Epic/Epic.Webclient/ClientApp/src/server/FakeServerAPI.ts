@@ -35,6 +35,7 @@ class ServerSideBattle implements IBattleDefinition {
         this.height = mapHeight
         this.enemyUnits = enemyUnits
     }
+    readonly stage = 0
 
 }
 

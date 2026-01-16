@@ -230,6 +230,11 @@ namespace Epic.Core.Services.Rewards
                     }
                 }
 
+                if (rewardObject.RewardType == RewardType.NextStage)
+                {
+                    await PlayersService.StageIncrement(playerId);
+                }
+
                 return new AcceptedRewardData
                 {
                     RewardId = rewardId,
@@ -294,7 +299,8 @@ namespace Epic.Core.Services.Rewards
                     break;
                 case RewardType.Attack:
                 case RewardType.Defense:
-                    // No additional data needed for Attack/Defense rewards
+                case RewardType.NextStage:
+                    // No additional data needed for Attack/Defense/NextStage rewards
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

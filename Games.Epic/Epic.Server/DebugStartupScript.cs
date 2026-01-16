@@ -110,9 +110,13 @@ namespace Epic.Server
             var hero1 = await HeroesService.CreateNew(user1Player.Name, user1Player.Id);
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
             
+            var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
+            
             // Generate random presets for both heroes
             var preset1 = await GenerateRandomPreset(targetScore);
             var preset2 = await GenerateRandomPreset(targetScore);
+            
+            await GlobalUnitsRepository.Create(archangelUnitType.Id, 5, hero.ArmyContainerId, true, 0);
             
             int slot = 0;
             foreach (var (unitType, count) in preset1)

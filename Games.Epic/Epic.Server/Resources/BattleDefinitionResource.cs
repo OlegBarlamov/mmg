@@ -18,6 +18,7 @@ namespace Epic.Server.Resources
         public BattleDefinitionUnitResource[] Units { get; }
         public bool IsFinished { get; }
         public int? ExpiresAfterDays { get; }
+        public int Stage { get; }
         
         public BattleDefinitionResource(
             IBattleDefinitionObject battleDefinitionObject, 
@@ -31,6 +32,7 @@ namespace Epic.Server.Resources
             IsFinished = battleDefinitionObject.IsFinished;
             Width = battleDefinitionObject.Width;
             Height = battleDefinitionObject.Height;
+            Stage = battleDefinitionObject.Stage;
             Rewards = rewards.SelectMany(x => BattleDefinitionRewardResource.CreateFromComposite((CompositeRewardObject)x, rewardVisibility, goldResourceId))
                 .ToArray();
             ExpiresAfterDays = playerObject != null ? battleDefinitionObject.ExpireAtDay - playerObject.Day : null;
@@ -54,6 +56,7 @@ namespace Epic.Server.Resources
         public string ThumbnailUrl { get; }
         public string Amount { get; }
         public string Description { get; }
+        public bool IsNextStage { get; }
 
         public BattleDefinitionRewardResource(RewardDescription description)
         {
@@ -61,6 +64,7 @@ namespace Epic.Server.Resources
             ThumbnailUrl = description.IconUrl;
             Amount = description.Amount;
             Description = description.Tooltip;
+            IsNextStage = description.IsNextStage;
         }
 
         public static BattleDefinitionRewardResource[] CreateFromComposite(CompositeRewardObject rewardObject, DescriptionVisibility visibility, Guid goldResourceId)

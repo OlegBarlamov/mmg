@@ -20,9 +20,10 @@ namespace Epic.Core.Services.BattleDefinitions
             int expireAtDay,
             int rewardVisibility,
             int guardVisibility,
+            int stage,
             Guid? containerId = null);
         
-        Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height);
+        Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height, int stage = 0);
         
         Task SetFinished(Guid battleDefinitionId);
     }

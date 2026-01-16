@@ -6,4 +6,5 @@ export enum RewardType {
     UnitsToUpgrade = 'UnitsToUpgrade',
     Attack = 'Attack',
     Defense = 'Defense',
+    NextStage = 'NextStage',
 }

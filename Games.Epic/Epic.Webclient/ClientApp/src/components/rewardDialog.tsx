@@ -1097,6 +1097,50 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     </div>
                 )
 
+            case RewardType.NextStage:
+                return (
+                    <div className="reward-content">
+                        <div className="reward-message">{reward.message}</div>
+                        <div className="reward-stats">
+                            <h4>Stage Advancement:</h4>
+                            <div className="stat-item">
+                                {reward.iconUrl && (
+                                    <img 
+                                        src={reward.iconUrl} 
+                                        alt="Next Stage"
+                                        className="stat-icon"
+                                    />
+                                )}
+                                <span className="stat-amount">Advance to Next Stage</span>
+                            </div>
+                        </div>
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+                        
+                        <div className="reward-actions">
+                            <button 
+                                className="reward-button accept-button" 
+                                onClick={this.handleAccept}
+                                disabled={this.state.isSubmitting}
+                            >
+                                {this.state.isSubmitting ? 'Accepting...' : 'Accept'}
+                            </button>
+                            {reward.canDecline && (
+                                <button 
+                                    className="reward-button decline-button" 
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )
+
             default:
                 return (
                     <div className="reward-content">

@@ -21,6 +21,8 @@ namespace Epic.Core.Services.BattleDefinitions
         int RewardVisibility { get; }
         int GuardVisibility { get; }
         
+        int Stage { get; }
+        
         IUnitsContainerObject UnitsContainerObject { get; }
         
         IReadOnlyCollection<IRewardObject> Rewards { get; }

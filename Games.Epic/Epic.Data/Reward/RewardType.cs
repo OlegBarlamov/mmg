@@ -9,5 +9,6 @@ namespace Epic.Data.Reward
         UnitsToUpgrade,
         Attack,
         Defense,
+        NextStage,
     }
 }

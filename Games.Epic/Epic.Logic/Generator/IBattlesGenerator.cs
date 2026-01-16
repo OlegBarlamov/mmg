@@ -7,6 +7,8 @@ using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.RewardDefinitions;
+using Epic.Data.BattleDefinitions;
+using Epic.Data.Players;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
@@ -29,12 +31,14 @@ namespace Epic.Logic.Generator
     public class BattleGenerator : IBattlesGenerator
     {
         public IBattleDefinitionsService BattleDefinitionsService { get; }
+        public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         public IGlobalUnitsRepository GlobalUnitsRepository { get; }
         public IUnitTypesRepository UnitTypesRepository { get; }
         public IUnitsContainersService UnitsContainersService { get; }
         public IRewardsRepository RewardsRepository { get; }
         public IGameResourcesRepository GameResourcesRepository { get; }
         public IPlayersService PlayersService { get; }
+        public IPlayersRepository PlayersRepository { get; }
         public ILogger<BattleGenerator> Logger { get; }
         public IGameResourcesRegistry ResourcesRegistry { get; }
         public IUnitTypesRegistry UnitTypesRegistry { get; }
@@ -47,12 +51,14 @@ namespace Epic.Logic.Generator
         
         public BattleGenerator(
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
+            [NotNull] IBattleDefinitionsRepository battleDefinitionsRepository,
             [NotNull] IGlobalUnitsRepository globalUnitsRepository,
             [NotNull] IUnitTypesRepository unitTypesRepository,
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IGameResourcesRepository gameResourcesRepository,
             [NotNull] IPlayersService playersService,
+            [NotNull] IPlayersRepository playersRepository,
             [NotNull] ILogger<BattleGenerator> logger,
             [NotNull] IGameResourcesRegistry resourcesRegistry,
             [NotNull] IUnitTypesRegistry unitTypesRegistry,
@@ -62,12 +68,14 @@ namespace Epic.Logic.Generator
             [NotNull] IGameModeProvider gameModeProvider)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
+            BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
             UnitTypesRepository = unitTypesRepository ?? throw new ArgumentNullException(nameof(unitTypesRepository));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            PlayersRepository = playersRepository ?? throw new ArgumentNullException(nameof(playersRepository));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ResourcesRegistry = resourcesRegistry ?? throw new ArgumentNullException(nameof(resourcesRegistry));
             UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
@@ -79,15 +87,40 @@ namespace Epic.Logic.Generator
 
         public async Task GenerateSingle(Guid playerId, int day, int stage)
         {
+            var player = await PlayersService.GetById(playerId);
             var gameMode = GameModeProvider.GetGameMode();
             var gameStage = gameMode.Stages[Math.Min(stage, gameMode.Stages.Length - 1)];
             var rewardFactor = gameStage.RewardsFactor;
             
+            // Check if we should generate a NextStage battle
+            bool isNextStageBattle = false;
+            int fixedDifficulty = 0;
+            bool hasNextStageAvailable = stage < gameMode.Stages.Length - 1;
+            if (hasNextStageAvailable)
+            {
+                var nextStage = gameMode.Stages[stage + 1];
+                if (nextStage.GuardDifficulty > 0)
+                {
+                    // Check if player already has battles with NextStage reward
+                    var battlesWithNextStage = await BattleDefinitionsRepository.GetActiveBattlesDefinitionsWithRewardType(playerId, player.Day, RewardType.NextStage);
+                    battlesWithNextStage = Array.Empty<IBattleDefinitionEntity>();
+                    
+                    // Generate NextStage battle if none exists and 25% chance
+                    if (battlesWithNextStage.Length == 0 && _random.NextDouble() < 0.25)
+                    {
+                        isNextStageBattle = true;
+                        fixedDifficulty = nextStage.GuardDifficulty;
+                        Logger.LogInformation($"Generating NextStage battle with fixed difficulty: {fixedDifficulty}");
+                    }
+                }
+            }
+            
             var orderedUnitTypes = UnitTypesRegistry.AllOrderedByValue;
             var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;
             var resources = ResourcesRegistry.GetAll();
-            var player = await PlayersService.GetById(playerId);
+            
             var difficulty = DifficultyMarker.GenerateFromDay(_random, gameStage, day);
+            difficulty.TargetDifficulty =  isNextStageBattle ? fixedDifficulty : difficulty.TargetDifficulty;
             
             Logger.LogInformation($"Generated Difficulty day {day}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
 
@@ -116,7 +149,7 @@ namespace Epic.Logic.Generator
             int duration = Math.Max(1, (int)Math.Round(1 + t * 3) + _random.Next(-2, 3));
 
             var rewardVisibility = 0;
-            if (difficulty.IdealDifficulty > 1000)
+            if (!isNextStageBattle && difficulty.IdealDifficulty > 1000)
             {
                 var rewardVisibilityChance = _random.NextDouble();
                 if (rewardVisibilityChance < 0.06)
@@ -126,7 +159,7 @@ namespace Epic.Logic.Generator
             }
 
             var guardVisibility = 0;
-            if (difficulty.IdealDifficulty > 2000)
+            if (!isNextStageBattle && difficulty.IdealDifficulty > 2000)
             {
                 var guardVisibilityChance = _random.NextDouble();
                 if (guardVisibilityChance < 0.06)
@@ -142,14 +175,24 @@ namespace Epic.Logic.Generator
                     day + duration,
                     rewardVisibility,
                     guardVisibility,
+                    stage,
                     container.Id);
 
-
-            var rewardTypeIndex = _random.Next(0, Enum.GetValues(typeof(GeneratedRewardTypes))
-                .Cast<int>()
-                .Max() + 1);
-
-            var rewardType = (GeneratedRewardTypes)rewardTypeIndex;
+            // For NextStage battles, use NextStage reward type; otherwise, randomly select
+            GeneratedRewardTypes rewardType;
+            if (isNextStageBattle)
+            {
+                rewardType = GeneratedRewardTypes.NextStage;
+            }
+            else
+            {
+                var availableRewardTypes = Enum.GetValues(typeof(GeneratedRewardTypes))
+                    .Cast<int>()
+                    .Where(x => x != (int)GeneratedRewardTypes.NextStage)
+                    .ToArray();
+                var rewardTypeIndex = _random.Next(0, availableRewardTypes.Length);
+                rewardType = (GeneratedRewardTypes)availableRewardTypes[rewardTypeIndex];
+            }
 
             if (rewardType == GeneratedRewardTypes.Gold)
             {
@@ -286,7 +329,7 @@ namespace Epic.Logic.Generator
                     var guardBattleWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + (unitToBuy.Value * unitToBuy.ToTrainAmount / 2) / 300);
                     var guardBattleHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + (unitToBuy.Value * unitToBuy.ToTrainAmount / 2) / 300);
                     
-                    var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
+                    var guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight, stage);
                     
                     await GlobalUnitsRepository.Create(unitToBuy.Id, Math.Max(1, unitToBuy.ToTrainAmount / 2),
                         guardBattleDefinition.ContainerId, true, guardBattleDefinition.Height / 2);
@@ -300,7 +343,7 @@ namespace Epic.Logic.Generator
             {
                 var maxRewardIndex = BinarySearch.FindClosestNotExceedingIndex(RewardDefinitionsRegistry.AllOrdered,
                     group => group.First().Value, difficulty.TargetDifficulty);
-                
+
                 maxRewardIndex = Math.Max(0, maxRewardIndex);
                 var maxRewardGroupValue = RewardDefinitionsRegistry.AllOrdered[maxRewardIndex].First().Value;
                 for (var i = maxRewardIndex + 1; i < RewardDefinitionsRegistry.AllOrdered.Count; i++)
@@ -308,17 +351,20 @@ namespace Epic.Logic.Generator
                     if (RewardDefinitionsRegistry.AllOrdered[i].First().Value <= maxRewardGroupValue)
                         maxRewardIndex++;
                 }
-                
+
                 var rewardGroup = RewardDefinitionsRegistry.AllOrdered[_random.Next(maxRewardIndex + 1)];
 
                 var rewardTemplates = rewardGroup.ToArray();
                 var variation = _random.Next(rewardTemplates.Length);
                 var targetRewardTemplate = rewardTemplates[variation];
-                
-                Logger.LogInformation($"Generating reward template: {targetRewardTemplate.Name}; variant: {variation + 1}");;
-                
-                await RewardDefinitionsService.CreateRewardsFromDefinition(targetRewardTemplate, battleDefinition.Id, rewardFactor);
-                
+
+                Logger.LogInformation(
+                    $"Generating reward template: {targetRewardTemplate.Name}; variant: {variation + 1}");
+                ;
+
+                await RewardDefinitionsService.CreateRewardsFromDefinition(targetRewardTemplate, battleDefinition.Id,
+                    rewardFactor);
+
                 var remainingValue = difficulty.TargetDifficulty - rewardGroup.First().Value;
                 if (remainingValue > 500)
                 {
@@ -326,22 +372,23 @@ namespace Epic.Logic.Generator
                     var resourceTypes = new List<IGameResourceEntity>();
                     var resourcesAmounts = new List<int>();
                     var resourceTypesCount = resourcesValue > resources.Sum(x => x.Price) / 2
-                        ? _random.Next(1, resources.Count) : 1;
+                        ? _random.Next(1, resources.Count)
+                        : 1;
                     var valuePerResource = (double)resourcesValue / resourceTypesCount;
                     var availableResources = new List<IGameResourceEntity>(resources);
                     for (var i = 0; i < resourceTypesCount; i++)
                     {
                         var resourceType = availableResources[_random.Next(0, availableResources.Count)];
                         availableResources.Remove(resourceType);
-                    
+
                         var resourceAmount = Math.Max(1,
                             (int)Math.Ceiling(valuePerResource / resourceType.Price));
                         resourceAmount = RoundToFriendlyNumber(resourceAmount);
-                    
+
                         resourceTypes.Add(resourceType);
                         resourcesAmounts.Add((int)(resourceAmount * rewardFactor));
                     }
-                
+
                     await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                     {
                         RewardType = RewardType.ResourcesGain,
@@ -353,6 +400,18 @@ namespace Epic.Logic.Generator
                         Ids = resourceTypes.Select(x => x.Id).ToArray(),
                     });
                 }
+            } else if (rewardType == GeneratedRewardTypes.NextStage)
+            {
+                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                {
+                    RewardType = RewardType.NextStage,
+                    Amounts = Array.Empty<int>(),
+                    CanDecline = true,
+                    GuardBattleDefinitionId = null,
+                    IconUrl = null,
+                    Title = "Stage Advancement",
+                    Message = "Advance to the next stage",
+                });
             }
         }
 
@@ -375,6 +434,7 @@ namespace Epic.Logic.Generator
             UnitsGain,
             UnitsToBuy,
             Template,
+            NextStage,
         }
         
         public static int RoundToFriendlyNumber(int value)

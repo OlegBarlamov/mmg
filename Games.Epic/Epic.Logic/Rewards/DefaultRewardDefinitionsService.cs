@@ -71,7 +71,7 @@ namespace Epic.Logic.Rewards
                 var guardBattleHeight = Math.Max(BattleConstants.StartBattleHeight,
                     Math.Min(BattleConstants.MaxBattleHeight, _random.Next(minBattleHeight, maxBattleHeight + 1)));
                 
-                guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight);
+                guardBattleDefinition = await BattleDefinitionsService.CreateBattleDefinition(guardBattleWidth, guardBattleHeight, 0);
 
                 if (rewardDefinitionEntity.GuardUnitTypeIds.Length == 1)
                 {

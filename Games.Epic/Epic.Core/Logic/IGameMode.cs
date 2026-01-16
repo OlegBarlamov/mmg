@@ -20,5 +20,6 @@ namespace Epic.Core.Logic
         int DaysLimit { get; }
         int WideStdChance { get; }
         double BattlesCountFactor { get; }
+        int GuardDifficulty { get; }
     }
 }

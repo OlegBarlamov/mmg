@@ -259,6 +259,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         return armyUnits.some(unit => unit.slotIndex >= battleHeight)
     }
 
+    private hasNextStageReward = (battle: IBattleDefinition): boolean => {
+        return battle.rewards.some(reward => reward.isNextStage)
+    }
+
     private handleBattleConfirmationAccept = () => {
         if (this.state.pendingBattle) {
             this.props.onBattleSelected(this.state.pendingBattle)
@@ -365,7 +369,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                         {this.state.availableBattles.map((battle, index) => (
                                             <tr 
                                                 key={index} 
-                                                className="battle-row"
+                                                className={`battle-row ${this.hasNextStageReward(battle) ? 'next-stage-battle' : ''}`}
                                                 onMouseEnter={() => this.handleBattleRowHover(battle.height)}
                                                 onMouseLeave={() => this.handleBattleRowHover(null)}
                                             >
@@ -396,21 +400,32 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                 <td className="menu-battle-rewards">
                                                     <div className="rewards-horizontal">
                                                         {battle.rewards.map((reward, rewardIndex) => (
-                                                            <div 
-                                                                key={rewardIndex} 
-                                                                className="reward-horizontal-item"
-                                                                onMouseEnter={(e) => this.handleRewardMouseEnter(e, reward.description)}
-                                                                onMouseLeave={this.handleRewardMouseLeave}
-                                                            >
-                                                                <img 
-                                                                    src={reward.thumbnailUrl} 
-                                                                    alt={reward.name}
-                                                                    className="reward-thumbnail"
-                                                                />
-                                                                {reward.amount && (
-                                                                    <span className="reward-amount">{reward.amount}</span>
-                                                                )}
-                                                            </div>
+                                                            reward.isNextStage ? (
+                                                                <div 
+                                                                    key={rewardIndex} 
+                                                                    className="reward-text-item"
+                                                                    onMouseEnter={(e) => this.handleRewardMouseEnter(e, reward.description)}
+                                                                    onMouseLeave={this.handleRewardMouseLeave}
+                                                                >
+                                                                    <span className="next-stage-text">Next Stage</span>
+                                                                </div>
+                                                            ) : (
+                                                                <div 
+                                                                    key={rewardIndex} 
+                                                                    className="reward-horizontal-item"
+                                                                    onMouseEnter={(e) => this.handleRewardMouseEnter(e, reward.description)}
+                                                                    onMouseLeave={this.handleRewardMouseLeave}
+                                                                >
+                                                                    <img 
+                                                                        src={reward.thumbnailUrl} 
+                                                                        alt={reward.name}
+                                                                        className="reward-thumbnail"
+                                                                    />
+                                                                    {reward.amount && (
+                                                                        <span className="reward-amount">{reward.amount}</span>
+                                                                    )}
+                                                                </div>
+                                                            )
                                                         ))}
                                                     </div>
                                                 </td>

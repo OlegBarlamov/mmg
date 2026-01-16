@@ -120,6 +120,31 @@
     font-weight: bold;
 }
 
+.stage-badge {
+    background: linear-gradient(145deg, #9b59b6, #8e44ad);
+    border: 2px solid #6c3483;
+    border-radius: 15px;
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stage-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
 .level-badge {
     background: linear-gradient(145deg, #9b59b6, #8e44ad);
     border: 2px solid #6c3483;
@@ -286,6 +311,11 @@
     }
     
     .day-badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+    
+    .stage-badge {
         font-size: 0.75rem;
         padding: 5px 10px;
     }

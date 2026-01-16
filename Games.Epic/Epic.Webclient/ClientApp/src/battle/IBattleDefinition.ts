@@ -10,6 +10,7 @@ export interface IBattleDefinitionReward {
     thumbnailUrl: string
     amount: string
     description: string
+    isNextStage: boolean
 }
 
 export interface IBattleDefinition {
@@ -20,4 +21,5 @@ export interface IBattleDefinition {
     readonly rewards: IBattleDefinitionReward[]
     readonly expiresAfterDays: number
     readonly isFinished: boolean
+    readonly stage: number
 }

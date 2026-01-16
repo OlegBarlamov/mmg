@@ -17,6 +17,7 @@ namespace Epic.Core.Services.BattleDefinitions
         public int ExpireAtDay { get; set; }
         public int RewardVisibility { get; set; }
         public int GuardVisibility { get; set; }
+        public int Stage { get; set; }
         public IUnitsContainerObject UnitsContainerObject { get; set; }
         public IReadOnlyCollection<IGlobalUnitObject> Units { get; set; }
         public IReadOnlyCollection<Guid> RewardsIds { get; set; }
@@ -38,6 +39,7 @@ namespace Epic.Core.Services.BattleDefinitions
                 ExpireAtDay = entity.ExpireAtDay,
                 RewardVisibility = entity.RewardVisibility,
                 GuardVisibility = entity.GuardVisibility,
+                Stage = entity.Stage,
             };
         }
 

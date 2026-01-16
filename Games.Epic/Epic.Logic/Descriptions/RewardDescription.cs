@@ -13,6 +13,7 @@ namespace Epic.Logic.Descriptions
         public string IconUrl { get; set; }
         public string Amount { get; set; }
         public string Tooltip { get; set; }
+        public bool IsNextStage { get; set; }
 
         private RewardDescription()
         {
@@ -314,6 +315,13 @@ namespace Epic.Logic.Descriptions
                         } };
                     case DescriptionVisibility.TypeOnly:
                     case DescriptionVisibility.MaskedSize:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Attack",
+                            Amount = "?",
+                            IconUrl = string.Empty,
+                            Tooltip = $"Gain Attack",
+                        } };
                     case DescriptionVisibility.ApproximateSize:
                     case DescriptionVisibility.Full:
                         return new [] { new RewardDescription
@@ -343,6 +351,13 @@ namespace Epic.Logic.Descriptions
                         } };
                     case DescriptionVisibility.TypeOnly:
                     case DescriptionVisibility.MaskedSize:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Defense",
+                            Amount = "?",
+                            IconUrl = string.Empty,
+                            Tooltip = $"Gain Defense",
+                        } };
                     case DescriptionVisibility.ApproximateSize:
                     case DescriptionVisibility.Full:
                         return new [] { new RewardDescription
@@ -351,6 +366,28 @@ namespace Epic.Logic.Descriptions
                             Amount = amount > 0 ? $"+{amount}" : string.Empty,
                             IconUrl = string.Empty,
                             Tooltip = $"Gain {amount} Defense",
+                        } };
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
+
+            if (reward.RewardType == RewardType.NextStage)
+            {
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                    case DescriptionVisibility.TypeOnly:
+                    case DescriptionVisibility.MaskedSize:
+                    case DescriptionVisibility.ApproximateSize:
+                    case DescriptionVisibility.Full:
+                        return new [] { new RewardDescription
+                        {
+                            Name = "Next Stage",
+                            Amount = string.Empty,
+                            IconUrl = string.Empty,
+                            Tooltip = "Advance to the next stage",
+                            IsNextStage = true,
                         } };
                     default:
                         throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);

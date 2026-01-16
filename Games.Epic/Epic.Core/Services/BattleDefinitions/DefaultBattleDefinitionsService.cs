@@ -7,6 +7,7 @@ using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Players;
+using Epic.Data.Reward;
 using JetBrains.Annotations;
 
 namespace Epic.Core.Services.BattleDefinitions
@@ -69,14 +70,15 @@ namespace Epic.Core.Services.BattleDefinitions
             int expireAtDay,
             int rewardVisibility,
             int guardVisibility,
+            int stage,
             Guid? containerId = null)
         {
-            return CreateBattleDefinitionInternal(width, height, expireAtDay, rewardVisibility, guardVisibility, containerId, playerId);
+            return CreateBattleDefinitionInternal(width, height, expireAtDay, rewardVisibility, guardVisibility, stage, containerId, playerId);
         }
 
-        public Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height)
+        public Task<IBattleDefinitionObject> CreateBattleDefinition(int width, int height, int stage = 0)
         {
-            return CreateBattleDefinitionInternal(width, height, Int32.MaxValue, 0, 0);
+            return CreateBattleDefinitionInternal(width, height, Int32.MaxValue, 0, 0, stage);
         }
 
         private async Task<IBattleDefinitionObject> CreateBattleDefinitionInternal(
@@ -85,6 +87,7 @@ namespace Epic.Core.Services.BattleDefinitions
             int expireAtDay,
             int rewardVisibility,
             int guardVisibility,
+            int stage,
             Guid? containerId = null,
             Guid? playerId = null)
         {
@@ -103,6 +106,7 @@ namespace Epic.Core.Services.BattleDefinitions
                 ExpireAt = null,
                 RewardVisibility = rewardVisibility,
                 GuardVisibility = guardVisibility,
+                Stage = stage,
             };
             var entity = playerId.HasValue
                 ? await BattleDefinitionsRepository.Create(playerId.Value, fields)

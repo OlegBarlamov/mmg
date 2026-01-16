@@ -25,6 +25,11 @@ namespace Epic.Data.Reward
             return Task.FromResult(_rewards.Where(x => x.BattleDefinitionId == battleDefinitionId).ToArray<IRewardEntity>());
         }
 
+        public Task<IRewardEntity[]> GetRewardsByBattleDefinitionIds(IReadOnlyList<Guid> battleDefinitionIds)
+        {
+            return Task.FromResult(_rewards.Where(x => battleDefinitionIds.Contains(x.BattleDefinitionId)).ToArray<IRewardEntity>());
+        }
+
         public Task<IRewardEntity[]> FindNotAcceptedRewardsByPlayerId(Guid playerId)
         {
             var rewardIds = _playerRewards.Where(x => x.PlayerId == playerId && !x.Accepted).Select(x => x.RewardId);
