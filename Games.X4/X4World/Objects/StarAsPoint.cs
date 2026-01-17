@@ -20,6 +20,11 @@ namespace X4World.Objects
     public class StarAsPoint : IWrappedDetails 
     {
         public Vector3 Position { get; set; }
+        public void SetPosition(Vector3 position)
+        {
+            Position = position;
+        }
+
         public IWrappedDetails Parent { get; }
 
         object IWrappedDetails.AggregatedData => AggregatedData;

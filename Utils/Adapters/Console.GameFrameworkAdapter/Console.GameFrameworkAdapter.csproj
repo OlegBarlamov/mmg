@@ -6,6 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\..\SDK\FrameworkSDK.MonoGame\FrameworkSDK.MonoGame.csproj" />
       <ProjectReference Include="..\..\..\SDK\FrameworkSDK\FrameworkSDK.csproj" />
       <ProjectReference Include="..\..\..\SDK\MonoGameExtensions\MonoGameExtensions.csproj" />

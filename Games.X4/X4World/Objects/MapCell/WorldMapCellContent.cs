@@ -15,10 +15,11 @@ namespace X4World.Objects
         public Vector3 Position
         {
             get => _position;
-            set
-            {
-                // Nothing
-            } 
+        }
+
+        public void SetPosition(Vector3 position)
+        {
+            
         }
 
         object IWrappedDetails.AggregatedData => WorldMapCellAggregatedData;

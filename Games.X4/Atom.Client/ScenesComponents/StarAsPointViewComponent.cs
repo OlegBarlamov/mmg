@@ -31,7 +31,7 @@ namespace Atom.Client.Components
             SetDataModel(model);
             
             Mesh.Material = new TextureMaterial(ResourcePackage.White);
-            Mesh.Position = DataModel.GetWorldPosition();
+            Mesh.SetPosition(DataModel.GetWorldPosition());
             Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 10);
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Atom.Client.Resources;
@@ -13,6 +14,7 @@ using FrameworkSDK.Common;
 using FrameworkSDK.MonoGame;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources;
+using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using X4World.Generation;
@@ -36,6 +38,7 @@ namespace Atom.Client
         private IExecutableCommandsCollection ExecutableCommandsCollection { get; }
         public IRandomSeedProvider RandomSeedProvider { get; }
         public IConsoleController ConsoleController { get; }
+        private IAppTerminator AppTerminator { get; }
 
         private SceneBase _currentScene;
         private LoadingScene _loadingScene;
@@ -53,7 +56,8 @@ namespace Atom.Client
             [NotNull] IRandomService randomService,
             [NotNull] IExecutableCommandsCollection executableCommandsCollection,
             [NotNull] IRandomSeedProvider randomSeedProvider,
-            [NotNull] IConsoleController consoleController)
+            [NotNull] IConsoleController consoleController,
+            [NotNull] IAppTerminator appTerminator)
         {
             ScenesResolverHolder = scenesResolverHolder ?? throw new ArgumentNullException(nameof(scenesResolverHolder));
             LoadingSceneResources = loadingSceneResources ?? throw new ArgumentNullException(nameof(loadingSceneResources));
@@ -65,6 +69,7 @@ namespace Atom.Client
             ExecutableCommandsCollection = executableCommandsCollection ?? throw new ArgumentNullException(nameof(executableCommandsCollection));
             RandomSeedProvider = randomSeedProvider ?? throw new ArgumentNullException(nameof(randomSeedProvider));
             ConsoleController = consoleController ?? throw new ArgumentNullException(nameof(consoleController));
+            AppTerminator = appTerminator ?? throw new ArgumentNullException(nameof(appTerminator));
         }
 
         protected override void Dispose()
@@ -113,7 +118,16 @@ namespace Atom.Client
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            
+
+#if DEBUG
+            // Exit cleanly when debugger detaches on macOS
+            if (!Debugger.IsAttached)
+            {
+                AppTerminator.Terminate();
+                return;
+            }
+#endif
+
             DefaultConsoleManipulator.Update(gameTime);
         }
 

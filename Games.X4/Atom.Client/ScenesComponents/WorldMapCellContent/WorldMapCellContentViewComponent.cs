@@ -16,7 +16,7 @@ namespace Atom.Client.Components
         {
             SetDataModel(dataModel);
 
-            Mesh.Position = DataModel.GetWorldPosition();
+            Mesh.SetPosition(DataModel.GetWorldPosition());
             Mesh.Scale = DataModel.Size;
             Mesh.Rotation = DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.Rotation;
             DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.RotationChanged += WorldMapCellTextureDataOnRotationChanged;
