@@ -3,6 +3,7 @@ import React, { PureComponent } from "react";
 import { IRewardToAccept, IPriceResource } from "../rewards/IRewardToAccept";
 import { RewardType } from "../rewards/RewardType";
 import { IResourceInfo } from "../services/serverAPI";
+import { MarketRewardComponent } from "./marketRewardComponent";
 
 export interface IRewardDialogProps {
     reward: IRewardToAccept
@@ -15,10 +16,12 @@ export interface IRewardDialogProps {
 interface IRewardDialogState {
     unitQuantities: number[]
     availableResources: { [resourceId: string]: number }
+    resourcePrices: { [resourceId: string]: number } // resource prices from server
     isSubmitting: boolean
     errorMessage: string | null
     upgradableUnits: IUpgradableUnit[] | null
     upgradeQuantities: number[]
+    marketTransactions: { [resourceId: string]: number } // positive = buying, negative = selling
 }
 
 interface IUpgradableUnit {
@@ -46,10 +49,12 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
         this.state = { 
             unitQuantities: [],
             availableResources: {},
+            resourcePrices: {},
             isSubmitting: false,
             errorMessage: null,
             upgradableUnits: null,
-            upgradeQuantities: []
+            upgradeQuantities: [],
+            marketTransactions: {}
         }
     }
 
@@ -89,6 +94,44 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     .filter(slotIndex => slotIndex !== -1) || []
                 
                 // Update the reward amounts before calling onAccept
+                this.props.reward.amounts = amounts
+            }
+            
+            // For Market, calculate net changes for all resources (including gold) and send in standard format
+            if (this.props.reward.rewardType === RewardType.Market) {
+                const { marketTransactions, resourcePrices } = this.state
+                const goldResourceId = this.getGoldResourceId()
+                
+                // Calculate gold cost/gain
+                let goldCost = 0
+                let goldGain = 0
+                Object.entries(marketTransactions).forEach(([resourceId, amount]) => {
+                    const resourcePrice = resourcePrices[resourceId] || 0
+                    if (amount > 0) {
+                        // Buying: 5x price
+                        goldCost += amount * resourcePrice * 5
+                    } else if (amount < 0) {
+                        // Selling: full price
+                        goldGain += Math.abs(amount) * resourcePrice
+                    }
+                })
+                const netGoldChange = goldGain - goldCost
+                
+                // Create amounts array matching resourcesRewards array
+                // Each amount[i] corresponds to resourcesRewards[i]
+                const amounts: number[] = []
+                if (this.props.reward.resourcesRewards) {
+                    this.props.reward.resourcesRewards.forEach((resource) => {
+                        if (resource.id === goldResourceId) {
+                            // Gold: net change (positive = gain, negative = cost)
+                            amounts.push(netGoldChange)
+                        } else {
+                            // Other resources: transaction amount (positive = buying, negative = selling)
+                            const transactionAmount = marketTransactions[resource.id] || 0
+                            amounts.push(transactionAmount)
+                        }
+                    })
+                }
                 this.props.reward.amounts = amounts
             }
             
@@ -161,6 +204,61 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                 unitQuantities,
                 availableResources
             })
+            } else if (reward.rewardType === RewardType.Market) {
+                // Initialize market state
+                if (serviceLocator) {
+                    try {
+                        const serverAPI = serviceLocator.serverAPI()
+                        const resources: IResourceInfo[] = await serverAPI.getResources()
+                        const availableResources: { [resourceId: string]: number } = {}
+                        const resourcePrices: { [resourceId: string]: number } = {}
+                        
+                        // First, add player's current resources
+                        resources.forEach((resource: IResourceInfo) => {
+                            availableResources[resource.id] = resource.amount
+                            resourcePrices[resource.id] = resource.price
+                        })
+                        
+                        // Then, add any resources from the reward itself (e.g., gold given as part of the reward)
+                        // Also ensure all reward resources have prices set
+                        if (reward.resourcesRewards) {
+                            reward.resourcesRewards.forEach((rewardResource) => {
+                                const existingAmount = availableResources[rewardResource.id] || 0
+                                const rewardAmount = reward.amounts && reward.resourcesRewards 
+                                    ? (reward.amounts[reward.resourcesRewards.findIndex(r => r.id === rewardResource.id)] || 0)
+                                    : 0
+                                
+                                // Add reward amount to existing amount
+                                availableResources[rewardResource.id] = existingAmount + rewardAmount
+                                
+                                // Set price - prioritize server resource price, then reward resource price
+                                // Always set price from reward resource if it's not already set or if reward resource has a price
+                                if (!resourcePrices[rewardResource.id] || resourcePrices[rewardResource.id] === 0) {
+                                    // Try to find price from server resources first
+                                    const serverResource = resources.find(r => r.id === rewardResource.id)
+                                    if (serverResource && serverResource.price !== undefined && serverResource.price > 0) {
+                                        resourcePrices[rewardResource.id] = serverResource.price
+                                    } else if (rewardResource.price !== undefined && rewardResource.price > 0) {
+                                        resourcePrices[rewardResource.id] = rewardResource.price
+                                    }
+                                }
+                            })
+                        }
+                        
+                        this.setState({
+                            availableResources,
+                            resourcePrices,
+                            marketTransactions: {}
+                        })
+                    } catch (error) {
+                        console.error('Failed to fetch resources for market:', error)
+                        this.setState({
+                            availableResources: {},
+                            resourcePrices: {},
+                            marketTransactions: {}
+                        })
+                    }
+                }
         } else if (reward.rewardType === RewardType.UnitsToUpgrade) {
             // Initialize upgradable units for UnitsToUpgrade case
             if (serviceLocator) {
@@ -249,7 +347,9 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                 this.setState({ 
                     upgradableUnits: null,
                     upgradeQuantities: [],
-                    availableResources: {}
+                    availableResources: {},
+                    resourcePrices: {},
+                    marketTransactions: {}
                 })
             }
         }
@@ -1141,6 +1241,23 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     </div>
                 )
 
+            case RewardType.Market:
+                return (
+                    <MarketRewardComponent
+                        reward={reward}
+                        availableResources={this.state.availableResources}
+                        resourcePrices={this.state.resourcePrices}
+                        marketTransactions={this.state.marketTransactions}
+                        isSubmitting={this.state.isSubmitting}
+                        errorMessage={this.state.errorMessage}
+                        onBuy={this.handleMarketBuy}
+                        onSell={this.handleMarketSell}
+                        onReset={this.handleMarketReset}
+                        onAccept={this.handleAccept}
+                        onDecline={this.handleDecline}
+                    />
+                )
+
             default:
                 return (
                     <div className="reward-content">
@@ -1172,6 +1289,100 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     </div>
                 )
         }
+    }
+
+    private getGoldResourceId = (): string => {
+        // Find gold resource ID from available resources or reward resources
+        const { availableResources } = this.state
+        const goldKey = Object.keys(availableResources).find(key => 
+            key.toLowerCase().includes('gold')
+        )
+        if (goldKey) return goldKey
+        
+        // Fallback: check reward resources
+        if (this.props.reward.resourcesRewards) {
+            const goldResource = this.props.reward.resourcesRewards.find(r => 
+                r.name.toLowerCase().includes('gold')
+            )
+            if (goldResource) return goldResource.id
+        }
+        
+        return Object.keys(availableResources)[0] || ''
+    }
+
+    private handleMarketBuy = (resourceId: string, amount: number) => {
+        const { marketTransactions, availableResources, resourcePrices } = this.state
+        const goldResourceId = this.getGoldResourceId()
+        const currentGold = availableResources[goldResourceId] || 0
+        const currentTransaction = marketTransactions[resourceId] || 0
+        const newTransaction = currentTransaction + amount
+        const resourcePrice = resourcePrices[resourceId] || 0
+        
+        if (resourcePrice <= 0) {
+            console.warn('Cannot buy resource with invalid price:', resourceId, resourcePrice)
+            return
+        }
+        
+        const buyPrice = resourcePrice * 5 // Buying at 5x price
+        
+        // Calculate total cost and gain for all transactions (including the new one)
+        let totalCost = 0
+        let totalGain = 0
+        const updatedTransactions = { ...marketTransactions, [resourceId]: newTransaction }
+        
+        // Calculate gold cost/gain from all resource transactions (excluding gold itself)
+        Object.entries(updatedTransactions).forEach(([rid, amt]) => {
+            if (rid === goldResourceId) return // Skip gold itself
+            
+            const rPrice = resourcePrices[rid] || 0
+            if (amt > 0) {
+                // Buying: 5x price
+                totalCost += amt * rPrice * 5
+            } else if (amt < 0) {
+                // Selling: full price
+                totalGain += Math.abs(amt) * rPrice
+            }
+        })
+        
+        const netGoldChange = totalGain - totalCost
+        const finalGold = currentGold + netGoldChange
+        
+        // Check if we have enough gold (final gold must be >= 0)
+        // finalGold already accounts for the cost of this purchase, so we just need to check it's non-negative
+        if (finalGold >= 0) {
+            this.setState({ marketTransactions: updatedTransactions })
+        } else {
+            console.warn('Not enough gold to buy:', {
+                resourceId,
+                amount,
+                currentGold,
+                totalCost,
+                totalGain,
+                netGoldChange,
+                finalGold
+            })
+        }
+    }
+
+    private handleMarketSell = (resourceId: string, amount: number) => {
+        const { marketTransactions, availableResources } = this.state
+        const currentAmount = availableResources[resourceId] || 0
+        const currentTransaction = marketTransactions[resourceId] || 0
+        const newTransaction = currentTransaction - amount
+        
+        // Check if we have enough resources to sell
+        if (currentAmount + currentTransaction >= amount) {
+            const newTransactions = { ...marketTransactions }
+            newTransactions[resourceId] = newTransaction
+            this.setState({ marketTransactions: newTransactions })
+        }
+    }
+
+    private handleMarketReset = (resourceId: string) => {
+        const { marketTransactions } = this.state
+        const newTransactions = { ...marketTransactions }
+        delete newTransactions[resourceId]
+        this.setState({ marketTransactions: newTransactions })
     }
 
     render() {

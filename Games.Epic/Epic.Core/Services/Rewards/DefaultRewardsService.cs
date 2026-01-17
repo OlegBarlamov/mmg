@@ -205,11 +205,54 @@ namespace Epic.Core.Services.Rewards
                     }
                 }
 
-                var resources = rewardObject.Resources;
-                if (resources.Count > 0)
+                // Handle Market rewards separately before standard resource handling
+                if (rewardObject.RewardType == RewardType.Market)
                 {
-                    resourcesGiven = resources.Select((x, i) => ResourceAmount.Create(x, amounts[i])).ToArray();
-                    await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
+                    // Market uses standard resource handling: amounts array contains net changes for each resource
+                    // Positive amounts = resources to add, negative amounts = resources to remove
+                    // Gold changes are included in the resources list
+                    // Client calculates all net changes including gold cost/gain based on 5x buy price and full sell price
+                    
+                    var resources = rewardObject.Resources;
+                    if (resources.Count > 0)
+                    {
+                        // Validate that player has enough resources for negative amounts (selling)
+                        for (int i = 0; i < resources.Count && i < amounts.Length; i++)
+                        {
+                            if (amounts[i] < 0)
+                            {
+                                var currentAmount = await GameResourcesRepository.GetResourceByPlayer(resources[i].Id, playerId);
+                                if (Math.Abs(amounts[i]) > currentAmount.Amount)
+                                    throw new NotEnoughResourcesToPayException();
+                            }
+                        }
+                        
+                        // Apply net changes using GiveResource (handles both positive and negative deltas)
+                        for (int i = 0; i < resources.Count && i < amounts.Length; i++)
+                        {
+                            if (amounts[i] != 0)
+                            {
+                                await GameResourcesRepository.GiveResource(resources[i].Id, playerId, amounts[i]);
+                            }
+                        }
+                        
+                        // Set resourcesGiven for positive amounts only (resources gained)
+                        resourcesGiven = resources
+                            .Select((x, i) => new { Resource = x, Amount = i < amounts.Length ? amounts[i] : 0 })
+                            .Where(x => x.Amount > 0)
+                            .Select(x => ResourceAmount.Create(x.Resource, x.Amount))
+                            .ToArray();
+                    }
+                }
+                else
+                {
+                    // Standard resource handling for non-Market rewards
+                    var resources = rewardObject.Resources;
+                    if (resources.Count > 0)
+                    {
+                        resourcesGiven = resources.Select((x, i) => ResourceAmount.Create(x, amounts[i])).ToArray();
+                        await GameResourcesRepository.GiveResources(resourcesGiven, playerId);
+                    }
                 }
 
                 if (rewardObject.RewardType == RewardType.Attack)
@@ -301,6 +344,11 @@ namespace Epic.Core.Services.Rewards
                 case RewardType.Defense:
                 case RewardType.NextStage:
                     // No additional data needed for Attack/Defense/NextStage rewards
+                    break;
+                case RewardType.Market:
+                    // Load all resources for market trading
+                    var allResourcesByKeys = await GameResourcesRepository.GetAllResourcesByKeys();
+                    rewardObject.Resources = allResourcesByKeys.Values.ToArray();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

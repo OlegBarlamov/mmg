@@ -328,6 +328,15 @@ ArenaBase: &ArenaBase
   Title: "Arena"
   CanDecline: true
 
+TradingPostBase: &TradingPostBase
+  Key: TradingPost
+  Value: 3000
+  RewardType: Market
+  IconUrl: "/resources/Trading_Post.webp"
+  Title: "Trading Post"
+  CanDecline: true
+  Amounts: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+
 Rewards:
   AncientLamp:
     Key: AncientLamp
@@ -1346,3 +1355,6 @@ Rewards:
     <<: *ArenaBase
     RewardType: Defense
     Amounts: [ 3 ]
+
+  TradingPost:
+    <<: *TradingPostBase

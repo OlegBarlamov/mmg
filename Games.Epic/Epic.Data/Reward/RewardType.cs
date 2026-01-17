@@ -10,5 +10,6 @@ namespace Epic.Data.Reward
         Attack,
         Defense,
         NextStage,
+        Market,
     }
 }

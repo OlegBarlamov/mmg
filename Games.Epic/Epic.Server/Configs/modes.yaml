@@ -40,36 +40,36 @@ Modes:
       - GuardDifficulty: 0
         RewardsFactor: 3
         DifficultyFactor: 1
-        MinDifficultyFactor: 2
-        StartMinDifficulty: 100
-        MaxDifficultyFactor: 30
-        StartMaxDifficulty: 500
+        MinDifficultyFactor: 3
+        StartMinDifficulty: 120
+        MaxDifficultyFactor: 35
+        StartMaxDifficulty: 700
         PvpBattles: false
         BattlesLimit: 30
         DaysLimit: 20
-        WideStdChance: 10
+        WideStdChance: 12
         BattlesCountFactor: 2
       - GuardDifficulty: 12000
         RewardsFactor: 4
         DifficultyFactor: 1
-        MinDifficultyFactor: 10
-        StartMinDifficulty: 4000
-        MaxDifficultyFactor: 60
-        StartMaxDifficulty: 24000
+        MinDifficultyFactor: 7
+        StartMinDifficulty: 3500
+        MaxDifficultyFactor: 50
+        StartMaxDifficulty: 18000
         PvpBattles: true
         BattlesLimit: 0
         DaysLimit: 0
-        WideStdChance: 15
+        WideStdChance: 14
         BattlesCountFactor: 3
       - GuardDifficulty: 36000
-        RewardsFactor: 8
+        RewardsFactor: 6
         DifficultyFactor: 1
-        MinDifficultyFactor: 50
+        MinDifficultyFactor: 45
         StartMinDifficulty: 12000
-        MaxDifficultyFactor: 120
-        StartMaxDifficulty: 72000
+        MaxDifficultyFactor: 110
+        StartMaxDifficulty: 60000
         PvpBattles: true
         BattlesLimit: 0
         DaysLimit: 0
-        WideStdChance: 20
+        WideStdChance: 18
         BattlesCountFactor: 4

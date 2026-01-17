@@ -7,4 +7,5 @@ export enum RewardType {
     Attack = 'Attack',
     Defense = 'Defense',
     NextStage = 'NextStage',
+    Market = 'Market',
 }

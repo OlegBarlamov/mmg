@@ -1,0 +1,246 @@
+/* Market Styles */
+.market-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.market-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border: 1px solid #1f4e79;
+}
+
+.market-gold-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.gold-current,
+.gold-final {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(241, 196, 15, 0.2);
+    border: 1px solid #f1c40f;
+    border-radius: 4px;
+}
+
+.gold-label {
+    color: #f1c40f;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.gold-amount {
+    color: #f1c40f;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.gold-change {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.gold-change.positive {
+    background: rgba(46, 204, 113, 0.3);
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+}
+
+.gold-change.negative {
+    background: rgba(231, 76, 60, 0.3);
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+}
+
+.market-rates {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.rate-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: rgba(52, 152, 219, 0.2);
+    border: 1px solid #3498db;
+    border-radius: 4px;
+}
+
+.rate-label {
+    color: #3498db;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.rate-value {
+    color: #ecf0f1;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.market-resources {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.market-resources h4 {
+    margin: 0;
+    color: #f39c12;
+    font-size: 1rem;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.market-resources-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.market-resource-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #34495e;
+    border-radius: 6px;
+}
+
+.resource-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.resource-current,
+.resource-final {
+    color: #ecf0f1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.resource-transaction {
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.resource-transaction.buy {
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.2);
+    border: 1px solid #2ecc71;
+}
+
+.resource-transaction.sell {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid #e74c3c;
+}
+
+.resource-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.market-button {
+    padding: 6px 12px;
+    border: 2px solid;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.market-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.market-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.buy-button {
+    background: linear-gradient(145deg, #27ae60, #229954);
+    border-color: #1e8449;
+    color: white;
+}
+
+.buy-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+}
+
+.sell-button {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    border-color: #a93226;
+    color: white;
+}
+
+.sell-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #ec7063, #e74c3c);
+}
+
+.reset-button {
+    background: linear-gradient(145deg, #95a5a6, #7f8c8d);
+    border-color: #5d6d7e;
+    color: white;
+}
+
+.reset-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #b2babb, #95a5a6);
+}
+
+@media (max-width: 768px) {
+    .market-gold-display {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .gold-current,
+    .gold-final {
+        justify-content: space-between;
+    }
+    
+    .market-rates {
+        flex-direction: column;
+    }
+    
+    .resource-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .resource-actions {
+        width: 100%;
+    }
+    
+    .market-button {
+        flex: 1;
+        min-width: 0;
+    }
+}

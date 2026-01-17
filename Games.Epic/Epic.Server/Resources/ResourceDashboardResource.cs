@@ -8,6 +8,7 @@ namespace Epic.Server.Resources
         public string Name { get; set; }
         public string IconUrl { get; set; }
         public int Amount { get; set; }
+        public int Price { get; set; }
         
         public ResourceDashboardResource(ResourceAmount resourceAmount)
         {
@@ -15,6 +16,7 @@ namespace Epic.Server.Resources
             Name = resourceAmount.Name;
             IconUrl = resourceAmount.IconUrl;
             Amount = resourceAmount.Amount;
+            Price = resourceAmount.Price;
         }
     }
 }

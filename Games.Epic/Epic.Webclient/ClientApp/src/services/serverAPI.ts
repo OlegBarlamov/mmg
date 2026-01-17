@@ -51,6 +51,7 @@ export interface IResourceInfo {
     readonly name: string
     readonly iconUrl: string
     readonly amount: number
+    readonly price: number
 }
 
 export interface IAcceptedReward {
