@@ -187,7 +187,7 @@ NagaBankBase: &NagaBankBase
 PirateCavernBase: &PirateCavernBase
  Key: PirateCavern
  RewardType: UnitsGain
- IconUrl: "/resources/Pirate_Cavern.gif"
+ IconUrl: "/resources/Pirate_Cavern.webp"
  Title: "Pirate Cavern"
  CanDecline: true
  Value: 3500
