@@ -660,6 +660,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 40
         MaxDamage: 50
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 6
       Crystal: 1
@@ -791,6 +792,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 40
         MaxDamage: 50
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 6
       Crystal: 1
@@ -1286,6 +1288,7 @@ Units:
     Attack: 26
     Defense: 28
     ToTrainAmount: 0
+    Movement: Fly
     UpgradeOf:
       - Devil
     Attacks:
@@ -1415,6 +1418,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 40
         MaxDamage: 50
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 6
       Sulfur: 2
@@ -1552,6 +1556,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 40
         MaxDamage: 50
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 6
       Sulfur: 2
@@ -2167,6 +2172,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 30
         MaxDamage: 40
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 3
       Mercury: 1
@@ -2303,6 +2309,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 30
         MaxDamage: 40
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 5
       Mercury: 1
@@ -2408,6 +2415,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 50
         MaxDamage: 50
+        PierceThrough: 1
     ResourcesDistribution:
       Gold: 50
       Sulfur: 5
@@ -2468,6 +2476,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 70
         MaxDamage: 80
+        PierceThrough: 2
     ResourcesDistribution:
       Gold: 100
       Mercury: 5
@@ -2944,6 +2953,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 3
         MaxDamage: 4
+        PierceThrough: 1
 
   Engineer:
     Name: "Engineer"
@@ -2961,6 +2971,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 3
         MaxDamage: 5
+        PierceThrough: 2
 
   Armadillo:
     Name: "Armadillo"

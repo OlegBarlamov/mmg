@@ -94,25 +94,77 @@ namespace Epic.Logic.Battle
             int maxAttackIndex = -1;
             var maxDamage = 0;
             var maxKilled = 0;
+            var maxValue = 0; // Combined value considering cumulative damage and friendly fire penalty
             // Iterate in reverse order so that when damage/kills are equal, attacks that appear earlier 
             // in the list (earlier attack types) are checked later and overwrite the selection, 
             // giving priority to earlier attack types in the unit's attack list.
             for (var index = possibleAttacksWithTargets.Count - 1; index >= 0; index--)
             {
                 var attacksWithTarget = possibleAttacksWithTargets[index];
+                var targetEnemy = attacksWithTarget.Item1;
+                var attackType = attacksWithTarget.Item2;
+                var attackerPosition = attacksWithTarget.Item3;
+                
+                var distance = OddRHexoGrid.Distance(attackerPosition, targetEnemy);
                 var potentialDamage = UnitTakesDamageData.FromUnitAndTarget(
                     unit, 
-                    attacksWithTarget.Item1, 
-                    attacksWithTarget.Item2, 
-                    OddRHexoGrid.Distance(unit, attacksWithTarget.Item1),
+                    targetEnemy, 
+                    attackType, 
+                    distance,
                     false,
                     _maxRandomProvider);
 
-                if (potentialDamage.KilledCount > maxKilled ||
-                    (potentialDamage.KilledCount == maxKilled && potentialDamage.DamageTaken > maxDamage))
+                // Calculate cumulative damage including PierceThrough
+                var cumulativeDamage = potentialDamage.DamageTaken;
+                var cumulativeKilled = potentialDamage.KilledCount;
+                var friendlyFirePenalty = 0;
+                
+                // Check PierceThrough and calculate damage to units behind target
+                if (attackType.PierceThrough > 0)
                 {
-                    maxKilled = potentialDamage.KilledCount;
-                    maxDamage = potentialDamage.DamageTaken;
+                    var unitsBehind = MapUtils.GetUnitsInLineBehindTarget(
+                        attackerPosition,
+                        targetEnemy,
+                        attackType.PierceThrough,
+                        Battle.Units,
+                        Battle.Height,
+                        Battle.Width);
+
+                    foreach (var unitBehind in unitsBehind)
+                    {
+                        var behindDistance = OddRHexoGrid.Distance(attackerPosition, unitBehind);
+                        var behindDamage = UnitTakesDamageData.FromUnitAndTarget(
+                            unit,
+                            unitBehind,
+                            attackType,
+                            behindDistance,
+                            false,
+                            _maxRandomProvider);
+
+                        if (unitBehind.PlayerIndex == unit.PlayerIndex)
+                        {
+                            // Friendly unit hit - apply penalty (subtract damage from value)
+                            friendlyFirePenalty += behindDamage.DamageTaken;
+                        }
+                        else
+                        {
+                            // Enemy unit hit - add to cumulative damage
+                            cumulativeDamage += behindDamage.DamageTaken;
+                            cumulativeKilled += behindDamage.KilledCount;
+                        }
+                    }
+                }
+
+                // Calculate total value: cumulative damage minus friendly fire penalty
+                var totalValue = cumulativeDamage - friendlyFirePenalty;
+                
+                // Prioritize kills, then total value (damage - friendly fire)
+                if (cumulativeKilled > maxKilled ||
+                    (cumulativeKilled == maxKilled && totalValue > maxValue))
+                {
+                    maxKilled = cumulativeKilled;
+                    maxDamage = cumulativeDamage;
+                    maxValue = totalValue;
                     maxAttackIndex = index;
                 } 
             }

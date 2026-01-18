@@ -143,6 +143,7 @@ namespace Epic.Logic.Battle.Commands
             
             await context.BattleUnitsService.UpdateUnits(new[] { attacker });
 
+            // Process damage to primary target
             var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
                 attacker,
                 target,
@@ -170,6 +171,50 @@ namespace Epic.Logic.Battle.Commands
                     RemainingHealth = unitTakesDamageData.RemainingHealth,
                 };
             await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
+
+            // Process PierceThrough - damage units behind target in straight line
+            if (attackType.PierceThrough > 0)
+            {
+                var unitsBehindTarget = MapUtils.GetUnitsInLineBehindTarget(
+                    attacker,
+                    target,
+                    attackType.PierceThrough,
+                    context.BattleObject.Units,
+                    context.BattleObject.Height,
+                    context.BattleObject.Width);
+
+                foreach (MutableBattleUnitObject unitBehind in unitsBehindTarget)
+                {
+                    // Apply same damage calculation to units behind
+                    var behindDamageData = UnitTakesDamageData.FromUnitAndTarget(
+                        attacker,
+                        unitBehind,
+                        attackType,
+                        OddRHexoGrid.Distance(attacker, unitBehind),
+                        isCounterAttack,
+                        context.RandomProvider);
+
+                    unitBehind.GlobalUnit.Count = behindDamageData.RemainingCount;
+                    unitBehind.GlobalUnit.IsAlive = unitBehind.GlobalUnit.Count > 0;
+
+                    await context.GlobalUnitsService.UpdateUnits(new[] { unitBehind.GlobalUnit });
+
+                    unitBehind.CurrentCount = behindDamageData.RemainingCount;
+                    unitBehind.CurrentHealth = behindDamageData.RemainingHealth;
+
+                    await context.BattleUnitsService.UpdateUnits(new[] { unitBehind });
+
+                    var behindUnitTakesDamage =
+                        new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, unitBehind.Id.ToString())
+                        {
+                            DamageTaken = behindDamageData.DamageTaken,
+                            KilledCount = behindDamageData.KilledCount,
+                            RemainingCount = behindDamageData.RemainingCount,
+                            RemainingHealth = behindDamageData.RemainingHealth,
+                        };
+                    await context.MessageBroadcaster.BroadcastMessageAsync(behindUnitTakesDamage);
+                }
+            }
         }
 
         private static AttackFunctionStateEntity FindAttackFunctionForCounterattack(IBattleUnitObject unit, int range, IReadOnlyCollection<IBattleUnitObject> battleUnits)

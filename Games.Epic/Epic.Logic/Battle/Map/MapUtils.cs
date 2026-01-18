@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Epic.Core;
@@ -177,6 +178,88 @@ namespace Epic.Logic.Battle.Map
             }
 
             return neighbors;
+        }
+
+        /// <summary>
+        /// Finds units in a straight line behind the target, continuing from attacker through target.
+        /// Returns units up to pierceThrough distance behind the target.
+        /// Uses hex line drawing algorithm in axial coordinates.
+        /// </summary>
+        public static List<TBattleUnit> GetUnitsInLineBehindTarget<TBattleUnit>(
+            IBattleUnitObject attacker,
+            IBattleUnitObject target,
+            int pierceThrough,
+            IReadOnlyCollection<TBattleUnit> allUnits,
+            int mapHeight,
+            int mapWidth) where TBattleUnit : IBattleUnitObject
+        {
+            return GetUnitsInLineBehindTarget(new HexoPoint(attacker.Column, attacker.Row), target, pierceThrough, allUnits, mapHeight, mapWidth);
+        }
+
+        /// <summary>
+        /// Returns units up to pierceThrough distance behind the target.
+        /// Uses hex line drawing algorithm in axial coordinates.
+        /// Overload that accepts attacker position as HexoPoint.
+        /// </summary>
+        public static List<TBattleUnit> GetUnitsInLineBehindTarget<TBattleUnit>(
+            HexoPoint attackerPosition,
+            IBattleUnitObject target,
+            int pierceThrough,
+            IReadOnlyCollection<TBattleUnit> allUnits,
+            int mapHeight,
+            int mapWidth) where TBattleUnit : IBattleUnitObject
+        {
+            var result = new List<TBattleUnit>();
+            
+            if (pierceThrough <= 0)
+                return result;
+
+            // Convert to axial coordinates
+            var attackerAxial = OddRHexoGrid.ToAxial(attackerPosition.R, attackerPosition.C);
+            var targetAxial = OddRHexoGrid.ToAxial(target.Row, target.Column);
+            
+            // Calculate direction vector from attacker to target
+            var dq = targetAxial.q - attackerAxial.q;
+            var dr = targetAxial.r - attackerAxial.r;
+            
+            // If attacker and target are at the same position, no line
+            if (dq == 0 && dr == 0)
+                return result;
+            
+            // Use hex line drawing algorithm to find cells in a straight line
+            // Continue from target in the same direction
+            for (int step = 1; step <= pierceThrough; step++)
+            {
+                // Calculate next cell in the line using linear interpolation in axial space
+                // For hex grids, we need to round to the nearest hex
+                double nextQ = targetAxial.q + (double)dq * step;
+                double nextR = targetAxial.r + (double)dr * step;
+                
+                // Round to nearest hex (cube coordinates rounding)
+                var nextQInt = (int)Math.Round(nextQ);
+                var nextRInt = (int)Math.Round(nextR);
+                
+                // Convert back to offset coordinates (odd-r)
+                var nextCol = nextQInt + (int)Math.Floor((nextRInt - (nextRInt & 1)) / 2.0);
+                var nextRow = nextRInt;
+                
+                // Check if cell is valid
+                if (nextRow < 0 || nextRow >= mapHeight || nextCol < 0 || nextCol >= mapWidth)
+                    break;
+                
+                // Find unit at this position
+                var unitAtPosition = allUnits.FirstOrDefault(u => 
+                    u.GlobalUnit.IsAlive && 
+                    u.Row == nextRow && 
+                    u.Column == nextCol);
+                
+                if (unitAtPosition != null)
+                {
+                    result.Add(unitAtPosition);
+                }
+            }
+            
+            return result;
         }
     }
 }
