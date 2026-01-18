@@ -329,7 +329,6 @@ ArenaBase: &ArenaBase
   CanDecline: true
 
 TradingPostBase: &TradingPostBase
-  Key: TradingPost
   Value: 3000
   RewardType: Market
   IconUrl: "/resources/Trading_Post.webp"
@@ -1356,11 +1355,14 @@ Rewards:
     RewardType: Defense
     Amounts: [ 3 ]
 
-  TradingPost_1:
+  TradingPost:
+    Key: TradingPost_1
     <<: *TradingPostBase
   
   TradingPost_2:
+    Key: TradingPost_2
     <<: *TradingPostBase
   
   TradingPost_3:
+    Key: TradingPost_3
     <<: *TradingPostBase
