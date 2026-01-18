@@ -19,7 +19,7 @@ namespace Epic.Logic.Descriptions
         {
         }
 
-        public static RewardDescription[] CreateComposite(CompositeRewardObject reward, DescriptionVisibility visibility, Guid goldResourceId)
+        public static RewardDescription[] CreateComposite(CompositeRewardObject reward, DescriptionVisibility visibility, Guid goldResourceId, double? rewardFactor = null)
         {
             if (reward == null)
                 return new []{ new RewardDescription() } ;
@@ -52,7 +52,7 @@ namespace Epic.Logic.Descriptions
                 }
             }
             
-            var descriptions = GetRawDescriptions(reward, visibility, goldResourceId);
+            var descriptions = GetRawDescriptions(reward, visibility, goldResourceId, rewardFactor);
             foreach (var description in descriptions)
             {
                 if (!string.IsNullOrWhiteSpace(reward.Title))
@@ -76,7 +76,7 @@ namespace Epic.Logic.Descriptions
         }
 
         private static RewardDescription[] GetRawDescriptions(CompositeRewardObject reward,
-            DescriptionVisibility visibility, Guid goldResourceId)
+            DescriptionVisibility visibility, Guid goldResourceId, double? rewardFactor = null)
         {
             if (reward.RewardType == RewardType.None)
             {
@@ -218,7 +218,7 @@ namespace Epic.Logic.Descriptions
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
                         {
                             Name = x.Name,
-                            Amount = "$",
+                            Amount = "$x?",
                             IconUrl = x.BattleImgUrl ?? string.Empty,
                             Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
@@ -226,7 +226,7 @@ namespace Epic.Logic.Descriptions
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
                         {
                             Name = x.Name,
-                            Amount = "$",
+                            Amount = FormatUnitsToBuyAmount(reward.Amounts, i, x.ToTrainAmount, rewardFactor),
                             IconUrl = x.BattleImgUrl ?? string.Empty,
                             Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
@@ -234,7 +234,7 @@ namespace Epic.Logic.Descriptions
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
                         {
                             Name = x.Name,
-                            Amount = "$",
+                            Amount = FormatUnitsToBuyAmount(reward.Amounts, i, x.ToTrainAmount, rewardFactor),
                             IconUrl = x.BattleImgUrl ?? string.Empty,
                             Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
@@ -242,7 +242,7 @@ namespace Epic.Logic.Descriptions
                         return reward.UnitTypes.Select((x, i) => new RewardDescription
                         {
                             Name = x.Name,
-                            Amount = "$",
+                            Amount = FormatUnitsToBuyAmount(reward.Amounts, i, x.ToTrainAmount, rewardFactor),
                             IconUrl = x.BattleImgUrl ?? string.Empty,
                             Tooltip = $"Buy {x.Name} for {DescribeResourcesAmounts(reward.Prices[i])}"
                         }).ToArray();
@@ -476,6 +476,32 @@ namespace Epic.Logic.Descriptions
             if (amount <= 59)   return "~50";
             if (amount <= 98)   return "~75";
             return "~120"; // 99+
+        }
+
+        private static string FormatUnitsToBuyAmount(int[] amounts, int index, int toTrainAmount, double? rewardFactor)
+        {
+            if (!rewardFactor.HasValue || amounts == null || index < 0 || index >= amounts.Length)
+                return "$";
+            
+            var targetAmount = amounts[index];
+            if (toTrainAmount <= 0 || rewardFactor.Value <= 0)
+                return "$";
+            
+            var baseAmount = (int)(toTrainAmount * rewardFactor.Value);
+            if (baseAmount <= 0)
+                return "$";
+            
+            // Calculate how many times the target amount is greater than the base amount
+            var multiplier = (double)targetAmount / baseAmount;
+            
+            // Only add postfix if multiplier is at least 2 (meaning at least 2x the base)
+            if (multiplier >= 2.0)
+            {
+                var n = (int)multiplier;
+                return $"$x{n}";
+            }
+            
+            return "$";
         }
     }
 }

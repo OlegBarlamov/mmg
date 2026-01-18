@@ -26,14 +26,15 @@ namespace Epic.Server.Resources
             DescriptionVisibility rewardVisibility,
             DescriptionVisibility guardVisibility,
             Guid goldResourceId,
-            IPlayerObject playerObject = null)
+            IPlayerObject playerObject = null,
+            double? rewardFactor = null)
         {
             Id = battleDefinitionObject.Id.ToString();
             IsFinished = battleDefinitionObject.IsFinished;
             Width = battleDefinitionObject.Width;
             Height = battleDefinitionObject.Height;
             Stage = battleDefinitionObject.Stage;
-            Rewards = rewards.SelectMany(x => BattleDefinitionRewardResource.CreateFromComposite((CompositeRewardObject)x, rewardVisibility, goldResourceId))
+            Rewards = rewards.SelectMany(x => BattleDefinitionRewardResource.CreateFromComposite((CompositeRewardObject)x, rewardVisibility, goldResourceId, rewardFactor))
                 .ToArray();
             ExpiresAfterDays = playerObject != null ? battleDefinitionObject.ExpireAtDay - playerObject.Day : null;
             
@@ -67,9 +68,9 @@ namespace Epic.Server.Resources
             IsNextStage = description.IsNextStage;
         }
 
-        public static BattleDefinitionRewardResource[] CreateFromComposite(CompositeRewardObject rewardObject, DescriptionVisibility visibility, Guid goldResourceId)
+        public static BattleDefinitionRewardResource[] CreateFromComposite(CompositeRewardObject rewardObject, DescriptionVisibility visibility, Guid goldResourceId, double? rewardFactor = null)
         {
-            var descriptions = RewardDescription.CreateComposite(rewardObject, visibility, goldResourceId);
+            var descriptions = RewardDescription.CreateComposite(rewardObject, visibility, goldResourceId, rewardFactor);
             return descriptions.Select(x => new BattleDefinitionRewardResource(x)).ToArray();
         }
     }

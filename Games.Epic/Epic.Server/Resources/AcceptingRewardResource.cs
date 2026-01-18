@@ -51,7 +51,9 @@ namespace Epic.Server.Resources
                     Array.Empty<IRewardObject>(),
                     DescriptionVisibility.MaskedSize,
                     DescriptionVisibility.MaskedSize,
-                    goldResourceId);
+                    goldResourceId,
+                    null,
+                    null);
             }
 
             Prices = prices.Select(x => new PriceResource(x)).ToArray();

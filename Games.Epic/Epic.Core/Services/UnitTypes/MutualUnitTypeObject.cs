@@ -20,6 +20,7 @@ namespace Epic.Core.Services.UnitTypes
         public string BattleImgUrl { get; set; }
         public string DashboardImgUrl { get; set; }
         public int Value { get; set; }
+        public int ToTrainAmount { get; set; }
         public IReadOnlyDictionary<string, int> ResourcesDistribution { get; set; }
         public IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; set; }
 
@@ -40,6 +41,7 @@ namespace Epic.Core.Services.UnitTypes
                 Health = entity.Health,
                 Attacks = entity.Attacks.Cast<AttackFunctionType>().ToList(),
                 Value = entity.Value,
+                ToTrainAmount = entity.ToTrainAmount,
                 ResourcesDistribution = entity.ResourcesDistribution,
                 Attack = entity.Attack,
                 Defense = entity.Defense,

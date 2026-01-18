@@ -264,10 +264,24 @@ namespace Epic.Logic.Generator
                     unitsGainAmount = Math.Max(1, (int)Math.Floor(((double)difficulty.TargetDifficulty / 3) / unitToGain.Value));
                 }
                 
+                // Calculate if the total value is a multiple of TargetDifficulty / 3
+                var totalValue = unitsGainAmount * unitToGain.Value;
+                var baseThreshold = (double)difficulty.TargetDifficulty / 3;
+                var multiplier = 1.0;
+                if (baseThreshold > 0 && totalValue > baseThreshold)
+                {
+                    var calculatedMultiplier = totalValue / baseThreshold;
+                    // Only apply multiplier if it's at least 2x
+                    if (calculatedMultiplier >= 2.0)
+                    {
+                        multiplier = (int)calculatedMultiplier;
+                    }
+                }
+                
                 await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                 {
                     RewardType = RewardType.UnitsGain,
-                    Amounts = new[] { (int)(unitsGainAmount * rewardFactor) },
+                    Amounts = new[] { (int)(unitsGainAmount * rewardFactor * multiplier) },
                     CanDecline = true,
                     GuardBattleDefinitionId = null,
                     IconUrl = null,

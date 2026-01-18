@@ -12,6 +12,7 @@ namespace Epic.Core.Services.UnitTypes
         string BattleImgUrl { get; }
         string DashboardImgUrl { get; }
         int Value { get; }
+        int ToTrainAmount { get; }
         IReadOnlyDictionary<string, int> ResourcesDistribution { get; } 
         IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; }
     }
