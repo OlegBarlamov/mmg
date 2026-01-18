@@ -1356,5 +1356,11 @@ Rewards:
     RewardType: Defense
     Amounts: [ 3 ]
 
-  TradingPost:
+  TradingPost_1:
+    <<: *TradingPostBase
+  
+  TradingPost_2:
+    <<: *TradingPostBase
+  
+  TradingPost_3:
     <<: *TradingPostBase
