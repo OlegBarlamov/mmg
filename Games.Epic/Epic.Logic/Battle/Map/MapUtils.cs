@@ -181,6 +181,112 @@ namespace Epic.Logic.Battle.Map
         }
 
         /// <summary>
+        /// Gets units at the specified positions from the collection of all units.
+        /// </summary>
+        public static List<TBattleUnit> GetUnitsAtPositions<TBattleUnit>(
+            IEnumerable<HexoPoint> positions,
+            IReadOnlyCollection<TBattleUnit> allUnits) where TBattleUnit : IBattleUnitObject
+        {
+            var result = new List<TBattleUnit>();
+            foreach (var position in positions)
+            {
+                var unitAtPosition = allUnits.FirstOrDefault(u =>
+                    u.GlobalUnit.IsAlive &&
+                    u.Row == position.R &&
+                    u.Column == position.C);
+                
+                if (unitAtPosition != null)
+                {
+                    result.Add(unitAtPosition);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gets neighbor cells around the target, walking in a circle starting from the attacker's position.
+        /// Splash = 1: 3 cells (target + 1 from left + 1 from right)
+        /// Splash = 2: 5 cells (target + 2 from left + 2 from right)
+        /// Splash = 3: all 6 neighbors
+        /// </summary>
+        public static List<HexoPoint> GetSplashNeighbors(
+            HexoPoint attackerPosition,
+            HexoPoint targetPosition,
+            int splash,
+            int mapHeight,
+            int mapWidth)
+        {
+            if (splash <= 0)
+                return new List<HexoPoint>();
+            
+            // Get all neighbors of the target
+            var allNeighbors = GetNeighborCells(targetPosition.R, targetPosition.C, mapHeight, mapWidth);
+            
+            if (splash >= 3)
+            {
+                // Return all 6 neighbors (including attacker position if it's a neighbor)
+                return allNeighbors;
+            }
+            
+            // Exclude the attacker position for splash 1 and 2
+            allNeighbors = allNeighbors.Where(n => !(n.R == attackerPosition.R && n.C == attackerPosition.C)).ToList();
+            
+            // Convert to axial coordinates for angle calculation
+            var attackerAxial = OddRHexoGrid.ToAxial(attackerPosition.R, attackerPosition.C);
+            var targetAxial = OddRHexoGrid.ToAxial(targetPosition.R, targetPosition.C);
+            
+            // Direction vector from attacker to target (this is our reference direction)
+            var attackDq = targetAxial.q - attackerAxial.q;
+            var attackDr = targetAxial.r - attackerAxial.r;
+            
+            // Calculate angle for each neighbor relative to the attack direction
+            // We'll order them by walking around the circle starting from the attacker's direction
+            var neighborsWithAngle = allNeighbors.Select(neighbor =>
+            {
+                var neighborAxial = OddRHexoGrid.ToAxial(neighbor.R, neighbor.C);
+                // Direction vector from target to neighbor
+                var neighborDq = neighborAxial.q - targetAxial.q;
+                var neighborDr = neighborAxial.r - targetAxial.r;
+                
+                // Calculate cross product to determine side (positive = right/counterclockwise, negative = left/clockwise)
+                // In hex grids, we use the cross product in axial coordinates
+                var crossProduct = attackDq * neighborDr - attackDr * neighborDq;
+                
+                // Calculate angle using atan2 for proper ordering around the circle
+                // We want to order starting from the attack direction and going around
+                var dotProduct = attackDq * neighborDq + attackDr * neighborDr;
+                var angle = Math.Atan2(crossProduct, dotProduct);
+                
+                return new { Neighbor = neighbor, Angle = angle, CrossProduct = crossProduct };
+            }).OrderBy(x => x.Angle).ToList();
+            
+            // Split into left and right sides relative to the attack direction
+            // Left side: negative cross product (clockwise from attack direction)
+            // Right side: positive cross product (counterclockwise from attack direction)
+            var leftSide = neighborsWithAngle.Where(x => x.CrossProduct < -0.01).OrderByDescending(x => x.Angle).ToList();
+            var rightSide = neighborsWithAngle.Where(x => x.CrossProduct > 0.01).OrderBy(x => x.Angle).ToList();
+            
+            var result = new List<HexoPoint>();
+            
+            // Always include the target position itself
+            result.Add(targetPosition);
+            
+            // Take splash units from each side
+            // Splash = 1: target + 1 from left + 1 from right = 3 total
+            // Splash = 2: target + 2 from left + 2 from right = 5 total
+            if (leftSide.Count > 0)
+            {
+                result.AddRange(leftSide.Take(splash).Select(x => x.Neighbor));
+            }
+            if (rightSide.Count > 0)
+            {
+                result.AddRange(rightSide.Take(splash).Select(x => x.Neighbor));
+            }
+            
+            return result;
+        }
+
+        /// <summary>
         /// Finds units in a straight line behind the target, continuing from attacker through target.
         /// Returns units up to pierceThrough distance behind the target.
         /// Uses hex line drawing algorithm in axial coordinates.

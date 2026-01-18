@@ -215,6 +215,56 @@ namespace Epic.Logic.Battle.Commands
                     await context.MessageBroadcaster.BroadcastMessageAsync(behindUnitTakesDamage);
                 }
             }
+
+            // Process Splash - damage units around target (only for melee attacks)
+            if (attackType.Splash > 0 && attackType.AttackMaxRange == 1)
+            {
+                var attackerPosition = new HexoPoint(attacker.Column, attacker.Row);
+                var targetPosition = new HexoPoint(target.Column, target.Row);
+                var splashPositions = MapUtils.GetSplashNeighbors(
+                    attackerPosition,
+                    targetPosition,
+                    attackType.Splash,
+                    context.BattleObject.Height,
+                    context.BattleObject.Width);
+
+                // Get units at splash positions (excluding the primary target and friendly units)
+                var splashUnits = MapUtils.GetUnitsAtPositions(splashPositions, context.BattleObject.Units)
+                    .Where(u => u.Id != target.Id && u.PlayerIndex != attacker.PlayerIndex)
+                    .ToList();
+
+                foreach (MutableBattleUnitObject splashUnit in splashUnits)
+                {
+                    // Apply same damage calculation to splash units
+                    var splashDamageData = UnitTakesDamageData.FromUnitAndTarget(
+                        attacker,
+                        splashUnit,
+                        attackType,
+                        OddRHexoGrid.Distance(attacker, splashUnit),
+                        isCounterAttack,
+                        context.RandomProvider);
+
+                    splashUnit.GlobalUnit.Count = splashDamageData.RemainingCount;
+                    splashUnit.GlobalUnit.IsAlive = splashUnit.GlobalUnit.Count > 0;
+
+                    await context.GlobalUnitsService.UpdateUnits(new[] { splashUnit.GlobalUnit });
+
+                    splashUnit.CurrentCount = splashDamageData.RemainingCount;
+                    splashUnit.CurrentHealth = splashDamageData.RemainingHealth;
+
+                    await context.BattleUnitsService.UpdateUnits(new[] { splashUnit });
+
+                    var splashUnitTakesDamage =
+                        new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, splashUnit.Id.ToString())
+                        {
+                            DamageTaken = splashDamageData.DamageTaken,
+                            KilledCount = splashDamageData.KilledCount,
+                            RemainingCount = splashDamageData.RemainingCount,
+                            RemainingHealth = splashDamageData.RemainingHealth,
+                        };
+                    await context.MessageBroadcaster.BroadcastMessageAsync(splashUnitTakesDamage);
+                }
+            }
         }
 
         private static AttackFunctionStateEntity FindAttackFunctionForCounterattack(IBattleUnitObject unit, int range, IReadOnlyCollection<IBattleUnitObject> battleUnits)

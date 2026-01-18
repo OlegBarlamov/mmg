@@ -35,4 +35,5 @@ export type AttackType = {
     maxDamage: number
     enemyInRangeDisablesAttack: number
     pierceThrough: number
+    splash: number
 }

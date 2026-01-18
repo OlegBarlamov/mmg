@@ -155,6 +155,47 @@ namespace Epic.Logic.Battle
                     }
                 }
 
+                // Check Splash and calculate damage to units around target (only for melee attacks)
+                if (attackType.Splash > 0 && attackType.AttackMaxRange == 1)
+                {
+                    var targetPosition = new HexoPoint(targetEnemy.Column, targetEnemy.Row);
+                    var splashPositions = MapUtils.GetSplashNeighbors(
+                        attackerPosition,
+                        targetPosition,
+                        attackType.Splash,
+                        Battle.Height,
+                        Battle.Width);
+
+                    // Get units at splash positions (excluding the primary target)
+                    var splashUnits = MapUtils.GetUnitsAtPositions(splashPositions, Battle.Units)
+                        .Where(u => u.Id != targetEnemy.Id)
+                        .ToList();
+
+                    foreach (var splashUnit in splashUnits)
+                    {
+                        var splashDistance = OddRHexoGrid.Distance(attackerPosition, splashUnit);
+                        var splashDamage = UnitTakesDamageData.FromUnitAndTarget(
+                            unit,
+                            splashUnit,
+                            attackType,
+                            splashDistance,
+                            false,
+                            _maxRandomProvider);
+
+                        if (splashUnit.PlayerIndex == unit.PlayerIndex)
+                        {
+                            // Friendly unit hit - apply penalty
+                            friendlyFirePenalty += splashDamage.DamageTaken;
+                        }
+                        else
+                        {
+                            // Enemy unit hit - add to cumulative damage
+                            cumulativeDamage += splashDamage.DamageTaken;
+                            cumulativeKilled += splashDamage.KilledCount;
+                        }
+                    }
+                }
+
                 // Calculate total value: cumulative damage minus friendly fire penalty
                 var totalValue = cumulativeDamage - friendlyFirePenalty;
                 

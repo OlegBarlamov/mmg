@@ -22,6 +22,7 @@ namespace Epic.Data.UnitTypes.Subtypes
         int AttacksCount { get; }
         bool MovesBackAfterAttack { get; }
         int PierceThrough { get; }
+        int Splash { get; }
     } 
     
     public class AttackFunctionType : IAttackFunctionType
@@ -43,6 +44,7 @@ namespace Epic.Data.UnitTypes.Subtypes
         public int AttacksCount { get; set; } = 1;
         public bool MovesBackAfterAttack { get; set; }
         public int PierceThrough { get; set; } = 0;
+        public int Splash { get; set; } = 0;
 
         public AttackFunctionType()
         {

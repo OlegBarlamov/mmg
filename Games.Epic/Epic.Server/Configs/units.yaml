@@ -1024,6 +1024,7 @@ Units:
         MinDamage: 30
         MaxDamage: 30
         CanTargetCounterattack: false
+        Splash: 1
     Gold: 4
     Sulfur: 1
 
@@ -1172,7 +1173,7 @@ Units:
     Name: "Familiar"
     BattleImgUrl: "/resources/Familiar_portrait.png"
     DashboardImgUrl: "/resources/Familiar_portrait.png"
-    Value: 60        # Gold cost
+    Value: 60
     Speed: 7
     Health: 4
     Attack: 4
@@ -1221,6 +1222,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 2
         MaxDamage: 7
+        Splash: 1
         CanTargetCounterattack: false
 
   HornedDemon:
@@ -1926,6 +1928,7 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 25
         MaxDamage: 45
+        Splash: 1
         CanTargetCounterattack: false
   
   GnollMarauder:
@@ -2055,6 +2058,7 @@ Units:
         MinDamage: 25
         MaxDamage: 45
         CanTargetCounterattack: false
+        Splash: 2
     ResourcesDistribution:
       Gold: 5
       Sulfur: 1
@@ -2153,6 +2157,7 @@ Units:
         MinDamage: 10
         MaxDamage: 20
         CanTargetCounterattack: false
+        Splash: 1
     ResourcesDistribution:
       Gold: 3
       Wood: 1
@@ -2288,6 +2293,7 @@ Units:
         MinDamage: 15
         MaxDamage: 25
         CanTargetCounterattack: false
+        Splash: 3
     ResourcesDistribution:
       Gold: 3
       Wood: 1
