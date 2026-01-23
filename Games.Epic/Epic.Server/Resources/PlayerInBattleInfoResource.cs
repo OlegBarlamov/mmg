@@ -1,6 +1,7 @@
 using System;
 using Epic.Core;
 using Epic.Core.Services.Battles;
+using Epic.Data.Heroes;
 
 namespace Epic.Server.Resources;
 
@@ -11,13 +12,15 @@ public class PlayerInBattleInfoResource
     public bool RunClaimed { get; }
     public string PlayerNumber { get; }
     public int Index { get; }
+    public IHeroStats HeroStats { get; }
     
-    public PlayerInBattleInfoResource(IPlayerInBattleInfoObject playerInBattleInfoObject, InBattlePlayerNumber playerNumber)
+    public PlayerInBattleInfoResource(IPlayerInBattleInfoObject playerInBattleInfoObject, InBattlePlayerNumber playerNumber, IHeroStats heroStats)
     {
         PlayerId = playerInBattleInfoObject.PlayerId;
         RansomClaimed = playerInBattleInfoObject.RansomClaimed;
         PlayerNumber = playerNumber.ToString();
         Index = (int)playerNumber;
         RunClaimed = playerInBattleInfoObject.RunClaimed;
+        HeroStats = heroStats;
     }
 }

@@ -28,6 +28,10 @@ export type InBattlePlayerInfo = {
     index: number
     ransomClaimed: boolean
     runClaimed: boolean
+    heroStats?: {
+        attack: number
+        defense: number
+    }
 }
 
 export type IBattleObstacle = {

@@ -204,9 +204,9 @@ namespace Epic.Logic.Battle.Map
         }
 
         /// <summary>
-        /// Gets neighbor cells around the target, walking in a circle starting from the attacker's position.
-        /// Splash = 1: 3 cells (target + 1 from left + 1 from right)
-        /// Splash = 2: 5 cells (target + 2 from left + 2 from right)
+        /// Gets neighbor cells around the attacker position (after move), walking in a circle starting from the target's direction.
+        /// Splash = 1: 3 cells (attacker + 1 from left + 1 from right)
+        /// Splash = 2: 5 cells (attacker + 2 from left + 2 from right)
         /// Splash = 3: all 6 neighbors
         /// </summary>
         public static List<HexoPoint> GetSplashNeighbors(
@@ -219,17 +219,20 @@ namespace Epic.Logic.Battle.Map
             if (splash <= 0)
                 return new List<HexoPoint>();
             
-            // Get all neighbors of the target
-            var allNeighbors = GetNeighborCells(targetPosition.R, targetPosition.C, mapHeight, mapWidth);
+            // Get all neighbors of the attacker position (after move)
+            var allNeighbors = GetNeighborCells(attackerPosition.R, attackerPosition.C, mapHeight, mapWidth);
+            
+            // Exclude both the attacker position itself and the target position from splash
+            // (attacker shouldn't hit itself, and target is already hit as primary target)
+            allNeighbors = allNeighbors.Where(n => 
+                !(n.R == attackerPosition.R && n.C == attackerPosition.C) &&
+                !(n.R == targetPosition.R && n.C == targetPosition.C)).ToList();
             
             if (splash >= 3)
             {
-                // Return all 6 neighbors (including attacker position if it's a neighbor)
+                // Return all remaining neighbors (all 6 minus attacker and target if they were neighbors)
                 return allNeighbors;
             }
-            
-            // Exclude the attacker position for splash 1 and 2
-            allNeighbors = allNeighbors.Where(n => !(n.R == attackerPosition.R && n.C == attackerPosition.C)).ToList();
             
             // Convert to axial coordinates for angle calculation
             var attackerAxial = OddRHexoGrid.ToAxial(attackerPosition.R, attackerPosition.C);
@@ -240,13 +243,13 @@ namespace Epic.Logic.Battle.Map
             var attackDr = targetAxial.r - attackerAxial.r;
             
             // Calculate angle for each neighbor relative to the attack direction
-            // We'll order them by walking around the circle starting from the attacker's direction
+            // We'll order them by walking around the circle starting from the target's direction
             var neighborsWithAngle = allNeighbors.Select(neighbor =>
             {
                 var neighborAxial = OddRHexoGrid.ToAxial(neighbor.R, neighbor.C);
-                // Direction vector from target to neighbor
-                var neighborDq = neighborAxial.q - targetAxial.q;
-                var neighborDr = neighborAxial.r - targetAxial.r;
+                // Direction vector from attacker to neighbor
+                var neighborDq = neighborAxial.q - attackerAxial.q;
+                var neighborDr = neighborAxial.r - attackerAxial.r;
                 
                 // Calculate cross product to determine side (positive = right/counterclockwise, negative = left/clockwise)
                 // In hex grids, we use the cross product in axial coordinates
@@ -268,12 +271,9 @@ namespace Epic.Logic.Battle.Map
             
             var result = new List<HexoPoint>();
             
-            // Always include the target position itself
-            result.Add(targetPosition);
-            
-            // Take splash units from each side
-            // Splash = 1: target + 1 from left + 1 from right = 3 total
-            // Splash = 2: target + 2 from left + 2 from right = 5 total
+            // Take splash units from each side around the attacker position
+            // Splash = 1: 1 from left + 1 from right = 2 total (plus primary target = 3 total)
+            // Splash = 2: 2 from left + 2 from right = 4 total (plus primary target = 5 total)
             if (leftSide.Count > 0)
             {
                 result.AddRange(leftSide.Take(splash).Select(x => x.Neighbor));

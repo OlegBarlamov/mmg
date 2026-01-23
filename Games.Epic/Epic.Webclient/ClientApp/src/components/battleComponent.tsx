@@ -372,6 +372,9 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             visibility: this.state.battleLoaded ? 'visible' : 'hidden'
         };
 
+        const player1 = this.props.battleMap.players.find(p => p.playerNumber === BattlePlayerNumber.Player1)
+        const player2 = this.props.battleMap.players.find(p => p.playerNumber === BattlePlayerNumber.Player2)
+
         return (
             <div className={"Container"}>
                 {(!this.state.battleLoaded) && (
@@ -380,7 +383,17 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
                 {this.state.battleLoaded && (
                     <div className="battle-header">
+                        {player1?.heroStats && (
+                            <div className="hero-stats-text hero-stats-left">
+                                Attack: {player1.heroStats.attack} Defense: {player1.heroStats.defense}
+                            </div>
+                        )}
                         <div className="round-number">Round {this.state.currentRoundNumber + 1}</div>
+                        {player2?.heroStats && (
+                            <div className="hero-stats-text hero-stats-right">
+                                Attack: {player2.heroStats.attack} Defense: {player2.heroStats.defense}
+                            </div>
+                        )}
                     </div>
                 )}
 

@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Objects;
+using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameResources;
+using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
+using Epic.Data.Heroes;
 using Epic.Data.Reward;
 using Epic.Server.Authentication;
 using Epic.Server.RequestBodies;
@@ -22,15 +26,28 @@ namespace Epic.Server.Controllers
         private IRewardsService RewardsService { get; }
         public IUnitTypesService UnitTypesService { get; }
         public IGameResourcesService GameResourcesService { get; }
+        public IPlayersService PlayersService { get; }
 
         public RewardsController(
             [NotNull] IRewardsService rewardsService,
             [NotNull] IUnitTypesService unitTypesService,
-            [NotNull] IGameResourcesService gameResourcesService)
+            [NotNull] IGameResourcesService gameResourcesService,
+            [NotNull] IPlayersService playersService)
         {
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
             GameResourcesService = gameResourcesService ?? throw new ArgumentNullException(nameof(gameResourcesService));
+            PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+        }
+
+        private async Task<Dictionary<Guid, IHeroStats>> GetPlayerHeroStats(IBattleObject battleObject)
+        {
+            var playerIds = battleObject.PlayerInfos.Select(x => x.PlayerId).ToList();
+            var players = await PlayersService.GetByIds(playerIds.ToArray());
+            return players.ToDictionary(
+                p => p.Id,
+                p => p.ActiveHero ?? (IHeroStats)DefaultHeroStats.Instance
+            );
         }
         
         [HttpGet]
@@ -78,7 +95,8 @@ namespace Epic.Server.Controllers
                 return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
             
             var battleObject = await RewardsService.BeginRewardGuardBattle(rewardId, playerId);
-            return Ok(new BattleResource(battleObject));
+            var playerHeroStats = await GetPlayerHeroStats(battleObject);
+            return Ok(new BattleResource(battleObject, playerHeroStats));
         }
     }
 }

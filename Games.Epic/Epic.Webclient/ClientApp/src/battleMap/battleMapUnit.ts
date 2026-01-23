@@ -38,6 +38,8 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
                 minDamage: 1,
                 maxDamage: 1,
                 enemyInRangeDisablesAttack: 0,
+                pierceThrough: 0,
+                splash: 0,
             }
         ],
         attacksStates: [],

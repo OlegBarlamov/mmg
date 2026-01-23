@@ -1,13 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using Epic.Core.Objects;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Data.Exceptions;
+using Epic.Data.Heroes;
 using Epic.Server.Authentication;
 using Epic.Server.RequestBodies;
 using Epic.Server.Resources;
@@ -47,6 +51,16 @@ namespace Epic.Server.Controllers
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
         }
+
+        private async Task<Dictionary<Guid, IHeroStats>> GetPlayerHeroStats(IBattleObject battleObject)
+        {
+            var playerIds = battleObject.PlayerInfos.Select(x => x.PlayerId).ToList();
+            var players = await PlayersService.GetByIds(playerIds.ToArray());
+            return players.ToDictionary(
+                p => p.Id,
+                p => p.ActiveHero ?? (IHeroStats)DefaultHeroStats.Instance
+            );
+        }
         
         [HttpGet]
         public async Task<IActionResult> GetCurrentUserActiveBattles()
@@ -58,7 +72,8 @@ namespace Epic.Server.Controllers
             if (battleObject == null)
                 return Ok(Array.Empty<BattleResource>());
 
-            return Ok(new [] { new BattleResource(battleObject) });
+            var playerHeroStats = await GetPlayerHeroStats(battleObject);
+            return Ok(new [] { new BattleResource(battleObject, playerHeroStats) });
         }
 
         [HttpGet("{id}")]
@@ -76,7 +91,8 @@ namespace Epic.Server.Controllers
                 });
             }
 
-            return Ok(new BattleResource(battleObject));
+            var playerHeroStats = await GetPlayerHeroStats(battleObject);
+            return Ok(new BattleResource(battleObject, playerHeroStats));
         }
 
         [HttpGet("{id}/ransom-info")]
@@ -131,7 +147,8 @@ namespace Epic.Server.Controllers
             
             var battleObject = await BattlesService.CreateBattleFromPlayerEnemy(player, enemyPlayer);
             battleObject = await BattlesService.BeginBattle(playerId, battleObject);
-            return Ok(new BattleResource(battleObject));
+            var playerHeroStats = await GetPlayerHeroStats(battleObject);
+            return Ok(new BattleResource(battleObject, playerHeroStats));
         }
 
         [HttpPost]
@@ -152,7 +169,8 @@ namespace Epic.Server.Controllers
             {
                 var battleObject = await BattlesService.CreateBattleFromDefinition(player, battleRequestBody.BattleDefinitionId);
                 battleObject = await BattlesService.BeginBattle(playerId, battleObject);
-                return Ok(new BattleResource(battleObject));
+                var playerHeroStats = await GetPlayerHeroStats(battleObject);
+                return Ok(new BattleResource(battleObject, playerHeroStats));
             }
             catch (EntityNotFoundException e)
             {

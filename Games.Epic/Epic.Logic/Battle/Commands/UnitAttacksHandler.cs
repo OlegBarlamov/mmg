@@ -143,127 +143,43 @@ namespace Epic.Logic.Battle.Commands
             
             await context.BattleUnitsService.UpdateUnits(new[] { attacker });
 
-            // Process damage to primary target
-            var unitTakesDamageData = UnitTakesDamageData.FromUnitAndTarget(
+            // Calculate all targets and their damages using the shared calculator
+            var attackerPosition = new HexoPoint(attacker.Column, attacker.Row);
+            var allTargets = AttackTargetsCalculator.CalculateAllTargets<MutableBattleUnitObject>(
                 attacker,
+                attackerPosition,
                 target,
                 attackType,
-                range,
                 isCounterAttack,
+                context.BattleObject.Units,
+                context.BattleObject.Height,
+                context.BattleObject.Width,
                 context.RandomProvider);
 
-            target.GlobalUnit.Count = unitTakesDamageData.RemainingCount;
-            target.GlobalUnit.IsAlive = target.GlobalUnit.Count > 0;
-
-            await context.GlobalUnitsService.UpdateUnits(new[] { target.GlobalUnit });
-
-            target.CurrentCount = unitTakesDamageData.RemainingCount;
-            target.CurrentHealth = unitTakesDamageData.RemainingHealth;
-
-            await context.BattleUnitsService.UpdateUnits(new[] { target });
-
-            var serverUnitTakesDamage =
-                new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, target.Id.ToString())
-                {
-                    DamageTaken = unitTakesDamageData.DamageTaken,
-                    KilledCount = unitTakesDamageData.KilledCount,
-                    RemainingCount = unitTakesDamageData.RemainingCount,
-                    RemainingHealth = unitTakesDamageData.RemainingHealth,
-                };
-            await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
-
-            // Process PierceThrough - damage units behind target in straight line
-            if (attackType.PierceThrough > 0)
+            // Apply damage to all affected targets
+            foreach (var targetDamage in allTargets)
             {
-                var unitsBehindTarget = MapUtils.GetUnitsInLineBehindTarget(
-                    attacker,
-                    target,
-                    attackType.PierceThrough,
-                    context.BattleObject.Units,
-                    context.BattleObject.Height,
-                    context.BattleObject.Width);
+                var mutableTarget = targetDamage.Target;
 
-                foreach (MutableBattleUnitObject unitBehind in unitsBehindTarget)
-                {
-                    // Apply same damage calculation to units behind
-                    var behindDamageData = UnitTakesDamageData.FromUnitAndTarget(
-                        attacker,
-                        unitBehind,
-                        attackType,
-                        OddRHexoGrid.Distance(attacker, unitBehind),
-                        isCounterAttack,
-                        context.RandomProvider);
+                mutableTarget.GlobalUnit.Count = targetDamage.DamageData.RemainingCount;
+                mutableTarget.GlobalUnit.IsAlive = mutableTarget.GlobalUnit.Count > 0;
 
-                    unitBehind.GlobalUnit.Count = behindDamageData.RemainingCount;
-                    unitBehind.GlobalUnit.IsAlive = unitBehind.GlobalUnit.Count > 0;
+                await context.GlobalUnitsService.UpdateUnits(new[] { mutableTarget.GlobalUnit });
 
-                    await context.GlobalUnitsService.UpdateUnits(new[] { unitBehind.GlobalUnit });
+                mutableTarget.CurrentCount = targetDamage.DamageData.RemainingCount;
+                mutableTarget.CurrentHealth = targetDamage.DamageData.RemainingHealth;
 
-                    unitBehind.CurrentCount = behindDamageData.RemainingCount;
-                    unitBehind.CurrentHealth = behindDamageData.RemainingHealth;
+                await context.BattleUnitsService.UpdateUnits(new[] { mutableTarget });
 
-                    await context.BattleUnitsService.UpdateUnits(new[] { unitBehind });
-
-                    var behindUnitTakesDamage =
-                        new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, unitBehind.Id.ToString())
-                        {
-                            DamageTaken = behindDamageData.DamageTaken,
-                            KilledCount = behindDamageData.KilledCount,
-                            RemainingCount = behindDamageData.RemainingCount,
-                            RemainingHealth = behindDamageData.RemainingHealth,
-                        };
-                    await context.MessageBroadcaster.BroadcastMessageAsync(behindUnitTakesDamage);
-                }
-            }
-
-            // Process Splash - damage units around target (only for melee attacks)
-            if (attackType.Splash > 0 && attackType.AttackMaxRange == 1)
-            {
-                var attackerPosition = new HexoPoint(attacker.Column, attacker.Row);
-                var targetPosition = new HexoPoint(target.Column, target.Row);
-                var splashPositions = MapUtils.GetSplashNeighbors(
-                    attackerPosition,
-                    targetPosition,
-                    attackType.Splash,
-                    context.BattleObject.Height,
-                    context.BattleObject.Width);
-
-                // Get units at splash positions (excluding the primary target and friendly units)
-                var splashUnits = MapUtils.GetUnitsAtPositions(splashPositions, context.BattleObject.Units)
-                    .Where(u => u.Id != target.Id && u.PlayerIndex != attacker.PlayerIndex)
-                    .ToList();
-
-                foreach (MutableBattleUnitObject splashUnit in splashUnits)
-                {
-                    // Apply same damage calculation to splash units
-                    var splashDamageData = UnitTakesDamageData.FromUnitAndTarget(
-                        attacker,
-                        splashUnit,
-                        attackType,
-                        OddRHexoGrid.Distance(attacker, splashUnit),
-                        isCounterAttack,
-                        context.RandomProvider);
-
-                    splashUnit.GlobalUnit.Count = splashDamageData.RemainingCount;
-                    splashUnit.GlobalUnit.IsAlive = splashUnit.GlobalUnit.Count > 0;
-
-                    await context.GlobalUnitsService.UpdateUnits(new[] { splashUnit.GlobalUnit });
-
-                    splashUnit.CurrentCount = splashDamageData.RemainingCount;
-                    splashUnit.CurrentHealth = splashDamageData.RemainingHealth;
-
-                    await context.BattleUnitsService.UpdateUnits(new[] { splashUnit });
-
-                    var splashUnitTakesDamage =
-                        new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, splashUnit.Id.ToString())
-                        {
-                            DamageTaken = splashDamageData.DamageTaken,
-                            KilledCount = splashDamageData.KilledCount,
-                            RemainingCount = splashDamageData.RemainingCount,
-                            RemainingHealth = splashDamageData.RemainingHealth,
-                        };
-                    await context.MessageBroadcaster.BroadcastMessageAsync(splashUnitTakesDamage);
-                }
+                var serverUnitTakesDamage =
+                    new UnitTakesDamageCommandFromServer(command.TurnIndex, command.Player, mutableTarget.Id.ToString())
+                    {
+                        DamageTaken = targetDamage.DamageData.DamageTaken,
+                        KilledCount = targetDamage.DamageData.KilledCount,
+                        RemainingCount = targetDamage.DamageData.RemainingCount,
+                        RemainingHealth = targetDamage.DamageData.RemainingHealth,
+                    };
+                await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
             }
         }
 

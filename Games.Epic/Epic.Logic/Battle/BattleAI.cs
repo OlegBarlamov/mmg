@@ -105,94 +105,35 @@ namespace Epic.Logic.Battle
                 var attackType = attacksWithTarget.Item2;
                 var attackerPosition = attacksWithTarget.Item3;
                 
-                var distance = OddRHexoGrid.Distance(attackerPosition, targetEnemy);
-                var potentialDamage = UnitTakesDamageData.FromUnitAndTarget(
-                    unit, 
-                    targetEnemy, 
-                    attackType, 
-                    distance,
+                // Calculate all targets and their damages using the shared calculator
+                var allTargets = AttackTargetsCalculator.CalculateAllTargets<IBattleUnitObject>(
+                    unit,
+                    attackerPosition,
+                    targetEnemy,
+                    attackType,
                     false,
+                    Battle.Units,
+                    Battle.Height,
+                    Battle.Width,
                     _maxRandomProvider);
 
-                // Calculate cumulative damage including PierceThrough
-                var cumulativeDamage = potentialDamage.DamageTaken;
-                var cumulativeKilled = potentialDamage.KilledCount;
+                // Calculate cumulative damage and friendly fire penalty
+                var cumulativeDamage = 0;
+                var cumulativeKilled = 0;
                 var friendlyFirePenalty = 0;
-                
-                // Check PierceThrough and calculate damage to units behind target
-                if (attackType.PierceThrough > 0)
+
+                foreach (var targetDamage in allTargets)
                 {
-                    var unitsBehind = MapUtils.GetUnitsInLineBehindTarget(
-                        attackerPosition,
-                        targetEnemy,
-                        attackType.PierceThrough,
-                        Battle.Units,
-                        Battle.Height,
-                        Battle.Width);
-
-                    foreach (var unitBehind in unitsBehind)
+                    if (targetDamage.Target.PlayerIndex == unit.PlayerIndex)
                     {
-                        var behindDistance = OddRHexoGrid.Distance(attackerPosition, unitBehind);
-                        var behindDamage = UnitTakesDamageData.FromUnitAndTarget(
-                            unit,
-                            unitBehind,
-                            attackType,
-                            behindDistance,
-                            false,
-                            _maxRandomProvider);
-
-                        if (unitBehind.PlayerIndex == unit.PlayerIndex)
-                        {
-                            // Friendly unit hit - apply penalty (subtract damage from value)
-                            friendlyFirePenalty += behindDamage.DamageTaken;
-                        }
-                        else
-                        {
-                            // Enemy unit hit - add to cumulative damage
-                            cumulativeDamage += behindDamage.DamageTaken;
-                            cumulativeKilled += behindDamage.KilledCount;
-                        }
+                        // Friendly unit hit - apply penalty
+                        friendlyFirePenalty += targetDamage.DamageData.DamageTaken;
                     }
-                }
-
-                // Check Splash and calculate damage to units around target (only for melee attacks)
-                if (attackType.Splash > 0 && attackType.AttackMaxRange == 1)
-                {
-                    var targetPosition = new HexoPoint(targetEnemy.Column, targetEnemy.Row);
-                    var splashPositions = MapUtils.GetSplashNeighbors(
-                        attackerPosition,
-                        targetPosition,
-                        attackType.Splash,
-                        Battle.Height,
-                        Battle.Width);
-
-                    // Get units at splash positions (excluding the primary target)
-                    var splashUnits = MapUtils.GetUnitsAtPositions(splashPositions, Battle.Units)
-                        .Where(u => u.Id != targetEnemy.Id)
-                        .ToList();
-
-                    foreach (var splashUnit in splashUnits)
+                    else
                     {
-                        var splashDistance = OddRHexoGrid.Distance(attackerPosition, splashUnit);
-                        var splashDamage = UnitTakesDamageData.FromUnitAndTarget(
-                            unit,
-                            splashUnit,
-                            attackType,
-                            splashDistance,
-                            false,
-                            _maxRandomProvider);
-
-                        if (splashUnit.PlayerIndex == unit.PlayerIndex)
-                        {
-                            // Friendly unit hit - apply penalty
-                            friendlyFirePenalty += splashDamage.DamageTaken;
-                        }
-                        else
-                        {
-                            // Enemy unit hit - add to cumulative damage
-                            cumulativeDamage += splashDamage.DamageTaken;
-                            cumulativeKilled += splashDamage.KilledCount;
-                        }
+                        // Enemy unit hit - add to cumulative damage
+                        cumulativeDamage += targetDamage.DamageData.DamageTaken;
+                        cumulativeKilled += targetDamage.DamageData.KilledCount;
                     }
                 }
 

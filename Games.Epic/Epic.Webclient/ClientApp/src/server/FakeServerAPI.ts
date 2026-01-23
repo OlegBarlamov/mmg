@@ -203,6 +203,8 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     minDamage: 1,
                     maxDamage: 1,
                     enemyInRangeDisablesAttack: 0,
+                    pierceThrough: 0,
+                    splash: 0,
                 }
             ],
             attacksStates: [],
@@ -487,6 +489,21 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     index: 0,
                     ransomClaimed: false,
                     runClaimed: false,
+                    heroStats: {
+                        attack: 5,
+                        defense: 3,
+                    },
+                },
+                {
+                    playerId: getRandomStringKey(7),
+                    playerNumber: BattlePlayerNumber.Player2,
+                    index: 1,
+                    ransomClaimed: false,
+                    runClaimed: false,
+                    heroStats: {
+                        attack: 4,
+                        defense: 4,
+                    },
                 },
             ],
             obstacles: [],
