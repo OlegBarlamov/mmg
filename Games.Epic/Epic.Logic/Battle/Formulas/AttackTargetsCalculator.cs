@@ -101,9 +101,9 @@ namespace Epic.Logic.Battle.Formulas
                         includeCenter: false);
                 }
 
-                // Get units at splash positions (excluding the primary target and friendly units)
+                bool includeFriendlyUnits = attackType.AttackMaxRange > 1; 
                 var splashUnits = MapUtils.GetUnitsAtPositions(splashPositions, allUnits)
-                    .Where(u => u.Id != primaryTarget.Id && u.PlayerIndex != attacker.PlayerIndex)
+                    .Where(u => u.Id != primaryTarget.Id && (includeFriendlyUnits || u.PlayerIndex != attacker.PlayerIndex))
                     .ToList();
 
                 foreach (var splashUnit in splashUnits)
