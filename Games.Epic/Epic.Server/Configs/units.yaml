@@ -502,6 +502,7 @@ Units:
       - <<: *RangeAttack
         MinDamage: 11
         MaxDamage: 15
+        Splash: 1
       - <<: *MeleeAttack
         MinDamage: 6
         MaxDamage: 8
@@ -1202,6 +1203,7 @@ Units:
       - <<: *RangeAttack
         MinDamage: 2
         MaxDamage: 4
+        Splash: 1
       - <<: *MeleeAttack
         MinDamage: 1
         MaxDamage: 2
@@ -1787,6 +1789,7 @@ Units:
       - <<: *RangeAttack
         MinDamage: 16
         MaxDamage: 20
+        Splash: 1
       - <<: *MeleeAttack
         MinDamage: 8
         MaxDamage: 10

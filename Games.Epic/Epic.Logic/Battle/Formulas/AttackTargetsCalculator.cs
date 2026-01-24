@@ -76,15 +76,30 @@ namespace Epic.Logic.Battle.Formulas
                 }
             }
 
-            // Splash targets - units around the primary target (only for melee attacks)
-            if (attackType.Splash > 0 && attackType.AttackMaxRange == 1)
+            // Splash targets.
+            // - For melee (max range == 1) we keep existing "cleave around attacker" semantics.
+            // - For ranged (max range > 1) splash is treated as a radius around the primary target.
+            if (attackType.Splash > 0)
             {
-                var splashPositions = MapUtils.GetSplashNeighbors(
-                    attackerPosition,
-                    primaryTargetPosition,
-                    attackType.Splash,
-                    mapHeight,
-                    mapWidth);
+                List<HexoPoint> splashPositions;
+                if (attackType.AttackMaxRange == 1)
+                {
+                    splashPositions = MapUtils.GetSplashNeighbors(
+                        attackerPosition,
+                        primaryTargetPosition,
+                        attackType.Splash,
+                        mapHeight,
+                        mapWidth);
+                }
+                else
+                {
+                    splashPositions = MapUtils.GetCellsWithinRadius(
+                        primaryTargetPosition,
+                        attackType.Splash,
+                        mapHeight,
+                        mapWidth,
+                        includeCenter: false);
+                }
 
                 // Get units at splash positions (excluding the primary target and friendly units)
                 var splashUnits = MapUtils.GetUnitsAtPositions(splashPositions, allUnits)

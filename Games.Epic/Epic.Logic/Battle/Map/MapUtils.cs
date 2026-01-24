@@ -204,6 +204,50 @@ namespace Epic.Logic.Battle.Map
         }
 
         /// <summary>
+        /// Returns all cells within the given radius (hex distance) around the center.
+        /// Uses BFS over hex neighbors; does not consider obstacles.
+        /// </summary>
+        public static List<HexoPoint> GetCellsWithinRadius(
+            HexoPoint center,
+            int radius,
+            int mapHeight,
+            int mapWidth,
+            bool includeCenter = false)
+        {
+            if (radius <= 0)
+                return new List<HexoPoint>();
+
+            var visited = new HashSet<string>();
+            var queue = new Queue<(HexoPoint Cell, int Distance)>();
+            queue.Enqueue((center, 0));
+
+            var result = new List<HexoPoint>();
+
+            while (queue.Count > 0)
+            {
+                var (cell, distance) = queue.Dequeue();
+                if (distance > radius)
+                    continue;
+
+                var key = CellToString(cell);
+                if (visited.Contains(key))
+                    continue;
+                visited.Add(key);
+
+                if (distance > 0 || includeCenter)
+                    result.Add(cell);
+
+                foreach (var neighbor in GetNeighborCells(cell.R, cell.C, mapHeight, mapWidth))
+                {
+                    if (!visited.Contains(CellToString(neighbor)))
+                        queue.Enqueue((neighbor, distance + 1));
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets neighbor cells around the attacker position (after move), walking in a circle starting from the target's direction.
         /// Splash = 1: 3 cells (attacker + 1 from left + 1 from right)
         /// Splash = 2: 5 cells (attacker + 2 from left + 2 from right)
