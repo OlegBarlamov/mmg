@@ -15,6 +15,7 @@ export interface IBattleControlPanelProps {
     battleId: string;
     battleMap: any; // BattleMap but avoiding circular import
     currentPlayerId: string;
+    battleLogLines: string[];
     onRansomAction?: () => void;
     onRunAction?: () => void;
 }
@@ -33,6 +34,7 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
     onPassPressed: (() => void) | null = null;
     onRansomPressed: (() => void) | null = null;
     onRunPressed: (() => void) | null = null;
+    private battleLogRef: React.RefObject<HTMLDivElement | null> = React.createRef()
 
     constructor(props: IBattleControlPanelProps) {
         super(props);
@@ -44,6 +46,15 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
             showRunModal: false,
             runPenaltyRounds: 0
         };
+    }
+
+    componentDidUpdate(prevProps: IBattleControlPanelProps) {
+        if (prevProps.battleLogLines !== this.props.battleLogLines) {
+            const el = this.battleLogRef.current
+            if (el) {
+                el.scrollTop = el.scrollHeight
+            }
+        }
     }
 
     private handleWaitClick = () => {
@@ -174,22 +185,6 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
         return (
             <>
                 <div className="battle-control-panel-container">
-                    <div className="left-buttons-container">
-                        <button 
-                            className="control-button ransom-button"
-                            onClick={this.handleRansomClick}
-                            disabled={!this.props.isPlayerTurn}
-                        >
-                            Ransom
-                        </button>
-                        <button 
-                            className="control-button run-button"
-                            onClick={this.handleRunClick}
-                            disabled={!this.props.isPlayerTurn}
-                        >
-                            Run
-                        </button>
-                    </div>
                     <div className="battle-control-panel">
                         <button 
                             className="control-button pass-button"
@@ -204,6 +199,31 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                             disabled={!this.props.isPlayerTurn || this.props.activeUnit?.currentProps.waited === true}
                         >
                             Wait
+                        </button>
+                    </div>
+                    <div className="battle-log-console" ref={this.battleLogRef}>
+                        {this.props.battleLogLines.length === 0 ? (
+                            <div className="battle-log-line battle-log-line-muted">Battle log…</div>
+                        ) : (
+                            this.props.battleLogLines.map((line, idx) => (
+                                <div key={idx} className="battle-log-line">{line}</div>
+                            ))
+                        )}
+                    </div>
+                    <div className="right-buttons-container">
+                        <button 
+                            className="control-button ransom-button"
+                            onClick={this.handleRansomClick}
+                            disabled={!this.props.isPlayerTurn}
+                        >
+                            Ransom
+                        </button>
+                        <button 
+                            className="control-button run-button"
+                            onClick={this.handleRunClick}
+                            disabled={!this.props.isPlayerTurn}
+                        >
+                            Run
                         </button>
                     </div>
                 </div>

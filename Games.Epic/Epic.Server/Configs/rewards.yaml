@@ -329,7 +329,7 @@ ArenaBase: &ArenaBase
   CanDecline: true
 
 TradingPostBase: &TradingPostBase
-  Value: 3000
+  Value: 2000
   RewardType: Market
   IconUrl: "/resources/Trading_Post.webp"
   Title: "Trading Post"

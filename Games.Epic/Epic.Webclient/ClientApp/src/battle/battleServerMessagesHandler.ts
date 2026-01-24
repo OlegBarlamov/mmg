@@ -8,6 +8,11 @@ import { Signal } from "typed-signals";
 
 export interface ITurnAwaiter {
     onCurrentPlayerActionReceived: Signal<() => void>
+    /**
+     * Fired when this handler starts processing a server message
+     * (i.e. after previously queued animations complete).
+     */
+    onServerMessageHandlingStarted: Signal<(message: BattleCommandFromServer) => void>
     readonly currentTurnIndex: number
     readonly currentRoundNumber: number
     getCurrentTurnInfo(): BattleTurnInfo 
@@ -17,6 +22,7 @@ export interface ITurnAwaiter {
 
 export class BattleServerMessagesHandler implements IBattleConnectionMessagesHandler, ITurnAwaiter {
     onCurrentPlayerActionReceived: Signal<() => void> = new Signal()
+    onServerMessageHandlingStarted: Signal<(message: BattleCommandFromServer) => void> = new Signal()
     currentTurnIndex: number
     currentRoundNumber: number
     
@@ -81,6 +87,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
         this.disposed = true
         
         this.onCurrentPlayerActionReceived.disconnectAll()
+        this.onServerMessageHandlingStarted.disconnectAll()
 
         this.rejectAwaitingPromises.forEach((reject: (error: Error) => void, key: number) =>
             this.rejectAwaitingPromiseForTurn(key, new Error("The battle is disposed"))
@@ -95,13 +102,22 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
     async onMessage(message: BattleCommandFromServer): Promise<void> {
         if (this.disposed) return
 
+        // Queue work after any previously running animation completes.
+        // Emit log notification right when handling starts (in sync with animations).
+        const enqueue = (action: () => Promise<void> | void): Promise<void> => {
+            this.previousAnimationPromise = this.previousAnimationPromise.then(async () => {
+                if (this.disposed) return
+                this.onServerMessageHandlingStarted.emit(message)
+                await action()
+            })
+            return this.previousAnimationPromise
+        }
+
         if (message.command === 'UNIT_MOVE') {
             this.cancelCurrentUserActionPending(message)
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                this.previousAnimationPromise = this.previousAnimationPromise
-                .then(() => this.mapController.moveUnit(unit, message.moveToCell.r, message.moveToCell.c))
-                return
+                return enqueue(() => this.mapController.moveUnit(unit, message.moveToCell.r, message.moveToCell.c))
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
@@ -113,9 +129,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 nextTurnUnitId: message.nextTurnUnitId,
                 roundNumber: message.roundNumber,
             }
-            this.previousAnimationPromise = this.previousAnimationPromise
-            .then(() => this.onNextTurnInfo(turnInfo))
-            return
+            return enqueue(() => this.onNextTurnInfo(turnInfo))
         } else if (message.command === 'UNIT_ATTACK') {
             if (!message.isCounterattack) {
                 this.cancelCurrentUserActionPending(message)
@@ -123,18 +137,14 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             const unit = getUnitById(this.mapController.map, message.actorId)
             const target = getUnitById(this.mapController.map, message.targetId)
             if (unit && target) {
-                this.previousAnimationPromise = this.previousAnimationPromise
-                .then(() => this.mapController.unitAttacks(unit, target, message.attackIndex))
-                return
+                return enqueue(() => this.mapController.unitAttacks(unit, target, message.attackIndex))
             } else {
                 throw Error("Target unit from server not found: " + message.targetId + " or actor unit not found: " + message.actorId)
             }
         } else if (message.command === 'TAKE_DAMAGE') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                this.previousAnimationPromise = this.previousAnimationPromise
-                .then(() => this.mapController.unitTakeDamage(unit, message.damageTaken, message.killedCount, message.remainingCount, message.remainingHealth))
-                return
+                return enqueue(() => this.mapController.unitTakeDamage(unit, message.damageTaken, message.killedCount, message.remainingCount, message.remainingHealth))
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
@@ -150,31 +160,27 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 nextTurnUnitId: "",
                 roundNumber: this.currentRoundNumber,
             }
-            this.previousAnimationPromise = this.previousAnimationPromise
-            .then(() => this.onNextTurnInfo(turnInfo))
-            return
+            return enqueue(() => this.onNextTurnInfo(turnInfo))
         } else if (message.command === 'UNIT_PASS') {
             this.cancelCurrentUserActionPending(message)
             // No specific action needed for pass - just acknowledge receipt
-            return
+            return enqueue(() => undefined)
         } else if (message.command === 'UNIT_WAIT') {
             this.cancelCurrentUserActionPending(message)
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                this.previousAnimationPromise = this.previousAnimationPromise
-                .then(() => this.mapController.unitWaits(unit))
-                return
+                return enqueue(() => this.mapController.unitWaits(unit))
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
         } else if (message.command === 'PLAYER_RANSOM') {
             this.cancelCurrentUserActionPending(message)
             this.mapController.map.players.find(player => player.playerNumber === message.player)!.ransomClaimed = true
-            return
+            return enqueue(() => undefined)
         } else if (message.command === 'PLAYER_RUN') {
             this.cancelCurrentUserActionPending(message)
             this.mapController.map.players.find(player => player.playerNumber === message.player)!.runClaimed = true
-            return
+            return enqueue(() => undefined)
         }
 
         throw Error("Unknown or invalid command from server")

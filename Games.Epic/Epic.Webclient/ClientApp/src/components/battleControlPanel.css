@@ -3,20 +3,20 @@
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0 20px;
+    padding: 10px 16px;
+    box-sizing: border-box;
+    min-height: 96px;
+    background: rgba(0, 0, 0, 0.85);
+    gap: 14px;
 }
 
 .battle-control-panel {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 15px;
+    padding: 0;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    gap: 20px;
-    width: 100%;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    gap: 12px;
+    flex: 0 0 auto;
 }
 
 .left-buttons-container {
@@ -27,6 +27,37 @@
     gap: 15px;
     position: relative;
     z-index: 10;
+}
+
+.right-buttons-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+
+.battle-log-console {
+    flex: 1 1 auto;
+    height: 76px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: rgba(255, 255, 255, 0.92);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.battle-log-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+    padding: 1px 0;
+}
+
+.battle-log-line-muted {
+    color: rgba(255, 255, 255, 0.55);
 }
 
 .control-button {

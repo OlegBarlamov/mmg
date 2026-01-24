@@ -17,6 +17,7 @@ import { IReportInfo } from '../services/serverAPI';
 import { BattleControlPanel } from './battleControlPanel';
 import { BattleMapUnit } from '../battleMap/battleMapUnit';
 import { BattleUnitInfoModal } from './battleUnitInfoModal';
+import { BattleCommandFromServer } from '../server/battleCommandFromServer';
 
 const CanvasContainerId = 'CanvasContainer'
 
@@ -38,6 +39,7 @@ interface IBattleComponentState {
     activeUnit: BattleMapUnit | null
     showUnitInfoModal: boolean
     selectedUnit: BattleMapUnit | null
+    battleLog: string[]
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
@@ -45,6 +47,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     private controlPanelRef: React.RefObject<BattleControlPanel | null> = React.createRef()
     private contextMenuHandler: ((e: Event) => void) | null = null
     private rewardManager: RewardManager
+    private readonly maxBattleLogLines = 200
 
     constructor(props: IBattleComponentProps) {
         super(props)
@@ -59,7 +62,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             isPlayerTurn: false,
             activeUnit: null,
             showUnitInfoModal: false,
-            selectedUnit: null
+            selectedUnit: null,
+            battleLog: []
         }
 
         // Initialize reward manager with callbacks
@@ -95,6 +99,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
         // Subscribe to turn changes
         this.battleController.onNextTurn.connect(this.handleNextTurn)
+        // Subscribe when message handling starts (in sync with animations)
+        this.battleController.onServerMessageHandlingStarted.connect(this.handleServerMessage)
 
         // Set up right-click handler for unit info modal
         this.battleController.mapController.onUnitRightMouseClick = this.handleUnitRightClick
@@ -115,6 +121,71 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             isPlayerTurn: isPlayerTurn,
             activeUnit: activeUnit
         })
+    }
+
+    private handleServerMessage = (message: BattleCommandFromServer) => {
+        const line = this.formatBattleServerMessage(message)
+        this.setState(prev => {
+            const next = [...prev.battleLog, line]
+            const trimmed = next.length > this.maxBattleLogLines ? next.slice(next.length - this.maxBattleLogLines) : next
+            return { battleLog: trimmed }
+        })
+    }
+
+    private getPlayerLabel(player: BattlePlayerNumber): string {
+        const myPlayerId = this.props.serviceLocator.playerService().currentPlayerInfo.id
+        const myPlayerNumber = this.props.battleMap.players.find(p => p.playerId === myPlayerId)?.playerNumber
+        if (myPlayerNumber && player === myPlayerNumber) return "You"
+        return "Enemy"
+    }
+
+    private getUnitLabel(unitId: string): string {
+        const unit =
+            this.battleController?.mapController.map.units.find(u => u.id === unitId) ??
+            this.props.battleMap.units.find(u => u.id === unitId)
+        if (!unit) return "A unit"
+        const suffix = unitId.length >= 4 ? ` #${unitId.slice(-4)}` : ""
+        return `${unit.name ?? "Unit"}${suffix}`
+    }
+
+    private formatBattleServerMessage(message: BattleCommandFromServer): string {
+        switch (message.command) {
+            case 'NEXT_TURN':
+                return `Round ${message.roundNumber + 1}: ${this.getPlayerLabel(message.player)} turn.`
+            case 'UNIT_MOVE':
+                return `${this.getUnitLabel(message.actorId)} moved.`
+            case 'UNIT_ATTACK':
+                return message.isCounterattack
+                    ? `${this.getUnitLabel(message.actorId)} counterattacked ${this.getUnitLabel(message.targetId)}.`
+                    : `${this.getUnitLabel(message.actorId)} attacked ${this.getUnitLabel(message.targetId)}.`
+            case 'TAKE_DAMAGE':
+                {
+                    const unitLabel = this.getUnitLabel(message.actorId)
+                    const lostPart = message.killedCount > 0 ? ` and lost ${message.killedCount}` : ""
+                    const tail = message.remainingCount <= 0
+                        ? ` It was destroyed.`
+                        : ` (${message.remainingHealth} health left)`
+                    return `${unitLabel} took ${message.damageTaken} damage${lostPart}.${tail}`
+                }
+            case 'UNIT_PASS':
+                return `${this.getUnitLabel(message.actorId)} passed.`
+            case 'UNIT_WAIT':
+                return `${this.getUnitLabel(message.actorId)} waited.`
+            case 'PLAYER_RANSOM':
+                return `${this.getPlayerLabel(message.player)} offered a ransom.`
+            case 'PLAYER_RUN':
+                return `${this.getPlayerLabel(message.player)} tried to run away.`
+            case 'BATTLE_FINISHED':
+                if (message.winner) {
+                    const winnerLabel = this.getPlayerLabel(message.winner)
+                    return winnerLabel === "You"
+                        ? `Battle finished. You won!`
+                        : `Battle finished. You lost.`
+                }
+                return `Battle finished.`
+            default:
+                return `Something happened.`
+        }
     }
 
 
@@ -308,6 +379,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     async componentWillUnmount() {
         if (this.battleController) {
             this.battleController.onNextTurn.disconnect(this.handleNextTurn)
+            this.battleController.onServerMessageHandlingStarted.disconnect(this.handleServerMessage)
             this.battleController.mapController.onUnitRightMouseClick = null
             this.battleController.dispose()
         }
@@ -409,6 +481,7 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         battleId={this.props.battleMap.id}
                         battleMap={this.props.battleMap}
                         currentPlayerId={this.props.serviceLocator.playerService().currentPlayerInfo.id}
+                        battleLogLines={this.state.battleLog}
                         onRansomAction={this.handleRansomAction}
                         onRunAction={this.handleRunAction}
                     />

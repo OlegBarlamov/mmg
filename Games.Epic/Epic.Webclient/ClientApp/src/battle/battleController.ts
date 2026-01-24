@@ -12,10 +12,12 @@ import { SignalBasedCancellationToken, TaskCancelledError } from "../common/canc
 import { Signal } from "typed-signals";
 import { IBattlePanelActionsController } from "./IBattlePanelActionsController";
 import { IPlayerService } from "../services/playerService";
+import { BattleCommandFromServer } from "../server/battleCommandFromServer";
 
 export interface IBattleController {
     readonly mapController: IBattleMapController
     readonly onNextTurn: Signal<(turnInfo: BattleTurnInfo) => void>
+    readonly onServerMessageHandlingStarted: Signal<(message: BattleCommandFromServer) => void>
     isPlayerControlled(player: BattlePlayerNumber): boolean
     startBattle(): Promise<{ winner: BattlePlayerNumber | null, reportId: string | null }>
     dispose(): void
@@ -23,6 +25,7 @@ export interface IBattleController {
 
 export class BattleController implements IBattleController {
     onNextTurn: Signal<(turnInfo: BattleTurnInfo) => void> = new Signal()
+    onServerMessageHandlingStarted: Signal<(message: BattleCommandFromServer) => void>
     
     mapController: IBattleMapController
 
@@ -53,6 +56,7 @@ export class BattleController implements IBattleController {
         this.turnAwaiter = turnAwaiter
         this.playerService = playerService
         this.map = mapController.map
+        this.onServerMessageHandlingStarted = turnAwaiter.onServerMessageHandlingStarted
 
         this.currentPlayerInfo = this.map.players.find(player => player.playerId === this.playerService.currentPlayerInfo.id) ?? null
 

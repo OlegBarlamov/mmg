@@ -59,11 +59,6 @@
     letter-spacing: 0.5px;
 }
 
-.hero-stats-text::before {
-    content: "⚔ ";
-    margin-right: 4px;
-}
-
 .hero-stats-left {
     order: 1;
 }
@@ -71,3 +66,4 @@
 .hero-stats-right {
     order: 3;
 }
+
