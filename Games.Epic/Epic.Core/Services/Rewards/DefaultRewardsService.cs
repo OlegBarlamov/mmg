@@ -320,6 +320,19 @@ namespace Epic.Core.Services.Rewards
             return await BattlesService.BeginBattle(playerId, battleObject);
         }
 
+        public async Task RejectRewardsGuardedByBattleDefinition(Guid playerId, Guid guardBattleDefinitionId)
+        {
+            var notAcceptedRewards = await RewardsRepository.FindNotAcceptedRewardsByPlayerId(playerId);
+            var guardedRewards = notAcceptedRewards
+                .Where(x => x.GuardBattleDefinitionId.HasValue && x.GuardBattleDefinitionId.Value == guardBattleDefinitionId)
+                .ToArray();
+
+            // Force remove the rewards from the player regardless of CanDecline.
+            // Run in parallel since these are independent operations.
+            await Task.WhenAll(guardedRewards.Select(reward =>
+                RewardsRepository.RemoveRewardFromPlayer(playerId, reward.Id)));
+        }
+
         private async Task<IRewardObject> ToRewardObject(IRewardEntity entity)
         {
             var rewardObject = new CompositeRewardObject(entity);

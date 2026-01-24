@@ -15,5 +15,11 @@ namespace Epic.Core.Services.Rewards
         Task<AcceptedRewardData> AcceptRewardAsync(Guid rewardId, Guid playerId, int[] amounts, int[] affectedSlots);
         Task<AcceptedRewardData> RejectRewardAsync(Guid rewardId, Guid playerId);
         Task<IBattleObject> BeginRewardGuardBattle(Guid rewardId, Guid playerId);
+        
+        /// <summary>
+        /// Removes (rejects) all not-yet-accepted rewards for the player that are guarded by the specified guard battle definition.
+        /// Intended to be called when the player loses the guard battle.
+        /// </summary>
+        Task RejectRewardsGuardedByBattleDefinition(Guid playerId, Guid guardBattleDefinitionId);
     }
 }
