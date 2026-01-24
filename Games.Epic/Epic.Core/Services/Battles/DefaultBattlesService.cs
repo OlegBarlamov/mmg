@@ -7,6 +7,7 @@ using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.BattleObstacles;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
+using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.BattleReports;
 using Epic.Data.Battles;
@@ -25,6 +26,7 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IPlayersService PlayersService { get; }
         [NotNull] private IBattleReportsRepository BattleReportsRepository { get; }
         [NotNull] private IBattleUnitsPlacer BattleUnitsPlacer { get; }
+        [NotNull] private IUnitsContainersService UnitsContainersService { get; }
         public IUnitTypesService UnitTypesService { get; }
         public IBattleObstaclesService BattleObstaclesService { get; }
         public IBattleObstaclesGenerator BattleObstaclesGenerator { get; }
@@ -38,6 +40,7 @@ namespace Epic.Core.Services.Battles
             [NotNull] IPlayersService playersService,
             [NotNull] IBattleReportsRepository battleReportsRepository,
             [NotNull] IBattleUnitsPlacer battleUnitsPlacer,
+            [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IUnitTypesService unitTypesService,
             [NotNull] IBattleObstaclesService battleObstaclesService,
             [NotNull] IBattleObstaclesGenerator battleObstaclesGenerator)
@@ -50,6 +53,7 @@ namespace Epic.Core.Services.Battles
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             BattleReportsRepository = battleReportsRepository ?? throw new ArgumentNullException(nameof(battleReportsRepository));
             BattleUnitsPlacer = battleUnitsPlacer ?? throw new ArgumentNullException(nameof(battleUnitsPlacer));
+            UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
             BattleObstaclesService = battleObstaclesService ?? throw new ArgumentNullException(nameof(battleObstaclesService));
             BattleObstaclesGenerator = battleObstaclesGenerator ?? throw new ArgumentNullException(nameof(battleObstaclesGenerator));
@@ -177,7 +181,19 @@ namespace Epic.Core.Services.Battles
             
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
-            BattleUnitsPlacer.PlaceBattleUnitsDefaultPattern(mutableBattleObject);
+            int? player1OriginalContainerHeight = player.ActiveHero?.ArmyContainer?.Capacity;
+            int? player2OriginalContainerHeight = null;
+            var player2ContainerId = mutableBattleObject.Units
+                .FirstOrDefault(u => u.PlayerIndex == (int)InBattlePlayerNumber.Player2 && u.GlobalUnit != null)
+                ?.GlobalUnit
+                ?.ContainerId;
+            if (player2ContainerId.HasValue)
+                player2OriginalContainerHeight = (await UnitsContainersService.GetById(player2ContainerId.Value)).Capacity;
+
+            BattleUnitsPlacer.PlaceBattleUnitsDefaultPattern(
+                mutableBattleObject,
+                player1OriginalContainerHeight,
+                player2OriginalContainerHeight);
 
             await BattleUnitsService.UpdateUnits(mutableBattleObject.Units);
             

@@ -19,6 +19,8 @@ using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
 using Epic.Core.Services.Users;
 using Epic.Data;
+using Epic.Data.Artifact;
+using Epic.Data.ArtifactType;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.BattleObstacles;
 using Epic.Data.BattleReports;
@@ -101,6 +103,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleReportsRepository, InMemoryBattleReportsRepository>();
             serviceRegistrator.RegisterType<IBattleObstaclesRepository, InMemoryBattleObstaclesRepository>();
             serviceRegistrator.RegisterType<IRewardDefinitionsRepository, InMemoryRewardDefinitionsRepository>();
+            serviceRegistrator.RegisterType<IArtifactsRepository, InMemoryArtifactsRepository>();
+            serviceRegistrator.RegisterType<IArtifactTypesRepository, InMemoryArtifactTypesRepository>();
             
             serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
