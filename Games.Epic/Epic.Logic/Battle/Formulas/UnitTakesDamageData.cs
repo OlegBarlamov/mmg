@@ -26,7 +26,7 @@ namespace Epic.Logic.Battle.Formulas
             var randomSum = Enumerable.Range(0, dicesCounts)
                 .Sum(x => random.NextInteger(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
             
-            var damage = randomSum * attacker.GlobalUnit.Count / Math.Max(0, dicesCounts);
+            var damage = randomSum * attacker.GlobalUnit.Count / Math.Max(1, dicesCounts);
             
             // Apply Attack vs Defense modifier
             var attackDefenseDiff = attacker.CurrentAttack - target.CurrentDefense;
@@ -54,6 +54,8 @@ namespace Epic.Logic.Battle.Formulas
             if (counterAttack)
                 damage = (int)(damage * 0.01 * (100 - attackFunctionType.CounterattacksPenaltyPercentage));
             
+            damage = Math.Max(1, damage);
+
             var finalHealth = target.CurrentHealth - damage;
             var newCount = target.GlobalUnit.Count;
             if (finalHealth <= 0)
