@@ -54,6 +54,31 @@ export interface IResourceInfo {
     readonly price: number
 }
 
+export enum ArtifactSlot {
+    None = 0,
+    Bag = 1,
+    Hand = 2,
+    Body = 3,
+    Head = 4,
+    Cloak = 5,
+    Legs = 6,
+    Neck = 7,
+    Shield = 8,
+    Wrist = 9,
+}
+
+export interface IArtifactInfo {
+    readonly id: string
+    readonly typeId: string
+    readonly typeKey: string | null
+    readonly typeName: string | null
+    readonly thumbnailUrl: string | null
+    readonly slots: ArtifactSlot[]
+    readonly attackBonus: number
+    readonly defenseBonus: number
+    readonly equippedSlotsIndexes: number[]
+}
+
 export interface IAcceptedReward {
     readonly rewardId: string
 }
@@ -99,6 +124,9 @@ export interface IServerAPI {
     getActiveBattle(): Promise<BattleMap | null>
     establishBattleConnection(battleId: string, handler: IBattleConnectionMessagesHandler): Promise<IBattleServerConnection> 
     getRansomPrice(battleId: string): Promise<IRansomPrice>
+
+    getMyArtifacts(): Promise<IArtifactInfo[]>
+    equipArtifact(artifactId: string, equippedSlotsIndexes: number[]): Promise<IArtifactInfo>
 
     getMyRewards(): Promise<IRewardToAccept[]>
     acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward>

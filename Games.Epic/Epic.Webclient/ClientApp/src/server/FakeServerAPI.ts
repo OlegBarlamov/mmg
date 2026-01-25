@@ -1,6 +1,6 @@
 import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IArtifactInfo, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -61,6 +61,12 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
         throw new Error("Method not implemented.");
     }
     getResources(): Promise<IResourceInfo[]> {
+        throw new Error("Method not implemented.");
+    }
+    getMyArtifacts(): Promise<IArtifactInfo[]> {
+        throw new Error("Method not implemented.");
+    }
+    equipArtifact(artifactId: string, equippedSlotsIndexes: number[]): Promise<IArtifactInfo> {
         throw new Error("Method not implemented.");
     }
     async moveUnits(unitId: string, containerId: string, count: number, slotIndex: number): Promise<IUnitsContainerInfo> {

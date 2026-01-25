@@ -81,7 +81,7 @@ namespace Epic.Logic.Battle
             // If this battle is a guard battle for any pending reward, losing it should reject that reward.
             // We detect guard battles indirectly: rewards reference the guard battle definition by id.
             var winner = BattleResult.Winner;
-            var rejectTasks = battleObject.PlayerInfos
+            var rejectGuardedRewardsTasks = battleObject.PlayerInfos
                 .Select(playerInfo => new
                 {
                     PlayerId = playerInfo.PlayerId,
@@ -90,7 +90,7 @@ namespace Epic.Logic.Battle
                 .Where(x => !(winner.HasValue && x.PlayerNumber.HasValue && x.PlayerNumber.Value == winner.Value))
                 .Select(x => RewardsService.RejectRewardsGuardedByBattleDefinition(x.PlayerId, battleObject.BattleDefinitionId))
                 .ToArray();
-            await Task.WhenAll(rejectTasks);
+            await Task.WhenAll(rejectGuardedRewardsTasks);
             
             // var defeatedPlayers = Players.Where(x => x.Id != winnerPlayerId).ToArray();
             // TODO kill the heroes

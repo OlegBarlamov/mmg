@@ -10,6 +10,7 @@ namespace Epic.Core.Services.ArtifactTypes
         public Guid Id { get; set; }
         public string Key { get; set; }
         public string Name { get; set; }
+        public string ThumbnailUrl { get; set; }
         public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
@@ -23,6 +24,7 @@ namespace Epic.Core.Services.ArtifactTypes
                 Id = entity.Id,
                 Key = entity.Key,
                 Name = entity.Name,
+                ThumbnailUrl = entity.ThumbnailUrl,
                 Slots = entity.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>(),
                 AttackBonus = entity.AttackBonus,
                 DefenseBonus = entity.DefenseBonus,

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
+using Epic.Core.Services.Artifacts;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
@@ -29,6 +31,8 @@ namespace Epic.Server
         [NotNull] public IGlobalUnitsRepository GlobalUnitsRepository { get; }
         public IRewardsRepository RewardsRepository { get; }
         public IPlayersService PlayersService { get; }
+        public IArtifactsService ArtifactsService { get; }
+        public IArtifactTypesService ArtifactTypesService { get; }
         public IUnitsContainersService UnitsContainersService { get; }
         public IBattleDefinitionsService BattleDefinitionsService { get; }
         public IHeroesService HeroesService { get; }
@@ -49,6 +53,8 @@ namespace Epic.Server
             [NotNull] IGlobalUnitsRepository globalUnitsRepository,
             [NotNull] IRewardsRepository rewardsRepository,
             [NotNull] IPlayersService playersService,
+            [NotNull] IArtifactsService artifactsService,
+            [NotNull] IArtifactTypesService artifactTypesService,
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IHeroesService heroesService,
@@ -60,6 +66,8 @@ namespace Epic.Server
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            ArtifactsService = artifactsService ?? throw new ArgumentNullException(nameof(artifactsService));
+            ArtifactTypesService = artifactTypesService ?? throw new ArgumentNullException(nameof(artifactTypesService));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
@@ -109,6 +117,9 @@ namespace Epic.Server
             
             var hero1 = await HeroesService.CreateNew(user1Player.Name, user1Player.Id);
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
+
+            // Give some artifacts to the first player's hero for testing.
+            await GiveTestArtifacts(hero.Id);
             
             var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
             
@@ -147,6 +158,16 @@ namespace Epic.Server
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+        }
+
+        private async Task GiveTestArtifacts(Guid heroId)
+        {
+            var allTypes = await ArtifactTypesService.GetAll();
+            if (allTypes == null || allTypes.Length == 0)
+                return;
+
+            // Give one of each artifact type (unequipped by default).
+            await Task.WhenAll(allTypes.Select(t => ArtifactsService.Create(heroId, t.Id)));
         }
 
         private async Task<List<(IUnitTypeEntity UnitType, int Count)>> GenerateRandomPreset(int targetScore)

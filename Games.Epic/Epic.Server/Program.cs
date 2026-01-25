@@ -20,6 +20,7 @@ namespace Epic.Server
                  .AddComponent<TerminalConsoleSubsystem>()
                  .AddComponent<InitializeResourcesScript>()
                  .AddComponent<InitializeUnitsScript>()
+                 .AddComponent<InitializeArtifactsScript>()
                  .AddComponent<InitializeRewardDefinitionsScript>()
                  .AddComponent<InitializeGameModesScript>()
                  .AddComponent<DebugStartupScript>()

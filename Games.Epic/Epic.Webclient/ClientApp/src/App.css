@@ -209,6 +209,33 @@
     min-width: 140px;
 }
 
+.inventory-button {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    border: 2px solid #1f4e79;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #ecf0f1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.inventory-button:hover {
+    background: linear-gradient(145deg, #2980b9, #3498db);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+}
+
+.inventory-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
 .stats-icon {
     width: 16px;
     height: 16px;

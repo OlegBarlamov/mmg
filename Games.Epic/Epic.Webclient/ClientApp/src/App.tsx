@@ -6,6 +6,7 @@ import {MenuComponent} from "./components/menuComponent";
 import {BattleComponent} from "./components/battleComponent";
 import {IPlayerInfo, IUserInfo} from "./services/serverAPI";
 import { BattleMap } from './battleMap/battleMap';
+import { ArtifactsInventoryModal } from './components/artifactsInventoryModal';
 
 export interface IAppProps {
     serviceLocator: IServiceLocator;
@@ -17,6 +18,7 @@ export interface IAppState {
     selectedBattle: BattleMap | null
     battleKey: number
     isLoading: boolean
+    showArtifactsInventory: boolean
 }
 
 export class App extends PureComponent<IAppProps, IAppState> {
@@ -25,7 +27,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
     constructor(props: IAppProps) {
         super(props)
         
-        this.state = {selectedBattle: null, userInfo: null, playerInfo: null, battleKey: 0, isLoading: true}
+        this.state = {selectedBattle: null, userInfo: null, playerInfo: null, battleKey: 0, isLoading: true, showArtifactsInventory: false}
         
         this.onBattleDefinitionSelected = this.onBattleDefinitionSelected.bind(this)
         this.onBattleFinished = this.onBattleFinished.bind(this)
@@ -116,6 +118,16 @@ export class App extends PureComponent<IAppProps, IAppState> {
         }
     } 
 
+    private async refreshPlayerInfoOnly() {
+        const serverAPI = this.props.serviceLocator.serverAPI()
+        const playerInfo = await serverAPI.getPlayer(this.state.playerInfo!.id)
+        this.props.serviceLocator.playerService().setCurrentPlayerInfo(playerInfo)
+        this.setState({
+            ...this.state,
+            playerInfo,
+        })
+    }
+
     private async refreshPlayerInfoAndBattles() {
         const serverAPI = this.props.serviceLocator.serverAPI()
         serverAPI.getPlayer(this.state.playerInfo!.id).then(playerInfo => {
@@ -164,6 +176,13 @@ export class App extends PureComponent<IAppProps, IAppState> {
                         <div className="stats-icon">S</div>
                         ATK: {playerInfo.stats.attack} | DEF: {playerInfo.stats.defense}
                     </div>
+
+                    <button
+                        className="inventory-button"
+                        onClick={() => this.setState({ showArtifactsInventory: true })}
+                    >
+                        Inventory
+                    </button>
                 </div>
                 
                 <div className="right-side">
@@ -249,6 +268,14 @@ export class App extends PureComponent<IAppProps, IAppState> {
                                     playerInfo={this.state.playerInfo}
                                 />
                             </div>
+
+                            <ArtifactsInventoryModal
+                                isVisible={this.state.showArtifactsInventory}
+                                serviceLocator={this.props.serviceLocator}
+                                heroStats={this.state.playerInfo?.stats ?? null}
+                                onClose={() => this.setState({ showArtifactsInventory: false })}
+                                onArtifactsChanged={() => this.refreshPlayerInfoOnly()}
+                            />
                         </>
                     )
                 }

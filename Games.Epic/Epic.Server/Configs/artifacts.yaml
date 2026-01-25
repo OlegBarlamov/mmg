@@ -1,0 +1,69 @@
+Weapon: &Weapon
+  Slots: [Hand]
+
+Artifacts:
+  CentaursAxe:
+    <<: *Weapon
+    Key: CentaursAxe
+    Name: "Centaur's Axe"
+    Value: 1000
+    AttackBonus: 2
+    ThumbnailUrl: "/resources/question.png"
+
+  BlackshardOfTheDeadKnight:
+    <<: *Weapon
+    Key: BlackshardOfTheDeadKnight
+    Name: "Blackshard of the Dead Knight"
+    Value: 1500
+    AttackBonus: 3
+    ThumbnailUrl: "/resources/question.png"
+
+  GreaterGnollsFlail:
+    <<: *Weapon
+    Key: GreaterGnollsFlail
+    Name: "Greater Gnoll's Flail"
+    Value: 2000
+    AttackBonus: 4
+    ThumbnailUrl: "/resources/question.png"
+
+  OgresClubOfHavoc:
+    <<: *Weapon
+    Key: OgresClubOfHavoc
+    Name: "Ogre's Club of Havoc"
+    Value: 2500
+    AttackBonus: 5
+    ThumbnailUrl: "/resources/question.png"
+
+  SwordOfHellfire:
+    <<: *Weapon
+    Key: SwordOfHellfire
+    Name: "Sword of Hellfire"
+    Value: 3000
+    AttackBonus: 6
+    ThumbnailUrl: "/resources/question.png"
+
+  TridentOfDominion:
+    <<: *Weapon
+    Key: TridentOfDominion
+    Name: "Trident of Dominion"
+    Value: 3500
+    AttackBonus: 7
+    ThumbnailUrl: "/resources/question.png"
+
+  RedDragonFlameTongue:
+    <<: *Weapon
+    Key: RedDragonFlameTongue
+    Name: "Red Dragon Flame Tongue"
+    Value: 2000
+    AttackBonus: 2
+    DefenseBonus: 2
+    ThumbnailUrl: "/resources/question.png"
+
+  TitansGladius:
+    <<: *Weapon
+    Key: TitansGladius
+    Name: "Titan's Gladius"
+    Value: 5000
+    AttackBonus: 12
+    DefenseBonus: -3
+    ThumbnailUrl: "/resources/question.png"

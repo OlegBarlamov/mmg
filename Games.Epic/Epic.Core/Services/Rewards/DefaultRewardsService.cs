@@ -327,8 +327,6 @@ namespace Epic.Core.Services.Rewards
                 .Where(x => x.GuardBattleDefinitionId.HasValue && x.GuardBattleDefinitionId.Value == guardBattleDefinitionId)
                 .ToArray();
 
-            // Force remove the rewards from the player regardless of CanDecline.
-            // Run in parallel since these are independent operations.
             await Task.WhenAll(guardedRewards.Select(reward =>
                 RewardsRepository.RemoveRewardFromPlayer(playerId, reward.Id)));
         }

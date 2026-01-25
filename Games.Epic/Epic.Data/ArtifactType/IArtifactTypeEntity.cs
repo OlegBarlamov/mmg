@@ -8,6 +8,7 @@ namespace Epic.Data.ArtifactType
     {
         string Key { get; }
         string Name { get; }
+        string ThumbnailUrl { get; }
         ArtifactSlot[] Slots { get; }
         int AttackBonus { get; }
         int DefenseBonus { get; }
@@ -22,6 +23,7 @@ namespace Epic.Data.ArtifactType
     {
         public string Key { get; set; }
         public string Name { get; set; }
+        public string ThumbnailUrl { get; set; }
         public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
@@ -40,6 +42,7 @@ namespace Epic.Data.ArtifactType
         {
             Key = fields.Key;
             Name = fields.Name;
+            ThumbnailUrl = fields.ThumbnailUrl;
             Slots = fields.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>();
             AttackBonus = fields.AttackBonus;
             DefenseBonus = fields.DefenseBonus;

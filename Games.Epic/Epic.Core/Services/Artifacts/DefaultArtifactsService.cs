@@ -78,10 +78,15 @@ namespace Epic.Core.Services.Artifacts
             // Empty -> unequip (no slots occupied)
             if (normalizedIndexes.Length == 0)
             {
-                var unequipped = MutableArtifactObject.FromEntity(targetEntity);
-                unequipped.EquippedSlotsIndexes = Array.Empty<int>();
-                await ArtifactsRepository.Update(unequipped.ToEntity());
-                return unequipped;
+                var targetMutable1 = MutableArtifactObject.FromEntity(targetEntity);
+                targetMutable1.EquippedSlotsIndexes = Array.Empty<int>();
+                await ArtifactsRepository.Update(targetMutable1.ToEntity());
+
+                // Return with type populated (so API includes name/stats/slots even after unequip).
+                var updated1 = await ArtifactsRepository.GetById(artifactId);
+                var updatedObj1 = MutableArtifactObject.FromEntity(updated1);
+                updatedObj1.ArtifactType = artifactType;
+                return updatedObj1;
             }
 
             // Resolve requested slot types and validate indexes exist.

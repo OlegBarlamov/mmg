@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell, IBattleObstacle as IBattleMapObstacle} from "../battleMap/battleMap";
-import {IAcceptedReward, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IArtifactInfo, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -13,7 +13,7 @@ import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
 //export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-export const SERVER_BASE_URL = "https://dd0f6d3cdda6.ngrok-free.app"
+export const SERVER_BASE_URL = "https://0337f0b68030.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
@@ -93,6 +93,18 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     async getRansomPrice(battleId: string): Promise<IRansomPrice> {
         return await this.fetchResource<IRansomPrice>(`api/battle/${battleId}/ransom-info`, "GET", "ransom-info")
     }
+
+    getMyArtifacts(): Promise<IArtifactInfo[]> {
+        return this.fetchResource("api/artifacts", "GET", "artifacts")
+    }
+
+    equipArtifact(artifactId: string, equippedSlotsIndexes: number[]): Promise<IArtifactInfo> {
+        return this.fetchResource("api/artifacts/equip", "POST", "equip_artifact", {
+            artifactId,
+            equippedSlotsIndexes
+        })
+    }
+
     async acceptReward(id: string, body: AcceptRewardBody): Promise<IAcceptedReward> {
         return await this.fetchResource<IAcceptedReward>(`api/rewards/${id}`, "POST", 'accept_reward', body)
     }
