@@ -4,6 +4,9 @@ Weapon: &Weapon
 Shield: &Shield
   Slots: [Shield]
 
+Torso: &Torso
+  Slots: [Body]
+
 Artifacts:
   CentaursAxe:
     <<: *Weapon
@@ -156,3 +159,80 @@ Artifacts:
     AttackBonus: -3
     DefenseBonus: 12
     ThumbnailUrl: "/resources/Artifact_Sentinel's_Shield.gif"
+
+  # Torso
+  BreastplateOfPetrifiedWood:
+    <<: *Torso
+    Key: BreastplateOfPetrifiedWood
+    Name: "Breastplate of Petrified Wood"
+    Value: 500
+    DefenseBonus: 1
+    ThumbnailUrl: "/resources/Artifact_Breastplate_of_Petrified_Wood.gif"
+
+  RibCage:
+    <<: *Torso
+    Key: RibCage
+    Name: "Rib Cage"
+    Value: 1500
+    DefenseBonus: 2
+    ThumbnailUrl: "/resources/Artifact_Rib_Cage.gif"
+
+  ScalesOfTheGreaterBasilisk:
+    <<: *Torso
+    Key: ScalesOfTheGreaterBasilisk
+    Name: "Scales of the Greater Basilisk"
+    Value: 2000
+    DefenseBonus: 3
+    ThumbnailUrl: "/resources/Artifact_Scales_of_the_Greater_Basilisk.gif"
+
+  TunicOfTheCyclopsKing:
+    <<: *Torso
+    Key: TunicOfTheCyclopsKing
+    Name: "Tunic of the Cyclops King"
+    Value: 2500
+    DefenseBonus: 4
+    ThumbnailUrl: "/resources/Artifact_Tunic_of_the_Cyclops_King.gif"
+
+  BreastplateOfBrimstone:
+    <<: *Torso
+    Key: BreastplateOfBrimstone
+    Name: "Breastplate of Brimstone"
+    Value: 3000
+    DefenseBonus: 5
+    ThumbnailUrl: "/resources/Artifact_Breastplate_of_Brimstone.gif"
+
+  RoyalArmorOfNix:
+    <<: *Torso
+    Key: RoyalArmorOfNix
+    Name: "Royal Armor of Nix"
+    Value: 3500
+    DefenseBonus: 6
+    ThumbnailUrl: "/resources/Artifact_Royal_Armor_of_Nix.gif"
+
+  ArmorOfWonder:
+    <<: *Torso
+    Key: ArmorOfWonder
+    Name: "Armor of Wonder"
+    Value: 2000
+    # Original includes Power/Knowledge; we only support ATK/DEF, so we scale ATK/DEF up.
+    AttackBonus: 2
+    DefenseBonus: 2
+    ThumbnailUrl: "/resources/Artifact_Armor_of_Wonder.gif"
+
+  DragonScaleArmor:
+    <<: *Torso
+    Key: DragonScaleArmor
+    Name: "Dragon Scale Armor"
+    Value: 4000
+    AttackBonus: 4
+    DefenseBonus: 4
+    ThumbnailUrl: "/resources/Artifact_Dragon_Scale_Armor.gif"
+
+  TitansCuirass:
+    <<: *Torso
+    Key: TitansCuirass
+    Name: "Titan's Cuirass"
+    Value: 5000
+    DefenseBonus: 10
+    AttackBonus: -2
+    ThumbnailUrl: "/resources/Artifact_Titan's_Cuirass.gif"
