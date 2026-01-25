@@ -29,7 +29,7 @@ namespace Epic.Data.Artifact
             return Task.FromResult(result);
         }
 
-        public Task<IArtifactEntity> Create(Guid id, IArtifactEntityFields fields)
+        public Task<IArtifactEntity> Create(Guid id, IArtifactFields fields)
         {
             var entity = ArtifactEntity.FromFields(id, fields);
             _artifacts.Add(entity);

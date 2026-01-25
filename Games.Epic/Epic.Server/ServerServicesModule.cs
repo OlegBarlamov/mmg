@@ -14,6 +14,8 @@ using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.RewardDefinitions;
 using Epic.Core.Services.Rewards;
+using Epic.Core.Services.Artifacts;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.UnitTypes;
@@ -76,6 +78,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IUnitsContainersService, DefaultUnitsContainerService>();
             serviceRegistrator.RegisterType<IContainersManipulator, DefaultContainersManipulator>();
             serviceRegistrator.RegisterType<IHeroesService, DefaultHeroesService>();
+            serviceRegistrator.RegisterType<IArtifactsService, DefaultArtifactsService>();
+            serviceRegistrator.RegisterType<IArtifactTypesService, DefaultArtifactTypesService>();
             serviceRegistrator.RegisterType<IGameResourcesService, DefaultGameResourcesService>();
             serviceRegistrator.RegisterType<IBattleReportsService, DefaultBattleReportsService>();
             serviceRegistrator.RegisterType<DefaultUnitTypesRegistry, DefaultUnitTypesRegistry>();

@@ -8,7 +8,7 @@ namespace Epic.Data.Artifact
         Task<IArtifactEntity> GetById(Guid id);
         Task<IArtifactEntity[]> GetByHeroId(Guid heroId);
         
-        Task<IArtifactEntity> Create(Guid id, IArtifactEntityFields fields);
+        Task<IArtifactEntity> Create(Guid id, IArtifactFields fields);
         Task Update(IArtifactEntity entity);
         Task Remove(Guid id);
     }

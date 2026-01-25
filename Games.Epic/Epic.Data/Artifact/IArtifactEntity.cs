@@ -1,27 +1,28 @@
 using System;
+using System.Linq;
 
 namespace Epic.Data.Artifact
 {
-    public interface IArtifactEntityFields
+    public interface IArtifactFields
     {
         Guid TypeId { get; }
         Guid HeroId { get; }
-        int EquippedSlotIndex { get; }
+        int[] EquippedSlotsIndexes { get; }
     }
     
-    public interface IArtifactEntity : IArtifactEntityFields
+    public interface IArtifactEntity : IArtifactFields
     {
         Guid Id { get; }
     }
     
-    public class ArtifactEntityFields : IArtifactEntityFields
+    public class ArtifactFields : IArtifactFields
     {
         public Guid TypeId { get; set; }
         public Guid HeroId { get; set; }
-        public int EquippedSlotIndex { get; set; }
+        public int[] EquippedSlotsIndexes { get; set; } = Array.Empty<int>();
     }
     
-    public class ArtifactEntity : ArtifactEntityFields, IArtifactEntity
+    public class ArtifactEntity : ArtifactFields, IArtifactEntity
     {
         public Guid Id { get; }
 
@@ -30,14 +31,14 @@ namespace Epic.Data.Artifact
             Id = id;
         }
 
-        internal void FillFrom(IArtifactEntityFields fields)
+        internal void FillFrom(IArtifactFields fields)
         {
             TypeId = fields.TypeId;
             HeroId = fields.HeroId;
-            EquippedSlotIndex = fields.EquippedSlotIndex;
+            EquippedSlotsIndexes = fields.EquippedSlotsIndexes?.ToArray() ?? Array.Empty<int>();
         }
 
-        public static ArtifactEntity FromFields(Guid id, IArtifactEntityFields fields)
+        public static ArtifactEntity FromFields(Guid id, IArtifactFields fields)
         {
             var entity = new ArtifactEntity(id);
             entity.FillFrom(fields);

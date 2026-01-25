@@ -50,7 +50,7 @@ Modes:
         WideStdChance: 12
         BattlesCountFactor: 2
       - GuardDifficulty: 12000
-        RewardsFactor: 4
+        RewardsFactor: 3
         DifficultyFactor: 1
         MinDifficultyFactor: 7
         StartMinDifficulty: 3500
@@ -62,7 +62,7 @@ Modes:
         WideStdChance: 14
         BattlesCountFactor: 3
       - GuardDifficulty: 36000
-        RewardsFactor: 6
+        RewardsFactor: 5
         DifficultyFactor: 1
         MinDifficultyFactor: 45
         StartMinDifficulty: 12000

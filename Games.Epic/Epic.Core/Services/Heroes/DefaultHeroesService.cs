@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
+using Epic.Core.Services.Artifacts;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.Heroes;
@@ -17,17 +18,20 @@ namespace Epic.Core.Services.Heroes
         public IUnitsContainersService UnitsContainersService { get; }
         public IGlobalUnitsService GlobalUnitsService { get; }
         public IHeroesLevelsCalculator HeroesLevelsCalculator { get; }
+        public IArtifactsService ArtifactsService { get; }
 
         public DefaultHeroesService(
             [NotNull] IHeroEntitiesRepository heroEntitiesRepository,
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IGlobalUnitsService globalUnitsService,
-            [NotNull] IHeroesLevelsCalculator heroesLevelsCalculator)
+            [NotNull] IHeroesLevelsCalculator heroesLevelsCalculator,
+            [NotNull] IArtifactsService artifactsService)
         {
             HeroEntitiesRepository = heroEntitiesRepository ?? throw new ArgumentNullException(nameof(heroEntitiesRepository));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             HeroesLevelsCalculator = heroesLevelsCalculator ?? throw new ArgumentNullException(nameof(heroesLevelsCalculator));
+            ArtifactsService = artifactsService ?? throw new ArgumentNullException(nameof(artifactsService));
         }
         
         public async Task<IHeroObject> GetById(Guid id)
@@ -108,6 +112,7 @@ namespace Epic.Core.Services.Heroes
         {
             heroObject.ArmyContainer = await UnitsContainersService.GetById(heroObject.ArmyContainerId);
             heroObject.HasAliveUnits = await GlobalUnitsService.HasAliveUnits(heroObject.ArmyContainerId);
+            heroObject.Artifacts = await ArtifactsService.GetByHeroId(heroObject.Id);
         }
     }
 }
