@@ -10,6 +10,18 @@ Torso: &Torso
 Helmet: &Helmet
   Slots: [Head]
 
+Feet: &Feet
+  Slots: [Legs]
+
+Cape: &Cape
+  Slots: [Cloak]
+
+Necklace: &Necklace
+  Slots: [Neck]
+
+Ring: &Ring
+  Slots: [Wrist]
+
 Artifacts:
   CentaursAxe:
     <<: *Weapon
@@ -315,3 +327,61 @@ Artifacts:
     AttackBonus: 12
     DefenseBonus: 12
     ThumbnailUrl: "/resources/Artifact_Helm_of_Heavenly_Enlightenment.gif"
+
+  # Feet (Power -> Attack, Knowledge -> Defense)
+  DragonboneGreaves:
+    <<: *Feet
+    Key: DragonboneGreaves
+    Name: "Dragonbone Greaves"
+    Value: 1000
+    AttackBonus: 1
+    DefenseBonus: 1
+    ThumbnailUrl: "/resources/Artifact_Dragonbone_Greaves.gif"
+
+  SandalsOfTheSaint:
+    <<: *Feet
+    Key: SandalsOfTheSaint
+    Name: "Sandals of the Saint"
+    Value: 4000
+    AttackBonus: 4
+    DefenseBonus: 4
+    ThumbnailUrl: "/resources/Artifact_Sandals_of_the_Saint.gif"
+
+  # Cape (Power -> Attack, Knowledge -> Defense)
+  DragonWingTabard:
+    <<: *Cape
+    Key: DragonWingTabard
+    Name: "Dragon Wing Tabard"
+    Value: 2000
+    AttackBonus: 2
+    DefenseBonus: 2
+    ThumbnailUrl: "/resources/Artifact_Dragon_Wing_Tabard.gif"
+
+  # Necklaces (Power -> Attack, Knowledge -> Defense)
+  NecklaceOfDragonteeth:
+    <<: *Necklace
+    Key: NecklaceOfDragonteeth
+    Name: "Necklace of Dragonteeth"
+    Value: 3000
+    AttackBonus: 3
+    DefenseBonus: 3
+    ThumbnailUrl: "/resources/Artifact_Necklace_of_Dragonteeth.gif"
+
+  CelestialNecklaceOfBliss:
+    <<: *Necklace
+    Key: CelestialNecklaceOfBliss
+    Name: "Celestial Necklace of Bliss"
+    Value: 6000
+    AttackBonus: 6
+    DefenseBonus: 6
+    ThumbnailUrl: "/resources/Artifact_Celestial_Necklace_of_Bliss.gif"
+
+  # Rings
+  QuietEyeOfTheDragon:
+    <<: *Ring
+    Key: QuietEyeOfTheDragon
+    Name: "Quiet Eye of the Dragon"
+    Value: 1000
+    AttackBonus: 1
+    DefenseBonus: 1
+    ThumbnailUrl: "/resources/Artifact_Quiet_Eye_of_the_Dragon.gif"
