@@ -58,7 +58,13 @@ function formatSigned(n: number): string {
 }
 
 function artifactHoverText(a: IArtifactInfo): string {
-    return `${artifactDisplayName(a)}\nATK ${formatSigned(a.attackBonus)} | DEF ${formatSigned(a.defenseBonus)}`
+    const parts: string[] = []
+    if ((a.attackBonus ?? 0) !== 0) parts.push(`ATK ${formatSigned(a.attackBonus)}`)
+    if ((a.defenseBonus ?? 0) !== 0) parts.push(`DEF ${formatSigned(a.defenseBonus)}`)
+
+    return parts.length > 0
+        ? `${artifactDisplayName(a)}\n${parts.join(" | ")}`
+        : `${artifactDisplayName(a)}`
 }
 
 function getRequiredSlots(artifact: IArtifactInfo | null): ArtifactSlot[] {
@@ -225,7 +231,7 @@ export class ArtifactsInventoryModal extends PureComponent<IArtifactsInventoryMo
                 const artifacts = await serverAPI.getMyArtifacts()
                 this.setState({
                     artifacts,
-                    selectedArtifactId: updated.id,
+                    selectedArtifactId: null,
                     pendingEquipArtifactId: null,
                     pendingEquipSlots: [],
                 })
@@ -253,7 +259,7 @@ export class ArtifactsInventoryModal extends PureComponent<IArtifactsInventoryMo
             const updated = await serverAPI.equipArtifact(artifact.id, [])
             this.setState(prev => ({
                 artifacts: prev.artifacts.map(a => a.id === updated.id ? updated : a),
-                selectedArtifactId: updated.id,
+                selectedArtifactId: null,
                 pendingEquipArtifactId: null,
                 pendingEquipSlots: [],
             }))

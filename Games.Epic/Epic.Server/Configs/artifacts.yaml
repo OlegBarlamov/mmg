@@ -1,6 +1,9 @@
 Weapon: &Weapon
   Slots: [Hand]
 
+Shield: &Shield
+  Slots: [Shield]
+
 Artifacts:
   CentaursAxe:
     <<: *Weapon
@@ -8,7 +11,7 @@ Artifacts:
     Name: "Centaur's Axe"
     Value: 1000
     AttackBonus: 2
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Centaur's_Axe.gif"
 
   BlackshardOfTheDeadKnight:
     <<: *Weapon
@@ -16,7 +19,7 @@ Artifacts:
     Name: "Blackshard of the Dead Knight"
     Value: 1500
     AttackBonus: 3
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Blackshard_of_the_Dead_Knight.gif"
 
   GreaterGnollsFlail:
     <<: *Weapon
@@ -24,7 +27,7 @@ Artifacts:
     Name: "Greater Gnoll's Flail"
     Value: 2000
     AttackBonus: 4
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Greater_Gnoll's_Flail.gif"
 
   OgresClubOfHavoc:
     <<: *Weapon
@@ -32,7 +35,7 @@ Artifacts:
     Name: "Ogre's Club of Havoc"
     Value: 2500
     AttackBonus: 5
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Ogre's_Club_of_Havoc.gif"
 
   SwordOfHellfire:
     <<: *Weapon
@@ -40,7 +43,7 @@ Artifacts:
     Name: "Sword of Hellfire"
     Value: 3000
     AttackBonus: 6
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Sword_of_Hellfire.gif"
 
   TridentOfDominion:
     <<: *Weapon
@@ -48,7 +51,7 @@ Artifacts:
     Name: "Trident of Dominion"
     Value: 3500
     AttackBonus: 7
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Trident_of_Dominion.gif"
 
   RedDragonFlameTongue:
     <<: *Weapon
@@ -57,7 +60,16 @@ Artifacts:
     Value: 2000
     AttackBonus: 2
     DefenseBonus: 2
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Red_Dragon_Flame_Tongue.gif"
+
+  SwordOfJudgement:
+    <<: *Weapon
+    Key: SwordOfJudgement
+    Name: "Sword of Judgement"
+    Value: 10000
+    AttackBonus: 10
+    DefenseBonus: 10
+    ThumbnailUrl: "/resources/Artifact_Sword_of_Judgement.gif"
 
   TitansGladius:
     <<: *Weapon
@@ -66,4 +78,81 @@ Artifacts:
     Value: 5000
     AttackBonus: 12
     DefenseBonus: -3
-    ThumbnailUrl: "/resources/question.png"
+    ThumbnailUrl: "/resources/Artifact_Titan's_Gladius.gif"
+
+  # Shields
+  ShieldOfTheDwarvenLords:
+    <<: *Shield
+    Key: ShieldOfTheDwarvenLords
+    Name: "Shield of the Dwarven Lords"
+    Value: 1000
+    DefenseBonus: 2
+    ThumbnailUrl: "/resources/Artifact_Shield_of_the_Dwarven_Lords.gif"
+
+  ShieldOfTheYawningDead:
+    <<: *Shield
+    Key: ShieldOfTheYawningDead
+    Name: "Shield of the Yawning Dead"
+    Value: 1500
+    DefenseBonus: 3
+    ThumbnailUrl: "/resources/Artifact_Shield_of_the_Yawning_Dead.gif"
+
+  BucklerOfTheGnollKing:
+    <<: *Shield
+    Key: BucklerOfTheGnollKing
+    Name: "Buckler of the Gnoll King"
+    Value: 2000
+    DefenseBonus: 4
+    ThumbnailUrl: "/resources/Artifact_Buckler_of_the_Gnoll_King.gif"
+
+  TargOfTheRampagingOgre:
+    <<: *Shield
+    Key: TargOfTheRampagingOgre
+    Name: "Targ of the Rampaging Ogre"
+    Value: 2500
+    DefenseBonus: 5
+    ThumbnailUrl: "/resources/Artifact_Targ_of_the_Rampaging_Ogre.gif"
+
+  ShieldOfTheDamned:
+    <<: *Shield
+    Key: ShieldOfTheDamned
+    Name: "Shield of the Damned"
+    Value: 3000
+    DefenseBonus: 6
+    ThumbnailUrl: "/resources/Artifact_Shield_of_the_Damned.gif"
+
+  ShieldOfNavalGlory:
+    <<: *Shield
+    Key: ShieldOfNavalGlory
+    Name: "Shield of Naval Glory"
+    Value: 3500
+    DefenseBonus: 7
+    ThumbnailUrl: "/resources/Artifact_Shield_of_Naval_Glory.gif"
+
+  DragonScaleShield:
+    <<: *Shield
+    Key: DragonScaleShield
+    Name: "Dragon Scale Shield"
+    Value: 3000
+    AttackBonus: 3
+    DefenseBonus: 3
+    ThumbnailUrl: "/resources/Artifact_Dragon_Scale_Shield.gif"
+
+  LionsShieldOfCourage:
+    <<: *Shield
+    Key: LionsShieldOfCourage
+    Name: "Lion's Shield of Courage"
+    Value: 8000
+    # Original includes Power/Knowledge; we only support ATK/DEF, so we scale ATK/DEF up.
+    AttackBonus: 8
+    DefenseBonus: 8
+    ThumbnailUrl: "/resources/Artifact_Lion's_Shield_of_Courage.gif"
+
+  SentinelsShield:
+    <<: *Shield
+    Key: SentinelsShield
+    Name: "Sentinel's Shield"
+    Value: 5000
+    AttackBonus: -3
+    DefenseBonus: 12
+    ThumbnailUrl: "/resources/Artifact_Sentinel's_Shield.gif"
