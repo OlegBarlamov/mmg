@@ -7,6 +7,9 @@ Shield: &Shield
 Torso: &Torso
   Slots: [Body]
 
+Helmet: &Helmet
+  Slots: [Head]
+
 Artifacts:
   CentaursAxe:
     <<: *Weapon
@@ -236,3 +239,79 @@ Artifacts:
     DefenseBonus: 10
     AttackBonus: -2
     ThumbnailUrl: "/resources/Artifact_Titan's_Cuirass.gif"
+
+  # Helmets (Knowledge -> Defense, Power -> Attack)
+  HelmOfTheAlabasterUnicorn:
+    <<: *Helmet
+    Key: HelmOfTheAlabasterUnicorn
+    Name: "Helm of the Alabaster Unicorn"
+    Value: 500
+    DefenseBonus: 1
+    ThumbnailUrl: "/resources/Artifact_Helm_of_the_Alabaster_Unicorn.gif"
+
+  SkullHelmet:
+    <<: *Helmet
+    Key: SkullHelmet
+    Name: "Skull Helmet"
+    Value: 1500
+    DefenseBonus: 2
+    ThumbnailUrl: "/resources/Artifact_Skull_Helmet.gif"
+
+  HelmOfChaos:
+    <<: *Helmet
+    Key: HelmOfChaos
+    Name: "Helm of Chaos"
+    Value: 2000
+    DefenseBonus: 3
+    ThumbnailUrl: "/resources/Artifact_Helm_of_Chaos.gif"
+
+  CrownOfTheSupremeMagi:
+    <<: *Helmet
+    Key: CrownOfTheSupremeMagi
+    Name: "Crown of the Supreme Magi"
+    Value: 2500
+    DefenseBonus: 4
+    ThumbnailUrl: "/resources/Artifact_Crown_of_the_Supreme_Magi.gif"
+
+  HellstormHelmet:
+    <<: *Helmet
+    Key: HellstormHelmet
+    Name: "Hellstorm Helmet"
+    Value: 3000
+    DefenseBonus: 5
+    ThumbnailUrl: "/resources/Artifact_Hellstorm_Helmet.gif"
+
+  CrownOfTheFiveSeas:
+    <<: *Helmet
+    Key: CrownOfTheFiveSeas
+    Name: "Crown of the Five Seas"
+    Value: 3500
+    DefenseBonus: 6
+    ThumbnailUrl: "/resources/Artifact_Crown_of_the_Five_Seas.gif"
+
+  CrownOfDragontooth:
+    <<: *Helmet
+    Key: CrownOfDragontooth
+    Name: "Crown of Dragontooth"
+    Value: 4000
+    AttackBonus: 4
+    DefenseBonus: 4
+    ThumbnailUrl: "/resources/Artifact_Crown_of_Dragontooth.gif"
+
+  ThunderHelmet:
+    <<: *Helmet
+    Key: ThunderHelmet
+    Name: "Thunder Helmet"
+    Value: 5000
+    AttackBonus: -2
+    DefenseBonus: 10
+    ThumbnailUrl: "/resources/Artifact_Thunder_Helmet.gif"
+
+  HelmOfHeavenlyEnlightenment:
+    <<: *Helmet
+    Key: HelmOfHeavenlyEnlightenment
+    Name: "Helm of Heavenly Enlightenment"
+    Value: 12000
+    AttackBonus: 12
+    DefenseBonus: 12
+    ThumbnailUrl: "/resources/Artifact_Helm_of_Heavenly_Enlightenment.gif"
