@@ -14,6 +14,7 @@ namespace Epic.Data.RewardDefinitions
         string Key { get; set; }
         int Value { get; }
         string Name { get; }
+        string Description { get; }
         
         RewardType RewardType { get; }
         Guid[] Ids { get; }
@@ -39,6 +40,7 @@ namespace Epic.Data.RewardDefinitions
         public string Key { get; set; }
         public int Value { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public RewardType RewardType { get; set; }
         public Guid[] Ids { get; set; }
         public int[] MinAmounts { get; set; }
@@ -61,6 +63,7 @@ namespace Epic.Data.RewardDefinitions
             Key = fields.Key;
             Value = fields.Value;
             Name = fields.Name;
+            Description = fields.Description;
             RewardType = fields.RewardType;
             Ids = fields.Ids;
             MinAmounts = fields.MinAmounts;

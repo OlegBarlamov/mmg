@@ -144,14 +144,32 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         await this.rewardManager.beginGuardBattle(rewardId)
     }
 
+    private buildTooltipText = (title: string, description?: string): string => {
+        const t = (title ?? '').trim()
+        const d = (description ?? '').trim()
+        if (t && d) return `${t}\n${d}`
+        return t || d
+    }
+
     private handleRewardMouseEnter = (event: React.MouseEvent, description: string) => {
+        const text = (description ?? '').trim()
+        if (!text) return
+
         const rect = event.currentTarget.getBoundingClientRect()
+        const x = rect.left + rect.width / 2
+        const y = rect.top - 60
+
+        // Keep tooltip reasonably within viewport (helps near edges/top).
+        const halfMaxWidth = 160
+        const clampedX = Math.min(window.innerWidth - halfMaxWidth, Math.max(halfMaxWidth, x))
+        const clampedY = Math.max(12, y)
+
         this.setState({
             tooltip: {
                 visible: true,
-                text: description,
-                x: rect.left + rect.width / 2,
-                y: rect.top - 60
+                text,
+                x: clampedX,
+                y: clampedY
             }
         })
     }
@@ -404,7 +422,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                                 <div 
                                                                     key={rewardIndex} 
                                                                     className="reward-text-item"
-                                                                    onMouseEnter={(e) => this.handleRewardMouseEnter(e, reward.description)}
+                                                                    onMouseEnter={(e) => this.handleRewardMouseEnter(
+                                                                        e,
+                                                                        this.buildTooltipText(reward.name || 'Next Stage', reward.description)
+                                                                    )}
                                                                     onMouseLeave={this.handleRewardMouseLeave}
                                                                 >
                                                                     <span className="next-stage-text">Next Stage</span>
@@ -413,7 +434,10 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                                                 <div 
                                                                     key={rewardIndex} 
                                                                     className="reward-horizontal-item"
-                                                                    onMouseEnter={(e) => this.handleRewardMouseEnter(e, reward.description)}
+                                                                    onMouseEnter={(e) => this.handleRewardMouseEnter(
+                                                                        e,
+                                                                        this.buildTooltipText(reward.name, reward.description)
+                                                                    )}
                                                                     onMouseLeave={this.handleRewardMouseLeave}
                                                                 >
                                                                     <img 

@@ -80,8 +80,6 @@ namespace Epic.Server.Resources
                     return "/resources/Attack_skill.png";
                 case Epic.Data.Reward.RewardType.Defense:
                     return "/resources/Defense_skill.png";
-                case Epic.Data.Reward.RewardType.ArtifactsGain:
-                    return reward.ArtifactTypes.FirstOrDefault()?.ThumbnailUrl ?? reward.IconUrl;
                 default:
                     return reward.IconUrl;
             }

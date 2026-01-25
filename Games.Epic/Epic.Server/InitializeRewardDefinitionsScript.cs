@@ -46,6 +46,7 @@ internal class RewardDefinitionsConfig
         public string IconUrl { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
+        public string Description { get; set; }
 
         public bool CanDecline { get; set; } = true;
         
@@ -107,6 +108,7 @@ public class InitializeRewardDefinitionsScript : IAppComponent
                     Title = x.Title,
                     IconUrl = x.IconUrl,
                     Message = x.Message,
+                    Description = x.Description,
                     MaxAmounts = x.Amounts ?? x.AmountsMax ?? Array.Empty<int>(),
                     MinAmounts = x.Amounts ?? x.AmountsMin ?? Array.Empty<int>(),
                     CanDecline = x.CanDecline,

@@ -114,7 +114,7 @@ namespace Epic.Logic.Rewards
                 GuardBattleDefinitionId = guardBattleDefinition?.Id,
                 IconUrl = rewardDefinitionEntity.IconUrl,
                 Title = rewardDefinitionEntity.Title,
-                Description = rewardDefinitionEntity.Title,
+                Description = rewardDefinitionEntity.Description ?? rewardDefinitionEntity.Title,
             });
             
             return new [] {reward};

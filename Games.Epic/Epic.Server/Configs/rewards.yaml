@@ -3,6 +3,7 @@ BeholdersSanctuaryBase: &BeholdersSanctuaryBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Beholders'_Sanctuary.gif"
   Title: "Beholders' Sanctuary"
+  Description: "Defeat Beholder, gain gold."
   CanDecline: true
   Value: 5000
   Resources: [ Gold ]
@@ -15,6 +16,7 @@ CampfireBase: &CampfireBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Campfire.gif"
   Title: "Campfire"
+  Description: "Gain resources and gold."
   CanDecline: true
   AmountsMin: [ 400, 4 ]
   AmountsMax: [ 600, 6 ]
@@ -25,6 +27,7 @@ BlackTowerBase: &BlackTowerBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Black_Tower.gif"
   Title: "Black Tower"
+  Description: "Defeat dragons, gain gold."
   CanDecline: true
   Resources: [ Gold ]
   
@@ -34,6 +37,7 @@ ChurchyardBase: &ChurchyardBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Churchyard.gif"
   Title: "ChurchyardBase"
+  Description: "Defeat zombies, gain gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -43,6 +47,7 @@ CryptBase: &CryptBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Crypt.gif"
   Title: "Crypt"
+  Description: "Defeat undead, plunder gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -52,6 +57,7 @@ CyclopsStockpileBase: &CyclopsStockpileBase
   Value: 3000
   IconUrl: "/resources/Cyclops_Stockpile.gif"
   Title: "Cyclops Stockpile"
+  Description: "Defeat cyclops, gain rare resources."
   CanDecline: true
   Resources: [ Wood, Stone, Mercury, Sulfur, Crystal, Gems ]
 
@@ -61,6 +67,7 @@ DerelictShipBase: &DerelictShipBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Derelict_Ship.gif"
   Title: "Derelict Ship"
+  Description: "Defeat water elementals, salvage gold from the wreck."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -70,6 +77,7 @@ DragonFlyHiveBase: &DragonFlyHiveBase
   Value: 8000
   IconUrl: "/resources/Dragon_Fly_Hive.gif"
   Title: "Dragon Fly Hive"
+  Description: "Defeat dragon flies, recruit Wyverns."
   CanDecline: true
   Units: [ Wyvern ]
 
@@ -79,6 +87,7 @@ DragonUtopiaBase: &DragonUtopiaBase
   Value: 10000
   IconUrl: "/resources/Dragon_Utopia.gif"
   Title: "Dragon Utopia"
+  Description: "Defeat dragons, claim a dragon hoard of gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -88,6 +97,7 @@ DwarvenTreasuryBase: &DwarvenTreasuryBase
   Value: 2000
   IconUrl: "/resources/Dwarven_Treasury.gif"
   Title: "Dwarven Treasury"
+  Description: "Defeat dwarves, gain gold and crystal."
   CanDecline: true
   Resources: [ Gold, Crystal ]
   
@@ -97,6 +107,7 @@ ExperimentalShopBase: &ExperimentalShopBase
   RewardType: UnitsGain
   IconUrl: "/resources/Experimental_Shop.gif"
   Title: "Experimental Shop"
+  Description: "Defeat steel golems, recruit Giants."
   CanDecline: true
   Units: [ Giant ]
 
@@ -105,6 +116,7 @@ FlotsamBase: &FlotsamBase
   Value: 500
   IconUrl: "/resources/Flotsam.gif"
   Title: "Flotsam"
+  Description: "Search the wreckage for supplies."
   CanDecline: true
 
 LeanToBase: &LeanToBase
@@ -112,6 +124,7 @@ LeanToBase: &LeanToBase
   Value: 500
   IconUrl: "/resources/Lean_To.gif"
   Title: "Lean To"
+  Description: "Find some supplies."
   CanDecline: true
   AmountsMin: [ 1 ]
   AmountsMax: [ 10 ]
@@ -121,6 +134,7 @@ MysticalGardenBase: &MysticalGardenBase
   Value: 500
   IconUrl: "/resources/Mystical_Garden.gif"
   Title: "Mystical Garden"
+  Description: "Gain a small treasure."
   CanDecline: true
 
 JetsamBase: &JetsamBase
@@ -128,6 +142,7 @@ JetsamBase: &JetsamBase
   Value: 500
   IconUrl: "/resources/Jetsam.gif"
   Title: "Jetsam"
+  Description: "Search the debris for supplies."
   CanDecline: true
 
 GriffinConservatoryBase: &GriffinConservatoryBase
@@ -135,6 +150,7 @@ GriffinConservatoryBase: &GriffinConservatoryBase
   RewardType: UnitsGain
   IconUrl: "/resources/Griffin_Conservatory.gif"
   Title: "Griffin Conservatory"
+  Description: "Defeat griffins, recruit Angels."
   CanDecline: true
   Value: 2000
   Units: [ Angel ]
@@ -144,6 +160,7 @@ ImpCacheBase: &ImpCacheBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Imp_Cache.gif"
   Title: "Imp Cache"
+  Description: "Defeat imps, gain gold and mercury."
   CanDecline: true
   Value: 5000
   Resources: [ Gold, Mercury ]
@@ -153,6 +170,7 @@ IvoryTowerBase: &IvoryTowerBase
   RewardType: UnitsGain
   IconUrl: "/resources/Ivory_Tower.gif"
   Title: "Ivory Tower"
+  Description: "Defeat arch mages, recruit Enchanters."
   CanDecline: true
   Value: 7000
   Units: [ Enchanter ]
@@ -162,6 +180,7 @@ MansionBase: &MansionBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Mansion.gif"
   Title: "Mansion"
+  Description: "Defeat vampire lords, gain gold and rare resources."
   CanDecline: true
   Value: 5000
   Resources: [ Gold, Mercury, Sulfur, Crystal, Gems ]
@@ -171,6 +190,7 @@ MedusaStoresBase: &MedusaStoresBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Medusa_Stores.gif"
   Title: "Medusa Stores"
+  Description: "Defeat medusas, gain gold and sulfur."
   CanDecline: true
   Value: 1500
   Resources: [ Gold, Sulfur ]
@@ -180,6 +200,7 @@ NagaBankBase: &NagaBankBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Naga_Bank.gif"
   Title: "Naga Bank"
+  Description: "Defeat nagas, gain gold and gems."
   CanDecline: true
   Value: 3000
   Resources: [ Gold, Gems ]
@@ -189,6 +210,7 @@ PirateCavernBase: &PirateCavernBase
  RewardType: UnitsGain
  IconUrl: "/resources/Pirate_Cavern.webp"
  Title: "Pirate Cavern"
+ Description: "Defeat pirates, recruit Sea Serpents."
  CanDecline: true
  Value: 3500
  Units: [ SeaSerpent ]
@@ -199,6 +221,7 @@ WindmillBase: &WindmillBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Windmill.webp"
   Title: "Windmill"
+  Description: "Gain resources."
   CanDecline: true
 
 ShipwreckBase: &ShipwreckBase
@@ -207,6 +230,7 @@ ShipwreckBase: &ShipwreckBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Shipwreck.webp"
   Title: "Shipwreck"
+  Description: "Defeat wights, salvage gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -216,6 +240,7 @@ SeaChestBase: &SeaChestBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Sea_Chest.webp"
   Title: "Sea Chest"
+  Description: "Gain gold."
   CanDecline: true
 
 SeaBarrelBase: &SeaBarrelBase
@@ -224,6 +249,7 @@ SeaBarrelBase: &SeaBarrelBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Sea_Barrel.webp"
   Title: "Sea Barrel"
+  Description: "Gain resources."
   CanDecline: true
 
 TreasureChestBase: &TreasureChestBase
@@ -232,6 +258,7 @@ TreasureChestBase: &TreasureChestBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Treasure_Chest.webp"
   Title: "Treasure Chest"
+  Description: "Gain gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -241,6 +268,7 @@ PyramidBase: &PyramidBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Pyramid.webp"
   Title: "Pyramid"
+  Description: "Defeat golems, claim ancient gold."
   CanDecline: true
 
 RuinsBase: &RuinsBase
@@ -249,6 +277,7 @@ RuinsBase: &RuinsBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Ruins.webp"
   Title: "Ruins"
+  Description: "Defeat undead, plunder gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -258,6 +287,7 @@ RedTowerBase: &RedTowerBase
   RewardType: UnitsGain
   IconUrl: "/resources/Red_Tower.webp"
   Title: "Red Tower"
+  Description: "Defeat elementals, recruit Firebirds."
   CanDecline: true
   Units: [ Firebird ]
 
@@ -267,6 +297,7 @@ WolfRaiderPicketBase: &WolfRaiderPicketBase
   RewardType: UnitsGain
   IconUrl: "/resources/Wolf_Raider_Picket.webp"
   Title: "Wolf Raider Picket"
+  Description: "Defeat wolf raiders, recruit Cyclops."
   CanDecline: true
   Units: [ Cyclops ]
 
@@ -276,6 +307,7 @@ SpitBase: &SpitBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Spit.webp"
   Title: "Spit"
+  Description: "Defeat basilisks, gain gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -285,6 +317,7 @@ TempleOfTheSeaBase: &TempleOfTheSeaBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Temple_of_the_Sea.webp"
   Title: "Temple of the Sea"
+  Description: "Defeat sea monsters, claim a sea treasure of gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -294,6 +327,7 @@ WagonBase: &WagonBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Wagon.webp"
   Title: "Wagon"
+  Description: "Gain resources."
   CanDecline: true
 
 WaterWheelBase: &WaterWheelBase
@@ -302,6 +336,7 @@ WaterWheelBase: &WaterWheelBase
   RewardType: ResourcesGain
   IconUrl: "/resources/Water_Wheel.webp"
   Title: "Water Wheel"
+  Description: "Gain gold."
   CanDecline: true
   Resources: [ Gold ]
 
@@ -311,6 +346,7 @@ MercenaryCampBase: &MercenaryCampBase
   RewardType: Attack
   IconUrl: "/resources/Mercenary_Camp.webp"
   Title: "Mercenary Camp"
+  Description: "Gain Attack."
   CanDecline: true
 
 SchoolOfWarBase: &SchoolOfWarBase
@@ -319,6 +355,7 @@ SchoolOfWarBase: &SchoolOfWarBase
   RewardType: Defense
   IconUrl: "/resources/School_of_War.webp"
   Title: "School of War"
+  Description: "Gain Defense."
   CanDecline: true
 
 ArenaBase: &ArenaBase
@@ -326,6 +363,7 @@ ArenaBase: &ArenaBase
   Value: 3000
   IconUrl: "/resources/Arena.webp"
   Title: "Arena"
+  Description: "Gain combat training."
   CanDecline: true
 
 TradingPostBase: &TradingPostBase
@@ -333,6 +371,7 @@ TradingPostBase: &TradingPostBase
   RewardType: Market
   IconUrl: "/resources/Trading_Post.webp"
   Title: "Trading Post"
+  Description: "Unlock trading."
   CanDecline: true
   Amounts: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 
@@ -347,6 +386,7 @@ Rewards:
     AmountsMax: [ 7 ]
     IconUrl: "/resources/Ancient_Lamp.gif"
     Title: "Ancient Lamp"
+    Description: "Unlock Master Genie recruitment."
     CanDecline: true
     
   BeholdersSanctuary_Small:
@@ -519,8 +559,9 @@ Rewards:
     Key: Derrick
     Value: 750
     RewardType: ResourcesGain
-    IconUrl: "/resources/Campfire.gif"
+    IconUrl: "/resources/Derrick.webp"
     Title: "Derrick"
+    Description: "Gain gold."
     CanDecline: true
     Resources: [ Gold ]
     AmountsMin: [ 500 ]
