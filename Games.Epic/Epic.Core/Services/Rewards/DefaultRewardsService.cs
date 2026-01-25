@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects.Rewards;
+using Epic.Core.Services.Artifacts;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameResources;
@@ -30,6 +32,8 @@ namespace Epic.Core.Services.Rewards
         public IUnitsContainersService ContainersService { get; }
         public IPlayersService PlayersService { get; }
         public IContainersManipulator ContainersManipulator { get; }
+        public IArtifactsService ArtifactsService { get; }
+        public IArtifactTypesService ArtifactTypesService { get; }
         public IGameResourcesRepository GameResourcesRepository { get; }
         public IBattleDefinitionsService BattleDefinitionsService { get; }
         public IBattlesService BattlesService { get; }
@@ -43,6 +47,8 @@ namespace Epic.Core.Services.Rewards
             [NotNull] IUnitsContainersService containersService,
             [NotNull] IPlayersService playersService,
             [NotNull] IContainersManipulator containersManipulator,
+            [NotNull] IArtifactsService artifactsService,
+            [NotNull] IArtifactTypesService artifactTypesService,
             [NotNull] IGameResourcesRepository gameResourcesRepository,
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IBattlesService battlesService,
@@ -55,6 +61,8 @@ namespace Epic.Core.Services.Rewards
             ContainersService = containersService ?? throw new ArgumentNullException(nameof(containersService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
             ContainersManipulator = containersManipulator ?? throw new ArgumentNullException(nameof(containersManipulator));
+            ArtifactsService = artifactsService ?? throw new ArgumentNullException(nameof(artifactsService));
+            ArtifactTypesService = artifactTypesService ?? throw new ArgumentNullException(nameof(artifactTypesService));
             GameResourcesRepository = gameResourcesRepository ?? throw new ArgumentNullException(nameof(gameResourcesRepository));
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
@@ -104,6 +112,28 @@ namespace Epic.Core.Services.Rewards
             {
                 if (rewardObject.GuardBattleDefinition is { IsFinished: false })
                     throw new RewardGuardBattleIsNotFinishedException();
+
+                if (rewardObject.RewardType == RewardType.ArtifactsGain)
+                {
+                    if (player.ActiveHero == null)
+                        throw new InvalidOperationException("Active hero is not set.");
+
+                    // Amounts can be passed by client; if not, use reward definition amounts; default to 1.
+                    var effectiveAmounts = (amounts != null && amounts.Length > 0)
+                        ? amounts
+                        : (rewardObject.Amounts ?? Array.Empty<int>());
+
+                    for (var i = 0; i < rewardObject.Ids.Length; i++)
+                    {
+                        var count = i < effectiveAmounts.Length ? effectiveAmounts[i] : 1;
+                        if (count <= 0) continue;
+
+                        for (var j = 0; j < count; j++)
+                        {
+                            await ArtifactsService.Create(player.ActiveHero.Id, rewardObject.Ids[i]);
+                        }
+                    }
+                }
 
                 var unitTypes = rewardObject.UnitTypes;
                 if (unitTypes.Count > 0)
@@ -341,6 +371,9 @@ namespace Epic.Core.Services.Rewards
                     break;
                 case RewardType.UnitsGain:
                     rewardObject.UnitTypes = (await UnitTypesService.GetUnitTypesByIdsAsync(entity.Ids)).ToArray();
+                    break;
+                case RewardType.ArtifactsGain:
+                    rewardObject.ArtifactTypes = await Task.WhenAll(entity.Ids.Select(ArtifactTypesService.GetById));
                     break;
                 case RewardType.UnitsToBuy:
                 case RewardType.UnitsToUpgrade:

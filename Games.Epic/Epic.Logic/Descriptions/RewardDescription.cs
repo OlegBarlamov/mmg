@@ -300,6 +300,43 @@ namespace Epic.Logic.Descriptions
                 }
             }
 
+            if (reward.RewardType == RewardType.ArtifactsGain)
+            {
+                int SafeAmount(int index, int defaultValue = 1)
+                {
+                    if (reward.Amounts == null || index < 0 || index >= reward.Amounts.Length)
+                        return defaultValue;
+                    return reward.Amounts[index];
+                }
+
+                string FormatAmount(int amount) => amount > 1 ? $"x{amount}" : string.Empty;
+
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new[] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = $"Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                    case DescriptionVisibility.MaskedSize:
+                    case DescriptionVisibility.ApproximateSize:
+                    case DescriptionVisibility.Full:
+                        return reward.ArtifactTypes.Select((x, i) => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = FormatAmount(SafeAmount(i)),
+                            IconUrl = x.ThumbnailUrl ?? string.Empty,
+                            Tooltip = $"Gain {x.Name}",
+                        }).ToArray();
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
+
             if (reward.RewardType == RewardType.Attack)
             {
                 var amount = reward.Amounts.Length > 0 ? reward.Amounts[0] : 0;

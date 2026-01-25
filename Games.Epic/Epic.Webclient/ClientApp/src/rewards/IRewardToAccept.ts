@@ -1,5 +1,6 @@
 import { IBattleDefinition } from "../battle/IBattleDefinition";
 import { IResourceInfo } from "../services/serverAPI";
+import { IArtifactRewardResource } from "./IArtifactRewardResource";
 import { IUnitRewardResource } from "./IUnitRewardResource";
 import { RewardType } from "./RewardType";
 
@@ -15,6 +16,7 @@ export interface IRewardToAccept {
     amounts: number[],
     unitsRewards: IUnitRewardResource[],
     resourcesRewards: IResourceInfo[],
+    artifactsRewards: IArtifactRewardResource[],
     prices: IPriceResource[],
     guardMessage: string | null,
     guardBattle: IBattleDefinition | null,

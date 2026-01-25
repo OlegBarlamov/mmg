@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Epic.Core.Objects;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.GameResources;
@@ -24,6 +25,7 @@ namespace Epic.Core.Services.Rewards
         
         IReadOnlyList<IUnitTypeObject> UnitTypes { get; }
         IReadOnlyList<IGameResourceEntity> Resources { get; }
+        IReadOnlyList<IArtifactTypeObject> ArtifactTypes { get; }
         
         [CanBeNull] IBattleDefinitionObject GuardBattleDefinition { get; }
     }

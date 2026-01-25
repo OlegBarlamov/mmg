@@ -19,6 +19,7 @@ namespace Epic.Server.Resources
         public string Title { get; }
         public UnitRewardResource[] UnitsRewards { get; }
         public ResourceDashboardResource[] ResourcesRewards { get; }
+        public ArtifactTypeRewardResource[] ArtifactsRewards { get; }
         public PriceResource[] Prices { get; }
         public string GuardMessage { get; }
         public BattleDefinitionResource GuardBattle { get; }
@@ -35,12 +36,23 @@ namespace Epic.Server.Resources
             IconUrl = GetIconUrl(reward);
             Title = reward.Title;
 
+            int SafeAmount(int index, int defaultValue = 1)
+            {
+                if (reward.Amounts == null || index < 0 || index >= reward.Amounts.Length)
+                    return defaultValue;
+                return reward.Amounts[index];
+            }
+
             UnitsRewards = reward.UnitTypes
-                .Select((x, i) => new UnitRewardResource(x, reward.Amounts[i]))
+                .Select((x, i) => new UnitRewardResource(x, SafeAmount(i)))
                 .ToArray();
             
             ResourcesRewards = reward.Resources
-                .Select((x, i) => new ResourceDashboardResource(ResourceAmount.Create(x, reward.Amounts[i])))
+                .Select((x, i) => new ResourceDashboardResource(ResourceAmount.Create(x, SafeAmount(i, 0))))
+                .ToArray();
+
+            ArtifactsRewards = reward.ArtifactTypes
+                .Select((x, i) => new ArtifactTypeRewardResource(x, SafeAmount(i)))
                 .ToArray();
 
             if (reward.GuardBattleDefinition != null)
@@ -68,6 +80,8 @@ namespace Epic.Server.Resources
                     return "/resources/Attack_skill.png";
                 case Epic.Data.Reward.RewardType.Defense:
                     return "/resources/Defense_skill.png";
+                case Epic.Data.Reward.RewardType.ArtifactsGain:
+                    return reward.ArtifactTypes.FirstOrDefault()?.ThumbnailUrl ?? reward.IconUrl;
                 default:
                     return reward.IconUrl;
             }

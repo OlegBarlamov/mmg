@@ -84,6 +84,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IBattleReportsService, DefaultBattleReportsService>();
             serviceRegistrator.RegisterType<DefaultUnitTypesRegistry, DefaultUnitTypesRegistry>();
             serviceRegistrator.RegisterFactory<IUnitTypesRegistry>((locator, _) => locator.Resolve<DefaultUnitTypesRegistry>());
+            serviceRegistrator.RegisterType<DefaultArtifactTypesRegistry, DefaultArtifactTypesRegistry>();
+            serviceRegistrator.RegisterFactory<IArtifactTypesRegistry>((locator, _) => locator.Resolve<DefaultArtifactTypesRegistry>());
             serviceRegistrator.RegisterType<DefaultGameResourcesRegistry, DefaultGameResourcesRegistry>();
             serviceRegistrator.RegisterFactory<IGameResourcesRegistry>((locator, _) => locator.Resolve<DefaultGameResourcesRegistry>());
             serviceRegistrator.RegisterType<IBattleObstaclesService, DefaultBattleObstaclesService>();

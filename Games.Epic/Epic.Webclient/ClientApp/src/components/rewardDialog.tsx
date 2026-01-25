@@ -803,6 +803,60 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                     </div>
                 )
 
+            case RewardType.ArtifactsGain:
+                return (
+                    <div className="reward-content">
+                        <div className="reward-message">{reward.message}</div>
+                        {reward.artifactsRewards && reward.artifactsRewards.length > 0 && (
+                            <div className="reward-units">
+                                <h4>Artifacts to gain:</h4>
+                                <div className="units-horizontal">
+                                    {reward.artifactsRewards.map((artifact, index) => (
+                                        <div
+                                            key={index}
+                                            className="unit-horizontal-item"
+                                            title={`${artifact.name}${artifact.attackBonus ? ` | ATK ${artifact.attackBonus > 0 ? '+' : ''}${artifact.attackBonus}` : ''}${artifact.defenseBonus ? ` | DEF ${artifact.defenseBonus > 0 ? '+' : ''}${artifact.defenseBonus}` : ''}`}
+                                        >
+                                            <img
+                                                src={artifact.thumbnailUrl ?? "/resources/question.png"}
+                                                alt={artifact.name}
+                                                className="unit-thumbnail"
+                                            />
+                                            {artifact.amount > 1 && (
+                                                <span className="unit-amount">x{artifact.amount}</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {this.state.errorMessage && (
+                            <div className="error-message">
+                                {this.state.errorMessage}
+                            </div>
+                        )}
+
+                        <div className="reward-actions">
+                            <button
+                                className="reward-button accept-button"
+                                onClick={this.handleAccept}
+                                disabled={this.state.isSubmitting}
+                            >
+                                {this.state.isSubmitting ? 'Accepting...' : 'Accept'}
+                            </button>
+                            {reward.canDecline && (
+                                <button
+                                    className="reward-button decline-button"
+                                    onClick={this.handleDecline}
+                                    disabled={this.state.isSubmitting}
+                                >
+                                    {this.state.isSubmitting ? 'Declining...' : 'Decline'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )
+
             case RewardType.UnitsToBuy:
                 const { unitQuantities } = this.state
                 const totalCost = this.getTotalCost()

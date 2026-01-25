@@ -7,6 +7,7 @@ using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.RewardDefinitions;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Players;
 using Epic.Core.Services.UnitsContainers;
@@ -46,6 +47,7 @@ namespace Epic.Logic.Generator
         public IRewardDefinitionsRegistry RewardDefinitionsRegistry { get; }
         public GlobalUnitsForBattleGenerator GlobalUnitsForBattleGenerator { get; }
         public IGameModeProvider GameModeProvider { get; }
+        public IArtifactTypesRegistry ArtifactTypesRegistry { get; }
 
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
         
@@ -65,7 +67,8 @@ namespace Epic.Logic.Generator
             [NotNull] IRewardDefinitionsService rewardDefinitionsService,
             [NotNull] IRewardDefinitionsRegistry rewardDefinitionsRegistry,
             [NotNull] GlobalUnitsForBattleGenerator globalUnitsForBattleGenerator,
-            [NotNull] IGameModeProvider gameModeProvider)
+            [NotNull] IGameModeProvider gameModeProvider,
+            [NotNull] IArtifactTypesRegistry artifactTypesRegistry)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
@@ -83,6 +86,7 @@ namespace Epic.Logic.Generator
             RewardDefinitionsRegistry = rewardDefinitionsRegistry ?? throw new ArgumentNullException(nameof(rewardDefinitionsRegistry));
             GlobalUnitsForBattleGenerator = globalUnitsForBattleGenerator ?? throw new ArgumentNullException(nameof(globalUnitsForBattleGenerator));
             GameModeProvider = gameModeProvider ?? throw new ArgumentNullException(nameof(gameModeProvider));
+            ArtifactTypesRegistry = artifactTypesRegistry ?? throw new ArgumentNullException(nameof(artifactTypesRegistry));
         }
 
         public async Task GenerateSingle(Guid playerId, int day, int stage)
@@ -288,7 +292,103 @@ namespace Epic.Logic.Generator
                     Title = null,
                     Ids = new[] { unitToGain.Id },
                 });
-            } else if (rewardType == GeneratedRewardTypes.UnitsToBuy)
+            }
+            else if (rewardType == GeneratedRewardTypes.ArtifactsGain)
+            {
+                var orderedArtifacts = ArtifactTypesRegistry.AllOrderedByValue;
+                if (orderedArtifacts.Count == 0)
+                {
+                    // fallback to gold if artifacts are not configured
+                    var goldAmount = RoundToFriendlyNumber(difficulty.TargetDifficulty);
+                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                    {
+                        RewardType = RewardType.ResourcesGain,
+                        Amounts = new[] { (int)(goldAmount * rewardFactor) },
+                        CanDecline = true,
+                        GuardBattleDefinitionId = null,
+                        IconUrl = null,
+                        Title = null,
+                        Ids = new[] { GameResourcesRepository.GoldResourceId },
+                    });
+                }
+                else
+                {
+                    var maxArtifactIndex = BinarySearch.FindClosestNotExceedingIndex(orderedArtifacts,
+                        x => x.Value, difficulty.TargetDifficulty);
+                    maxArtifactIndex = Math.Max(0, maxArtifactIndex);
+                    var artifactToGain = orderedArtifacts[_random.Next(0, maxArtifactIndex + 1)];
+
+                    const int artifactAmount = 1;
+                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                    {
+                        RewardType = RewardType.ArtifactsGain,
+                        Amounts = new[] { artifactAmount },
+                        CanDecline = true,
+                        GuardBattleDefinitionId = null,
+                        IconUrl = artifactToGain.ThumbnailUrl,
+                        Title = artifactToGain.Name,
+                        Message = $"You found {artifactToGain.Name}",
+                        Ids = new[] { artifactToGain.Id },
+                    });
+
+                    var remainingValue = difficulty.TargetDifficulty - artifactToGain.Value * artifactAmount;
+                    if (remainingValue > 500)
+                    {
+                        // Fill remaining value with either gold or resources, similar to Template rewards
+                        if (_random.NextDouble() < 0.5)
+                        {
+                            var goldAmount = RoundToFriendlyNumber(remainingValue);
+                            await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                            {
+                                RewardType = RewardType.ResourcesGain,
+                                Amounts = new[] { (int)(goldAmount * rewardFactor) },
+                                CanDecline = true,
+                                GuardBattleDefinitionId = null,
+                                IconUrl = null,
+                                Title = null,
+                                Ids = new[] { GameResourcesRepository.GoldResourceId },
+                            });
+                        }
+                        else
+                        {
+                            var resourcesValue = remainingValue;
+                            var resourceTypes = new List<IGameResourceEntity>();
+                            var resourcesAmounts = new List<int>();
+                            var nonGoldResources = resources.Where(x => x.Id != GameResourcesRepository.GoldResourceId).ToList();
+                            var availablePool = nonGoldResources.Any() ? nonGoldResources : resources;
+                            var resourceTypesCount = resourcesValue > availablePool.Sum(x => x.Price) / 2
+                                ? _random.Next(1, availablePool.Count)
+                                : 1;
+                            var valuePerResource = (double)resourcesValue / resourceTypesCount;
+                            var availableResources = new List<IGameResourceEntity>(availablePool);
+                            for (var i = 0; i < resourceTypesCount; i++)
+                            {
+                                var resourceType = availableResources[_random.Next(0, availableResources.Count)];
+                                availableResources.Remove(resourceType);
+
+                                var resourceAmount = Math.Max(1,
+                                    (int)Math.Ceiling(valuePerResource / resourceType.Price));
+                                resourceAmount = RoundToFriendlyNumber(resourceAmount);
+
+                                resourceTypes.Add(resourceType);
+                                resourcesAmounts.Add((int)(resourceAmount * rewardFactor));
+                            }
+
+                            await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                            {
+                                RewardType = RewardType.ResourcesGain,
+                                Amounts = resourcesAmounts.ToArray(),
+                                CanDecline = true,
+                                GuardBattleDefinitionId = null,
+                                IconUrl = null,
+                                Title = null,
+                                Ids = resourceTypes.Select(x => x.Id).ToArray(),
+                            });
+                        }
+                    }
+                }
+            }
+            else if (rewardType == GeneratedRewardTypes.UnitsToBuy)
             {
                 var maxUnitIndex = BinarySearch.FindClosestNotExceedingIndex(toTrainOrderedUnitTypes,
                     entity => entity.Value, (int)(difficulty.TargetDifficulty * 1.5));
@@ -448,6 +548,7 @@ namespace Epic.Logic.Generator
             Gold, 
             Resource,
             UnitsGain,
+            ArtifactsGain,
             UnitsToBuy,
             Template,
             NextStage,

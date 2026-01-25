@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.RewardDefinitions;
 using Epic.Core.Services.UnitTypes;
@@ -10,8 +10,6 @@ using Epic.Data.Reward;
 using Epic.Data.RewardDefinitions;
 using FrameworkSDK;
 using JetBrains.Annotations;
-using YamlDotNet.Core;
-using YamlDotNet.Serialization;
 
 namespace Epic.Server;
 
@@ -41,6 +39,7 @@ internal class RewardDefinitionsConfig
         public RewardType RewardType { get; set; }
         public string[] Units { get; set; }
         public string[] Resources { get; set; }
+        public string[] Artifacts { get; set; }
         public int[] AmountsMin { get; set; }
         public int[] AmountsMax { get; set; }
         public int[] Amounts { get; set; }
@@ -64,17 +63,20 @@ public class InitializeRewardDefinitionsScript : IAppComponent
     public IUnitTypesRegistry UnitTypesRegistry { get; }
     public DefaultRewardDefinitionsRegistry RewardDefinitionsRegistry { get; }
     public IGameResourcesRegistry ResourcesRegistry { get; }
+    public IArtifactTypesService ArtifactTypesService { get; }
 
     public InitializeRewardDefinitionsScript(
         [NotNull] IRewardDefinitionsRepository repository,
         [NotNull] IUnitTypesRegistry unitTypesRegistry,
         [NotNull] DefaultRewardDefinitionsRegistry rewardDefinitionsRegistry,
-        [NotNull] IGameResourcesRegistry resourcesRegistry)
+        [NotNull] IGameResourcesRegistry resourcesRegistry,
+        [NotNull] IArtifactTypesService artifactTypesService)
     {
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
         RewardDefinitionsRegistry = rewardDefinitionsRegistry ?? throw new ArgumentNullException(nameof(rewardDefinitionsRegistry));
         ResourcesRegistry = resourcesRegistry ?? throw new ArgumentNullException(nameof(resourcesRegistry));
+        ArtifactTypesService = artifactTypesService ?? throw new ArgumentNullException(nameof(artifactTypesService));
     }
     
     public void Configure()
@@ -88,6 +90,10 @@ public class InitializeRewardDefinitionsScript : IAppComponent
         {
             var config = YamlConfigParser<RewardDefinitionsConfig>
                 .Parse("Configs/rewards.yaml");
+
+            var artifactTypes = await ArtifactTypesService.GetAll();
+            var artifactTypeIdsByKey = artifactTypes.ToDictionary(x => x.Key, x => x.Id);
+            Guid GetArtifactTypeIdByKey(string key) => artifactTypeIdsByKey[key];
 
             var rewardDefinitionFields = config.Rewards.Select(keyValue =>
             {
@@ -106,6 +112,7 @@ public class InitializeRewardDefinitionsScript : IAppComponent
                     CanDecline = x.CanDecline,
                     Ids = x.Units?.Select(GetUnitIdByName).ToArray() 
                           ?? x.Resources?.Select(GetResourceIdByName).ToArray()
+                          ?? x.Artifacts?.Select(GetArtifactTypeIdByKey).ToArray()
                           ?? Array.Empty<Guid>(),
                     GuardMessage = x.Guard?.Message,
                     GuardUnitTypeIds = x.Guard?.Units.Select(GetUnitIdByName).ToArray() 

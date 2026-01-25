@@ -119,7 +119,7 @@ namespace Epic.Server
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
 
             // Give some artifacts to the first player's hero for testing.
-            await GiveTestArtifacts(hero.Id);
+            //await GiveTestArtifacts(hero.Id);
             
             var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
             

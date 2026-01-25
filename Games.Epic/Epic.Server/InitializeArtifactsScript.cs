@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
+using Epic.Core.Services.ArtifactTypes;
 using Epic.Data.ArtifactType;
 using Epic.Data.Artifacts;
 using FrameworkSDK;
@@ -16,6 +18,7 @@ namespace Epic.Server
         {
             public string Key { get; set; }
             public string Name { get; set; }
+            public int Value { get; set; }
             public string ThumbnailUrl { get; set; }
             public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
             public int AttackBonus { get; set; }
@@ -30,10 +33,14 @@ namespace Epic.Server
     public class InitializeArtifactsScript : IAppComponent
     {
         public IArtifactTypesRepository ArtifactTypesRepository { get; }
+        public DefaultArtifactTypesRegistry ArtifactTypesRegistry { get; }
 
-        public InitializeArtifactsScript([NotNull] IArtifactTypesRepository artifactTypesRepository)
+        public InitializeArtifactsScript(
+            [NotNull] IArtifactTypesRepository artifactTypesRepository,
+            [NotNull] DefaultArtifactTypesRegistry artifactTypesRegistry)
         {
             ArtifactTypesRepository = artifactTypesRepository ?? throw new ArgumentNullException(nameof(artifactTypesRepository));
+            ArtifactTypesRegistry = artifactTypesRegistry ?? throw new ArgumentNullException(nameof(artifactTypesRegistry));
         }
 
         public void Configure()
@@ -58,6 +65,7 @@ namespace Epic.Server
                 {
                     Key = key,
                     Name = x.Name,
+                    Value = x.Value,
                     ThumbnailUrl = x.ThumbnailUrl,
                     Slots = x.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>(),
                     AttackBonus = x.AttackBonus,
@@ -66,6 +74,7 @@ namespace Epic.Server
             }).ToArray<IArtifactTypeEntityFields>();
 
             await ArtifactTypesRepository.CreateBatch(fields);
+            await ArtifactTypesRegistry.Load(CancellationToken.None);
         }
 
         public void Dispose()
