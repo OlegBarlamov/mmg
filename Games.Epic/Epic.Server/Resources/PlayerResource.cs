@@ -1,4 +1,6 @@
 using System;
+using Epic.Core.Objects;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Data.Heroes;
 
@@ -32,7 +34,7 @@ namespace Epic.Server.Resources
             SupplyContainerId = playerObject.Supply.Id.ToString();
             Experience = playerObject.ActiveHero.Experience;
             Level = playerObject.ActiveHero.Level;
-            Stats = playerObject.ActiveHero;
+            Stats = playerObject.ActiveHero?.GetCumulativeHeroStats() ?? DefaultHeroStats.Instance;
         }
     }
 }

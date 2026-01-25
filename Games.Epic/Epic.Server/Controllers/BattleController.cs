@@ -58,7 +58,7 @@ namespace Epic.Server.Controllers
             var players = await PlayersService.GetByIds(playerIds.ToArray());
             return players.ToDictionary(
                 p => p.Id,
-                p => p.ActiveHero ?? (IHeroStats)DefaultHeroStats.Instance
+                p => p.ActiveHero.GetCumulativeHeroStats()
             );
         }
         

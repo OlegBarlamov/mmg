@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameResources;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.UnitTypes;
@@ -46,7 +47,7 @@ namespace Epic.Server.Controllers
             var players = await PlayersService.GetByIds(playerIds.ToArray());
             return players.ToDictionary(
                 p => p.Id,
-                p => p.ActiveHero ?? (IHeroStats)DefaultHeroStats.Instance
+                p => p.ActiveHero.GetCumulativeHeroStats()
             );
         }
         

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Epic.Core.Logic;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.BattleObstacles;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
@@ -152,7 +153,7 @@ namespace Epic.Core.Services.Battles
                 enemyGlobalUnits, 
                 InBattlePlayerNumber.Player2, 
                 battleObject.Id,
-                enemyPlayer.ActiveHero);
+                enemyPlayer.ActiveHero.GetCumulativeHeroStats());
             
             var obstacles = await BattleObstaclesGenerator.GenerateForBattle(battleObject);
             battleObject.Obstacles = obstacles;
@@ -177,7 +178,7 @@ namespace Epic.Core.Services.Battles
                 userUnitsFitToBattle, 
                 InBattlePlayerNumber.Player1, 
                 battleObject.Id,
-                player.ActiveHero);
+                player.ActiveHero.GetCumulativeHeroStats());
             
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
