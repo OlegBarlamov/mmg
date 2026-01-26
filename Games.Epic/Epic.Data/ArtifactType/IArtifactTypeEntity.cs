@@ -11,6 +11,7 @@ namespace Epic.Data.ArtifactType
         int Value { get; }
         string ThumbnailUrl { get; }
         ArtifactSlot[] Slots { get; }
+        Guid[] BuffTypeIds { get; }
         int AttackBonus { get; }
         int DefenseBonus { get; }
     }
@@ -27,6 +28,7 @@ namespace Epic.Data.ArtifactType
         public int Value { get; set; }
         public string ThumbnailUrl { get; set; }
         public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
+        public Guid[] BuffTypeIds { get; set; } = Array.Empty<Guid>();
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
     }
@@ -47,6 +49,7 @@ namespace Epic.Data.ArtifactType
             Value = fields.Value;
             ThumbnailUrl = fields.ThumbnailUrl;
             Slots = fields.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>();
+            BuffTypeIds = fields.BuffTypeIds?.ToArray() ?? Array.Empty<Guid>();
             AttackBonus = fields.AttackBonus;
             DefenseBonus = fields.DefenseBonus;
         }

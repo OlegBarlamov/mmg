@@ -23,6 +23,7 @@ namespace Epic.Core.Services.UnitTypes
         public int ToTrainAmount { get; set; }
         public IReadOnlyDictionary<string, int> ResourcesDistribution { get; set; }
         public IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; set; }
+        public IReadOnlyList<Guid> BuffTypeIds { get; set; }
 
         private MutualUnitTypeObject()
         {
@@ -46,7 +47,8 @@ namespace Epic.Core.Services.UnitTypes
                 Attack = entity.Attack,
                 Defense = entity.Defense,
                 Movement = entity.Movement,
-                UpgradeForUnitTypeIds = entity.UpgradeForUnitTypeIds
+                UpgradeForUnitTypeIds = entity.UpgradeForUnitTypeIds,
+                BuffTypeIds = entity.BuffTypeIds
             };
         }
 

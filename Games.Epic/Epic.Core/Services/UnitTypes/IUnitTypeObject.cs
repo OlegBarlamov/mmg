@@ -15,5 +15,6 @@ namespace Epic.Core.Services.UnitTypes
         int ToTrainAmount { get; }
         IReadOnlyDictionary<string, int> ResourcesDistribution { get; } 
         IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; }
+        IReadOnlyList<Guid> BuffTypeIds { get; }
     }
 }

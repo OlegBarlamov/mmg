@@ -26,6 +26,7 @@ namespace Epic.Data.UnitTypes
         int ToTrainAmount { get; }
         IReadOnlyDictionary<string, int> ResourcesDistribution { get; }
         IReadOnlyList<Guid> UpgradeForUnitTypeIds { get; }
+        IReadOnlyList<Guid> BuffTypeIds { get; }
     }
 
     public abstract class UnitTypeProps : IUnitProps
@@ -52,8 +53,10 @@ namespace Epic.Data.UnitTypes
         public int ToTrainAmount { get; set; }
         public Dictionary<string, int> ResourcesDistribution { get; set; } = new Dictionary<string, int>();
         public List<Guid> UpgradeForUnitTypeIds { get; set; } = new List<Guid>();
+        public List<Guid> BuffTypeIds { get; set; } = new List<Guid>();
         
         IReadOnlyList<Guid> IUnitTypeProperties.UpgradeForUnitTypeIds => UpgradeForUnitTypeIds;
+        IReadOnlyList<Guid> IUnitTypeProperties.BuffTypeIds => BuffTypeIds;
 
         IReadOnlyDictionary<string, int> IUnitTypeProperties.ResourcesDistribution => ResourcesDistribution; 
         
@@ -90,6 +93,7 @@ namespace Epic.Data.UnitTypes
             Defense = properties.Defense;
             Movement = properties.Movement;
             UpgradeForUnitTypeIds = new List<Guid>(properties.UpgradeForUnitTypeIds);
+            BuffTypeIds = new List<Guid>(properties.BuffTypeIds ?? Array.Empty<Guid>());
         }
 
         public static UnitTypeEntity FromProperties(Guid id, IUnitTypeProperties properties)

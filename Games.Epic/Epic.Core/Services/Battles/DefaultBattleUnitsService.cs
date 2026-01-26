@@ -78,7 +78,40 @@ namespace Epic.Core.Services.Battles
                 u.AttackFunctionsData = attacksDataMapPerBattleUnit[u.Id];
             });
 
+            await PrecreatePermanentBuffsFromUnitTypes(createdBattleUnits);
             return createdBattleUnits;
+        }
+
+        private async Task PrecreatePermanentBuffsFromUnitTypes(IReadOnlyCollection<MutableBattleUnitObject> createdBattleUnits)
+        {
+            if (createdBattleUnits == null || createdBattleUnits.Count == 0)
+                return;
+
+            const int permanentDurationRemaining = 0;
+
+            var createTasks = new List<Task<IBuffObject>>();
+            foreach (var unit in createdBattleUnits)
+            {
+                var buffTypeIds = unit.GlobalUnit?.UnitType?.BuffTypeIds ?? Array.Empty<Guid>();
+                foreach (var buffTypeId in buffTypeIds.Where(x => x != Guid.Empty).Distinct())
+                {
+                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, permanentDurationRemaining));
+                }
+            }
+
+            if (createTasks.Count == 0)
+            {
+                createdBattleUnits.ForEach(u => u.Buffs = Array.Empty<IBuffObject>());
+                return;
+            }
+
+            var createdBuffs = await Task.WhenAll(createTasks);
+            var buffsByUnitId = createdBuffs
+                .GroupBy(x => x.TargetBattleUnitId)
+                .ToDictionary(g => g.Key, g => (IReadOnlyList<IBuffObject>)g.ToArray());
+
+            foreach (var unit in createdBattleUnits)
+                unit.Buffs = buffsByUnitId.TryGetValue(unit.Id, out var buffs) ? buffs : Array.Empty<IBuffObject>();
         }
 
         public async Task UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnits)

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Epic.Core.Objects;
+using Epic.Core.Services.BuffTypes;
 using Epic.Data.ArtifactType;
 using Epic.Data.Artifacts;
 
@@ -9,6 +11,8 @@ namespace Epic.Core.Services.ArtifactTypes
     {
         Guid Id { get; }
         new ArtifactSlot[] Slots { get; }
+
+        IReadOnlyList<IBuffTypeObject> BuffTypes { get; }
     }
 }
 
