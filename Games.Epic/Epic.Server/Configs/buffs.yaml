@@ -1,0 +1,8 @@
+
+Buffs:
+  HealthPlusOne:
+    Key: HealthPlusOne
+    Name: "Health +1"
+    HealthBonus: 1
+    Permanent: true
+    Duration: 0

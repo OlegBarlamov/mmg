@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Epic.Core.Services.ArtifactTypes;
+using Epic.Core.Services.BuffTypes;
 using Epic.Data.ArtifactType;
 using Epic.Data.Artifacts;
 using FrameworkSDK;
@@ -23,6 +24,9 @@ namespace Epic.Server
             public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
             public int AttackBonus { get; set; }
             public int DefenseBonus { get; set; }
+            
+            [UsedImplicitly]
+            public string[] BuffTypes { get; set; } = Array.Empty<string>();
         }
 
         [UsedImplicitly]
@@ -34,13 +38,16 @@ namespace Epic.Server
     {
         public IArtifactTypesRepository ArtifactTypesRepository { get; }
         public DefaultArtifactTypesRegistry ArtifactTypesRegistry { get; }
+        public IBuffTypesRegistry BuffTypesRegistry { get; }
 
         public InitializeArtifactsScript(
             [NotNull] IArtifactTypesRepository artifactTypesRepository,
-            [NotNull] DefaultArtifactTypesRegistry artifactTypesRegistry)
+            [NotNull] DefaultArtifactTypesRegistry artifactTypesRegistry,
+            [NotNull] IBuffTypesRegistry buffTypesRegistry)
         {
             ArtifactTypesRepository = artifactTypesRepository ?? throw new ArgumentNullException(nameof(artifactTypesRepository));
             ArtifactTypesRegistry = artifactTypesRegistry ?? throw new ArgumentNullException(nameof(artifactTypesRegistry));
+            BuffTypesRegistry = buffTypesRegistry ?? throw new ArgumentNullException(nameof(buffTypesRegistry));
         }
 
         public void Configure()
@@ -61,7 +68,7 @@ namespace Epic.Server
                 // Keep keys stable: if YAML doesn't specify Key, use dictionary key.
                 var key = string.IsNullOrWhiteSpace(x.Key) ? kv.Key : x.Key;
 
-                return new ArtifactTypeEntityFields
+                var fieldsObj = new ArtifactTypeEntityFields
                 {
                     Key = key,
                     Name = x.Name,
@@ -71,6 +78,17 @@ namespace Epic.Server
                     AttackBonus = x.AttackBonus,
                     DefenseBonus = x.DefenseBonus,
                 };
+                
+                // Resolve BuffTypes string keys to GUIDs
+                if (x.BuffTypes != null && x.BuffTypes.Length > 0)
+                {
+                    fieldsObj.BuffTypeIds = x.BuffTypes
+                        .Where(buffKey => !string.IsNullOrWhiteSpace(buffKey))
+                        .Select(buffKey => BuffTypesRegistry.ByKey(buffKey).Id)
+                        .ToArray();
+                }
+                
+                return fieldsObj;
             }).ToArray<IArtifactTypeEntityFields>();
 
             await ArtifactTypesRepository.CreateBatch(fields);

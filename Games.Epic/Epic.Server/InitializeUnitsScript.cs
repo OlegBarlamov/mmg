@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.UnitTypes;
 using Epic.Data.UnitTypes;
 using FrameworkSDK;
@@ -16,6 +17,9 @@ namespace Epic.Server
         {
             [UsedImplicitly]
             public string[] UpgradeOf { get; set; } = Array.Empty<string>();
+            
+            [UsedImplicitly]
+            public string[] BuffTypes { get; set; } = Array.Empty<string>();
         }
         
         [UsedImplicitly]
@@ -27,13 +31,16 @@ namespace Epic.Server
     {
         public IUnitTypesRepository UnitTypesRepository { get; }
         public DefaultUnitTypesRegistry UnitTypesRegistry { get; }
+        public IBuffTypesRegistry BuffTypesRegistry { get; }
 
         public InitializeUnitsScript(
             [NotNull] IUnitTypesRepository unitTypesRepository,
-            [NotNull] DefaultUnitTypesRegistry unitTypesRegistry)
+            [NotNull] DefaultUnitTypesRegistry unitTypesRegistry,
+            [NotNull] IBuffTypesRegistry buffTypesRegistry)
         {
             UnitTypesRepository = unitTypesRepository ?? throw new ArgumentNullException(nameof(unitTypesRepository));
             UnitTypesRegistry = unitTypesRegistry ?? throw new ArgumentNullException(nameof(unitTypesRegistry));
+            BuffTypesRegistry = buffTypesRegistry ?? throw new ArgumentNullException(nameof(buffTypesRegistry));
         }
         
         public void Configure()
@@ -48,7 +55,17 @@ namespace Epic.Server
             
             var createdUnits = await UnitTypesRepository.CreateBatch(config.Units.Select(x =>
             {
-                x.Value.Key = x.Key; 
+                x.Value.Key = x.Key;
+                
+                // Resolve BuffTypes string keys to GUIDs
+                if (x.Value.BuffTypes != null && x.Value.BuffTypes.Length > 0)
+                {
+                    x.Value.BuffTypeIds = x.Value.BuffTypes
+                        .Where(key => !string.IsNullOrWhiteSpace(key))
+                        .Select(key => BuffTypesRegistry.ByKey(key).Id)
+                        .ToList();
+                }
+                
                 return x.Value;
             }));
             var createdUnitsByNames = createdUnits.ToDictionary(x => x.Name, x => x);
