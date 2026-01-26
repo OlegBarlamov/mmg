@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Epic.Core;
+using Epic.Core.Services.Buffs;
 using Epic.Core.Services.Battles;
 
 namespace Epic.Server.Resources
@@ -20,6 +23,8 @@ namespace Epic.Server.Resources
         
         public int Count { get; }
         public bool IsAlive { get; }
+
+        public IReadOnlyList<BattleUnitBuffResource> Buffs { get; }
         
         public BattleUnitResource(IBattleUnitObject battleUnitObject)
         {
@@ -35,6 +40,9 @@ namespace Epic.Server.Resources
             IsAlive = battleUnitObject.GlobalUnit.IsAlive;
             Props = new BattleUnitPropsResource(battleUnitObject, false);
             CurrentProps = new BattleUnitPropsResource(battleUnitObject, true);
+            Buffs = (battleUnitObject.Buffs ?? Array.Empty<IBuffObject>())
+                .Select(x => new BattleUnitBuffResource(x))
+                .ToList();
         }
     }
 }

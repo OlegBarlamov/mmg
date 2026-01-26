@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
+using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
@@ -19,12 +20,14 @@ namespace Epic.Core.Services.Battles
         public IBattleUnitsRepository BattleUnitsRepository { get; }
         public IGlobalUnitsService PlayerUnitsService { get; }
         public IBattlesCacheService CacheService { get; }
+        public IBuffsService BuffsService { get; }
 
         private ILogger<DefaultBattleUnitsService> Logger { get; }
 
         public DefaultBattleUnitsService(
             [NotNull] IBattleUnitsRepository battleUnitsRepository,
             [NotNull] IGlobalUnitsService playerUnitsService,
+            [NotNull] IBuffsService buffsService,
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IBattlesCacheService cacheService)
         {
@@ -32,6 +35,7 @@ namespace Epic.Core.Services.Battles
             BattleUnitsRepository =
                 battleUnitsRepository ?? throw new ArgumentNullException(nameof(battleUnitsRepository));
             PlayerUnitsService = playerUnitsService ?? throw new ArgumentNullException(nameof(playerUnitsService));
+            BuffsService = buffsService ?? throw new ArgumentNullException(nameof(buffsService));
             CacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
             Logger = loggerFactory.CreateLogger<DefaultBattleUnitsService>();
         }
@@ -94,7 +98,10 @@ namespace Epic.Core.Services.Battles
         {
             var attacksDataPerUnitTasks =
                 battleUnitObjects.ToDictionary(x => x.Id, x => BattleUnitsRepository.GetAttacksData(x.Id));
-            await Task.WhenAll(attacksDataPerUnitTasks.Values);
+            var buffsPerUnitTasks =
+                battleUnitObjects.ToDictionary(x => x.Id, x => BuffsService.GetByTargetBattleUnitId(x.Id));
+
+            await Task.WhenAll(attacksDataPerUnitTasks.Values.Concat<Task>(buffsPerUnitTasks.Values));
             
             var userUnitIds = battleUnitObjects.Select(x => x.PlayerUnitId).ToArray();
             
@@ -108,6 +115,7 @@ namespace Epic.Core.Services.Battles
                     battleUnitObject.GlobalUnit = MutableGlobalUnitObject.CopyFrom(playerUnitObject);
 
                 battleUnitObject.AttackFunctionsData = attacksDataPerUnitTasks[battleUnitObject.Id].Result;
+                battleUnitObject.Buffs = buffsPerUnitTasks[battleUnitObject.Id].Result;
               
                 if (IsValid(battleUnitObject))
                     validUnits.Add(battleUnitObject);

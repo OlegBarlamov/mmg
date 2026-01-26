@@ -8,6 +8,8 @@ export type UnitProperties = {
     attacksStates: AttackState[]
     waited: boolean
     movementType: MovementType
+
+    buffs?: UnitBuff[]
 }
 
 export enum MovementType {
@@ -36,4 +38,10 @@ export type AttackType = {
     enemyInRangeDisablesAttack: number
     pierceThrough: number
     splash: number
+}
+
+export type UnitBuff = {
+    name: string
+    permanent: boolean
+    durationRemaining: number
 }

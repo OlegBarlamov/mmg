@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Epic.Core.Services.Buffs;
 using Epic.Core.Services.Battles;
 using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes;
@@ -18,6 +20,8 @@ namespace Epic.Server.Resources
         public IReadOnlyList<IAttackFunctionType> Attacks { get; }
         public IReadOnlyList<AttackFunctionStateEntity> AttacksStates { get; }
         public bool Waited { get; }
+        
+        public IReadOnlyList<BattleUnitBuffResource> Buffs { get; }
 
         public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps)
         {
@@ -32,6 +36,10 @@ namespace Epic.Server.Resources
             MovementType = battleUnitObject.GlobalUnit.UnitType.Movement.ToString();
             if (currentProps)
                 AttacksStates = battleUnitObject.AttackFunctionsData;
+
+            Buffs = (battleUnitObject.Buffs ?? System.Array.Empty<IBuffObject>())
+                .Select(x => new BattleUnitBuffResource(x))
+                .ToList();
         }
     }
 }

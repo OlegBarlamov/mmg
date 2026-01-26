@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Epic.Core.Services.Buffs;
 using Epic.Core.Objects;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
@@ -19,5 +20,7 @@ namespace Epic.Core.Services.Battles
         int CurrentAttack { get; set; }
         int CurrentDefense { get; set; }
         IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; }
+
+        IReadOnlyList<IBuffObject> Buffs { get; }
     }
 }

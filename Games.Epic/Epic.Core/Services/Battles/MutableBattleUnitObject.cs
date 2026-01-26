@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Epic.Core.Services.Buffs;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
 
@@ -22,6 +23,7 @@ namespace Epic.Core.Services.Battles
         public int CurrentDefense { get; set; }
 
         public IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; set; }
+        public IReadOnlyList<IBuffObject> Buffs { get; set; } = Array.Empty<IBuffObject>();
 
         IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
 
@@ -54,6 +56,7 @@ namespace Epic.Core.Services.Battles
             var battleUnitObject = FromEntity(entity);
             battleUnitObject.GlobalUnit = MutableGlobalUnitObject.CopyFrom(x.GlobalUnit);
             battleUnitObject.AttackFunctionsData = x.AttackFunctionsData;
+            battleUnitObject.Buffs = x.Buffs;
             return battleUnitObject;
         }
 

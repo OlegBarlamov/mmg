@@ -45,6 +45,7 @@ export function getTestUnit(r: number, c: number, count: number, player: BattleP
         attacksStates: [],
         waited: false,
         movementType: MovementType.Walk,
+        buffs: [],
     }
     return {
         id: getRandomStringKey(10),

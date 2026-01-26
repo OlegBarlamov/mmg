@@ -98,6 +98,24 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                             </div>
                         </div>
 
+                        <div className="unit-buffs">
+                            <h4>Buffs ({(unit.currentProps.buffs ?? []).length})</h4>
+                            {(unit.currentProps.buffs ?? []).length === 0 ? (
+                                <div className="buff-empty">No active buffs</div>
+                            ) : (
+                                <div className="buffs-list">
+                                    {(unit.currentProps.buffs ?? []).map((buff, index) => (
+                                        <div key={index} className="buff-item">
+                                            <span className="buff-name">{buff.name}</span>
+                                            <span className="buff-meta">
+                                                {buff.permanent ? "Permanent" : `Turns left: ${buff.durationRemaining}`}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="unit-attacks">
                             <h4>Attacks ({unit.currentProps.attacks.length})</h4>
                             {unit.currentProps.attacks.map((attack, index) => {

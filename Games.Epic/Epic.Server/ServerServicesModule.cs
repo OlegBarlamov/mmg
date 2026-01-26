@@ -8,6 +8,8 @@ using Epic.Core.Services.BattleObstacles;
 using Epic.Core.Services.BattleReports;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
+using Epic.Core.Services.Buffs;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Heroes;
@@ -23,6 +25,8 @@ using Epic.Core.Services.Users;
 using Epic.Data;
 using Epic.Data.Artifact;
 using Epic.Data.ArtifactType;
+using Epic.Data.Buff;
+using Epic.Data.BuffType;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.BattleObstacles;
 using Epic.Data.BattleReports;
@@ -80,6 +84,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IHeroesService, DefaultHeroesService>();
             serviceRegistrator.RegisterType<IArtifactsService, DefaultArtifactsService>();
             serviceRegistrator.RegisterType<IArtifactTypesService, DefaultArtifactTypesService>();
+            serviceRegistrator.RegisterType<IBuffTypesService, DefaultBuffTypesService>();
+            serviceRegistrator.RegisterType<IBuffsService, DefaultBuffsService>();
             serviceRegistrator.RegisterType<IGameResourcesService, DefaultGameResourcesService>();
             serviceRegistrator.RegisterType<IBattleReportsService, DefaultBattleReportsService>();
             serviceRegistrator.RegisterType<DefaultUnitTypesRegistry, DefaultUnitTypesRegistry>();
@@ -111,6 +117,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IRewardDefinitionsRepository, InMemoryRewardDefinitionsRepository>();
             serviceRegistrator.RegisterType<IArtifactsRepository, InMemoryArtifactsRepository>();
             serviceRegistrator.RegisterType<IArtifactTypesRepository, InMemoryArtifactTypesRepository>();
+            serviceRegistrator.RegisterType<IBuffTypesRepository, InMemoryBuffTypesRepository>();
+            serviceRegistrator.RegisterType<IBuffsRepository, InMemoryBuffsRepository>();
             
             serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
             serviceRegistrator.RegisterType<IDaysProcessor, DaysProcessor>();
