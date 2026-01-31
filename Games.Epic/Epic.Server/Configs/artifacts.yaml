@@ -180,7 +180,7 @@ Artifacts:
     <<: *Torso
     Key: BreastplateOfPetrifiedWood
     Name: "Breastplate of Petrified Wood"
-    Value: 500
+    Value: 1000
     DefenseBonus: 1
     ThumbnailUrl: "/resources/Artifact_Breastplate_of_Petrified_Wood.gif"
 
@@ -257,7 +257,7 @@ Artifacts:
     <<: *Helmet
     Key: HelmOfTheAlabasterUnicorn
     Name: "Helm of the Alabaster Unicorn"
-    Value: 500
+    Value: 1000
     DefenseBonus: 1
     ThumbnailUrl: "/resources/Artifact_Helm_of_the_Alabaster_Unicorn.gif"
 

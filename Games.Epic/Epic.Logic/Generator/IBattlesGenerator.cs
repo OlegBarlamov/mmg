@@ -138,7 +138,7 @@ namespace Epic.Logic.Generator
             
             var maxStrongUnitIndex = BinarySearch.FindClosestNotExceedingIndex(orderedUnitTypes,
                 entity => entity.Value, difficulty.TargetDifficulty);
-            var normalizedMean = 1.0 / 3.0; // Bias toward lower part
+            var normalizedMean = 1.0 / 2.25; // Bias toward lower part
             var stdDev = 0.25; // how chaotic the output
             var sample = RandomDistributions.GetBoundedNormal(_random, normalizedMean, stdDev, 0, 1);
             var targetIndex = (int)(sample * maxStrongUnitIndex);

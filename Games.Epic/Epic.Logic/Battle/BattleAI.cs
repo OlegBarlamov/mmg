@@ -197,6 +197,25 @@ namespace Epic.Logic.Battle
                     }
                 }
 
+                // If no direct path found that gets closer, try to find best move toward target
+                // This helps navigate around large obstacles
+                if (finalMove.C == unit.Column && finalMove.R == unit.Row && cellsToMove.Count > 0)
+                {
+                    var targetPoint = new HexoPoint(closestTarget.Item1.Column, closestTarget.Item1.Row);
+                    var bestMove = MapUtils.FindBestMoveTowardTarget(
+                        Battle, 
+                        Battle.Obstacles, 
+                        unit, 
+                        targetPoint, 
+                        unit.GlobalUnit.UnitType.Movement, 
+                        cellsToMove);
+                    
+                    if (bestMove.HasValue)
+                    {
+                        finalMove = bestMove.Value;
+                    }
+                }
+
                 if (finalMove.C != unit.Column || finalMove.R != unit.Row)
                 {
                     await BattleLogic.OnClientMessage(_fakeConnection, new UnitMoveClientBattleMessage

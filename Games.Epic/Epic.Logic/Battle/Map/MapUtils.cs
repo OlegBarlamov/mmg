@@ -133,6 +133,81 @@ namespace Epic.Logic.Battle.Map
             return reachableCells.Any(cell => cell.Equals(target));
         }
 
+        /// <summary>
+        /// Finds the best move toward a target when direct pathfinding is blocked by obstacles.
+        /// Uses longer-range pathfinding to find the best direction, then selects the best move
+        /// within moveRange that gets closer to that direction.
+        /// </summary>
+        public static HexoPoint? FindBestMoveTowardTarget(
+            IBattleObject map,
+            IReadOnlyCollection<IBattleObstacleFields> obstacles,
+            IBattleUnitObject unit,
+            HexoPoint target,
+            MovementType movementType,
+            List<HexoPoint> availableMoves)
+        {
+            if (availableMoves == null || availableMoves.Count == 0)
+                return null;
+
+            var start = new HexoPoint(unit.Column, unit.Row);
+            int moveRange = unit.GlobalUnit.UnitType.Speed;
+
+            // First, try to find the closest reachable cell to the target using longer-range exploration
+            // This helps when obstacles block the direct path
+            HexoPoint? bestReachableCell = null;
+            int bestDistance = int.MaxValue;
+
+            // Explore a larger area (3x move range) to find the best direction
+            var extendedRange = moveRange * 3;
+            var reachableCells = BfsExplore(map, obstacles, start, movementType, false, extendedRange, null);
+
+            foreach (var cell in reachableCells)
+            {
+                var distance = OddRHexoGrid.Distance(cell, target);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    bestReachableCell = cell;
+                }
+            }
+
+            // If we found a best reachable cell, find the move that gets closest to it
+            if (bestReachableCell.HasValue)
+            {
+                HexoPoint? bestMove = null;
+                int bestMoveDistance = int.MaxValue;
+
+                foreach (var move in availableMoves)
+                {
+                    var distance = OddRHexoGrid.Distance(move, bestReachableCell.Value);
+                    if (distance < bestMoveDistance)
+                    {
+                        bestMoveDistance = distance;
+                        bestMove = move;
+                    }
+                }
+
+                return bestMove;
+            }
+
+            // Fallback: if no best reachable cell found, try to move in the general direction of target
+            // by finding the move that minimizes the distance to target
+            HexoPoint? fallbackMove = null;
+            int fallbackDistance = int.MaxValue;
+
+            foreach (var move in availableMoves)
+            {
+                var distance = OddRHexoGrid.Distance(move, target);
+                if (distance < fallbackDistance)
+                {
+                    fallbackDistance = distance;
+                    fallbackMove = move;
+                }
+            }
+
+            return fallbackMove;
+        }
+
         public static List<HexoPoint> GetNeighborCells(int row, int col, int rows, int cols)
         {
             bool IsValidCell(int r, int c)

@@ -16,14 +16,10 @@ namespace Epic.Logic.Utils
                 int mid = left + (right - left) / 2;
                 int midValue = func(sortedArray[mid]);
 
-                if (midValue == target)
-                {
-                    return mid; // exact match
-                }
-                else if (midValue < target)
+                if (midValue <= target)
                 {
                     resultIndex = mid; // store index of valid candidate
-                    left = mid + 1;
+                    left = mid + 1;    // keep searching right for last match
                 }
                 else
                 {
