@@ -4,6 +4,7 @@ using Epic.Core.Services.Buffs;
 using Epic.Core.Objects;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
+using Epic.Data.Heroes;
 
 namespace Epic.Core.Services.Battles
 {
@@ -17,8 +18,15 @@ namespace Epic.Core.Services.Battles
         int InitialCount { get; }
         int CurrentCount { get; }
         bool Waited { get; }
-        int CurrentAttack { get; set; }
-        int CurrentDefense { get; set; }
+        
+        IHeroStats HeroStats { get; }
+        
+        int MaxHealth { get; }
+        
+        int CurrentAttack { get; }
+        
+        int CurrentDefense { get; }
+        
         IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; }
 
         IReadOnlyList<IBuffObject> Buffs { get; }

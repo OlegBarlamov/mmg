@@ -27,9 +27,6 @@ namespace Epic.Data.BattleUnits
         int InitialCount { get; }
         
         int CurrentCount { get; }
-        
-        int CurrentAttack { get; set; }
-        int CurrentDefense { get; set; }
     }
 
     internal class BattleUnitEntity : IBattleUnitEntity
@@ -44,9 +41,6 @@ namespace Epic.Data.BattleUnits
         public int CurrentHealth { get; set; }
         public int InitialCount { get; set; }
         public int CurrentCount { get; set; }
-        
-        public int CurrentAttack { get; set; }
-        public int CurrentDefense { get; set; }
         
         public bool Waited { get; set; }
 
@@ -67,8 +61,6 @@ namespace Epic.Data.BattleUnits
             InitialCount = fields.InitialCount;
             CurrentCount = fields.CurrentCount;
             Waited = fields.Waited;
-            CurrentAttack = fields.CurrentAttack;
-            CurrentDefense = fields.CurrentDefense;
         }
     }
 }

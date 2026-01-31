@@ -385,3 +385,11 @@ Artifacts:
     AttackBonus: 1
     DefenseBonus: 1
     ThumbnailUrl: "/resources/Artifact_Quiet_Eye_of_the_Dragon.gif"
+
+  RingOfLife:
+    <<: *Ring
+    Key: RingOfLife
+    Name: "Ring of Life"
+    Value: 2500
+    Buffs: [HealthPlusOne]
+    ThumbnailUrl: "/resources/Artifact_Ring_of_Life.gif"

@@ -16,6 +16,7 @@ namespace Epic.Server.Resources
         public int AttackBonus { get; }
         public int DefenseBonus { get; }
         public int[] EquippedSlotsIndexes { get; }
+        public string[] BuffNames { get; }
 
         public ArtifactResource(IArtifactObject artifact)
         {
@@ -28,6 +29,10 @@ namespace Epic.Server.Resources
             AttackBonus = artifact.ArtifactType?.AttackBonus ?? 0;
             DefenseBonus = artifact.ArtifactType?.DefenseBonus ?? 0;
             EquippedSlotsIndexes = artifact.EquippedSlotsIndexes?.ToArray() ?? Array.Empty<int>();
+            BuffNames = artifact.ArtifactType?.BuffTypes?
+                .Where(b => b != null && !string.IsNullOrEmpty(b.Name))
+                .Select(b => b.Name)
+                .ToArray() ?? Array.Empty<string>();
         }
     }
 }

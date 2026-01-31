@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Epic.Core.Services.Buffs;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
+using Epic.Data.Heroes;
 
 namespace Epic.Core.Services.Battles
 {
@@ -19,13 +21,77 @@ namespace Epic.Core.Services.Battles
         public int InitialCount { get; set; }
         public int CurrentCount { get; set; }
         public bool Waited { get; set; }
-        public int CurrentAttack { get; set; }
-        public int CurrentDefense { get; set; }
+        
+        public IHeroStats HeroStats { get; set; }
+
+        // Computed properties: base + hero bonus + buff bonuses
+        public int MaxHealth => CalculateMaxHealth();
+        public int CurrentAttack => CalculateCurrentAttack();
+        public int CurrentDefense => CalculateCurrentDefense();
 
         public IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; set; }
         public IReadOnlyList<IBuffObject> Buffs { get; set; } = Array.Empty<IBuffObject>();
 
         IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
+
+        private int CalculateMaxHealth()
+        {
+            var baseHealth = GlobalUnit?.UnitType?.Health ?? 0;
+            var buffBonus = CalculateBuffHealthBonus();
+            return baseHealth + buffBonus;
+        }
+
+        private int CalculateCurrentAttack()
+        {
+            var baseAttack = GlobalUnit?.UnitType?.Attack ?? 0;
+            var heroBonus = HeroStats?.Attack ?? 0;
+            var buffBonus = CalculateBuffAttackBonus();
+            return baseAttack + heroBonus + buffBonus;
+        }
+
+        private int CalculateCurrentDefense()
+        {
+            var baseDefense = GlobalUnit?.UnitType?.Defense ?? 0;
+            var heroBonus = HeroStats?.Defense ?? 0;
+            var buffBonus = CalculateBuffDefenseBonus();
+            return baseDefense + heroBonus + buffBonus;
+        }
+
+        private int CalculateBuffHealthBonus()
+        {
+            if (Buffs == null || Buffs.Count == 0)
+                return 0;
+
+            var flatBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.HealthBonus);
+            var percentageBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.HealthBonusPercentage);
+            
+            var baseHealth = GlobalUnit?.UnitType?.Health ?? 0;
+            return flatBonus + (baseHealth * percentageBonus / 100);
+        }
+
+        private int CalculateBuffAttackBonus()
+        {
+            if (Buffs == null || Buffs.Count == 0)
+                return 0;
+
+            var flatBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.AttackBonus);
+            var percentageBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.AttackBonusPercentage);
+            
+            var baseAttack = GlobalUnit?.UnitType?.Attack ?? 0;
+            return flatBonus + (baseAttack * percentageBonus / 100);
+        }
+
+        private int CalculateBuffDefenseBonus()
+        {
+            if (Buffs == null || Buffs.Count == 0)
+                return 0;
+
+            var flatBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.DefenseBonus);
+            var percentageBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.DefenseBonusPercentage);
+            
+            var baseDefense = GlobalUnit?.UnitType?.Defense ?? 0;
+            return flatBonus + (baseDefense * percentageBonus / 100);
+        }
 
         private MutableBattleUnitObject(Guid id)
         {
@@ -45,8 +111,6 @@ namespace Epic.Core.Services.Battles
                 InitialCount = entity.InitialCount,
                 CurrentCount = entity.CurrentCount,
                 Waited = entity.Waited,
-                CurrentAttack = entity.CurrentAttack,
-                CurrentDefense = entity.CurrentDefense,
             };
         }
         
@@ -57,6 +121,7 @@ namespace Epic.Core.Services.Battles
             battleUnitObject.GlobalUnit = MutableGlobalUnitObject.CopyFrom(x.GlobalUnit);
             battleUnitObject.AttackFunctionsData = x.AttackFunctionsData;
             battleUnitObject.Buffs = x.Buffs;
+            battleUnitObject.HeroStats = x.HeroStats;
             return battleUnitObject;
         }
 

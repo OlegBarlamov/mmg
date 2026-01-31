@@ -77,6 +77,7 @@ export interface IArtifactInfo {
     readonly attackBonus: number
     readonly defenseBonus: number
     readonly equippedSlotsIndexes: number[]
+    readonly buffNames: string[]
 }
 
 export interface IAcceptedReward {

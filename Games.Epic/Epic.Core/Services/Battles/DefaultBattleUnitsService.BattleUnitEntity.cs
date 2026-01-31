@@ -17,8 +17,6 @@ namespace Epic.Core.Services.Battles
             public int CurrentHealth { get; set; }
             public int InitialCount { get; set; }
             public int CurrentCount { get; set; }
-            public int CurrentAttack { get; set; }
-            public int CurrentDefense { get; set; }
             public bool Waited { get; set; }
 
 
@@ -27,8 +25,7 @@ namespace Epic.Core.Services.Battles
             public static BattleUnitEntityFields FromUserUnit(
                 IGlobalUnitObject globalUnit, 
                 Guid battleId, 
-                InBattlePlayerNumber playerNumber,
-                IHeroStats heroStats)
+                InBattlePlayerNumber playerNumber)
             {
                 return new BattleUnitEntityFields
                 {
@@ -41,8 +38,6 @@ namespace Epic.Core.Services.Battles
                     InitialCount = globalUnit.Count,
                     CurrentCount = globalUnit.Count,
                     Waited = false,
-                    CurrentAttack = globalUnit.UnitType.Attack + heroStats.Attack,
-                    CurrentDefense = globalUnit.UnitType.Defense + heroStats.Defense,
                 };
             }
         }
@@ -69,8 +64,6 @@ namespace Epic.Core.Services.Battles
                     InitialCount = battleUnit.InitialCount,
                     CurrentCount = battleUnit.CurrentCount,
                     Waited = battleUnit.Waited,
-                    CurrentAttack = battleUnit.CurrentAttack,
-                    CurrentDefense = battleUnit.CurrentDefense,
                 };
             }
         }

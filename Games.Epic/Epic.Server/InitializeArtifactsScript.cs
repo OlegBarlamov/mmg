@@ -26,7 +26,7 @@ namespace Epic.Server
             public int DefenseBonus { get; set; }
             
             [UsedImplicitly]
-            public string[] BuffTypes { get; set; } = Array.Empty<string>();
+            public string[] Buffs { get; set; } = Array.Empty<string>();
         }
 
         [UsedImplicitly]
@@ -80,9 +80,9 @@ namespace Epic.Server
                 };
                 
                 // Resolve BuffTypes string keys to GUIDs
-                if (x.BuffTypes != null && x.BuffTypes.Length > 0)
+                if (x.Buffs != null && x.Buffs.Length > 0)
                 {
-                    fieldsObj.BuffTypeIds = x.BuffTypes
+                    fieldsObj.BuffTypeIds = x.Buffs
                         .Where(buffKey => !string.IsNullOrWhiteSpace(buffKey))
                         .Select(buffKey => BuffTypesRegistry.ByKey(buffKey).Id)
                         .ToArray();

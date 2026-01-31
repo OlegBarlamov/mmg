@@ -60,8 +60,8 @@ namespace Epic.Logic.Battle.Formulas
             var newCount = target.GlobalUnit.Count;
             if (finalHealth <= 0)
             {
-                var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / target.GlobalUnit.UnitType.Health) + 1;
-                finalHealth += killedUnits * target.GlobalUnit.UnitType.Health;
+                var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / target.MaxHealth) + 1;
+                finalHealth += killedUnits * target.MaxHealth;
                 newCount = target.GlobalUnit.Count - killedUnits;
 
                 if (newCount < 1)
@@ -69,7 +69,7 @@ namespace Epic.Logic.Battle.Formulas
                     return new UnitTakesDamageData
                     {
                         DamageTaken =
-                            target.GlobalUnit.Count * target.GlobalUnit.UnitType.Health + target.CurrentHealth,
+                            target.GlobalUnit.Count * target.MaxHealth + target.CurrentHealth,
                         KilledCount = target.GlobalUnit.Count,
                         RemainingHealth = finalHealth,
                         RemainingCount = 0,

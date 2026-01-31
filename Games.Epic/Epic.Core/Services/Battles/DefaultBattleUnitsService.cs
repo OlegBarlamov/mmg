@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BattleDefinitions;
+using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Units;
 using Epic.Data.BattleUnits;
-using Epic.Data.Heroes;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NetExtensions.Collections;
@@ -50,17 +50,19 @@ namespace Epic.Core.Services.Battles
         public Task<IReadOnlyCollection<IBattleUnitObject>> CreateUnitsFromBattleDefinition(IBattleDefinitionObject battleDefinition, Guid battleId)
         {
             var unitsFitToBattle = PickUnitsFitToBattleSize(battleDefinition.Units, battleDefinition);
-            return CreateBattleUnitsFromGlobalUnits(unitsFitToBattle, InBattlePlayerNumber.Player2, battleId, DefaultHeroStats.Instance);
+            return CreateBattleUnitsFromGlobalUnits(unitsFitToBattle, InBattlePlayerNumber.Player2, battleId, null);
         }
 
         public async Task<IReadOnlyCollection<IBattleUnitObject>> CreateBattleUnitsFromGlobalUnits(
             IReadOnlyCollection<IGlobalUnitObject> playerUnits, 
             InBattlePlayerNumber playerNumber, 
             Guid battleId,
-            IHeroStats heroStats)
+            IHeroObject hero)
         {
+            var heroStats = hero?.GetCumulativeHeroStats() ?? DefaultHeroStats.Instance;
+            
             var userUnitsById = playerUnits.ToDictionary(u => u.Id, u => u);
-            var entities = playerUnits.Select(u => BattleUnitEntityFields.FromUserUnit(u, battleId, playerNumber, heroStats))
+            var entities = playerUnits.Select(u => BattleUnitEntityFields.FromUserUnit(u, battleId, playerNumber))
                 .ToArray<IBattleUnitEntityFields>();
 
             var createdInstances = await BattleUnitsRepository.CreateBatch(entities);
@@ -76,9 +78,15 @@ namespace Epic.Core.Services.Battles
             {
                 u.GlobalUnit = MutableGlobalUnitObject.CopyFrom(userUnitsById[u.PlayerUnitId]);
                 u.AttackFunctionsData = attacksDataMapPerBattleUnit[u.Id];
+                u.HeroStats = heroStats;
             });
 
             await PrecreatePermanentBuffsFromUnitTypes(createdBattleUnits);
+            await PrecreatePermanentBuffsFromHeroArtifacts(hero, createdBattleUnits);
+            
+            // Set initial health to max health (including buff bonuses)
+            createdBattleUnits.ForEach(u => u.CurrentHealth = u.MaxHealth);
+            
             return createdBattleUnits;
         }
 
@@ -112,6 +120,54 @@ namespace Epic.Core.Services.Battles
 
             foreach (var unit in createdBattleUnits)
                 unit.Buffs = buffsByUnitId.TryGetValue(unit.Id, out var buffs) ? buffs : Array.Empty<IBuffObject>();
+        }
+
+        private async Task PrecreatePermanentBuffsFromHeroArtifacts(
+            IHeroObject hero,
+            IReadOnlyCollection<MutableBattleUnitObject> createdBattleUnits)
+        {
+            if (hero == null || createdBattleUnits == null || createdBattleUnits.Count == 0)
+                return;
+
+            // Get buff type IDs from all equipped artifacts
+            var artifactBuffTypeIds = hero.GetEquippedArtefacts()
+                .SelectMany(a => a?.ArtifactType?.BuffTypeIds ?? Array.Empty<Guid>())
+                .Where(id => id != Guid.Empty)
+                .Distinct()
+                .ToArray();
+
+            if (artifactBuffTypeIds.Length == 0)
+                return;
+
+            const int permanentDurationRemaining = 0;
+
+            // Create buffs for each unit from each artifact buff type
+            var createTasks = new List<Task<IBuffObject>>();
+            foreach (var unit in createdBattleUnits)
+            {
+                foreach (var buffTypeId in artifactBuffTypeIds)
+                {
+                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, permanentDurationRemaining));
+                }
+            }
+
+            if (createTasks.Count == 0)
+                return;
+
+            var createdBuffs = await Task.WhenAll(createTasks);
+            var buffsByUnitId = createdBuffs
+                .GroupBy(x => x.TargetBattleUnitId)
+                .ToDictionary(g => g.Key, g => g.ToArray());
+
+            // Append artifact buffs to existing unit buffs
+            foreach (var unit in createdBattleUnits)
+            {
+                if (buffsByUnitId.TryGetValue(unit.Id, out var artifactBuffs))
+                {
+                    var existingBuffs = unit.Buffs ?? Array.Empty<IBuffObject>();
+                    unit.Buffs = existingBuffs.Concat(artifactBuffs).ToArray();
+                }
+            }
         }
 
         public async Task UpdateUnits(IReadOnlyCollection<IBattleUnitObject> battleUnits)

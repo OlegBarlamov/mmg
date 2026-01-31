@@ -58,13 +58,19 @@ function formatSigned(n: number): string {
 }
 
 function artifactHoverText(a: IArtifactInfo): string {
-    const parts: string[] = []
-    if ((a.attackBonus ?? 0) !== 0) parts.push(`ATK ${formatSigned(a.attackBonus)}`)
-    if ((a.defenseBonus ?? 0) !== 0) parts.push(`DEF ${formatSigned(a.defenseBonus)}`)
+    const lines: string[] = [artifactDisplayName(a)]
+    
+    const statParts: string[] = []
+    if ((a.attackBonus ?? 0) !== 0) statParts.push(`ATK ${formatSigned(a.attackBonus)}`)
+    if ((a.defenseBonus ?? 0) !== 0) statParts.push(`DEF ${formatSigned(a.defenseBonus)}`)
+    if (statParts.length > 0) lines.push(statParts.join(" | "))
+    
+    const buffNames = a.buffNames ?? []
+    if (buffNames.length > 0) {
+        lines.push("Buffs: " + buffNames.join(", "))
+    }
 
-    return parts.length > 0
-        ? `${artifactDisplayName(a)}\n${parts.join(" | ")}`
-        : `${artifactDisplayName(a)}`
+    return lines.join("\n")
 }
 
 function getRequiredSlots(artifact: IArtifactInfo | null): ArtifactSlot[] {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Logic;
-using Epic.Core.Services.Buffs;
+using Epic.Core.Objects;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.BattleObstacles;
 using Epic.Core.Services.Heroes;
@@ -29,7 +29,6 @@ namespace Epic.Core.Services.Battles
         [NotNull] private IBattleReportsRepository BattleReportsRepository { get; }
         [NotNull] private IBattleUnitsPlacer BattleUnitsPlacer { get; }
         [NotNull] private IUnitsContainersService UnitsContainersService { get; }
-        [NotNull] private IBuffsService BuffsService { get; }
         public IUnitTypesService UnitTypesService { get; }
         public IBattleObstaclesService BattleObstaclesService { get; }
         public IBattleObstaclesGenerator BattleObstaclesGenerator { get; }
@@ -44,7 +43,6 @@ namespace Epic.Core.Services.Battles
             [NotNull] IBattleReportsRepository battleReportsRepository,
             [NotNull] IBattleUnitsPlacer battleUnitsPlacer,
             [NotNull] IUnitsContainersService unitsContainersService,
-            [NotNull] IBuffsService buffsService,
             [NotNull] IUnitTypesService unitTypesService,
             [NotNull] IBattleObstaclesService battleObstaclesService,
             [NotNull] IBattleObstaclesGenerator battleObstaclesGenerator)
@@ -58,7 +56,6 @@ namespace Epic.Core.Services.Battles
             BattleReportsRepository = battleReportsRepository ?? throw new ArgumentNullException(nameof(battleReportsRepository));
             BattleUnitsPlacer = battleUnitsPlacer ?? throw new ArgumentNullException(nameof(battleUnitsPlacer));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
-            BuffsService = buffsService ?? throw new ArgumentNullException(nameof(buffsService));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
             BattleObstaclesService = battleObstaclesService ?? throw new ArgumentNullException(nameof(battleObstaclesService));
             BattleObstaclesGenerator = battleObstaclesGenerator ?? throw new ArgumentNullException(nameof(battleObstaclesGenerator));
@@ -75,6 +72,7 @@ namespace Epic.Core.Services.Battles
             await FillUnits(battleObject);
             await FillPlayers(battleObject);
             await FillObstacles(battleObject);
+            await FillHeroStatsOnUnits(battleObject);
 
             return battleObject;
         }
@@ -93,6 +91,7 @@ namespace Epic.Core.Services.Battles
             await FillUnits(battleObject);
             await FillPlayers(battleObject);
             await FillObstacles(battleObject);
+            await FillHeroStatsOnUnits(battleObject);
             
             return battleObject;
         }
@@ -157,9 +156,7 @@ namespace Epic.Core.Services.Battles
                 enemyGlobalUnits, 
                 InBattlePlayerNumber.Player2, 
                 battleObject.Id,
-                enemyPlayer.ActiveHero.GetCumulativeHeroStats());
-
-            await PrecreatePermanentBuffsFromHeroEquippedArtifacts(enemyPlayer.ActiveHero, battleInitialUnits);
+                enemyPlayer.ActiveHero);
             
             var obstacles = await BattleObstaclesGenerator.GenerateForBattle(battleObject);
             battleObject.Obstacles = obstacles;
@@ -184,9 +181,7 @@ namespace Epic.Core.Services.Battles
                 userUnitsFitToBattle, 
                 InBattlePlayerNumber.Player1, 
                 battleObject.Id,
-                player.ActiveHero.GetCumulativeHeroStats());
-
-            await PrecreatePermanentBuffsFromHeroEquippedArtifacts(player.ActiveHero, userBattleUnits);
+                player.ActiveHero);
             
             mutableBattleObject.Units.AddRange(userBattleUnits.Select(MutableBattleUnitObject.CopyFrom));
 
@@ -207,53 +202,6 @@ namespace Epic.Core.Services.Battles
             await BattleUnitsService.UpdateUnits(mutableBattleObject.Units);
             
             return mutableBattleObject;
-        }
-
-        private async Task PrecreatePermanentBuffsFromHeroEquippedArtifacts(
-            IHeroObject heroObject,
-            IReadOnlyCollection<IBattleUnitObject> createdBattleUnits)
-        {
-            if (heroObject == null || createdBattleUnits == null || createdBattleUnits.Count == 0)
-                return;
-
-            // One hero -> same artifact buffs applied to all created units.
-            var heroBuffTypeIds = heroObject.GetEquippedArtefacts()
-                .SelectMany(a => a?.ArtifactType?.BuffTypeIds ?? Array.Empty<Guid>())
-                .Where(id => id != Guid.Empty)
-                .Distinct()
-                .ToArray();
-
-            if (heroBuffTypeIds.Length == 0)
-                return;
-
-            // Artifact-derived buffs are always permanent -> duration remaining is irrelevant.
-            const int permanentDurationRemaining = 0;
-
-            var createTasks = new List<Task<IBuffObject>>();
-            foreach (var unit in createdBattleUnits)
-            {
-                foreach (var buffTypeId in heroBuffTypeIds)
-                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, permanentDurationRemaining));
-            }
-
-            if (createTasks.Count == 0)
-                return;
-
-            var createdBuffs = await Task.WhenAll(createTasks);
-
-            var buffsByUnitId = createdBuffs
-                .GroupBy(x => x.TargetBattleUnitId)
-                .ToDictionary(g => g.Key, g => (IReadOnlyList<IBuffObject>)g.ToArray());
-
-            foreach (var unit in createdBattleUnits)
-            {
-                if (unit is MutableBattleUnitObject mutable)
-                {
-                    var existing = mutable.Buffs ?? Array.Empty<IBuffObject>();
-                    if (buffsByUnitId.TryGetValue(unit.Id, out var added))
-                        mutable.Buffs = existing.Concat(added).ToArray();
-                }
-            }
         }
 
         public Task UpdateBattle(IBattleObject battleObject)
@@ -306,6 +254,29 @@ namespace Epic.Core.Services.Battles
             var battleUnits = await BattleUnitsService.GetBattleUnits(battleObject.Id);
             var mutableBattleUnits = battleUnits.Select(MutableBattleUnitObject.CopyFrom);
             battleObject.Units = new List<MutableBattleUnitObject>(mutableBattleUnits);
+        }
+
+        private async Task FillHeroStatsOnUnits(MutableBattleObject battleObject)
+        {
+            // Group units by player index to minimize player lookups
+            var unitsByPlayerIndex = battleObject.Units.GroupBy(u => u.PlayerIndex).ToArray();
+            
+            foreach (var group in unitsByPlayerIndex)
+            {
+                var playerNumber = (InBattlePlayerNumber)group.Key;
+                var playerId = battleObject.FindPlayerId(playerNumber);
+                
+                if (!playerId.HasValue)
+                    continue;
+                
+                var player = await PlayersService.GetById(playerId.Value);
+                var heroStats = player?.ActiveHero?.GetCumulativeHeroStats() ?? DefaultHeroStats.Instance;
+                
+                foreach (var unit in group)
+                {
+                    unit.HeroStats = heroStats;
+                }
+            }
         }
 
         private async Task FillObstacles(MutableBattleObject battleObject)

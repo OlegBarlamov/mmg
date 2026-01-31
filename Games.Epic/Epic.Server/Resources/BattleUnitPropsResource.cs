@@ -28,7 +28,7 @@ namespace Epic.Server.Resources
             BattleImgUrl = battleUnitObject.GlobalUnit.UnitType.BattleImgUrl;
             Speed = battleUnitObject.GlobalUnit.UnitType.Speed;
             Waited = battleUnitObject.Waited;
-            Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.GlobalUnit.UnitType.Health;
+            Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.MaxHealth;
             Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks;
             Attack = currentProps ? battleUnitObject.CurrentAttack : battleUnitObject.GlobalUnit.UnitType.Attack;
             Defense = currentProps ? battleUnitObject.CurrentDefense : battleUnitObject.GlobalUnit.UnitType.Defense;

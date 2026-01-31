@@ -121,7 +121,7 @@ namespace Epic.Server
             // Give some artifacts to the first player's hero for testing.
             //await GiveTestArtifacts(hero.Id);
             
-            var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
+            // var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
             
             // Generate random presets for both heroes
             var preset1 = await GenerateRandomPreset(targetScore);
