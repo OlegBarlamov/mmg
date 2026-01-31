@@ -22,6 +22,12 @@ Necklace: &Necklace
 Ring: &Ring
   Slots: [Wrist]
 
+Misc: &Misc
+  Slots: [Bag]
+
+MiscRingRing: &MiscRingRing
+  Slots: [Bag, Wrist, Wrist]
+
 Artifacts:
   CentaursAxe:
     <<: *Weapon
@@ -347,6 +353,14 @@ Artifacts:
     DefenseBonus: 4
     ThumbnailUrl: "/resources/Artifact_Sandals_of_the_Saint.gif"
 
+  BootsOfSpeed:
+    <<: *Feet
+    Key: BootsOfSpeed
+    Name: "Boots of Speed"
+    Value: 3000
+    Buffs: [SpeedPlusOne]
+    ThumbnailUrl: "/resources/Artifact_Boots_of_Speed.gif"
+
   # Cape (Power -> Attack, Knowledge -> Defense)
   DragonWingTabard:
     <<: *Cape
@@ -376,6 +390,14 @@ Artifacts:
     DefenseBonus: 6
     ThumbnailUrl: "/resources/Artifact_Celestial_Necklace_of_Bliss.gif"
 
+  NecklaceOfSwiftness:
+    <<: *Necklace
+    Key: NecklaceOfSwiftness
+    Name: "Necklace of Swiftness"
+    Value: 3000
+    Buffs: [SpeedPlusOne]
+    ThumbnailUrl: "/resources/Artifact_Necklace_of_Swiftness.gif"
+
   # Rings
   QuietEyeOfTheDragon:
     <<: *Ring
@@ -393,3 +415,37 @@ Artifacts:
     Value: 2500
     Buffs: [HealthPlusOne]
     ThumbnailUrl: "/resources/Artifact_Ring_of_Life.gif"
+
+  RingOfTheWayfarer:
+    <<: *Ring
+    Key: RingOfTheWayfarer
+    Name: "Ring of the Wayfarer"
+    Value: 3000
+    Buffs: [SpeedPlusOne]
+    ThumbnailUrl: "/resources/Artifact_Ring_of_the_Wayfarer.gif"
+
+  RingOfVitality:
+    <<: *Ring
+    Key: RingOfVitality
+    Name: "Ring of Vitality"
+    Value: 2500
+    Buffs: [HealthPlusOne]
+    ThumbnailUrl: "/resources/Artifact_Ring_of_Vitality.gif"
+
+  # Misc
+  VialOfLifeblood:
+    <<: *Misc
+    Key: VialOfLifeblood
+    Name: "Vial of Lifeblood"
+    Value: 5000
+    Buffs: [HealthPlusTwo]
+    ThumbnailUrl: "/resources/Artifact_Vial_of_Lifeblood.gif"
+
+  # Combo Artifacts
+  ElixirOfLife:
+    <<: *MiscRingRing
+    Key: ElixirOfLife
+    Name: "Elixir of Life"
+    Value: 10000
+    Buffs: [ElixirOfLifeBuff]
+    ThumbnailUrl: "/resources/Artifact_Elixir_of_Life.gif"

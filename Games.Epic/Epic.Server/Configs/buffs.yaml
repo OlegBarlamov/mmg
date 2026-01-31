@@ -6,3 +6,22 @@ Buffs:
     HealthBonus: 1
     Permanent: true
     Duration: 0
+  HealthPlusTwo:
+    Key: HealthPlusTwo
+    Name: "Max Health +2"
+    HealthBonus: 2
+    Permanent: true
+    Duration: 0
+  SpeedPlusOne:
+    Key: SpeedPlusOne
+    Name: "Speed +1"
+    SpeedBonus: 1
+    Permanent: true
+    Duration: 0
+  ElixirOfLifeBuff:
+    Key: ElixirOfLifeBuff
+    Name: "Health +4; Health +25%"
+    HealthBonus: 4
+    HealthBonusPercentage: 25
+    Permanent: true
+    Duration: 0
