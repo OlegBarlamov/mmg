@@ -8,6 +8,7 @@ namespace Epic.Server.Resources
         public string ThumbnailUrl { get; }
         public bool Permanent { get; }
         public int DurationRemaining { get; }
+        public bool Stunned { get; }
 
         public BattleUnitBuffResource(IBuffObject buffObject)
         {
@@ -16,6 +17,7 @@ namespace Epic.Server.Resources
             ThumbnailUrl = buffObject.BuffType?.ThumbnailUrl;
             Permanent = buffObject.BuffType?.Permanent ?? false;
             DurationRemaining = buffObject.DurationRemaining;
+            Stunned = buffObject.BuffType?.Stunned ?? false;
         }
     }
 }

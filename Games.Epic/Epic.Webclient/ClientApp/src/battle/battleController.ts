@@ -154,7 +154,9 @@ export class BattleController implements IBattleController {
     private async processStep(unit: BattleMapUnit): Promise<void> {
         await this.mapController.battleMapHighlighter.setActiveUnit(unit)
 
-        const cellsForMove = getCellsForUnitMove(this.map, unit, unit.currentProps.movementType)
+        // Check if unit is stunned (cannot move but can still attack from current position)
+        const isStunned = unit.currentProps.buffs?.some(b => b.stunned) ?? false
+        const cellsForMove = isStunned ? [] : getCellsForUnitMove(this.map, unit, unit.currentProps.movementType)
         const reachableCells = [this.map.grid.getCell(unit.position.r, unit.position.c), ...cellsForMove]
         const attackTargets = getAttackTargets(this.map, unit, reachableCells)
 

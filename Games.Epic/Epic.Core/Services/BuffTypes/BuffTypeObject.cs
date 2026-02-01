@@ -22,6 +22,7 @@ namespace Epic.Core.Services.BuffTypes
         public int MinDamageBonusPercentage { get; set; }
         public int MaxDamageBonusPercentage { get; set; }
         public bool Paralyzed { get; set; }
+        public bool Stunned { get; set; }
         public int VampirePercentage { get; set; }
         public bool VampireCanResurrect { get; set; }
         public bool DeclinesWhenTakesDamage { get; set; }
@@ -51,6 +52,7 @@ namespace Epic.Core.Services.BuffTypes
                 MinDamageBonusPercentage = entity.MinDamageBonusPercentage,
                 MaxDamageBonusPercentage = entity.MaxDamageBonusPercentage,
                 Paralyzed = entity.Paralyzed,
+                Stunned = entity.Stunned,
                 VampirePercentage = entity.VampirePercentage,
                 VampireCanResurrect = entity.VampireCanResurrect,
                 DeclinesWhenTakesDamage = entity.DeclinesWhenTakesDamage,

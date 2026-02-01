@@ -37,6 +37,11 @@ namespace Epic.Logic.Battle.Commands
             _attackFunction = availableAttacks[command.AttackIndex];
             if (_attackFunction.StayOnly && command.MoveToCell != new HexoPoint(TargetActor.Column, TargetActor.Row))
                 throw new BattleLogicException($"The target Attack Type {_attackFunction.Name} does not allow moving");
+            
+            // Stunned units cannot move as part of attack
+            var isStunned = TargetActor.Buffs?.Any(b => b.BuffType?.Stunned == true) ?? false;
+            if (isStunned && command.MoveToCell != new HexoPoint(TargetActor.Column, TargetActor.Row))
+                throw new BattleLogicException("Stunned units cannot move");
             _range = OddRHexoGrid.Distance(command.MoveToCell, _targetTarget);
             if (_range < _attackFunction.AttackMinRange || _range > _attackFunction.AttackMaxRange)
                 throw new BattleLogicException("The target is out of range for attack");
@@ -281,7 +286,8 @@ namespace Epic.Logic.Battle.Commands
                     BuffName = buffType.Name,
                     ThumbnailUrl = buffType.ThumbnailUrl,
                     Permanent = buffType.Permanent,
-                    DurationRemaining = durationRemaining
+                    DurationRemaining = durationRemaining,
+                    Stunned = buffType.Stunned
                 };
                 await context.MessageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
             }

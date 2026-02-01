@@ -1,5 +1,7 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.ClientMessages;
+using Epic.Core.Logic.Erros;
 using Epic.Core.ServerMessages;
 
 namespace Epic.Logic.Battle.Commands
@@ -10,6 +12,13 @@ namespace Epic.Logic.Battle.Commands
         {
             ValidateTargetActor(context, command.ActorId);
             ValidateExpectedTurn(context, command.TurnIndex, command.Player);
+            
+            // Check if unit is stunned (cannot move)
+            var isStunned = TargetActor.Buffs?.Any(b => b.BuffType?.Stunned == true) ?? false;
+            if (isStunned)
+            {
+                throw new BattleLogicException("Stunned units cannot move");
+            }
             
             //TODO Check if it is reachable
             

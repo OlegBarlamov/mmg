@@ -70,6 +70,7 @@ export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer
     thumbnailUrl?: string
     permanent: boolean
     durationRemaining: number
+    stunned?: boolean
 }
 
 export interface UnitLosesBuffCommandFromServer extends UnitCommandFromServer {

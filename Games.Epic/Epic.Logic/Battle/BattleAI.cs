@@ -46,9 +46,15 @@ namespace Epic.Logic.Battle
         {
             var enemies = Battle.Units.Where(x => x.PlayerIndex != unit.PlayerIndex && x.GlobalUnit.IsAlive).ToList();
             var attacks = unit.GlobalUnit.UnitType.Attacks;
+            
+            // Check if unit is stunned (cannot move but can still attack)
+            var isStunned = unit.Buffs?.Any(b => b.BuffType?.Stunned == true) ?? false;
 
             Tuple<IBattleUnitObject, int> closestTarget = null;
-            var cellsToMove = MapUtils.GetCellsForUnitMove(Battle, Battle.Obstacles, unit, unit.GlobalUnit.UnitType.Movement);
+            // Stunned units cannot move, so don't calculate move cells
+            var cellsToMove = isStunned 
+                ? new List<HexoPoint>() 
+                : MapUtils.GetCellsForUnitMove(Battle, Battle.Obstacles, unit, unit.GlobalUnit.UnitType.Movement);
             var possibleAttacksWithTargets = new List<Tuple<IBattleUnitObject, IAttackFunctionType, HexoPoint, int>>();
             
             foreach (var enemy in enemies)
@@ -76,7 +82,8 @@ namespace Epic.Logic.Battle
                         continue;
                     }
 
-                    if (attack.StayOnly)
+                    // Stunned units cannot move, so skip move+attack combinations
+                    if (attack.StayOnly || isStunned)
                         continue;
 
                     foreach (var point in cellsToMove)
@@ -121,7 +128,7 @@ namespace Epic.Logic.Battle
                 var cumulativeDamage = 0;
                 var cumulativeKilled = 0;
                 var friendlyFirePenalty = 0;
-                var paralyzedWithDeclineBuffPenalty = 0;
+                var debuffBreakPenalty = 0;
 
                 foreach (var targetDamage in allTargets)
                 {
@@ -136,23 +143,31 @@ namespace Epic.Logic.Battle
                         cumulativeDamage += targetDamage.DamageData.DamageTaken;
                         cumulativeKilled += targetDamage.DamageData.KilledCount;
                         
-                        // Check if this enemy is paralyzed and has buffs that decline when taking damage
-                        // Attacking such targets would break their paralysis - apply penalty
-                        if (targetDamage.DamageData.DamageTaken > 0 && 
-                            targetDamage.Target.Buffs != null &&
-                            targetDamage.Target.Buffs.Any(b => 
+                        // Check if this enemy has debuffs that decline when taking damage
+                        // Attacking such targets would break their debuff - apply penalty
+                        if (targetDamage.DamageData.DamageTaken > 0 && targetDamage.Target.Buffs != null)
+                        {
+                            // Large penalty for breaking paralysis (unit can't act at all)
+                            if (targetDamage.Target.Buffs.Any(b => 
                                 b.BuffType?.Paralyzed == true && 
                                 b.BuffType?.DeclinesWhenTakesDamage == true))
-                        {
-                            // Large penalty to deprioritize breaking paralysis
-                            paralyzedWithDeclineBuffPenalty += 10000;
+                            {
+                                debuffBreakPenalty += 5000;
+                            }
+                            // Smaller penalty for breaking stun (unit can't move but can still act)
+                            else if (targetDamage.Target.Buffs.Any(b => 
+                                b.BuffType?.Stunned == true && 
+                                b.BuffType?.DeclinesWhenTakesDamage == true))
+                            {
+                                debuffBreakPenalty += 100;
+                            }
                         }
                     }
                 }
 
                 // Calculate total value: cumulative damage minus penalties
-                // Paralyzed units with DeclinesWhenTakesDamage buffs are deprioritized
-                var totalValue = cumulativeDamage - friendlyFirePenalty - paralyzedWithDeclineBuffPenalty;
+                // Paralyzed/Stunned units with DeclinesWhenTakesDamage buffs are deprioritized
+                var totalValue = cumulativeDamage - friendlyFirePenalty - debuffBreakPenalty;
                 
                 // Prioritize kills, then total value (damage - friendly fire)
                 // Use >= for totalValue to prefer earlier attack types when damage is equal
@@ -199,7 +214,8 @@ namespace Epic.Logic.Battle
                 return;
             }
 
-            if (closestTarget != null)
+            // Stunned units cannot move toward enemies
+            if (closestTarget != null && !isStunned)
             {
                 var distanceToClosestTarget = closestTarget.Item2;
                 var finalMove = new HexoPoint(unit.Column, unit.Row);

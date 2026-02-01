@@ -1,6 +1,6 @@
 MeleeAttack: &MeleeAttack
   Name: "Melee"
-  ThumbnailUrl: "sword.png"
+  ThumbnailUrl: "/resources/sword.gif"
   AttackMaxRange: 1
   AttackMinRange: 1
   StayOnly: false
@@ -12,7 +12,7 @@ MeleeAttack: &MeleeAttack
 
 RangeAttack: &RangeAttack
   Name: "Range"
-  ThumbnailUrl: "sword.png"
+  ThumbnailUrl: "/resources/arrow.gif"
   AttackMaxRange: 12
   AttackMinRange: 2
   StayOnly: true
@@ -627,6 +627,10 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 10
         MaxDamage: 14
+        ApplyBuffTypes:
+          - Bound
+        ApplyBuffChances:
+          - 25
 
   Unicorn:
     Name: "Unicorn"
@@ -645,7 +649,7 @@ Units:
         ApplyBuffTypes: 
           - Blind
         ApplyBuffChances:
-          - 20
+          - 25
     ResourcesDistribution:
       Gold: 4
       Gems: 1
@@ -759,6 +763,10 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 10
         MaxDamage: 14
+        ApplyBuffTypes:
+          - Bound
+        ApplyBuffChances:
+          - 25
 
   WarUnicorn:
     Name: "War Unicorn"

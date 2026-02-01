@@ -21,6 +21,7 @@ namespace Epic.Data.BuffType
         int MaxDamageBonusPercentage { get; }
         
         bool Paralyzed { get; }
+        bool Stunned { get; }
         int VampirePercentage { get; }
         bool VampireCanResurrect { get; }
         bool DeclinesWhenTakesDamage { get; }
@@ -52,6 +53,7 @@ namespace Epic.Data.BuffType
         public int MinDamageBonusPercentage { get; set; }
         public int MaxDamageBonusPercentage { get; set; }
         public bool Paralyzed { get; set; }
+        public bool Stunned { get; set; }
         public int VampirePercentage { get; set; }
         public bool VampireCanResurrect { get; set; }
         public bool DeclinesWhenTakesDamage { get; set; }
@@ -86,6 +88,7 @@ namespace Epic.Data.BuffType
             MinDamageBonusPercentage = fields.MinDamageBonusPercentage;
             MaxDamageBonusPercentage = fields.MaxDamageBonusPercentage;
             Paralyzed = fields.Paralyzed;
+            Stunned = fields.Stunned;
             VampirePercentage = fields.VampirePercentage;
             VampireCanResurrect = fields.VampireCanResurrect;
             DeclinesWhenTakesDamage = fields.DeclinesWhenTakesDamage;

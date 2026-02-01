@@ -207,7 +207,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                         name: message.buffName,
                         thumbnailUrl: message.thumbnailUrl,
                         permanent: message.permanent,
-                        durationRemaining: message.durationRemaining
+                        durationRemaining: message.durationRemaining,
+                        stunned: message.stunned
                     })
                     // Update buff icons on the battlefield
                     await this.mapController.updateUnitBuffIcons(unit)

@@ -33,5 +33,10 @@ namespace Epic.Core.ServerMessages
         /// The remaining duration of the buff in rounds (0 for permanent buffs).
         /// </summary>
         public int DurationRemaining { get; set; }
+        
+        /// <summary>
+        /// Whether this buff prevents the unit from moving.
+        /// </summary>
+        public bool Stunned { get; set; }
     }
 }

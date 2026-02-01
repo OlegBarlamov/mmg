@@ -28,7 +28,6 @@ export type BuffTypeInfo = {
     thumbnailUrl?: string
     permanent: boolean
     duration: number
-    /** Percentage chance (0-100) that this buff is applied. Defaults to 100. */
     chance: number
 }
 
@@ -56,4 +55,5 @@ export type UnitBuff = {
     thumbnailUrl?: string
     permanent: boolean
     durationRemaining: number
+    stunned?: boolean
 }

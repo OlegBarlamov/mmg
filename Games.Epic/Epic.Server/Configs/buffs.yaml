@@ -31,3 +31,9 @@ Buffs:
     ThumbnailUrl: "/resources/Blind.png"
     DeclinesWhenTakesDamage: true
     Paralyzed: true
+  Bound:
+    Key: Bound
+    Name: "Bound"
+    Duration: 3
+    ThumbnailUrl: "/resources/Bound.png"
+    Stunned: true
