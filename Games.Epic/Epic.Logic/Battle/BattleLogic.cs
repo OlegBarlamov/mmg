@@ -347,6 +347,103 @@ namespace Epic.Logic.Battle
             {
                 mutableUnit.Buffs = remainingBuffs;
             }
+            
+            // Process healing from active buffs
+            await ProcessBuffHealing(activeUnit, remainingBuffs);
+        }
+
+        /// <summary>
+        /// Processes healing effects from active buffs at the start of a unit's turn.
+        /// </summary>
+        private async Task ProcessBuffHealing(IBattleUnitObject activeUnit, List<IBuffObject> activeBuffs)
+        {
+            if (activeBuffs == null || activeBuffs.Count == 0)
+                return;
+
+            // Calculate total healing from all buffs
+            var totalFlatHeal = 0;
+            var totalPercentageHeal = 0;
+            var canResurrect = false;
+
+            foreach (var buff in activeBuffs)
+            {
+                if (buff.BuffType == null)
+                    continue;
+
+                totalFlatHeal += buff.BuffType.Heals;
+                totalPercentageHeal += buff.BuffType.HealsPercentage;
+                if (buff.BuffType.HealCanResurrect)
+                    canResurrect = true;
+            }
+
+            if (totalFlatHeal <= 0 && totalPercentageHeal <= 0)
+                return;
+
+            var mutableUnit = activeUnit as MutableBattleUnitObject;
+            if (mutableUnit == null)
+                return;
+
+            var unitHealth = mutableUnit.GlobalUnit.UnitType.Health;
+            var initialCount = mutableUnit.InitialCount;
+            var currentCount = mutableUnit.CurrentCount;
+            var currentHealth = mutableUnit.CurrentHealth;
+
+            // Calculate HP to heal
+            var percentageHeal = unitHealth * totalPercentageHeal / 100;
+            var hpToHeal = totalFlatHeal + percentageHeal;
+
+            if (hpToHeal <= 0)
+                return;
+
+            // Calculate new health values
+            var totalCurrentHp = (currentCount - 1) * unitHealth + currentHealth;
+            var totalNewHp = totalCurrentHp + hpToHeal;
+
+            // Cap at initial army size if resurrection is not allowed
+            var maxTotalHp = canResurrect
+                ? initialCount * unitHealth
+                : currentCount * unitHealth;
+
+            if (totalNewHp > maxTotalHp)
+                totalNewHp = maxTotalHp;
+
+            // Calculate new count and health
+            var newCount = (totalNewHp + unitHealth - 1) / unitHealth; // Ceiling division
+            var newHealth = totalNewHp - (newCount - 1) * unitHealth;
+
+            // Ensure we don't exceed initial count
+            if (newCount > initialCount)
+            {
+                newCount = initialCount;
+                newHealth = unitHealth;
+            }
+
+            var actualHealedAmount = totalNewHp - totalCurrentHp;
+            var resurrectedCount = newCount - currentCount;
+
+            if (actualHealedAmount <= 0)
+                return;
+
+            // Update the unit's state
+            mutableUnit.CurrentCount = newCount;
+            mutableUnit.CurrentHealth = newHealth;
+            mutableUnit.GlobalUnit.Count = newCount;
+
+            await GlobalUnitsService.UpdateUnits(new[] { mutableUnit.GlobalUnit });
+            await BattleUnitsService.UpdateUnits(new[] { mutableUnit });
+
+            // Broadcast healing message
+            var healMessage = new UnitHealsCommandFromServer(
+                BattleObject.TurnNumber,
+                activeUnit.PlayerIndex.ToInBattlePlayerNumber(),
+                activeUnit.Id.ToString())
+            {
+                HealedAmount = actualHealedAmount,
+                ResurrectedCount = resurrectedCount,
+                NewCount = newCount,
+                NewHealth = newHealth
+            };
+            await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(healMessage);
         }
     }
 }

@@ -26,6 +26,9 @@ namespace Epic.Core.Services.BuffTypes
         public int VampirePercentage { get; set; }
         public bool VampireCanResurrect { get; set; }
         public bool DeclinesWhenTakesDamage { get; set; }
+        public int Heals { get; set; }
+        public int HealsPercentage { get; set; }
+        public bool HealCanResurrect { get; set; }
         public bool Permanent { get; set; }
         public int Duration { get; set; }
 
@@ -56,6 +59,9 @@ namespace Epic.Core.Services.BuffTypes
                 VampirePercentage = entity.VampirePercentage,
                 VampireCanResurrect = entity.VampireCanResurrect,
                 DeclinesWhenTakesDamage = entity.DeclinesWhenTakesDamage,
+                Heals = entity.Heals,
+                HealsPercentage = entity.HealsPercentage,
+                HealCanResurrect = entity.HealCanResurrect,
                 Permanent = entity.Permanent,
                 Duration = entity.Duration,
             };
