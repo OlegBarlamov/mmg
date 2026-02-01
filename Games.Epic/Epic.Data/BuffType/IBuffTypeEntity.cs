@@ -23,6 +23,7 @@ namespace Epic.Data.BuffType
         bool Paralyzed { get; }
         int VampirePercentage { get; }
         bool VampireCanResurrect { get; }
+        bool DeclinesWhenTakesDamage { get; }
         
         bool Permanent { get; }
         int Duration { get; }
@@ -53,6 +54,7 @@ namespace Epic.Data.BuffType
         public bool Paralyzed { get; set; }
         public int VampirePercentage { get; set; }
         public bool VampireCanResurrect { get; set; }
+        public bool DeclinesWhenTakesDamage { get; set; }
         public bool Permanent { get; set; }
         public int Duration { get; set; }
     }
@@ -86,6 +88,7 @@ namespace Epic.Data.BuffType
             Paralyzed = fields.Paralyzed;
             VampirePercentage = fields.VampirePercentage;
             VampireCanResurrect = fields.VampireCanResurrect;
+            DeclinesWhenTakesDamage = fields.DeclinesWhenTakesDamage;
             Permanent = fields.Permanent;
             Duration = fields.Duration;
         }

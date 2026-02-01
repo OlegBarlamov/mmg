@@ -29,4 +29,5 @@ Buffs:
     Name: "Blind"
     Duration: 3
     ThumbnailUrl: "/resources/Blind.png"
+    DeclinesWhenTakesDamage: true
     Paralyzed: true

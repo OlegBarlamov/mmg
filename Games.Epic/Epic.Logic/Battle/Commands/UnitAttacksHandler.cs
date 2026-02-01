@@ -185,11 +185,52 @@ namespace Epic.Logic.Battle.Commands
                     };
                 await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
                 
+                // Remove buffs that decline when taking damage
+                if (targetDamage.DamageData.DamageTaken > 0)
+                {
+                    await RemoveBuffsThatDeclineOnDamage(context, mutableTarget, command);
+                }
+                
                 if (mutableTarget.GlobalUnit.IsAlive)
                 {
                     await ApplyAttackBuffsToTarget(context, mutableTarget, attackType, command);
                 }
             }
+        }
+
+        private static async Task RemoveBuffsThatDeclineOnDamage(
+            CommandExecutionContext context,
+            MutableBattleUnitObject target,
+            UnitAttackClientBattleMessage command)
+        {
+            if (target.Buffs == null || target.Buffs.Count == 0)
+                return;
+
+            var buffsToRemove = target.Buffs
+                .Where(b => b.BuffType?.DeclinesWhenTakesDamage == true)
+                .ToList();
+
+            if (buffsToRemove.Count == 0)
+                return;
+
+            foreach (var buff in buffsToRemove)
+            {
+                await context.BuffsService.DeleteById(buff.Id);
+                
+                var buffLostMessage = new UnitLosesBuffCommandFromServer(
+                    command.TurnIndex,
+                    command.Player,
+                    target.Id.ToString())
+                {
+                    BuffId = buff.Id.ToString(),
+                    BuffName = buff.BuffType?.Name ?? "Unknown"
+                };
+                await context.MessageBroadcaster.BroadcastMessageAsync(buffLostMessage);
+            }
+
+            // Update in-memory buffs list
+            var remainingBuffs = target.Buffs.Where(b => b.BuffType?.DeclinesWhenTakesDamage != true).ToList();
+            target.Buffs = remainingBuffs;
         }
 
         private static async Task ApplyAttackBuffsToTarget(

@@ -121,6 +121,7 @@ namespace Epic.Logic.Battle
                 var cumulativeDamage = 0;
                 var cumulativeKilled = 0;
                 var friendlyFirePenalty = 0;
+                var paralyzedWithDeclineBuffPenalty = 0;
 
                 foreach (var targetDamage in allTargets)
                 {
@@ -134,11 +135,24 @@ namespace Epic.Logic.Battle
                         // Enemy unit hit - add to cumulative damage
                         cumulativeDamage += targetDamage.DamageData.DamageTaken;
                         cumulativeKilled += targetDamage.DamageData.KilledCount;
+                        
+                        // Check if this enemy is paralyzed and has buffs that decline when taking damage
+                        // Attacking such targets would break their paralysis - apply penalty
+                        if (targetDamage.DamageData.DamageTaken > 0 && 
+                            targetDamage.Target.Buffs != null &&
+                            targetDamage.Target.Buffs.Any(b => 
+                                b.BuffType?.Paralyzed == true && 
+                                b.BuffType?.DeclinesWhenTakesDamage == true))
+                        {
+                            // Large penalty to deprioritize breaking paralysis
+                            paralyzedWithDeclineBuffPenalty += 10000;
+                        }
                     }
                 }
 
-                // Calculate total value: cumulative damage minus friendly fire penalty
-                var totalValue = cumulativeDamage - friendlyFirePenalty;
+                // Calculate total value: cumulative damage minus penalties
+                // Paralyzed units with DeclinesWhenTakesDamage buffs are deprioritized
+                var totalValue = cumulativeDamage - friendlyFirePenalty - paralyzedWithDeclineBuffPenalty;
                 
                 // Prioritize kills, then total value (damage - friendly fire)
                 if (cumulativeKilled > maxKilled ||
