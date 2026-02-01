@@ -57,6 +57,21 @@ function formatSigned(n: number): string {
     return n >= 0 ? `+${n}` : `${n}`
 }
 
+function getSlotName(slot: ArtifactSlot): string {
+    switch (slot) {
+        case ArtifactSlot.Bag: return "Bag"
+        case ArtifactSlot.Hand: return "Hand"
+        case ArtifactSlot.Body: return "Body"
+        case ArtifactSlot.Head: return "Head"
+        case ArtifactSlot.Cloak: return "Cloak"
+        case ArtifactSlot.Legs: return "Legs"
+        case ArtifactSlot.Neck: return "Neck"
+        case ArtifactSlot.Shield: return "Shield"
+        case ArtifactSlot.Wrist: return "Wrist"
+        default: return "Unknown"
+    }
+}
+
 function artifactHoverText(a: IArtifactInfo): string {
     const lines: string[] = [artifactDisplayName(a)]
     
@@ -64,6 +79,13 @@ function artifactHoverText(a: IArtifactInfo): string {
     if ((a.attackBonus ?? 0) !== 0) statParts.push(`ATK ${formatSigned(a.attackBonus)}`)
     if ((a.defenseBonus ?? 0) !== 0) statParts.push(`DEF ${formatSigned(a.defenseBonus)}`)
     if (statParts.length > 0) lines.push(statParts.join(" | "))
+    
+    // Show slots if artifact takes more than one slot
+    const requiredSlots = (a.slots ?? []).filter(s => s !== ArtifactSlot.None)
+    if (requiredSlots.length > 1) {
+        const slotNames = requiredSlots.map(getSlotName).join(", ")
+        lines.push("Slots: " + slotNames)
+    }
     
     const buffNames = a.buffNames ?? []
     if (buffNames.length > 0) {
