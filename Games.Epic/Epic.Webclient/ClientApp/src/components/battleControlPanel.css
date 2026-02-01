@@ -65,6 +65,11 @@
     font-weight: 600;
 }
 
+.log-highlight-green {
+    color: #69db7c;
+    font-weight: 600;
+}
+
 .control-button {
     padding: 12px 24px;
     font-size: 16px;

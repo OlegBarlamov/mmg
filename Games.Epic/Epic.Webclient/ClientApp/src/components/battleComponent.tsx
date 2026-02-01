@@ -196,6 +196,14 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     const unitLabel = this.getUnitLabel(message.actorId)
                     return `${unitLabel}'s "${message.buffName}" expired.`
                 }
+            case 'UNIT_HEALS':
+                {
+                    const unitLabel = this.getUnitLabel(message.actorId)
+                    const resurrectedPart = message.resurrectedCount > 0 
+                        ? ` and resurrected ${message.resurrectedCount}` 
+                        : ""
+                    return `${unitLabel} healed ${message.healedAmount} HP${resurrectedPart}.`
+                }
             default:
                 return `Something happened.`
         }

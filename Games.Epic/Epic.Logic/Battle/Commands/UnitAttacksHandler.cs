@@ -165,6 +165,9 @@ namespace Epic.Logic.Battle.Commands
                 context.BattleObject.Width,
                 context.RandomProvider);
 
+            // Track total damage dealt to enemies for vampire healing
+            var totalEnemyDamage = 0;
+
             // Apply damage to all affected targets
             foreach (var targetDamage in allTargets)
             {
@@ -190,6 +193,12 @@ namespace Epic.Logic.Battle.Commands
                     };
                 await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
                 
+                // Track enemy damage for vampire healing (exclude friendly fire)
+                if (mutableTarget.PlayerIndex != attacker.PlayerIndex)
+                {
+                    totalEnemyDamage += targetDamage.DamageData.DamageTaken;
+                }
+                
                 // Remove buffs that decline when taking damage
                 if (targetDamage.DamageData.DamageTaken > 0)
                 {
@@ -200,6 +209,12 @@ namespace Epic.Logic.Battle.Commands
                 {
                     await ApplyAttackBuffsToTarget(context, mutableTarget, attackType, command);
                 }
+            }
+            
+            // Apply vampire healing to the attacker if they have vampire buffs
+            if (totalEnemyDamage > 0 && attacker.GlobalUnit.IsAlive)
+            {
+                await ApplyVampireHealing(context, attacker, totalEnemyDamage, command);
             }
         }
 
@@ -299,6 +314,93 @@ namespace Epic.Logic.Battle.Commands
                 existingBuffs.AddRange(newBuffs);
                 target.Buffs = existingBuffs;
             }
+        }
+
+        private static async Task ApplyVampireHealing(
+            CommandExecutionContext context,
+            MutableBattleUnitObject attacker,
+            int damageDealt,
+            UnitAttackClientBattleMessage command)
+        {
+            // Calculate total vampire percentage from all buffs
+            var vampirePercentage = 0;
+            var canResurrect = false;
+            
+            if (attacker.Buffs != null)
+            {
+                foreach (var buff in attacker.Buffs)
+                {
+                    if (buff.BuffType != null && buff.BuffType.VampirePercentage > 0)
+                    {
+                        vampirePercentage += buff.BuffType.VampirePercentage;
+                        if (buff.BuffType.VampireCanResurrect)
+                            canResurrect = true;
+                    }
+                }
+            }
+            
+            if (vampirePercentage <= 0)
+                return;
+            
+            // Calculate HP to heal
+            var hpToHeal = damageDealt * vampirePercentage / 100;
+            if (hpToHeal <= 0)
+                return;
+            
+            var unitHealth = attacker.GlobalUnit.UnitType.Health;
+            var initialCount = attacker.InitialCount;
+            var currentCount = attacker.CurrentCount;
+            var currentHealth = attacker.CurrentHealth;
+            
+            // Calculate new health values
+            var totalCurrentHp = (currentCount - 1) * unitHealth + currentHealth;
+            var totalNewHp = totalCurrentHp + hpToHeal;
+            
+            // Cap at initial army size if resurrection is not allowed
+            var maxTotalHp = canResurrect 
+                ? initialCount * unitHealth 
+                : currentCount * unitHealth;
+            
+            if (totalNewHp > maxTotalHp)
+                totalNewHp = maxTotalHp;
+            
+            // Calculate new count and health
+            var newCount = (totalNewHp + unitHealth - 1) / unitHealth; // Ceiling division
+            var newHealth = totalNewHp - (newCount - 1) * unitHealth;
+            
+            // Ensure we don't exceed initial count
+            if (newCount > initialCount)
+            {
+                newCount = initialCount;
+                newHealth = unitHealth;
+            }
+            
+            var actualHealedAmount = totalNewHp - totalCurrentHp;
+            var resurrectedCount = newCount - currentCount;
+            
+            if (actualHealedAmount <= 0)
+                return;
+            
+            // Update the attacker's state
+            attacker.CurrentCount = newCount;
+            attacker.CurrentHealth = newHealth;
+            attacker.GlobalUnit.Count = newCount;
+            
+            await context.GlobalUnitsService.UpdateUnits(new[] { attacker.GlobalUnit });
+            await context.BattleUnitsService.UpdateUnits(new[] { attacker });
+            
+            // Broadcast healing message
+            var healMessage = new UnitHealsCommandFromServer(
+                command.TurnIndex,
+                command.Player,
+                attacker.Id.ToString())
+            {
+                HealedAmount = actualHealedAmount,
+                ResurrectedCount = resurrectedCount,
+                NewCount = newCount,
+                NewHealth = newHealth
+            };
+            await context.MessageBroadcaster.BroadcastMessageAsync(healMessage);
         }
 
         private static AttackFunctionStateEntity FindAttackFunctionForCounterattack(IBattleUnitObject unit, int range, IReadOnlyCollection<IBattleUnitObject> battleUnits)

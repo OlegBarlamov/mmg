@@ -31,15 +31,14 @@ interface IBattleControlPanelState {
 
 // Helper function to render log lines with colored highlights
 function renderLogLine(line: string): React.ReactNode {
-    // Pattern to match damage-related text:
-    // - "took X damage" - highlight "X damage"
-    // - "lost X" (killed count) - highlight "lost X"
-    // - "destroyed" - highlight it
+    // Pattern to match damage and healing-related text:
+    // Red: "took X damage", "lost X", "destroyed"
+    // Green: "healed X HP", "resurrected X"
     const parts: React.ReactNode[] = []
     let lastIndex = 0
     
     // Combined regex to find all highlights
-    const pattern = /(\d+)\s+(damage)|lost\s+(\d+)|destroyed/gi
+    const pattern = /(\d+)\s+(damage)|lost\s+(\d+)|destroyed|healed\s+(\d+)\s+HP|resurrected\s+(\d+)/gi
     let match: RegExpExecArray | null
     
     while ((match = pattern.exec(line)) !== null) {
@@ -49,13 +48,13 @@ function renderLogLine(line: string): React.ReactNode {
         }
         
         const matchedText = match[0]
-        if (matchedText.toLowerCase() === 'destroyed') {
-            parts.push(<span key={match.index} className="log-highlight-red">{matchedText}</span>)
-        } else if (matchedText.toLowerCase().startsWith('lost')) {
-            // "lost X" pattern
-            parts.push(<span key={match.index} className="log-highlight-red">{matchedText}</span>)
-        } else {
-            // "X damage" pattern
+        const lowerText = matchedText.toLowerCase()
+        
+        if (lowerText.startsWith('healed') || lowerText.startsWith('resurrected')) {
+            // Healing/resurrection - green highlight
+            parts.push(<span key={match.index} className="log-highlight-green">{matchedText}</span>)
+        } else if (lowerText === 'destroyed' || lowerText.startsWith('lost') || lowerText.includes('damage')) {
+            // Damage-related - red highlight
             parts.push(<span key={match.index} className="log-highlight-red">{matchedText}</span>)
         }
         

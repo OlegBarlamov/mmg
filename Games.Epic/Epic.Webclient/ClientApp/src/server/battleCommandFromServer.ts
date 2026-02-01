@@ -79,6 +79,14 @@ export interface UnitLosesBuffCommandFromServer extends UnitCommandFromServer {
     buffName: string
 }
 
+export interface UnitHealsCommandFromServer extends UnitCommandFromServer {
+    command: 'UNIT_HEALS'
+    healedAmount: number
+    resurrectedCount: number
+    newCount: number
+    newHealth: number
+}
+
 export type BattleCommandFromServer = 
     UnitMoveCommandFromServer
     | UnitAttackCommandFromServer
@@ -91,3 +99,4 @@ export type BattleCommandFromServer =
     | PlayerRunCommandFromServer
     | UnitReceivesBuffCommandFromServer
     | UnitLosesBuffCommandFromServer
+    | UnitHealsCommandFromServer

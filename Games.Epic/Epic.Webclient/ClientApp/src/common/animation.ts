@@ -160,6 +160,39 @@ export class Animation {
         });
     }
 
+    static async animateHeal(
+        container: PIXI.Container,
+        options: Partial<AnimationOptions> = {}
+    ): Promise<void> {
+        const opts = { ...this.defaultOptions, ...options };
+        const originalScale = container.scale.x;
+        
+        const startTime = Date.now();
+        
+        return new Promise((resolve) => {
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / opts.duration, 1);
+                
+                // Create a "grow" effect - scale up slightly then back down
+                const growIntensity = Math.sin(progress * Math.PI); // Smooth grow and shrink
+                const scale = originalScale + (growIntensity * 0.15);
+                
+                container.scale.set(scale);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Restore original scale
+                    container.scale.set(originalScale);
+                    resolve();
+                }
+            };
+            
+            animate();
+        });
+    }
+
     private static applyEasing(progress: number, easing: string): number {
         switch (easing) {
             case 'linear':

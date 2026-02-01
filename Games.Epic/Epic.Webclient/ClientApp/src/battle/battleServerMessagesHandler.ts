@@ -234,6 +234,13 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
+        } else if (message.command === 'UNIT_HEALS') {
+            const unit = getUnitById(this.mapController.map, message.actorId)
+            if (unit) {
+                return enqueue(() => this.mapController.unitHeals(unit, message.healedAmount, message.resurrectedCount, message.newCount, message.newHealth))
+            } else {
+                throw Error("Target unit from server not found: " + message.actorId)
+            }
         }
 
         throw Error("Unknown or invalid command from server")

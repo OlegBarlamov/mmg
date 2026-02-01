@@ -22,6 +22,7 @@ export interface IBattleMapController {
     getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell
 
     unitTakeDamage(unit: BattleMapUnit, damageTaken: number, killedCount: number, remainingCount: number, remainingHealth: number): Promise<void>
+    unitHeals(unit: BattleMapUnit, healedAmount: number, resurrectedCount: number, newCount: number, newHealth: number): Promise<void>
     
     updateUnitBuffIcons(unit: BattleMapUnit): Promise<void>
 
@@ -146,6 +147,23 @@ export class BattleMapController implements IBattleMapController {
                 text: target.count.toString()
             })
         }
+    }
+
+    async unitHeals(unit: BattleMapUnit, healedAmount: number, resurrectedCount: number, newCount: number, newHealth: number): Promise<void> {
+        unit.currentProps.health = newHealth
+        unit.count = newCount
+
+        const unitTile = this.getUnitTile(unit)
+        
+        // Animate heal effect
+        await this.canvasService.animateUnitHeal(unitTile, {
+            duration: 300
+        })
+
+        await this.canvasService.changeUnit(unitTile, {
+            ...unitTile,
+            text: unit.count.toString()
+        })
     }
 
     removeUnit(unit: BattleMapUnit): Promise<void> {

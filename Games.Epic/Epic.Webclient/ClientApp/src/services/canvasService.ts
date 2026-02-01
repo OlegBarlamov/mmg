@@ -28,6 +28,7 @@ export interface ICanvasService {
     changeUnitAnimated(unit: IUnitTile, newProps: IUnitTileProps, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<IUnitTile>
     animateUnitAttack(attacker: IUnitTile, target: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut'; attackDistance: number; returnDuration: number }>): Promise<void>
     animateUnitDamage(unit: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<void>
+    animateUnitHeal(unit: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<void>
     animateUnitWait(unit: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<void>
     updateUnitBuffIcons(unit: IUnitTile, buffs: BuffIconInfo[]): Promise<void>
     destroyUnit(unit: IUnitTile): void
@@ -185,6 +186,16 @@ export class CanvasService implements ICanvasService {
         if (!pixiUnit) throw new Error("The input unit is not PIXI based")
         
         await Animation.animateDamage(pixiUnit.container, animationOptions)
+    }
+
+    async animateUnitHeal(
+        unit: IUnitTile,
+        animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>
+    ): Promise<void> {
+        const pixiUnit = unit as PixiUnitTile
+        if (!pixiUnit) throw new Error("The input unit is not PIXI based")
+        
+        await Animation.animateHeal(pixiUnit.container, animationOptions)
     }
 
     async animateUnitWait(
