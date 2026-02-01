@@ -183,6 +183,19 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         : `Battle finished. You lost.`
                 }
                 return `Battle finished.`
+            case 'RECEIVE_BUFF':
+                {
+                    const unitLabel = this.getUnitLabel(message.actorId)
+                    const durationText = message.permanent 
+                        ? '' 
+                        : ` (${message.durationRemaining})`
+                    return `${unitLabel} received "${message.buffName}"${durationText}.`
+                }
+            case 'LOSE_BUFF':
+                {
+                    const unitLabel = this.getUnitLabel(message.actorId)
+                    return `${unitLabel}'s "${message.buffName}" expired.`
+                }
             default:
                 return `Something happened.`
         }

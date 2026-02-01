@@ -129,7 +129,19 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 nextTurnUnitId: message.nextTurnUnitId,
                 roundNumber: message.roundNumber,
             }
-            return enqueue(() => this.onNextTurnInfo(turnInfo))
+            return enqueue(() => {
+                // Decrement buff durations for the active unit (server already processed this)
+                // Buffs are removed via LOSE_BUFF message when durationRemaining goes below 0
+                const activeUnit = getUnitById(this.mapController.map, message.nextTurnUnitId)
+                if (activeUnit?.currentProps.buffs) {
+                    for (const buff of activeUnit.currentProps.buffs) {
+                        if (!buff.permanent) {
+                            buff.durationRemaining--
+                        }
+                    }
+                }
+                this.onNextTurnInfo(turnInfo)
+            })
         } else if (message.command === 'UNIT_ATTACK') {
             if (!message.isCounterattack) {
                 this.cancelCurrentUserActionPending(message)
@@ -181,6 +193,39 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             this.cancelCurrentUserActionPending(message)
             this.mapController.map.players.find(player => player.playerNumber === message.player)!.runClaimed = true
             return enqueue(() => undefined)
+        } else if (message.command === 'RECEIVE_BUFF') {
+            const unit = getUnitById(this.mapController.map, message.actorId)
+            if (unit) {
+                return enqueue(() => {
+                    // Add the buff to the unit's buffs list
+                    if (!unit.currentProps.buffs) {
+                        unit.currentProps.buffs = []
+                    }
+                    unit.currentProps.buffs.push({
+                        id: message.buffId,
+                        name: message.buffName,
+                        permanent: message.permanent,
+                        durationRemaining: message.durationRemaining
+                    })
+                })
+            } else {
+                throw Error("Target unit from server not found: " + message.actorId)
+            }
+        } else if (message.command === 'LOSE_BUFF') {
+            const unit = getUnitById(this.mapController.map, message.actorId)
+            if (unit) {
+                return enqueue(() => {
+                    // Remove the buff from the unit's buffs list
+                    if (unit.currentProps.buffs) {
+                        const buffIndex = unit.currentProps.buffs.findIndex(b => b.id === message.buffId)
+                        if (buffIndex >= 0) {
+                            unit.currentProps.buffs.splice(buffIndex, 1)
+                        }
+                    }
+                })
+            } else {
+                throw Error("Target unit from server not found: " + message.actorId)
+            }
         }
 
         throw Error("Unknown or invalid command from server")

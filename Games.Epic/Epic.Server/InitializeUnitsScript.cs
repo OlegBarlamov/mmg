@@ -57,13 +57,25 @@ namespace Epic.Server
             {
                 x.Value.Key = x.Key;
                 
-                // Resolve BuffTypes string keys to GUIDs
+                // Resolve BuffTypes string keys to GUIDs for unit-level buffs
                 if (x.Value.BuffTypes != null && x.Value.BuffTypes.Length > 0)
                 {
                     x.Value.BuffTypeIds = x.Value.BuffTypes
                         .Where(key => !string.IsNullOrWhiteSpace(key))
                         .Select(key => BuffTypesRegistry.ByKey(key).Id)
                         .ToList();
+                }
+                
+                // Resolve ApplyBuffTypes string keys to GUIDs for each attack
+                foreach (var attack in x.Value.Attacks)
+                {
+                    if (attack.ApplyBuffTypes != null && attack.ApplyBuffTypes.Count > 0)
+                    {
+                        attack.ApplyBuffTypeIds = attack.ApplyBuffTypes
+                            .Where(key => !string.IsNullOrWhiteSpace(key))
+                            .Select(key => BuffTypesRegistry.ByKey(key).Id)
+                            .ToList();
+                    }
                 }
                 
                 return x.Value;

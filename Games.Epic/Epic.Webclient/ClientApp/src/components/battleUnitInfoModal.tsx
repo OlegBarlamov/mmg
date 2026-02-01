@@ -106,9 +106,8 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                                 <div className="buffs-list">
                                     {(unit.currentProps.buffs ?? []).map((buff, index) => (
                                         <div key={index} className="buff-item">
-                                            <span className="buff-name">{buff.name}</span>
-                                            <span className="buff-meta">
-                                                {buff.permanent ? "Permanent" : `Turns left: ${buff.durationRemaining}`}
+                                            <span className="buff-name">
+                                                {buff.name}{!buff.permanent && ` (${buff.durationRemaining}) remaining`}
                                             </span>
                                         </div>
                                     ))}
@@ -213,6 +212,19 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                                                     )}
                                                 </span>
                                             </div>
+                                            {attack.applyBuffs && attack.applyBuffs.length > 0 && (
+                                                <div className="attack-stat">
+                                                    <span className="stat-label">Applies:</span>
+                                                    <span className="stat-value">
+                                                        {attack.applyBuffs.map((buff, i) => (
+                                                            <span key={i}>
+                                                                {buff.name}{!buff.permanent && ` (${buff.duration})`}
+                                                                {i < attack.applyBuffs!.length - 1 && ', '}
+                                                            </span>
+                                                        ))}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )

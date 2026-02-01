@@ -642,6 +642,8 @@ Units:
       - <<: *MeleeAttack
         MinDamage: 18
         MaxDamage: 22
+        ApplyBuffTypes: 
+          - Blind
     ResourcesDistribution:
       Gold: 4
       Gems: 1

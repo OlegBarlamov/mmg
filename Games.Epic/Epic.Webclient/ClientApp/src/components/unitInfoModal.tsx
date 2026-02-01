@@ -162,6 +162,19 @@ export class UnitInfoModal extends PureComponent<IUnitInfoModalProps, IUnitInfoM
                                             <span className="stat-label">Enemy in Range Disables:</span>
                                             <span className="stat-value">{attack.enemyInRangeDisablesAttack ? 'Yes' : 'No'}</span>
                                         </div>
+                                        {attack.applyBuffs && attack.applyBuffs.length > 0 && (
+                                            <div className="attack-stat">
+                                                <span className="stat-label">Applies:</span>
+                                                <span className="stat-value">
+                                                    {attack.applyBuffs.map((buff: any, i: number) => (
+                                                        <span key={i}>
+                                                            {buff.name}{!buff.permanent && ` (${buff.duration})`}
+                                                            {i < attack.applyBuffs!.length - 1 && ', '}
+                                                        </span>
+                                                    ))}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}

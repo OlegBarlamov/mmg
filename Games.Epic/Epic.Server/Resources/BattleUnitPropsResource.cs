@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Buffs;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.Battles;
 using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes;
@@ -8,7 +9,7 @@ using Epic.Data.UnitTypes.Subtypes;
 
 namespace Epic.Server.Resources
 {
-    public class BattleUnitPropsResource : IUnitProps
+    public class BattleUnitPropsResource
     {
         public string BattleImgUrl { get; }
         public int Speed { get; }
@@ -17,19 +18,21 @@ namespace Epic.Server.Resources
         public int Defense { get; set; }
         public MovementType Movement { get; set; }
         public string MovementType { get; set; }
-        public IReadOnlyList<IAttackFunctionType> Attacks { get; }
+        public IReadOnlyList<AttackTypeResource> Attacks { get; }
         public IReadOnlyList<AttackFunctionStateEntity> AttacksStates { get; }
         public bool Waited { get; }
         
         public IReadOnlyList<BattleUnitBuffResource> Buffs { get; }
 
-        public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps)
+        public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps, IBuffTypesRegistry buffTypesRegistry)
         {
             BattleImgUrl = battleUnitObject.GlobalUnit.UnitType.BattleImgUrl;
             Speed = battleUnitObject.GlobalUnit.UnitType.Speed;
             Waited = battleUnitObject.Waited;
             Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.MaxHealth;
-            Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks;
+            Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks
+                .Select(a => new AttackTypeResource(a, buffTypesRegistry))
+                .ToList();
             Attack = currentProps ? battleUnitObject.CurrentAttack : battleUnitObject.GlobalUnit.UnitType.Attack;
             Defense = currentProps ? battleUnitObject.CurrentDefense : battleUnitObject.GlobalUnit.UnitType.Defense;
             Movement = battleUnitObject.GlobalUnit.UnitType.Movement;

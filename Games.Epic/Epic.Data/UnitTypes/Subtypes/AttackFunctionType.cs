@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Epic.Data.UnitTypes.Subtypes
 {
     public interface IAttackFunctionType
@@ -23,6 +26,8 @@ namespace Epic.Data.UnitTypes.Subtypes
         bool MovesBackAfterAttack { get; }
         int PierceThrough { get; }
         int Splash { get; }
+        
+        IReadOnlyList<Guid> ApplyBuffTypeIds { get; }
     } 
     
     public class AttackFunctionType : IAttackFunctionType
@@ -45,10 +50,41 @@ namespace Epic.Data.UnitTypes.Subtypes
         public bool MovesBackAfterAttack { get; set; }
         public int PierceThrough { get; set; } = 0;
         public int Splash { get; set; } = 0;
+        
+        public List<Guid> ApplyBuffTypeIds { get; set; } = new List<Guid>();
+        
+        IReadOnlyList<Guid> IAttackFunctionType.ApplyBuffTypeIds => ApplyBuffTypeIds;
+
+        public List<string> ApplyBuffTypes { get; set; } = new List<string>();
 
         public AttackFunctionType()
         {
             
+        }
+        
+        public void CopyFrom(IAttackFunctionType source)
+        {
+            Name = source.Name;
+            ThumbnailUrl = source.ThumbnailUrl;
+            AttackMaxRange = source.AttackMaxRange;
+            AttackMinRange = source.AttackMinRange;
+            StayOnly = source.StayOnly;
+            CounterattacksCount = source.CounterattacksCount;
+            CounterattacksPenaltyPercentage = source.CounterattacksPenaltyPercentage;
+            BulletsCount = source.BulletsCount;
+            CanTargetCounterattack = source.CanTargetCounterattack;
+            RangePenalty = source.RangePenalty;
+            RangePenaltyZonesCount = source.RangePenaltyZonesCount;
+            EnemyInRangeDisablesAttack = source.EnemyInRangeDisablesAttack;
+            MinDamage = source.MinDamage;
+            MaxDamage = source.MaxDamage;
+            AttacksCount = source.AttacksCount;
+            MovesBackAfterAttack = source.MovesBackAfterAttack;
+            PierceThrough = source.PierceThrough;
+            Splash = source.Splash;
+            ApplyBuffTypeIds = source.ApplyBuffTypeIds != null 
+                ? new List<Guid>(source.ApplyBuffTypeIds) 
+                : new List<Guid>();
         }
     }
 }

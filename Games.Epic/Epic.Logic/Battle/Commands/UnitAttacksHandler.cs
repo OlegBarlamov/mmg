@@ -6,6 +6,7 @@ using Epic.Core.ClientMessages;
 using Epic.Core.Logic.Erros;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.Buffs;
 using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes.Subtypes;
 using Epic.Logic.Battle.Formulas;
@@ -180,6 +181,57 @@ namespace Epic.Logic.Battle.Commands
                         RemainingHealth = targetDamage.DamageData.RemainingHealth,
                     };
                 await context.MessageBroadcaster.BroadcastMessageAsync(serverUnitTakesDamage);
+                
+                if (mutableTarget.GlobalUnit.IsAlive)
+                {
+                    await ApplyAttackBuffsToTarget(context, mutableTarget, attackType, command);
+                }
+            }
+        }
+
+        private static async Task ApplyAttackBuffsToTarget(
+            CommandExecutionContext context,
+            MutableBattleUnitObject target,
+            IAttackFunctionType attackType,
+            UnitAttackClientBattleMessage command)
+        {
+            if (attackType.ApplyBuffTypeIds == null || attackType.ApplyBuffTypeIds.Count == 0)
+                return;
+
+            var newBuffs = new List<IBuffObject>();
+            
+            foreach (var buffTypeId in attackType.ApplyBuffTypeIds)
+            {
+                if (buffTypeId == System.Guid.Empty)
+                    continue;
+                    
+                var buffType = await context.BuffTypesService.GetById(buffTypeId);
+                if (buffType == null)
+                    continue;
+                
+                var durationRemaining = buffType.Permanent ? 0 : buffType.Duration;
+                var buff = await context.BuffsService.Create(target.Id, buffType.Id, durationRemaining);
+                newBuffs.Add(buff);
+                
+                var buffAppliedMessage = new UnitReceivesBuffCommandFromServer(
+                    command.TurnIndex, 
+                    command.Player, 
+                    target.Id.ToString())
+                {
+                    BuffId = buff.Id.ToString(),
+                    BuffName = buffType.Name,
+                    Permanent = buffType.Permanent,
+                    DurationRemaining = durationRemaining
+                };
+                await context.MessageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
+            }
+            
+            // Update the in-memory buffs list for subsequent calculations in this battle session
+            if (newBuffs.Count > 0)
+            {
+                var existingBuffs = target.Buffs?.ToList() ?? new List<IBuffObject>();
+                existingBuffs.AddRange(newBuffs);
+                target.Buffs = existingBuffs;
             }
         }
 

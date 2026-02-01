@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Objects;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.BuffTypes;
 using Epic.Data.Heroes;
 
 namespace Epic.Server.Resources
@@ -17,12 +18,12 @@ namespace Epic.Server.Resources
         public IReadOnlyList<PlayerInBattleInfoResource> Players { get; }
         public IReadOnlyList<BattleObstacleResource> Obstacles { get; }
         
-        public BattleResource(IBattleObject battleObject, IReadOnlyDictionary<Guid, IHeroStats> playerHeroStats)
+        public BattleResource(IBattleObject battleObject, IReadOnlyDictionary<Guid, IHeroStats> playerHeroStats, IBuffTypesRegistry buffTypesRegistry)
         {
             Id = battleObject.Id;
             Width = battleObject.Width;
             Height = battleObject.Height;
-            Units = battleObject.Units.Select(x => new BattleUnitResource(x)).ToList();
+            Units = battleObject.Units.Select(x => new BattleUnitResource(x, buffTypesRegistry)).ToList();
             TurnInfo = new TurnInfoResource(battleObject.TurnNumber, battleObject.TurnPlayerIndex, battleObject.RoundNumber);
             Players = battleObject.PlayerInfos
                 .Select(x => 

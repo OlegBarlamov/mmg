@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Epic.Core.Objects;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
@@ -28,17 +29,20 @@ namespace Epic.Server.Controllers
         public IUnitTypesService UnitTypesService { get; }
         public IGameResourcesService GameResourcesService { get; }
         public IPlayersService PlayersService { get; }
+        public IBuffTypesRegistry BuffTypesRegistry { get; }
 
         public RewardsController(
             [NotNull] IRewardsService rewardsService,
             [NotNull] IUnitTypesService unitTypesService,
             [NotNull] IGameResourcesService gameResourcesService,
-            [NotNull] IPlayersService playersService)
+            [NotNull] IPlayersService playersService,
+            [NotNull] IBuffTypesRegistry buffTypesRegistry)
         {
             RewardsService = rewardsService ?? throw new ArgumentNullException(nameof(rewardsService));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
             GameResourcesService = gameResourcesService ?? throw new ArgumentNullException(nameof(gameResourcesService));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
+            BuffTypesRegistry = buffTypesRegistry ?? throw new ArgumentNullException(nameof(buffTypesRegistry));
         }
 
         private async Task<Dictionary<Guid, IHeroStats>> GetPlayerHeroStats(IBattleObject battleObject)
@@ -97,7 +101,7 @@ namespace Epic.Server.Controllers
             
             var battleObject = await RewardsService.BeginRewardGuardBattle(rewardId, playerId);
             var playerHeroStats = await GetPlayerHeroStats(battleObject);
-            return Ok(new BattleResource(battleObject, playerHeroStats));
+            return Ok(new BattleResource(battleObject, playerHeroStats, BuffTypesRegistry));
         }
     }
 }

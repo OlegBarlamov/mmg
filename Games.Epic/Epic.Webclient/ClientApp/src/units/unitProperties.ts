@@ -23,6 +23,12 @@ export type AttackState = {
     counterattacksUsed: number
 }
 
+export type BuffTypeInfo = {
+    name: string
+    permanent: boolean
+    duration: number
+}
+
 export type AttackType = {
     name: string
     thumbnailUrl: string
@@ -38,9 +44,11 @@ export type AttackType = {
     enemyInRangeDisablesAttack: number
     pierceThrough: number
     splash: number
+    applyBuffs?: BuffTypeInfo[]
 }
 
 export type UnitBuff = {
+    id: string
     name: string
     permanent: boolean
     durationRemaining: number

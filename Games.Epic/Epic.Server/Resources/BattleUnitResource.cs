@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core;
 using Epic.Core.Services.Buffs;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.Battles;
 
 namespace Epic.Server.Resources
@@ -26,7 +27,7 @@ namespace Epic.Server.Resources
 
         public IReadOnlyList<BattleUnitBuffResource> Buffs { get; }
         
-        public BattleUnitResource(IBattleUnitObject battleUnitObject)
+        public BattleUnitResource(IBattleUnitObject battleUnitObject, IBuffTypesRegistry buffTypesRegistry)
         {
             Id = battleUnitObject.Id;
             Name = battleUnitObject.GlobalUnit.UnitType.Name;
@@ -38,8 +39,8 @@ namespace Epic.Server.Resources
             Player = ((InBattlePlayerNumber)battleUnitObject.PlayerIndex).ToString();
             Count = battleUnitObject.GlobalUnit.Count;
             IsAlive = battleUnitObject.GlobalUnit.IsAlive;
-            Props = new BattleUnitPropsResource(battleUnitObject, false);
-            CurrentProps = new BattleUnitPropsResource(battleUnitObject, true);
+            Props = new BattleUnitPropsResource(battleUnitObject, false, buffTypesRegistry);
+            CurrentProps = new BattleUnitPropsResource(battleUnitObject, true, buffTypesRegistry);
             Buffs = (battleUnitObject.Buffs ?? Array.Empty<IBuffObject>())
                 .Select(x => new BattleUnitBuffResource(x))
                 .ToList();

@@ -1,4 +1,3 @@
-
 Buffs:
   HealthPlusOne:
     Key: HealthPlusOne
@@ -25,3 +24,8 @@ Buffs:
     HealthBonusPercentage: 25
     Permanent: true
     Duration: 0
+  Blind:
+    Key: Blind
+    Name: "Blind"
+    Duration: 3
+    Paralyzed: true

@@ -1,6 +1,8 @@
 using System;
 using Epic.Core.Logic;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.Buffs;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.Players;
@@ -27,6 +29,8 @@ namespace Epic.Logic.Battle
         public IRandomService RandomProvider { get; }
         public IHeroesService HeroesService { get; }
         public IGameResourcesRepository ResourcesRepository { get; }
+        public IBuffsService BuffsService { get; }
+        public IBuffTypesService BuffTypesService { get; }
 
         public BattleLogicFactory(
             [NotNull] IBattleUnitsService battleUnitsService,
@@ -38,7 +42,9 @@ namespace Epic.Logic.Battle
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IRandomService randomProvider,
             [NotNull] IHeroesService heroesService,
-            [NotNull] IGameResourcesRepository resourcesRepository)
+            [NotNull] IGameResourcesRepository resourcesRepository,
+            [NotNull] IBuffsService buffsService,
+            [NotNull] IBuffTypesService buffTypesService)
         {
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
@@ -50,6 +56,8 @@ namespace Epic.Logic.Battle
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
             ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
+            BuffsService = buffsService ?? throw new ArgumentNullException(nameof(buffsService));
+            BuffTypesService = buffTypesService ?? throw new ArgumentNullException(nameof(buffTypesService));
         }
         
         public IBattleLogic Create(MutableBattleObject battleObject, IBattleMessageBroadcaster broadcaster)
@@ -65,7 +73,9 @@ namespace Epic.Logic.Battle
                 LoggerFactory.CreateLogger<BattleLogic>(),
                 RandomProvider,
                 HeroesService,
-                ResourcesRepository);
+                ResourcesRepository,
+                BuffsService,
+                BuffTypesService);
         }
     }
 }

@@ -63,6 +63,20 @@ export interface PlayerRunCommandFromServer extends PlayerCommandFromServer {
     command: 'PLAYER_RUN'
 }
 
+export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer {
+    command: 'RECEIVE_BUFF'
+    buffId: string
+    buffName: string
+    permanent: boolean
+    durationRemaining: number
+}
+
+export interface UnitLosesBuffCommandFromServer extends UnitCommandFromServer {
+    command: 'LOSE_BUFF'
+    buffId: string
+    buffName: string
+}
+
 export type BattleCommandFromServer = 
     UnitMoveCommandFromServer
     | UnitAttackCommandFromServer
@@ -73,3 +87,5 @@ export type BattleCommandFromServer =
     | BattleFinishedCommandFromServer
     | PlayerRansomCommandFromServer
     | PlayerRunCommandFromServer
+    | UnitReceivesBuffCommandFromServer
+    | UnitLosesBuffCommandFromServer

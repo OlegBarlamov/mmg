@@ -119,21 +119,26 @@ namespace Epic.Server
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
 
             // Give some artifacts to the first player's hero for testing.
-            //await GiveTestArtifacts(hero.Id);
-            
-            // var archangelUnitType = await UnitTypesRepository.GetByName("Archangel");
+            await GiveTestArtifacts(hero.Id);
             
             // Generate random presets for both heroes
             var preset1 = await GenerateRandomPreset(targetScore);
             var preset2 = await GenerateRandomPreset(targetScore);
             
-            // await GlobalUnitsRepository.Create(archangelUnitType.Id, 5, hero.ArmyContainerId, true, 0);
-            
             int slot = 0;
-            foreach (var (unitType, count) in preset1)
+            var debugArmy = true;
+            if (debugArmy)
             {
-                await GlobalUnitsRepository.Create(unitType.Id, count, hero.ArmyContainerId, true, slot);
-                slot++;
+                await GiveUnitByKey(hero.ArmyContainerId, 0, 1, "Unicorn");
+            }
+            else
+            {
+                slot = 0;
+                foreach (var (unitType, count) in preset1)
+                {
+                    await GlobalUnitsRepository.Create(unitType.Id, count, hero.ArmyContainerId, true, slot);
+                    slot++;
+                }
             }
             
             slot = 0;
@@ -158,6 +163,12 @@ namespace Epic.Server
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
             await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+        }
+
+        private async Task GiveUnitByKey(Guid armyContainerId, int slot, int count, string unitKey)
+        {
+            var unitType = await UnitTypesRepository.GetByName(unitKey);
+            await GlobalUnitsRepository.Create(unitType.Id, count, armyContainerId, true, slot);
         }
 
         private async Task GiveTestArtifacts(Guid heroId)

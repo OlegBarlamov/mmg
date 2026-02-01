@@ -9,6 +9,8 @@ using Epic.Core.Logic;
 using Epic.Core.Logic.Erros;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
+using Epic.Core.Services.Buffs;
+using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Heroes;
@@ -38,6 +40,8 @@ namespace Epic.Logic.Battle
         private IRandomService RandomProvider { get; }
         private IHeroesService HeroesService { get; }
         public IGameResourcesRepository ResourcesRepository { get; }
+        private IBuffsService BuffsService { get; }
+        private IBuffTypesService BuffTypesService { get; }
 
         private BattleResultLogic BattleResultLogic { get; }
         private BattleUnitsCarousel BattleUnitsCarousel { get; }
@@ -70,7 +74,9 @@ namespace Epic.Logic.Battle
             [NotNull] ILogger<BattleLogic> logger,
             [NotNull] IRandomService randomProvider,
             [NotNull] IHeroesService heroesService,
-            [NotNull] IGameResourcesRepository resourcesRepository)
+            [NotNull] IGameResourcesRepository resourcesRepository,
+            [NotNull] IBuffsService buffsService,
+            [NotNull] IBuffTypesService buffTypesService)
         {
             BattleObject = battleObject ?? throw new ArgumentNullException(nameof(battleObject));
             BattleUnitsService = battleUnitsService ?? throw new ArgumentNullException(nameof(battleUnitsService));
@@ -84,6 +90,8 @@ namespace Epic.Logic.Battle
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
             ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
+            BuffsService = buffsService ?? throw new ArgumentNullException(nameof(buffsService));
+            BuffTypesService = buffTypesService ?? throw new ArgumentNullException(nameof(buffTypesService));
 
 
             ClientConnectedHandler = new ClientConnectedHandler(Broadcaster);
@@ -139,6 +147,9 @@ namespace Epic.Logic.Battle
                         await BattlesService.UpdateBattle(BattleObject);
                     }
                     
+                    // Process buff expiration before the unit takes its turn
+                    await ProcessActiveUnitBuffs(BattleUnitsCarousel.ActiveUnit);
+                    
                     await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(
                         new NextTurnCommandFromServer(
                             BattleObject.TurnNumber,
@@ -148,7 +159,15 @@ namespace Epic.Logic.Battle
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (IsHumanControlled(BattleUnitsCarousel.ActiveUnit, out var runClaimed))
+                    // Check if unit is paralyzed - auto-pass if so
+                    if (IsUnitParalyzed(BattleUnitsCarousel.ActiveUnit))
+                    {
+                        Logger.LogInformation(
+                            $"Unit is paralyzed, auto-pass: {BattleUnitsCarousel.ActiveUnit.Id} - Turn {BattleObject.TurnNumber}");
+                        TurnAwaiter.WaitForAiTurn(BattleUnitsCarousel.ActiveUnit.PlayerIndex, BattleObject.TurnNumber);
+                        await AI.ProcessAutoSkip(BattleUnitsCarousel.ActiveUnit);
+                    }
+                    else if (IsHumanControlled(BattleUnitsCarousel.ActiveUnit, out var runClaimed))
                     {
                         if (runClaimed)
                         {
@@ -208,6 +227,17 @@ namespace Epic.Logic.Battle
             return playerInfo != null;
         }
 
+        /// <summary>
+        /// Checks if the unit has any buff with Paralyzed effect.
+        /// </summary>
+        private static bool IsUnitParalyzed(IBattleUnitObject unit)
+        {
+            if (unit?.Buffs == null || unit.Buffs.Count == 0)
+                return false;
+
+            return unit.Buffs.Any(buff => buff.BuffType?.Paralyzed == true);
+        }
+
         private async Task UpdateRunPlayers()
         {
             var runPlayers = BattleObject.PlayerInfos.Where(x => x.RunClaimed);
@@ -236,7 +266,9 @@ namespace Epic.Logic.Battle
                 RandomProvider,
                 connection,
                 BattlesService,
-                ResourcesRepository);
+                ResourcesRepository,
+                BuffsService,
+                BuffTypesService);
             
             await handler.Validate(context, command);
             
@@ -246,6 +278,75 @@ namespace Epic.Logic.Battle
             
             if (result.TurnFinished)
                 TurnAwaiter.TurnProcessed(command.Command);
+        }
+
+        /// <summary>
+        /// Processes buff expiration for the active unit before its turn.
+        /// Decrements duration for non-permanent buffs and removes expired ones.
+        /// </summary>
+        private async Task ProcessActiveUnitBuffs(IBattleUnitObject activeUnit)
+        {
+            if (activeUnit?.Buffs == null || activeUnit.Buffs.Count == 0)
+                return;
+
+            var buffsToUpdate = new List<IBuffObject>();
+            var buffsToRemove = new List<IBuffObject>();
+            var remainingBuffs = new List<IBuffObject>();
+
+            foreach (var buff in activeUnit.Buffs)
+            {
+                // Permanent buffs (DurationRemaining = 0 and Permanent = true) never expire
+                if (buff.BuffType?.Permanent == true)
+                {
+                    remainingBuffs.Add(buff);
+                    continue;
+                }
+
+                // Non-permanent buffs: decrement duration first
+                if (buff is MutableBuffObject mutableBuff)
+                {
+                    mutableBuff.DurationRemaining--;
+                    
+                    // Remove buff only when duration goes below 0
+                    if (mutableBuff.DurationRemaining < 0)
+                    {
+                        buffsToRemove.Add(buff);
+                    }
+                    else
+                    {
+                        buffsToUpdate.Add(buff);
+                        remainingBuffs.Add(buff);
+                    }
+                }
+            }
+
+            // Update buffs with decremented duration
+            if (buffsToUpdate.Count > 0)
+            {
+                await BuffsService.UpdateBatch(buffsToUpdate.ToArray());
+            }
+
+            // Remove expired buffs and notify clients
+            foreach (var expiredBuff in buffsToRemove)
+            {
+                await BuffsService.DeleteById(expiredBuff.Id);
+                
+                var buffExpiredMessage = new UnitLosesBuffCommandFromServer(
+                    BattleObject.TurnNumber,
+                    activeUnit.PlayerIndex.ToInBattlePlayerNumber(),
+                    activeUnit.Id.ToString())
+                {
+                    BuffId = expiredBuff.Id.ToString(),
+                    BuffName = expiredBuff.BuffType?.Name ?? "Unknown"
+                };
+                await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(buffExpiredMessage);
+            }
+
+            // Update the unit's in-memory buffs list
+            if (buffsToRemove.Count > 0 && activeUnit is MutableBattleUnitObject mutableUnit)
+            {
+                mutableUnit.Buffs = remainingBuffs;
+            }
         }
     }
 }
