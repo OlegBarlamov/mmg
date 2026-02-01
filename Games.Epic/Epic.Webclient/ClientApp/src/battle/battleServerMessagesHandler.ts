@@ -196,7 +196,8 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
         } else if (message.command === 'RECEIVE_BUFF') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                return enqueue(() => {
+                this.cancelCurrentUserActionPending(message)
+                return enqueue(async () => {
                     // Add the buff to the unit's buffs list
                     if (!unit.currentProps.buffs) {
                         unit.currentProps.buffs = []
@@ -204,9 +205,12 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                     unit.currentProps.buffs.push({
                         id: message.buffId,
                         name: message.buffName,
+                        thumbnailUrl: message.thumbnailUrl,
                         permanent: message.permanent,
                         durationRemaining: message.durationRemaining
                     })
+                    // Update buff icons on the battlefield
+                    await this.mapController.updateUnitBuffIcons(unit)
                 })
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
@@ -214,14 +218,17 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
         } else if (message.command === 'LOSE_BUFF') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                return enqueue(() => {
+                return enqueue(async () => {
                     // Remove the buff from the unit's buffs list
-                    if (unit.currentProps.buffs) {
-                        const buffIndex = unit.currentProps.buffs.findIndex(b => b.id === message.buffId)
+                    if (unit.currentProps.buffs && message.buffId) {
+                        const buffIdLower = message.buffId.toLowerCase()
+                        const buffIndex = unit.currentProps.buffs.findIndex(b => b.id?.toLowerCase() === buffIdLower)
                         if (buffIndex >= 0) {
                             unit.currentProps.buffs.splice(buffIndex, 1)
                         }
                     }
+                    // Update buff icons on the battlefield
+                    await this.mapController.updateUnitBuffIcons(unit)
                 })
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)

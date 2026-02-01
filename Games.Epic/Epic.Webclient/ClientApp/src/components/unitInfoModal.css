@@ -299,6 +299,29 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
 
+/* Attack buffs (in attack stat rows) */
+.attack-buffs-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.attack-buff-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.buff-thumbnail-small {
+    width: 16px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: 1px solid #2ecc71;
+    vertical-align: middle;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
     .unit-info-modal {

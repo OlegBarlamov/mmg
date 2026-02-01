@@ -22,6 +22,8 @@ export interface IBattleMapController {
     getClosestCellToPoint(cells: BattleMapCell[], canvasPoint: Point): BattleMapCell
 
     unitTakeDamage(unit: BattleMapUnit, damageTaken: number, killedCount: number, remainingCount: number, remainingHealth: number): Promise<void>
+    
+    updateUnitBuffIcons(unit: BattleMapUnit): Promise<void>
 
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
@@ -203,6 +205,16 @@ export class BattleMapController implements IBattleMapController {
         return tileUnit
     }
 
+    async updateUnitBuffIcons(unit: BattleMapUnit): Promise<void> {
+        const unitTile = this.getUnitTile(unit)
+        
+        // Get buffs that have thumbnail URLs
+        const buffsWithIcons = (unit.currentProps.buffs ?? [])
+            .filter(b => b.thumbnailUrl)
+            .map(b => ({ id: b.id, thumbnailUrl: b.thumbnailUrl! }))
+        
+        await this.canvasService.updateUnitBuffIcons(unitTile, buffsWithIcons)
+    }
 
     loadMap(): Promise<void> {
         if (this.hexagons.length !== 0) throw new Error("Cannot regenerate the visuals of already loaded map")
@@ -270,6 +282,14 @@ export class BattleMapController implements IBattleMapController {
             unitTile.onRightClick = (sender, event) => this.onUnitRightMouseClick?.(unit, this.translatePointerEvent(event, this.canvasService))
 
             this.units.push(unitTile)
+            
+            // Load initial buff icons (without animation for existing buffs)
+            const buffsWithIcons = (unit.currentProps.buffs ?? [])
+                .filter(b => b.thumbnailUrl)
+                .map(b => ({ id: b.id, thumbnailUrl: b.thumbnailUrl! }))
+            if (buffsWithIcons.length > 0) {
+                await this.canvasService.updateUnitBuffIcons(unitTile, buffsWithIcons)
+            }
         }
     }
 

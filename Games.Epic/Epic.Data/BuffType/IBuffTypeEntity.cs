@@ -6,6 +6,7 @@ namespace Epic.Data.BuffType
     {
         string Key { get; }
         string Name { get; }
+        string ThumbnailUrl { get; }
         int HealthBonus { get; }
         int AttackBonus { get; }
         int DefenseBonus { get; }
@@ -36,6 +37,7 @@ namespace Epic.Data.BuffType
     {
         public string Key { get; set; }
         public string Name { get; set; }
+        public string ThumbnailUrl { get; set; }
         public int HealthBonus { get; set; }
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
@@ -68,6 +70,7 @@ namespace Epic.Data.BuffType
         {
             Key = fields.Key;
             Name = fields.Name;
+            ThumbnailUrl = fields.ThumbnailUrl;
             HealthBonus = fields.HealthBonus;
             AttackBonus = fields.AttackBonus;
             DefenseBonus = fields.DefenseBonus;

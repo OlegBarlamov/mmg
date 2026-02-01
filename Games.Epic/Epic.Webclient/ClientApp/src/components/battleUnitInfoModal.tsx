@@ -106,8 +106,15 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                                 <div className="buffs-list">
                                     {(unit.currentProps.buffs ?? []).map((buff, index) => (
                                         <div key={index} className="buff-item">
+                                            {buff.thumbnailUrl && (
+                                                <img 
+                                                    src={buff.thumbnailUrl} 
+                                                    alt={buff.name} 
+                                                    className="buff-thumbnail"
+                                                />
+                                            )}
                                             <span className="buff-name">
-                                                {buff.name}{!buff.permanent && ` (${buff.durationRemaining}) remaining`}
+                                                {buff.name}{!buff.permanent && ` (${buff.durationRemaining})`}
                                             </span>
                                         </div>
                                     ))}
@@ -215,9 +222,16 @@ export class BattleUnitInfoModal extends PureComponent<IBattleUnitInfoModalProps
                                             {attack.applyBuffs && attack.applyBuffs.length > 0 && (
                                                 <div className="attack-stat">
                                                     <span className="stat-label">Applies:</span>
-                                                    <span className="stat-value">
+                                                    <span className="stat-value attack-buffs-list">
                                                         {attack.applyBuffs.map((buff, i) => (
-                                                            <span key={i}>
+                                                            <span key={i} className="attack-buff-item">
+                                                                {buff.thumbnailUrl && (
+                                                                    <img 
+                                                                        src={buff.thumbnailUrl} 
+                                                                        alt={buff.name} 
+                                                                        className="buff-thumbnail-small"
+                                                                    />
+                                                                )}
                                                                 {buff.name}{!buff.permanent && ` (${buff.duration})`}
                                                                 {i < attack.applyBuffs!.length - 1 && ', '}
                                                             </span>

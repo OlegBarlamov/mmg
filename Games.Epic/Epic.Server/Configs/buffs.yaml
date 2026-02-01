@@ -28,4 +28,5 @@ Buffs:
     Key: Blind
     Name: "Blind"
     Duration: 3
+    ThumbnailUrl: "/resources/Blind.png"
     Paralyzed: true

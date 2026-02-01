@@ -8,6 +8,7 @@ namespace Epic.Core.Services.BuffTypes
         public Guid Id { get; set; }
         public string Key { get; set; }
         public string Name { get; set; }
+        public string ThumbnailUrl { get; set; }
         public int HealthBonus { get; set; }
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
@@ -35,6 +36,7 @@ namespace Epic.Core.Services.BuffTypes
                 Id = entity.Id,
                 Key = entity.Key,
                 Name = entity.Name,
+                ThumbnailUrl = entity.ThumbnailUrl,
                 HealthBonus = entity.HealthBonus,
                 AttackBonus = entity.AttackBonus,
                 DefenseBonus = entity.DefenseBonus,

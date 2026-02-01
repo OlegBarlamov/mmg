@@ -67,6 +67,7 @@ export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer
     command: 'RECEIVE_BUFF'
     buffId: string
     buffName: string
+    thumbnailUrl?: string
     permanent: boolean
     durationRemaining: number
 }

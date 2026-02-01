@@ -73,7 +73,10 @@ namespace Epic.Logic.Battle.Commands
                 false,
                 _range);
 
-            if (_attackFunction.CanTargetCounterattack && _targetTarget.GlobalUnit.IsAlive)
+            // Paralyzed units cannot counterattack
+            var isTargetParalyzed = _targetTarget.Buffs?.Any(b => b.BuffType?.Paralyzed == true) ?? false;
+            
+            if (_attackFunction.CanTargetCounterattack && _targetTarget.GlobalUnit.IsAlive && !isTargetParalyzed)
             {
                 var attackFunctionForCounterattack = FindAttackFunctionForCounterattack(_targetTarget, _range, context.BattleObject.Units);
                 if (attackFunctionForCounterattack != null)
@@ -220,6 +223,7 @@ namespace Epic.Logic.Battle.Commands
                 {
                     BuffId = buff.Id.ToString(),
                     BuffName = buffType.Name,
+                    ThumbnailUrl = buffType.ThumbnailUrl,
                     Permanent = buffType.Permanent,
                     DurationRemaining = durationRemaining
                 };

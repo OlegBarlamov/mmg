@@ -4,6 +4,11 @@ import {IUnitTile, IUnitTileProps} from "../unitTile";
 import {PixiHexagon} from "./pixiHexagone";
 import * as PIXI from "pixi.js";
 
+export interface BuffIconInfo {
+    id: string
+    thumbnailUrl: string
+}
+
 export class PixiUnitTile implements IUnitTile {
     hexagon: IHexagonProps = undefined!
     
@@ -17,6 +22,10 @@ export class PixiUnitTile implements IUnitTile {
     container: PIXI.Container;
     mask: PIXI.Graphics;
     textSprite: PIXI.Sprite;
+    
+    // Buff icons
+    buffIconsContainer: PIXI.Container;
+    buffIconSprites: Map<string, PIXI.Sprite> = new Map();
     
     model: BattleMapUnit = undefined!
 
@@ -34,13 +43,15 @@ export class PixiUnitTile implements IUnitTile {
         container: PIXI.Container,
         mask: PIXI.Graphics,
         text: PIXI.Text,
-        textSprite: PIXI.Sprite) {
+        textSprite: PIXI.Sprite,
+        buffIconsContainer: PIXI.Container) {
         this.sprite = sprite
         this.container = container
         this.mask = mask
         this.textSprite = textSprite
         this.textGraphics = text
         this.hexagonPixi = hexagon
+        this.buffIconsContainer = buffIconsContainer
 
         hexagon.onMouseMove = (sender, event) => this.onMouseMove(this, event)
         hexagon.onMouseEnters = (sender, event) => this.onMouseEnters(this, event)
@@ -70,6 +81,12 @@ export class PixiUnitTile implements IUnitTile {
         this.textSprite.destroy()
         this.sprite.destroy()
         this.mask.destroy()
+        
+        // Clean up buff icons (container is in global layer)
+        this.buffIconsContainer.parent?.removeChild(this.buffIconsContainer)
+        this.buffIconSprites.forEach(sprite => sprite.destroy())
+        this.buffIconSprites.clear()
+        this.buffIconsContainer.destroy()
         
         this.hexagonPixi.dispose()
 

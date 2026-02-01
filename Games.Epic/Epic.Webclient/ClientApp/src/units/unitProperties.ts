@@ -25,6 +25,7 @@ export type AttackState = {
 
 export type BuffTypeInfo = {
     name: string
+    thumbnailUrl?: string
     permanent: boolean
     duration: number
 }
@@ -50,6 +51,7 @@ export type AttackType = {
 export type UnitBuff = {
     id: string
     name: string
+    thumbnailUrl?: string
     permanent: boolean
     durationRemaining: number
 }

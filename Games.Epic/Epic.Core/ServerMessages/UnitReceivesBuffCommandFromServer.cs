@@ -20,6 +20,11 @@ namespace Epic.Core.ServerMessages
         public string BuffName { get; set; }
         
         /// <summary>
+        /// The thumbnail URL of the buff for display purposes.
+        /// </summary>
+        public string ThumbnailUrl { get; set; }
+        
+        /// <summary>
         /// Whether this buff is permanent (never expires).
         /// </summary>
         public bool Permanent { get; set; }
