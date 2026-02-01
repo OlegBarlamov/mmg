@@ -46,7 +46,7 @@
     padding: 8px 10px;
     color: rgba(255, 255, 255, 0.92);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.35;
 }
 
@@ -58,6 +58,11 @@
 
 .battle-log-line-muted {
     color: rgba(255, 255, 255, 0.55);
+}
+
+.log-highlight-red {
+    color: #ff6b6b;
+    font-weight: 600;
 }
 
 .control-button {

@@ -29,6 +29,47 @@ interface IBattleControlPanelState {
     runPenaltyRounds: number;
 }
 
+// Helper function to render log lines with colored highlights
+function renderLogLine(line: string): React.ReactNode {
+    // Pattern to match damage-related text:
+    // - "took X damage" - highlight "X damage"
+    // - "lost X" (killed count) - highlight "lost X"
+    // - "destroyed" - highlight it
+    const parts: React.ReactNode[] = []
+    let lastIndex = 0
+    
+    // Combined regex to find all highlights
+    const pattern = /(\d+)\s+(damage)|lost\s+(\d+)|destroyed/gi
+    let match: RegExpExecArray | null
+    
+    while ((match = pattern.exec(line)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+            parts.push(line.slice(lastIndex, match.index))
+        }
+        
+        const matchedText = match[0]
+        if (matchedText.toLowerCase() === 'destroyed') {
+            parts.push(<span key={match.index} className="log-highlight-red">{matchedText}</span>)
+        } else if (matchedText.toLowerCase().startsWith('lost')) {
+            // "lost X" pattern
+            parts.push(<span key={match.index} className="log-highlight-red">{matchedText}</span>)
+        } else {
+            // "X damage" pattern
+            parts.push(<span key={match.index} className="log-highlight-red">{matchedText}</span>)
+        }
+        
+        lastIndex = match.index + matchedText.length
+    }
+    
+    // Add remaining text
+    if (lastIndex < line.length) {
+        parts.push(line.slice(lastIndex))
+    }
+    
+    return parts.length > 0 ? parts : line
+}
+
 export class BattleControlPanel extends Component<IBattleControlPanelProps, IBattleControlPanelState> implements IBattlePanelActionsController {
     onWaitPressed: (() => void) | null = null;
     onPassPressed: (() => void) | null = null;
@@ -206,7 +247,7 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                             <div className="battle-log-line battle-log-line-muted">Battle log…</div>
                         ) : (
                             this.props.battleLogLines.map((line, idx) => (
-                                <div key={idx} className="battle-log-line">{line}</div>
+                                <div key={idx} className="battle-log-line">{renderLogLine(line)}</div>
                             ))
                         )}
                     </div>

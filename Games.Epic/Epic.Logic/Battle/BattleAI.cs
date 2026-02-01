@@ -82,7 +82,7 @@ namespace Epic.Logic.Battle
                     foreach (var point in cellsToMove)
                     {
                         distance = OddRHexoGrid.Distance(point, enemy);
-                        if (distance < attack.AttackMaxRange || distance > attack.AttackMaxRange)
+                        if (distance < attack.AttackMinRange || distance > attack.AttackMaxRange)
                             continue;
                         
                         possibleAttacksWithTargets.Add(new Tuple<IBattleUnitObject, IAttackFunctionType, HexoPoint, int>(enemy, attack, point, i));
@@ -155,8 +155,10 @@ namespace Epic.Logic.Battle
                 var totalValue = cumulativeDamage - friendlyFirePenalty - paralyzedWithDeclineBuffPenalty;
                 
                 // Prioritize kills, then total value (damage - friendly fire)
+                // Use >= for totalValue to prefer earlier attack types when damage is equal
+                // (since we iterate in reverse, earlier attacks are checked later and will overwrite)
                 if (cumulativeKilled > maxKilled ||
-                    (cumulativeKilled == maxKilled && totalValue > maxValue))
+                    (cumulativeKilled == maxKilled && totalValue >= maxValue))
                 {
                     maxKilled = cumulativeKilled;
                     maxDamage = cumulativeDamage;
