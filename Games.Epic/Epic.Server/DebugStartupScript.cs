@@ -129,7 +129,7 @@ namespace Epic.Server
             var debugArmy = true;
             if (debugArmy)
             {
-                await GiveUnitByKey(hero.ArmyContainerId, 0, 1, "Unicorn");
+                await GiveUnitByKey(hero.ArmyContainerId, 0, 6, "Unicorn");
             }
             else
             {

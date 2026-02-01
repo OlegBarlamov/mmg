@@ -175,7 +175,9 @@ export class UnitInfoModal extends PureComponent<IUnitInfoModalProps, IUnitInfoM
                                                                     className="buff-thumbnail-small"
                                                                 />
                                                             )}
-                                                            {buff.name}{!buff.permanent && ` (${buff.duration})`}
+                                                            {buff.name}
+                                                            {buff.chance < 100 && ` ${buff.chance}%`}
+                                                            {!buff.permanent && ` (${buff.duration})`}
                                                             {i < attack.applyBuffs!.length - 1 && ', '}
                                                         </span>
                                                     ))}

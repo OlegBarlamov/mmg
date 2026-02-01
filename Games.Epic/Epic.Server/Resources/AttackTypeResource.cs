@@ -21,11 +21,24 @@ namespace Epic.Server.Resources
         {
             CopyFrom(attackType);
             
-            ApplyBuffs = attackType.ApplyBuffTypeIds?
-                .Select(id => buffTypesRegistry.ById(id))
-                .Where(bt => bt != null)
-                .Select(bt => new BuffTypeResource(bt))
-                .ToList() ?? new List<BuffTypeResource>();
+            var buffResources = new List<BuffTypeResource>();
+            if (attackType.ApplyBuffTypeIds != null)
+            {
+                for (int i = 0; i < attackType.ApplyBuffTypeIds.Count; i++)
+                {
+                    var buffType = buffTypesRegistry.ById(attackType.ApplyBuffTypeIds[i]);
+                    if (buffType == null)
+                        continue;
+                    
+                    // Get the chance for this buff (default to 100% if not specified)
+                    var chance = (attackType.ApplyBuffChances != null && i < attackType.ApplyBuffChances.Count)
+                        ? attackType.ApplyBuffChances[i]
+                        : 100;
+                    
+                    buffResources.Add(new BuffTypeResource(buffType, chance));
+                }
+            }
+            ApplyBuffs = buffResources;
         }
     }
 }

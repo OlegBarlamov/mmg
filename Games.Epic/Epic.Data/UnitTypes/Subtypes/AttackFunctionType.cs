@@ -28,6 +28,11 @@ namespace Epic.Data.UnitTypes.Subtypes
         int Splash { get; }
         
         IReadOnlyList<Guid> ApplyBuffTypeIds { get; }
+        /// <summary>
+        /// Parallel array to ApplyBuffTypeIds. Each value is the percentage chance (0-100) that the corresponding buff is applied.
+        /// If not specified or shorter than ApplyBuffTypeIds, missing values default to 100%.
+        /// </summary>
+        IReadOnlyList<int> ApplyBuffChances { get; }
     } 
     
     public class AttackFunctionType : IAttackFunctionType
@@ -54,6 +59,13 @@ namespace Epic.Data.UnitTypes.Subtypes
         public List<Guid> ApplyBuffTypeIds { get; set; } = new List<Guid>();
         
         IReadOnlyList<Guid> IAttackFunctionType.ApplyBuffTypeIds => ApplyBuffTypeIds;
+        
+        /// <summary>
+        /// Parallel array to ApplyBuffTypeIds. Each value is the percentage chance (0-100) that the corresponding buff is applied.
+        /// </summary>
+        public List<int> ApplyBuffChances { get; set; } = new List<int>();
+        
+        IReadOnlyList<int> IAttackFunctionType.ApplyBuffChances => ApplyBuffChances;
 
         public List<string> ApplyBuffTypes { get; set; } = new List<string>();
 
@@ -85,6 +97,9 @@ namespace Epic.Data.UnitTypes.Subtypes
             ApplyBuffTypeIds = source.ApplyBuffTypeIds != null 
                 ? new List<Guid>(source.ApplyBuffTypeIds) 
                 : new List<Guid>();
+            ApplyBuffChances = source.ApplyBuffChances != null 
+                ? new List<int>(source.ApplyBuffChances) 
+                : new List<int>();
         }
     }
 }

@@ -244,10 +244,25 @@ namespace Epic.Logic.Battle.Commands
 
             var newBuffs = new List<IBuffObject>();
             
-            foreach (var buffTypeId in attackType.ApplyBuffTypeIds)
+            for (int i = 0; i < attackType.ApplyBuffTypeIds.Count; i++)
             {
+                var buffTypeId = attackType.ApplyBuffTypeIds[i];
+                
                 if (buffTypeId == System.Guid.Empty)
                     continue;
+                
+                // Get the chance for this buff (default to 100% if not specified)
+                var chance = (attackType.ApplyBuffChances != null && i < attackType.ApplyBuffChances.Count) 
+                    ? attackType.ApplyBuffChances[i] 
+                    : 100;
+                
+                // Roll for buff application
+                if (chance < 100)
+                {
+                    var roll = context.RandomProvider.NextInteger(0, 100);
+                    if (roll >= chance)
+                        continue; // Buff not applied
+                }
                     
                 var buffType = await context.BuffTypesService.GetById(buffTypeId);
                 if (buffType == null)
