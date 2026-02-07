@@ -29,6 +29,10 @@ namespace Epic.Core.Services.BuffTypes
         public int Heals { get; set; }
         public int HealsPercentage { get; set; }
         public bool HealCanResurrect { get; set; }
+        public int TakesDamageMin { get; set; }
+        public int TakesDamageMax { get; set; }
+        public int DamageReturnPercentage { get; set; }
+        public int DamageReturnMaxRange { get; set; }
         public bool Permanent { get; set; }
         public int Duration { get; set; }
 
@@ -62,6 +66,10 @@ namespace Epic.Core.Services.BuffTypes
                 Heals = entity.Heals,
                 HealsPercentage = entity.HealsPercentage,
                 HealCanResurrect = entity.HealCanResurrect,
+                TakesDamageMin = entity.TakesDamageMin,
+                TakesDamageMax = entity.TakesDamageMax,
+                DamageReturnPercentage = entity.DamageReturnPercentage,
+                DamageReturnMaxRange = entity.DamageReturnMaxRange,
                 Permanent = entity.Permanent,
                 Duration = entity.Duration,
             };

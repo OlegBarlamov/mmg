@@ -22,9 +22,13 @@ namespace Epic.Logic.Battle.Formulas
             bool counterAttack,
             IRandomService random)
         {
+            // Calculate effective damage with buff bonuses (MaxDamage is guaranteed >= MinDamage)
+            var effectiveMinDamage = attacker.GetEffectiveMinDamage(attackFunctionType.MinDamage);
+            var effectiveMaxDamage = attacker.GetEffectiveMaxDamage(attackFunctionType.MinDamage, attackFunctionType.MaxDamage);
+            
             var dicesCounts = Math.Min(attacker.GlobalUnit.Count, 10);
             var randomSum = Enumerable.Range(0, dicesCounts)
-                .Sum(x => random.NextInteger(attackFunctionType.MinDamage, attackFunctionType.MaxDamage + 1));
+                .Sum(x => random.NextInteger(effectiveMinDamage, effectiveMaxDamage + 1));
             
             var damage = randomSum * attacker.GlobalUnit.Count / Math.Max(1, dicesCounts);
             

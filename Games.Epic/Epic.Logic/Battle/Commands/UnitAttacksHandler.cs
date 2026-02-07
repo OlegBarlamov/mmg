@@ -203,6 +203,12 @@ namespace Epic.Logic.Battle.Commands
                 if (targetDamage.DamageData.DamageTaken > 0)
                 {
                     await RemoveBuffsThatDeclineOnDamage(context, mutableTarget, command);
+                    
+                    // Apply damage return from target's buffs back to attacker
+                    if (attacker.GlobalUnit.IsAlive)
+                    {
+                        await ApplyDamageReturn(context, mutableTarget, attacker, targetDamage.DamageData.DamageTaken, range, command);
+                    }
                 }
                 
                 if (mutableTarget.GlobalUnit.IsAlive)
@@ -216,6 +222,98 @@ namespace Epic.Logic.Battle.Commands
             {
                 await ApplyVampireHealing(context, attacker, totalEnemyDamage, command);
             }
+        }
+
+        private static async Task ApplyDamageReturn(
+            CommandExecutionContext context,
+            MutableBattleUnitObject target,
+            MutableBattleUnitObject attacker,
+            int damageTaken,
+            int range,
+            UnitAttackClientBattleMessage command)
+        {
+            if (target.Buffs == null || target.Buffs.Count == 0)
+                return;
+
+            // Calculate total damage return percentage from all buffs that are in range
+            var totalReturnPercentage = 0;
+            
+            foreach (var buff in target.Buffs)
+            {
+                if (buff.BuffType == null || buff.BuffType.DamageReturnPercentage <= 0)
+                    continue;
+                
+                // Check if attacker is within the buff's max range (0 = any range)
+                var maxRange = buff.BuffType.DamageReturnMaxRange;
+                if (maxRange > 0 && range > maxRange)
+                    continue;
+                
+                totalReturnPercentage += buff.BuffType.DamageReturnPercentage;
+            }
+            
+            if (totalReturnPercentage <= 0)
+                return;
+            
+            // Calculate damage to return
+            var damageToReturn = damageTaken * totalReturnPercentage / 100;
+            if (damageToReturn <= 0)
+                return;
+            
+            var unitHealth = attacker.GlobalUnit.UnitType.Health;
+            var currentCount = attacker.CurrentCount;
+            var currentHealth = attacker.CurrentHealth;
+            
+            // Calculate damage application
+            var totalCurrentHp = (currentCount - 1) * unitHealth + currentHealth;
+            var totalNewHp = totalCurrentHp - damageToReturn;
+            
+            if (totalNewHp < 0)
+                totalNewHp = 0;
+            
+            // Calculate new count and health
+            int newCount;
+            int newHealth;
+            int killedCount;
+            
+            if (totalNewHp <= 0)
+            {
+                newCount = 0;
+                newHealth = 0;
+                killedCount = currentCount;
+            }
+            else
+            {
+                newCount = (totalNewHp + unitHealth - 1) / unitHealth; // Ceiling division
+                newHealth = totalNewHp - (newCount - 1) * unitHealth;
+                killedCount = currentCount - newCount;
+            }
+            
+            var actualDamageTaken = totalCurrentHp - totalNewHp;
+            
+            if (actualDamageTaken <= 0)
+                return;
+            
+            // Update the attacker's state
+            attacker.CurrentCount = newCount;
+            attacker.CurrentHealth = newHealth;
+            attacker.GlobalUnit.Count = newCount;
+            attacker.GlobalUnit.IsAlive = newCount > 0;
+            
+            await context.GlobalUnitsService.UpdateUnits(new[] { attacker.GlobalUnit });
+            await context.BattleUnitsService.UpdateUnits(new[] { attacker });
+            
+            // Broadcast damage message
+            var damageMessage = new UnitTakesDamageCommandFromServer(
+                command.TurnIndex,
+                command.Player,
+                attacker.Id.ToString())
+            {
+                DamageTaken = actualDamageTaken,
+                KilledCount = killedCount,
+                RemainingCount = newCount,
+                RemainingHealth = newHealth
+            };
+            await context.MessageBroadcaster.BroadcastMessageAsync(damageMessage);
         }
 
         private static async Task RemoveBuffsThatDeclineOnDamage(
@@ -263,6 +361,7 @@ namespace Epic.Logic.Battle.Commands
                 return;
 
             var newBuffs = new List<IBuffObject>();
+            var replacedBuffTypeIds = new List<System.Guid>();
             
             for (int i = 0; i < attackType.ApplyBuffTypeIds.Count; i++)
             {
@@ -289,8 +388,10 @@ namespace Epic.Logic.Battle.Commands
                     continue;
                 
                 var durationRemaining = buffType.Permanent ? 0 : buffType.Duration;
+                // BuffsService.Create will automatically remove any existing buff of the same type
                 var buff = await context.BuffsService.Create(target.Id, buffType.Id, durationRemaining);
                 newBuffs.Add(buff);
+                replacedBuffTypeIds.Add(buffTypeId);
                 
                 var buffAppliedMessage = new UnitReceivesBuffCommandFromServer(
                     command.TurnIndex, 
@@ -310,7 +411,9 @@ namespace Epic.Logic.Battle.Commands
             // Update the in-memory buffs list for subsequent calculations in this battle session
             if (newBuffs.Count > 0)
             {
+                // Remove existing buffs of the same types (they were replaced in the repository)
                 var existingBuffs = target.Buffs?.ToList() ?? new List<IBuffObject>();
+                existingBuffs.RemoveAll(b => replacedBuffTypeIds.Contains(b.BuffTypeId));
                 existingBuffs.AddRange(newBuffs);
                 target.Buffs = existingBuffs;
             }

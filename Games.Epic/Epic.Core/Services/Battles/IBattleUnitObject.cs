@@ -30,5 +30,16 @@ namespace Epic.Core.Services.Battles
         IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; }
 
         IReadOnlyList<IBuffObject> Buffs { get; }
+        
+        /// <summary>
+        /// Calculates the effective MinDamage for an attack, applying buff bonuses.
+        /// </summary>
+        int GetEffectiveMinDamage(int baseMinDamage);
+        
+        /// <summary>
+        /// Calculates the effective MaxDamage for an attack, applying buff bonuses.
+        /// MaxDamage is guaranteed to be at least equal to effective MinDamage.
+        /// </summary>
+        int GetEffectiveMaxDamage(int baseMinDamage, int baseMaxDamage);
     }
 }

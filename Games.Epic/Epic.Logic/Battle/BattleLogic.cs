@@ -350,6 +350,9 @@ namespace Epic.Logic.Battle
             
             // Process healing from active buffs
             await ProcessBuffHealing(activeUnit, remainingBuffs);
+            
+            // Process damage from active buffs
+            await ProcessBuffDamage(activeUnit, remainingBuffs);
         }
 
         /// <summary>
@@ -444,6 +447,102 @@ namespace Epic.Logic.Battle
                 NewHealth = newHealth
             };
             await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(healMessage);
+        }
+
+        /// <summary>
+        /// Processes damage effects from active buffs at the start of a unit's turn.
+        /// </summary>
+        private async Task ProcessBuffDamage(IBattleUnitObject activeUnit, List<IBuffObject> activeBuffs)
+        {
+            if (activeBuffs == null || activeBuffs.Count == 0)
+                return;
+
+            // Calculate total damage from all buffs (random range only)
+            var totalDamage = 0;
+
+            foreach (var buff in activeBuffs)
+            {
+                if (buff.BuffType == null)
+                    continue;
+                
+                // Random damage range
+                var minDmg = buff.BuffType.TakesDamageMin;
+                var maxDmg = buff.BuffType.TakesDamageMax;
+                if (minDmg > 0 || maxDmg > 0)
+                {
+                    if (maxDmg < minDmg) maxDmg = minDmg;
+                    totalDamage += RandomProvider.NextInteger(minDmg, maxDmg + 1);
+                }
+            }
+
+            if (totalDamage <= 0)
+                return;
+
+            var mutableUnit = activeUnit as MutableBattleUnitObject;
+            if (mutableUnit == null)
+                return;
+
+            var unitHealth = mutableUnit.GlobalUnit.UnitType.Health;
+            var currentCount = mutableUnit.CurrentCount;
+            var currentHealth = mutableUnit.CurrentHealth;
+
+            // Calculate damage application
+            var totalCurrentHp = (currentCount - 1) * unitHealth + currentHealth;
+            var totalNewHp = totalCurrentHp - totalDamage;
+
+            if (totalNewHp < 0)
+                totalNewHp = 0;
+
+            // Calculate new count and health
+            int newCount;
+            int newHealth;
+            int killedCount;
+
+            if (totalNewHp <= 0)
+            {
+                newCount = 0;
+                newHealth = 0;
+                killedCount = currentCount;
+            }
+            else
+            {
+                newCount = (totalNewHp + unitHealth - 1) / unitHealth; // Ceiling division
+                newHealth = totalNewHp - (newCount - 1) * unitHealth;
+                killedCount = currentCount - newCount;
+            }
+
+            var actualDamageTaken = totalCurrentHp - totalNewHp;
+
+            if (actualDamageTaken <= 0)
+                return;
+
+            // Update the unit's state
+            mutableUnit.CurrentCount = newCount;
+            mutableUnit.CurrentHealth = newHealth;
+            mutableUnit.GlobalUnit.Count = newCount;
+
+            await GlobalUnitsService.UpdateUnits(new[] { mutableUnit.GlobalUnit });
+            await BattleUnitsService.UpdateUnits(new[] { mutableUnit });
+
+            // Broadcast damage message
+            var damageMessage = new UnitTakesDamageCommandFromServer(
+                BattleObject.TurnNumber,
+                activeUnit.PlayerIndex.ToInBattlePlayerNumber(),
+                activeUnit.Id.ToString())
+            {
+                DamageTaken = actualDamageTaken,
+                KilledCount = killedCount,
+                RemainingCount = newCount,
+                RemainingHealth = newHealth
+            };
+            await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(damageMessage);
+
+            // Check if unit died from buff damage
+            if (newCount <= 0)
+            {
+                mutableUnit.GlobalUnit.IsAlive = false;
+                await GlobalUnitsService.UpdateUnits(new[] { mutableUnit.GlobalUnit });
+            }
         }
     }
 }

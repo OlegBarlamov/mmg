@@ -93,6 +93,41 @@ namespace Epic.Core.Services.Battles
             return flatBonus + (baseDefense * percentageBonus / 100);
         }
 
+        /// <summary>
+        /// Calculates the effective MinDamage for an attack, applying buff bonuses.
+        /// </summary>
+        public int GetEffectiveMinDamage(int baseMinDamage)
+        {
+            if (Buffs == null || Buffs.Count == 0)
+                return Math.Max(0, baseMinDamage);
+
+            var flatBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.MinDamageBonus);
+            var percentageBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.MinDamageBonusPercentage);
+            
+            var result = baseMinDamage + flatBonus + (baseMinDamage * percentageBonus / 100);
+            return Math.Max(0, result);
+        }
+
+        /// <summary>
+        /// Calculates the effective MaxDamage for an attack, applying buff bonuses.
+        /// MaxDamage is guaranteed to be at least equal to MinDamage.
+        /// </summary>
+        public int GetEffectiveMaxDamage(int baseMinDamage, int baseMaxDamage)
+        {
+            var effectiveMin = GetEffectiveMinDamage(baseMinDamage);
+            
+            if (Buffs == null || Buffs.Count == 0)
+                return Math.Max(effectiveMin, baseMaxDamage);
+
+            var flatBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.MaxDamageBonus);
+            var percentageBonus = Buffs.Where(b => b.BuffType != null).Sum(b => b.BuffType.MaxDamageBonusPercentage);
+            
+            var result = baseMaxDamage + flatBonus + (baseMaxDamage * percentageBonus / 100);
+            
+            // MaxDamage cannot be less than MinDamage
+            return Math.Max(effectiveMin, result);
+        }
+
         private MutableBattleUnitObject(Guid id)
         {
             Id = id;

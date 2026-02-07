@@ -30,6 +30,12 @@ namespace Epic.Data.BuffType
         int HealsPercentage { get; }
         bool HealCanResurrect { get; }
         
+        int TakesDamageMin { get; }
+        int TakesDamageMax { get; }
+        
+        int DamageReturnPercentage { get; }
+        int DamageReturnMaxRange { get; }
+        
         bool Permanent { get; }
         int Duration { get; }
     }
@@ -64,6 +70,10 @@ namespace Epic.Data.BuffType
         public int Heals { get; set; }
         public int HealsPercentage { get; set; }
         public bool HealCanResurrect { get; set; }
+        public int TakesDamageMin { get; set; }
+        public int TakesDamageMax { get; set; }
+        public int DamageReturnPercentage { get; set; }
+        public int DamageReturnMaxRange { get; set; }
         public bool Permanent { get; set; }
         public int Duration { get; set; }
     }
@@ -102,6 +112,10 @@ namespace Epic.Data.BuffType
             Heals = fields.Heals;
             HealsPercentage = fields.HealsPercentage;
             HealCanResurrect = fields.HealCanResurrect;
+            TakesDamageMin = fields.TakesDamageMin;
+            TakesDamageMax = fields.TakesDamageMax;
+            DamageReturnPercentage = fields.DamageReturnPercentage;
+            DamageReturnMaxRange = fields.DamageReturnMaxRange;
             Permanent = fields.Permanent;
             Duration = fields.Duration;
         }
