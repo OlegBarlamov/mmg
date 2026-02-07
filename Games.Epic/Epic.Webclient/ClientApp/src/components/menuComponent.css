@@ -437,3 +437,72 @@
     border-top-color: #1f4e79;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
+
+/* Stage Tabs Styles */
+.stage-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.stage-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    color: #bdc3c7;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.stage-tab:hover {
+    background: rgba(52, 152, 219, 0.2);
+    border-color: #3498db;
+    color: #ecf0f1;
+}
+
+.stage-tab.active {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    border-color: #1f4e79;
+    color: white;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+}
+
+.stage-tab.current {
+    border-color: #27ae60;
+}
+
+.stage-tab.current.active {
+    background: linear-gradient(145deg, #27ae60, #219a52);
+    border-color: #1e8449;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4);
+}
+
+.stage-tab-name {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.stage-tab-day {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.stage-info {
+    margin-bottom: 12px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+}
+
+.stage-info-text {
+    color: #bdc3c7;
+    font-size: 0.85rem;
+}

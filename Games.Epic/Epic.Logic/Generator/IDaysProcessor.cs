@@ -66,14 +66,24 @@ namespace Epic.Logic.Generator
             if (player.PlayerType == PlayerObjectType.Computer)
                 return;
             
-            var battlesCount = await BattleDefinitionsService.GetBattlesCountForPlayer(player);
-            var currentDay = player.Day;
-            var currentStage = player.Stage;
+            var globalDay = player.Day;
+            var stageUnlockedDays = player.StageUnlockedDays ?? new[] { 1 };
             
             await PlayersService.SetGenerationInProgress(playerId, true);
             try
             {
-                await BattlesGenerator.Generate(player.Id, currentDay, battlesCount, currentStage);
+                // Generate battles for all unlocked stages
+                for (int stage = 0; stage <= player.Stage; stage++)
+                {
+                    // Calculate effective day for this stage (frozen until unlocked)
+                    var stageUnlockedDay = stage < stageUnlockedDays.Length ? stageUnlockedDays[stage] : 1;
+                    var effectiveDay = Math.Max(1, globalDay - stageUnlockedDay + 1);
+                    
+                    var battlesCount = await BattleDefinitionsService.GetBattlesCountForPlayer(player);
+                    
+                    Logger.LogInformation($"Generating battles for player {playerId}, stage {stage}, effectiveDay {effectiveDay}, globalDay {globalDay}");
+                    await BattlesGenerator.Generate(player.Id, effectiveDay, globalDay, battlesCount, stage);
+                }
             }
             finally
             {

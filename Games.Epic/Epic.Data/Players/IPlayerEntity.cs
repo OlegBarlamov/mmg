@@ -17,6 +17,12 @@ namespace Epic.Data.Players
         string Name { get; }
         PlayerEntityType PlayerType { get; }
         bool GenerationInProgress { get; }
+        /// <summary>
+        /// Array storing the day when each stage was unlocked.
+        /// Index corresponds to stage number. Stage 0 is unlocked at day 1 by default.
+        /// Used for calculating effective day for difficulty.
+        /// </summary>
+        int[] StageUnlockedDays { get; }
     }
 
     public class MutablePlayerEntityFields : IPlayerEntityFields
@@ -30,6 +36,7 @@ namespace Epic.Data.Players
         public string Name { get; set; }
         public PlayerEntityType PlayerType { get; set; }
         public bool GenerationInProgress { get; set; }
+        public int[] StageUnlockedDays { get; set; } = new[] { 1 };
 
         public MutablePlayerEntityFields() { }
     }
@@ -53,6 +60,7 @@ namespace Epic.Data.Players
             ActiveHeroId = entity.ActiveHeroId;
             GenerationInProgress = entity.GenerationInProgress;
             SupplyContainerId = entity.SupplyContainerId;
+            StageUnlockedDays = entity.StageUnlockedDays;
         }
 
         public static MutablePlayerEntity FromFields(Guid id, IPlayerEntityFields fields)
@@ -67,6 +75,7 @@ namespace Epic.Data.Players
                 ActiveHeroId = fields.ActiveHeroId,
                 GenerationInProgress = fields.GenerationInProgress,
                 SupplyContainerId = fields.SupplyContainerId,
+                StageUnlockedDays = fields.StageUnlockedDays,
             };
         }
     }

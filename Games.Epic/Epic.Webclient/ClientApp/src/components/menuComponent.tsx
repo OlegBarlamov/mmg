@@ -12,6 +12,13 @@ import {PlayerBattleModal} from "./playerBattleModal";
 import {RewardDialog} from "./rewardDialog";
 import "./menuComponent.css";
 
+// Stage info derived from battles
+interface IDerivedStageInfo {
+    readonly index: number
+    readonly name: string
+    readonly isCurrent: boolean
+}
+
 export interface IMenuComponentProps {
     serviceLocator: IServiceLocator
     onBattleSelected(definition: IBattleDefinition): void
@@ -20,7 +27,8 @@ export interface IMenuComponentProps {
 }
 
 interface IMenuComponentState {
-    availableBattles: IBattleDefinition[] | null 
+    allBattles: IBattleDefinition[] | null  // All battles from server
+    filteredBattles: IBattleDefinition[] | null  // Battles filtered by selected stage
     isLoading: boolean
     battlesGenerationInProgress: boolean
     showSupply: boolean
@@ -41,6 +49,8 @@ interface IMenuComponentState {
         x: number
         y: number
     }
+    stages: IDerivedStageInfo[] | null
+    selectedStage: number
 }
 
 export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuComponentState> {
@@ -53,7 +63,8 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         super(props)
         
         this.state = {
-            availableBattles: null,
+            allBattles: null,
+            filteredBattles: null,
             isLoading: true,
             battlesGenerationInProgress: false,
             showSupply: false,
@@ -73,7 +84,9 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                 text: '',
                 x: 0,
                 y: 0
-            }
+            },
+            stages: null,
+            selectedStage: 0
         }
 
         // Initialize reward manager with callbacks
@@ -341,8 +354,37 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
         this.setState({ isLoading: true })
         try {
             const battlesProvider = this.props.serviceLocator.battlesProvider()
-            const battles = await battlesProvider.fetchBattles()
-            this.setState({availableBattles: battles, isLoading: false})
+            const allBattles = await battlesProvider.fetchBattles()
+            
+            // Derive stages from battles
+            const currentPlayerStage = this.props.playerInfo?.stage ?? 0
+            const stageSet = new Set(allBattles.map(b => b.stage))
+            const stages: IDerivedStageInfo[] = Array.from(stageSet)
+                .sort((a, b) => a - b)
+                .map(stageIndex => ({
+                    index: stageIndex,
+                    name: `Stage ${stageIndex + 1}`,
+                    isCurrent: stageIndex === currentPlayerStage
+                }))
+            
+            // Default to current player stage if available, otherwise the highest stage
+            let selectedStage = this.state.selectedStage
+            if (this.state.stages === null) {
+                // First load - select current stage
+                selectedStage = stages.find(s => s.isCurrent)?.index ?? 
+                    (stages.length > 0 ? stages[stages.length - 1].index : 0)
+            }
+            
+            // Filter battles by selected stage
+            const filteredBattles = allBattles.filter(b => b.stage === selectedStage)
+            
+            this.setState({
+                allBattles,
+                filteredBattles,
+                stages,
+                selectedStage,
+                isLoading: false
+            })
         } catch (error) {
             console.error('Failed to fetch battles:', error)
             
@@ -351,6 +393,14 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                 this.fetchBattles()
             }, this.RETRY_DELAY_MS)
         }
+    }
+
+    private handleStageChange = (stageIndex: number) => {
+        if (stageIndex === this.state.selectedStage) return
+        
+        // Filter battles by selected stage locally
+        const filteredBattles = this.state.allBattles?.filter(b => b.stage === stageIndex) ?? null
+        this.setState({ selectedStage: stageIndex, filteredBattles })
     }
 
     // Method to fetch resources
@@ -365,13 +415,40 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
     }
     
     render() {
+        const { stages, selectedStage, filteredBattles } = this.state
+        const selectedStageInfo = stages?.find(s => s.index === selectedStage)
+        
         return (
             <div className="menu-container">
                 <div className="battles-section">
+                    {/* Stage Tabs */}
+                    {stages && stages.length > 1 && (
+                        <div className="stage-tabs">
+                            {stages.map((stage) => (
+                                <button
+                                    key={stage.index}
+                                    className={`stage-tab ${stage.index === selectedStage ? 'active' : ''} ${stage.isCurrent ? 'current' : ''}`}
+                                    onClick={() => this.handleStageChange(stage.index)}
+                                >
+                                    <span className="stage-tab-name">{stage.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    
+                    {/* Stage Info */}
+                    {selectedStageInfo && stages && stages.length > 1 && (
+                        <div className="stage-info">
+                            <span className="stage-info-text">
+                                {selectedStageInfo.isCurrent ? 'Current stage' : 'Previous stage'}
+                            </span>
+                        </div>
+                    )}
+                    
                     {
                         this.state.isLoading ? (
                             <div className="loading">Loading battles...</div>
-                        ) : this.state.availableBattles ? (
+                        ) : filteredBattles ? (
                             <div className="battles-table-container">
                                 <table className="battles-table">
                                     <thead>
@@ -384,7 +461,7 @@ export class MenuComponent extends PureComponent<IMenuComponentProps, IMenuCompo
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.state.availableBattles.map((battle, index) => (
+                                        {filteredBattles.map((battle, index) => (
                                             <tr 
                                                 key={index} 
                                                 className={`battle-row ${this.hasNextStageReward(battle) ? 'next-stage-battle' : ''}`}

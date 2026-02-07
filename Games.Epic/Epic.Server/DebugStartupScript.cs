@@ -119,14 +119,14 @@ namespace Epic.Server
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
 
             // Give some artifacts to the first player's hero for testing.
-            await GiveTestArtifacts(hero.Id);
+            // await GiveTestArtifacts(hero.Id);
             
             // Generate random presets for both heroes
             var preset1 = await GenerateRandomPreset(targetScore);
             var preset2 = await GenerateRandomPreset(targetScore);
             
             int slot = 0;
-            var debugArmy = true;
+            var debugArmy = false;
             if (debugArmy)
             {
                 await GiveUnitByKey(hero.ArmyContainerId, 0, 2, "Dendroid");
@@ -148,21 +148,22 @@ namespace Epic.Server
                 slot++;
             }
 
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
-            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Stage);
+            // Generate battles for both players (effectiveDay and globalDay are the same for new players at day 1)
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
+            await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
 
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
-            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
+            await BattlesGenerator.GenerateSingle(user1Player.Id, user1Player.Day, user1Player.Day, user1Player.Stage);
         }
 
         private async Task GiveUnitByKey(Guid armyContainerId, int slot, int count, string unitKey)

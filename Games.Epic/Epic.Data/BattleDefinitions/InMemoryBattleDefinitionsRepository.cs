@@ -94,27 +94,22 @@ namespace Epic.Data.BattleDefinitions
 
         public async Task<IBattleDefinitionEntity[]> GetActiveBattlesDefinitionsWithRewardType(Guid playerId, int currentDay, RewardType rewardType)
         {
-            // Get all active battle definitions for the player
             var activeBattles = await GetActiveBattleDefinitionsByPlayer(playerId, currentDay);
             
             if (activeBattles.Length == 0)
                 return Array.Empty<IBattleDefinitionEntity>();
             
-            // Get all rewards for all active battles in one bulk request
             var battleDefinitionIds = activeBattles.Select(b => b.Id).ToList();
             var allRewards = await _rewardsRepository.GetRewardsByBattleDefinitionIds(battleDefinitionIds);
             
-            // Group rewards by battle definition ID and filter battles with the specified reward type
-            var rewardsByBattleId = allRewards
+            var battleIdsWithRewardType = allRewards
                 .Where(r => r.RewardType == rewardType)
-                .GroupBy(r => r.BattleDefinitionId)
-                .ToDictionary(g => g.Key, g => g.ToList());
+                .Select(r => r.BattleDefinitionId)
+                .ToHashSet();
             
-            var battlesWithRewardType = activeBattles
-                .Where(battle => rewardsByBattleId.ContainsKey(battle.Id))
+            return activeBattles
+                .Where(battle => battleIdsWithRewardType.Contains(battle.Id))
                 .ToArray();
-            
-            return battlesWithRewardType;
         }
 
         private static bool IsFinishedOrExpired(IBattleDefinitionEntity battleDefinition, int day)

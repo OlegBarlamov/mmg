@@ -411,7 +411,8 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     
     async getBattles(): Promise<IBattleDefinition[]> {
         const id = await this.getUserId()
-        return structuredClone(this.battles.get(id)) ?? []
+        const battles = structuredClone(this.battles.get(id)) ?? []
+        return battles
     }
     async beginBattle(battleId: string): Promise<BattleMap> {
         const id = await this.getUserId()

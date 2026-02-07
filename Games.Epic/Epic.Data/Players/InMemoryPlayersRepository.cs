@@ -62,6 +62,20 @@ namespace Epic.Data.Players
         {
             var player = _playerEntities.First(x => x.Id == playerId);
             player.Stage++;
+            
+            // Record when the new stage was unlocked
+            var newStageIndex = player.Stage;
+            if (player.StageUnlockedDays == null || player.StageUnlockedDays.Length <= newStageIndex)
+            {
+                var newArray = new int[newStageIndex + 1];
+                if (player.StageUnlockedDays != null)
+                {
+                    Array.Copy(player.StageUnlockedDays, newArray, player.StageUnlockedDays.Length);
+                }
+                newArray[newStageIndex] = player.Day;
+                player.StageUnlockedDays = newArray;
+            }
+            
             return Task.CompletedTask;
         }
 

@@ -54,6 +54,7 @@ namespace Epic.Core.Services.Players
                 UserId = user.Id,
                 GenerationInProgress = false,
                 SupplyContainerId = supplyContainer.Id,
+                StageUnlockedDays = new[] { 1 }, // Stage 0 unlocked at day 1
             });
             supplyContainer = await UnitsContainersService.ChangeOwner(supplyContainer, entity.Id);
             

@@ -24,8 +24,20 @@ namespace Epic.Logic.Generator
 {
     public interface IBattlesGenerator
     {
-        Task Generate(Guid playerId, int day, int currentBattlesCount, int stage);
-        Task GenerateSingle(Guid playerId, int day, int stage);
+        /// <summary>
+        /// Generate battles for a specific stage.
+        /// </summary>
+        /// <param name="playerId">Player ID</param>
+        /// <param name="effectiveDay">The effective day for the stage (globalDay - stageUnlockedDay + 1) - used for difficulty</param>
+        /// <param name="globalDay">The global day (used for expiration calculation)</param>
+        /// <param name="currentBattlesCount">Current number of battles for the player</param>
+        /// <param name="stage">Stage index</param>
+        Task Generate(Guid playerId, int effectiveDay, int globalDay, int currentBattlesCount, int stage);
+        
+        /// <summary>
+        /// Generate a single battle for a specific stage.
+        /// </summary>
+        Task GenerateSingle(Guid playerId, int effectiveDay, int globalDay, int stage);
     }
 
     [UsedImplicitly]
@@ -89,30 +101,37 @@ namespace Epic.Logic.Generator
             ArtifactTypesRegistry = artifactTypesRegistry ?? throw new ArgumentNullException(nameof(artifactTypesRegistry));
         }
 
-        public async Task GenerateSingle(Guid playerId, int day, int stage)
+        public async Task GenerateSingle(Guid playerId, int effectiveDay, int globalDay, int stage)
         {
             var player = await PlayersService.GetById(playerId);
             var gameMode = GameModeProvider.GetGameMode();
             var gameStage = gameMode.Stages[Math.Min(stage, gameMode.Stages.Length - 1)];
             var rewardFactor = gameStage.RewardsFactor;
             
-            // Check if we should generate a NextStage battle
+            // Apply bonus reward multiplier for admin player
+            if (player.Name == "admin_1_player")
+            {
+                rewardFactor *= 1.5;
+            }
+            
+            // Check if we should generate a NextStage battle (only on current/highest unlocked stage)
             bool isNextStageBattle = false;
             int fixedDifficulty = 0;
+            bool isCurrentStage = stage == player.Stage;
             bool hasNextStageAvailable = stage < gameMode.Stages.Length - 1;
-            if (hasNextStageAvailable)
+            if (isCurrentStage && hasNextStageAvailable)
             {
                 var nextStage = gameMode.Stages[stage + 1];
                 if (nextStage.GuardDifficulty > 0 && _random.NextDouble() < 0.07)
                 {
-                    // Check if player already has battles with NextStage reward
-                    var battlesWithNextStage = await BattleDefinitionsRepository.GetActiveBattlesDefinitionsWithRewardType(playerId, player.Day, RewardType.NextStage);
+                    // Check if player already has an active NextStage battle
+                    var existingNextStageBattles = await BattleDefinitionsRepository.GetActiveBattlesDefinitionsWithRewardType(playerId, player.Day, RewardType.NextStage);
                     
                     // Check if player already has not accepted rewards with NextStage type
                     var notAcceptedNextStageRewards = await RewardsRepository.FindNotAcceptedRewardsByPlayerIdAndRewardType(playerId, RewardType.NextStage);
                     
-                    // Generate NextStage battle if none exists and no not accepted rewards
-                    if (battlesWithNextStage.Length == 0 && notAcceptedNextStageRewards.Length == 0)
+                    // Generate NextStage battle if none exists and no pending NextStage rewards
+                    if (existingNextStageBattles.Length == 0 && notAcceptedNextStageRewards.Length == 0)
                     {
                         isNextStageBattle = true;
                         fixedDifficulty = nextStage.GuardDifficulty;
@@ -125,10 +144,11 @@ namespace Epic.Logic.Generator
             var toTrainOrderedUnitTypes = UnitTypesRegistry.ToTrainOrderedByValue;
             var resources = ResourcesRegistry.GetAll();
             
-            var difficulty = DifficultyMarker.GenerateFromDay(_random, gameStage, day);
+            // Use effectiveDay for difficulty calculation (frozen until stage is unlocked)
+            var difficulty = DifficultyMarker.GenerateFromDay(_random, gameStage, effectiveDay);
             difficulty.TargetDifficulty =  isNextStageBattle ? fixedDifficulty : difficulty.TargetDifficulty;
             
-            Logger.LogInformation($"Generated Difficulty day {day}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
+            Logger.LogInformation($"Generated Difficulty stage {stage} effectiveDay {effectiveDay} globalDay {globalDay}: {difficulty.TargetDifficulty}; {difficulty.MinDifficulty}-{difficulty.MaxDifficulty}");
 
             var maxWidth = Math.Min(BattleConstants.MaxBattleWidth, BattleConstants.StartBattleWidth + difficulty.TargetDifficulty / 300);
             var maxHeight = Math.Min(BattleConstants.MaxBattleHeight, BattleConstants.StartBattleHeight + difficulty.TargetDifficulty / 300);
@@ -178,7 +198,7 @@ namespace Epic.Logic.Generator
                     playerId,
                     width,
                     height,
-                    day + duration,
+                    globalDay + duration, // Use globalDay for expiration
                     rewardVisibility,
                     guardVisibility,
                     stage,
@@ -315,7 +335,20 @@ namespace Epic.Logic.Generator
                 {
                     var maxArtifactIndex = BinarySearch.FindClosestNotExceedingIndex(orderedArtifacts,
                         x => x.Value, difficulty.TargetDifficulty);
-                    maxArtifactIndex = Math.Max(0, maxArtifactIndex);
+                    
+                    // If difficulty is below the minimum artifact value, select from all artifacts 
+                    // with the minimum value (instead of always picking the first one)
+                    if (maxArtifactIndex < 0)
+                    {
+                        var minValue = orderedArtifacts[0].Value;
+                        maxArtifactIndex = 0;
+                        while (maxArtifactIndex < orderedArtifacts.Count - 1 && 
+                               orderedArtifacts[maxArtifactIndex + 1].Value == minValue)
+                        {
+                            maxArtifactIndex++;
+                        }
+                    }
+                    
                     var artifactToGain = orderedArtifacts[_random.Next(0, maxArtifactIndex + 1)];
 
                     const int artifactAmount = 1;
@@ -531,15 +564,16 @@ namespace Epic.Logic.Generator
             }
         }
 
-        public async Task Generate(Guid playerId, int day, int currentBattlesCount, int stage)
+        public async Task Generate(Guid playerId, int effectiveDay, int globalDay, int currentBattlesCount, int stage)
         {
             var gameMode = GameModeProvider.GetGameMode();
             var gameStage = gameMode.Stages[Math.Min(stage, gameMode.Stages.Length - 1)];
             
-            int count = currentBattlesCount <= Math.Max(7, day * gameStage.BattlesCountFactor) ? _random.Next(3, 7) : _random.Next(1, 4);
+            // Use effectiveDay for battles count factor
+            int count = currentBattlesCount <= Math.Max(7, effectiveDay * gameStage.BattlesCountFactor) ? _random.Next(3, 7) : _random.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
-                await GenerateSingle(playerId, day, stage);
+                await GenerateSingle(playerId, effectiveDay, globalDay, stage);
             }
         }
 
