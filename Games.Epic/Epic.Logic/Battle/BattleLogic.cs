@@ -119,7 +119,8 @@ namespace Epic.Logic.Battle
                 GlobalUnitsService,
                 BattleUnitsService,
                 RandomProvider,
-                ClientConnectedHandler);
+                ClientConnectedHandler,
+                new EffectsLogic(GlobalUnitsService, BattleUnitsService, ClientConnectedHandler));
         }
 
         public void Dispose()
@@ -160,7 +161,7 @@ namespace Epic.Logic.Battle
                     
                     // Process buff expiration before the unit takes its turn
                     await BuffsLogic.ProcessActiveUnitBuffs(
-                        BattleUnitsCarousel.ActiveUnit,
+                        (MutableBattleUnitObject)BattleUnitsCarousel.ActiveUnit,
                         BattleObject.TurnNumber,
                         BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber());
                     

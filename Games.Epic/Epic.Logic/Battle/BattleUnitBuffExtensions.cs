@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Buffs;
+using Epic.Data.EffectType;
 
 namespace Epic.Logic.Battle
 {
@@ -160,51 +161,20 @@ namespace Epic.Logic.Battle
             return (vampirePercentage, canResurrect);
         }
         
-        public static (int Flat, int Percentage, bool CanResurrect) GetHealingStats(this IBattleUnitObject unit)
+        /// <summary>
+        /// Gets effect type properties from the unit (buffs and, when available, other effects).
+        /// </summary>
+        public static IEnumerable<IEffectTypeProperties> GetEffectTypeProperties(this IBattleUnitObject unit)
         {
             if (unit.Buffs == null || unit.Buffs.Count == 0)
-                return (0, 0, false);
-
-            var totalFlatHeal = 0;
-            var totalPercentageHeal = 0;
-            var canResurrect = false;
+                yield break;
 
             foreach (var buff in unit.Buffs)
             {
-                if (buff.BuffType == null)
-                    continue;
-
-                totalFlatHeal += buff.BuffType.Heals;
-                totalPercentageHeal += buff.BuffType.HealsPercentage;
-                if (buff.BuffType.HealCanResurrect)
-                    canResurrect = true;
+                if (buff.BuffType != null)
+                    yield return buff.BuffType;
             }
-
-            return (totalFlatHeal, totalPercentageHeal, canResurrect);
         }
-        
-        public static int CalculateDamageOverTime(this IBattleUnitObject unit, Func<int, int, int> randomInRange)
-        {
-            if (unit.Buffs == null || unit.Buffs.Count == 0)
-                return 0;
 
-            var totalDamage = 0;
-
-            foreach (var buff in unit.Buffs)
-            {
-                if (buff.BuffType == null)
-                    continue;
-                
-                var minDmg = buff.BuffType.TakesDamageMin;
-                var maxDmg = buff.BuffType.TakesDamageMax;
-                if (minDmg > 0 || maxDmg > 0)
-                {
-                    if (maxDmg < minDmg) maxDmg = minDmg;
-                    totalDamage += randomInRange(minDmg, maxDmg + 1);
-                }
-            }
-
-            return totalDamage;
-        }
     }
 }
