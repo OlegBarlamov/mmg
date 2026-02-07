@@ -27,9 +27,8 @@ namespace Epic.Data.BuffType
         bool VampireCanResurrect { get; }
         bool DeclinesWhenTakesDamage { get; }
         
-        int Heals { get; }
-        int HealsPercentage { get; }
-        bool HealCanResurrect { get; }
+        int DamageReturnPercentage { get; }
+        int DamageReturnMaxRange { get; }
         
         bool Permanent { get; }
         int Duration { get; }

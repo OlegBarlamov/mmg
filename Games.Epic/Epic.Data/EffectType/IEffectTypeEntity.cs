@@ -8,8 +8,9 @@ namespace Epic.Data.EffectType
         int TakesDamageMin { get; }
         int TakesDamageMax { get; }
         
-        int DamageReturnPercentage { get; }
-        int DamageReturnMaxRange { get; }
+        int Heals { get; }
+        int HealsPercentage { get; }
+        bool HealCanResurrect { get; }
     }
     
     public interface IEffectTypeFields : IEffectTypeProperties
@@ -33,8 +34,9 @@ namespace Epic.Data.EffectType
         public string SpriteUrl { get; set; }
         public int TakesDamageMin { get; set; }
         public int TakesDamageMax { get; set; }
-        public int DamageReturnPercentage { get; set; }
-        public int DamageReturnMaxRange { get; set; }
+        public int Heals { get; set; }
+        public int HealsPercentage { get; set; }
+        public bool HealCanResurrect { get; set; }
     }
 
     public class EffectTypeEntity : EffectTypeFields, IEffectTypeEntity
@@ -53,8 +55,9 @@ namespace Epic.Data.EffectType
             SpriteUrl = fields.SpriteUrl;
             TakesDamageMin = fields.TakesDamageMin;
             TakesDamageMax = fields.TakesDamageMax;
-            DamageReturnPercentage = fields.DamageReturnPercentage;
-            DamageReturnMaxRange = fields.DamageReturnMaxRange;
+            Heals = fields.Heals;
+            HealsPercentage = fields.HealsPercentage;
+            HealCanResurrect = fields.HealCanResurrect;
         }
 
         public static EffectTypeEntity FromFields(Guid id, IEffectTypeFields fields)

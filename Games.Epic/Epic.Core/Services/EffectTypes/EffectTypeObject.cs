@@ -11,8 +11,9 @@ namespace Epic.Core.Services.EffectTypes
         public string SpriteUrl { get; set; }
         public int TakesDamageMin { get; set; }
         public int TakesDamageMax { get; set; }
-        public int DamageReturnPercentage { get; set; }
-        public int DamageReturnMaxRange { get; set; }
+        public int Heals { get; set; }
+        public int HealsPercentage { get; set; }
+        public bool HealCanResurrect { get; set; }
 
         private MutableEffectTypeObject() { }
 
@@ -26,8 +27,9 @@ namespace Epic.Core.Services.EffectTypes
                 SpriteUrl = entity.SpriteUrl,
                 TakesDamageMin = entity.TakesDamageMin,
                 TakesDamageMax = entity.TakesDamageMax,
-                DamageReturnPercentage = entity.DamageReturnPercentage,
-                DamageReturnMaxRange = entity.DamageReturnMaxRange,
+                Heals = entity.Heals,
+                HealsPercentage = entity.HealsPercentage,
+                HealCanResurrect = entity.HealCanResurrect,
             };
         }
 
