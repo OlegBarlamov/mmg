@@ -150,17 +150,21 @@ namespace Epic.Logic.Battle
                     // Process buff expiration before the unit takes its turn
                     await ProcessActiveUnitBuffs(BattleUnitsCarousel.ActiveUnit);
                     
+                    // Check if unit can act (not paralyzed) - include this info in NEXT_TURN message
+                    var unitCanAct = BattleUnitsCarousel.ActiveUnit.CanAct;
+                    
                     await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(
                         new NextTurnCommandFromServer(
                             BattleObject.TurnNumber,
                             BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber(),
                             BattleUnitsCarousel.ActiveUnit.Id,
-                            BattleObject.RoundNumber));
+                            BattleObject.RoundNumber,
+                            unitCanAct));
 
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // Check if unit is paralyzed - auto-pass if so
-                    if (IsUnitParalyzed(BattleUnitsCarousel.ActiveUnit))
+                    if (!unitCanAct)
                     {
                         Logger.LogInformation(
                             $"Unit is paralyzed, auto-pass: {BattleUnitsCarousel.ActiveUnit.Id} - Turn {BattleObject.TurnNumber}");
@@ -225,17 +229,6 @@ namespace Epic.Logic.Battle
             var playerInfo = BattleObject.FindPlayerInfo(unit.PlayerIndex.ToInBattlePlayerNumber());
             runClaimed = playerInfo is { RunClaimed: true };
             return playerInfo != null;
-        }
-
-        /// <summary>
-        /// Checks if the unit has any buff with Paralyzed effect.
-        /// </summary>
-        private static bool IsUnitParalyzed(IBattleUnitObject unit)
-        {
-            if (unit?.Buffs == null || unit.Buffs.Count == 0)
-                return false;
-
-            return unit.Buffs.Any(buff => buff.BuffType?.Paralyzed == true);
         }
 
         private async Task UpdateRunPlayers()

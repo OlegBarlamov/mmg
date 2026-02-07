@@ -4,20 +4,21 @@ namespace Epic.Server.Resources
 {
     public class BattleUnitBuffResource
     {
+        public string Id { get; }
+        public string BuffTypeId { get; }
         public string Name { get; }
         public string ThumbnailUrl { get; }
         public bool Permanent { get; }
         public int DurationRemaining { get; }
-        public bool Stunned { get; }
 
         public BattleUnitBuffResource(IBuffObject buffObject)
         {
-            // BuffType should be populated by service layer; keep null-safe just in case.
+            Id = buffObject.Id.ToString();
+            BuffTypeId = buffObject.BuffTypeId.ToString();
             Name = buffObject.BuffType?.Name;
             ThumbnailUrl = buffObject.BuffType?.ThumbnailUrl;
             Permanent = buffObject.BuffType?.Permanent ?? false;
             DurationRemaining = buffObject.DurationRemaining;
-            Stunned = buffObject.BuffType?.Stunned ?? false;
         }
     }
 }

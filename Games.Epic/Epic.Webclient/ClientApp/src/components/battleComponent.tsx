@@ -528,6 +528,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                 <BattleUnitInfoModal
                     isVisible={this.state.showUnitInfoModal}
                     unit={this.state.selectedUnit}
+                    battleId={this.props.battleMap.id}
+                    serverAPI={this.props.serviceLocator.serverAPI()}
                     onClose={this.handleUnitInfoModalClose}
                 />
             </div>

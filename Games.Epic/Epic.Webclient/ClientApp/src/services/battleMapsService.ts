@@ -49,6 +49,7 @@ export class BattleMapsService implements IBattleMapsService {
                 index: 0,
                 roundNumber: 0,
                 nextTurnUnitId: undefined,
+                canAct: true,
             },
             players: [
                 {

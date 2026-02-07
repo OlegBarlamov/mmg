@@ -91,7 +91,9 @@ export class BattleController implements IBattleController {
 
                 this.currentPlayerInfo = this.map.players.find(player => player.playerId === this.playerService.currentPlayerInfo.id) ?? null
 
-                if (this.isPlayerControlled(this.map.turnInfo.player) && this.canPlayerAct()) {
+                // Only process user input if unit can act (not paralyzed)
+                // Server sends canAct=false for paralyzed units and auto-passes them
+                if (this.isPlayerControlled(this.map.turnInfo.player) && this.canPlayerAct() && this.map.turnInfo.canAct) {
                     const currentUnit = this.getActiveUnit(this.map.turnInfo.nextTurnUnitId!)
                     if (currentUnit) {
                         await this.processStep(currentUnit)

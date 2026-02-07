@@ -49,11 +49,15 @@ export type AttackType = {
     applyBuffs?: BuffTypeInfo[]
 }
 
+// Buff instance on a unit - minimal data stored client-side
+// Full details fetched from server when modal opens
 export type UnitBuff = {
     id: string
-    name: string
+    buffTypeId: string
+    name?: string
     thumbnailUrl?: string
-    permanent: boolean
-    durationRemaining: number
+    permanent?: boolean
     stunned?: boolean
+    paralyzed?: boolean
+    durationRemaining: number
 }

@@ -67,11 +67,15 @@ namespace Epic.Logic.Battle.Commands
 
             if (context.UnitsCarousel.ActiveUnit != null)
             {
+                var activeUnit = context.UnitsCarousel.ActiveUnit;
+                var unitCanAct = activeUnit.CanAct;
+                
                 await context.Connection.SendMessageAsync(new NextTurnCommandFromServer(
                     context.BattleObject.TurnNumber,
                     context.BattleObject.TurnPlayerIndex.ToInBattlePlayerNumber(),
-                    context.UnitsCarousel.ActiveUnit.Id,
-                    context.BattleObject.RoundNumber));
+                    activeUnit.Id,
+                    context.BattleObject.RoundNumber,
+                    unitCanAct));
             }
 
             _clientConnected = true;

@@ -47,6 +47,7 @@ export interface NextTurnCommandFromServer extends PlayerCommandFromServer {
     command: 'NEXT_TURN'
     nextTurnUnitId: string
     roundNumber: number
+    canAct: boolean
 }
 
 export interface BattleFinishedCommandFromServer extends BaseCommandFromServer {
@@ -66,11 +67,13 @@ export interface PlayerRunCommandFromServer extends PlayerCommandFromServer {
 export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer {
     command: 'RECEIVE_BUFF'
     buffId: string
+    buffTypeId: string
     buffName: string
     thumbnailUrl?: string
     permanent: boolean
+    stunned: boolean
+    paralyzed: boolean
     durationRemaining: number
-    stunned?: boolean
 }
 
 export interface UnitLosesBuffCommandFromServer extends UnitCommandFromServer {

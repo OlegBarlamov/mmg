@@ -38,6 +38,15 @@ namespace Epic.Logic.Generator
         /// Generate a single battle for a specific stage.
         /// </summary>
         Task GenerateSingle(Guid playerId, int effectiveDay, int globalDay, int stage);
+        
+        /// <summary>
+        /// Generate a test battle with specified enemies. No obstacles, no rewards.
+        /// </summary>
+        /// <param name="playerId">Player ID</param>
+        /// <param name="width">Battle field width</param>
+        /// <param name="height">Battle field height</param>
+        /// <param name="enemies">List of (unitKey, count) tuples for enemy units</param>
+        Task GenerateTestBattle(Guid playerId, int width, int height, IReadOnlyList<(string unitKey, int count)> enemies);
     }
 
     [UsedImplicitly]
@@ -575,6 +584,40 @@ namespace Epic.Logic.Generator
             {
                 await GenerateSingle(playerId, effectiveDay, globalDay, stage);
             }
+        }
+
+        public async Task GenerateTestBattle(Guid playerId, int width, int height, IReadOnlyList<(string unitKey, int count)> enemies)
+        {
+            var container = await UnitsContainersService.Create(height, Guid.Empty);
+            
+            // Add enemy units
+            int slot = 0;
+            foreach (var (unitKey, count) in enemies)
+            {
+                var unitType = await UnitTypesRepository.GetByName(unitKey);
+                if (unitType != null)
+                {
+                    await GlobalUnitsRepository.Create(unitType.Id, count, container.Id, true, slot);
+                    slot++;
+                }
+                else
+                {
+                    Logger.LogWarning($"Unit type not found: {unitKey}");
+                }
+            }
+            
+            // Create battle definition with no expiration (max day)
+            await BattleDefinitionsService.CreateBattleDefinition(
+                playerId,
+                width,
+                height,
+                int.MaxValue, // Never expires
+                0, // Full reward visibility
+                0, // Full guard visibility
+                0, // Stage 0
+                container.Id);
+            
+            Logger.LogInformation($"Generated test battle for player {playerId}: {width}x{height} with {enemies.Count} enemy types");
         }
 
         internal enum GeneratedRewardTypes

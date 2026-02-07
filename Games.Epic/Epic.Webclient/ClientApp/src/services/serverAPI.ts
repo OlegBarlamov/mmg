@@ -141,4 +141,48 @@ export interface IServerAPI {
 
     getUnitTypeInfo(unitTypeId: string): Promise<IUnitTypeInfo>
     getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]>
+
+    getBattleUnitInfo(battleId: string, unitId: string): Promise<IBattleUnitInfo>
+}
+
+// Battle unit info fetched from server with computed buff effects
+export interface IBattleUnitInfo {
+    id: string
+    name: string
+    count: number
+    isAlive: boolean
+    position: { r: number, c: number }
+    player: string
+    props: IBattleUnitProps
+    currentProps: IBattleUnitProps
+    buffs: IBattleUnitBuff[]
+}
+
+export interface IBattleUnitProps {
+    battleImgUrl: string
+    speed: number
+    health: number
+    attack: number
+    defense: number
+    movementType: string
+    attacks: IBattleUnitAttack[]
+    waited: boolean
+    buffs: IBattleUnitBuff[]
+}
+
+export interface IBattleUnitAttack {
+    name: string
+    minDamage: number
+    maxDamage: number
+    attackMinRange: number
+    attackMaxRange: number
+}
+
+export interface IBattleUnitBuff {
+    id: string
+    buffTypeId: string
+    thumbnailUrl?: string
+    name?: string
+    permanent?: boolean
+    durationRemaining: number
 }

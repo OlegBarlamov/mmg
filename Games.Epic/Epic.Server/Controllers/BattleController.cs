@@ -182,6 +182,30 @@ namespace Epic.Server.Controllers
             }
         }
 
+        [HttpGet("{battleId}/unit/{unitId}")]
+        public async Task<IActionResult> GetBattleUnit(Guid battleId, Guid unitId)
+        {
+            if (!User.TryGetPlayerId(out var playerId))
+                return BadRequest(Constants.PlayerIdIsNotSpecifiedErrorMessage);
+
+            var battleObject = await BattlesService.GetBattleById(battleId);
+            if (battleObject.PlayerInfos.All(x => x.PlayerId != playerId))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = "You are not authorized to see this battle."
+                });
+            }
+
+            var unit = battleObject.Units.FirstOrDefault(u => u.Id == unitId);
+            if (unit == null)
+            {
+                return NotFound($"Unit {unitId} not found in battle {battleId}");
+            }
+
+            return Ok(new BattleUnitResource(unit, BuffTypesRegistry));
+        }
+
         [HttpGet("{battleId}/ws")]
         public async Task EstablishWsConnection(Guid battleId)
         {

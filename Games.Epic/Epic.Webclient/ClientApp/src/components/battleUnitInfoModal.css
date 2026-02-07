@@ -161,6 +161,16 @@
     font-weight: bold;
 }
 
+.buff-value {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.debuff-value {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
 /* Unit Attacks Section */
 .unit-attacks {
     background: rgba(0, 0, 0, 0.2);

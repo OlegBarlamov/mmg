@@ -128,6 +128,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 result: undefined,
                 nextTurnUnitId: message.nextTurnUnitId,
                 roundNumber: message.roundNumber,
+                canAct: message.canAct,
             }
             return enqueue(() => {
                 // Decrement buff durations for the active unit (server already processed this)
@@ -171,6 +172,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                 },
                 nextTurnUnitId: "",
                 roundNumber: this.currentRoundNumber,
+                canAct: false,
             }
             return enqueue(() => this.onNextTurnInfo(turnInfo))
         } else if (message.command === 'UNIT_PASS') {
@@ -204,11 +206,13 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                     }
                     unit.currentProps.buffs.push({
                         id: message.buffId,
+                        buffTypeId: message.buffTypeId,
                         name: message.buffName,
                         thumbnailUrl: message.thumbnailUrl,
                         permanent: message.permanent,
+                        stunned: message.stunned,
+                        paralyzed: message.paralyzed,
                         durationRemaining: message.durationRemaining,
-                        stunned: message.stunned
                     })
                     // Update buff icons on the battlefield
                     await this.mapController.updateUnitBuffIcons(unit)

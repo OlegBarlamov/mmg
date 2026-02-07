@@ -51,6 +51,9 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
     getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]> {
         throw new Error("Method not implemented.");
     }
+    getBattleUnitInfo(battleId: string, unitId: string): Promise<import("../services/serverAPI").IBattleUnitInfo> {
+        throw new Error("Method not implemented.");
+    }
     beginBattleWithPlayer(playerName: string): Promise<BattleMap> {
         throw new Error("Method not implemented.");
     }
@@ -488,6 +491,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                 index: 0,
                 roundNumber: 0,
                 nextTurnUnitId: undefined,
+                canAct: true,
             },
             players: [
                 {
@@ -736,6 +740,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             turnNumber: map.turnInfo.index,
             nextTurnUnitId: targetUnit.id,
             roundNumber: map.turnInfo.roundNumber,
+            canAct: true,
         })
     }
     

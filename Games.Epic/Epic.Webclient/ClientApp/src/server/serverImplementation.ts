@@ -148,5 +148,9 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
             return obstacle.mask[dx][dy];
         });
     }
+
+    getBattleUnitInfo(battleId: string, unitId: string): Promise<import("../services/serverAPI").IBattleUnitInfo> {
+        return this.fetchResource(`api/battle/${battleId}/unit/${unitId}`, "GET", "battle_unit_info")
+    }
     
 }

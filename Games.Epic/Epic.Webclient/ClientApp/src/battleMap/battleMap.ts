@@ -20,6 +20,7 @@ export type BattleTurnInfo = {
     result?: BattleResult
     nextTurnUnitId: string | undefined
     roundNumber: number
+    canAct: boolean
 }
 
 export type InBattlePlayerInfo = {

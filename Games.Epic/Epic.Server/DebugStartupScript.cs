@@ -102,15 +102,6 @@ namespace Epic.Server
 
             await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, userPlayer.Id, 500);
             await ResourcesRepository.GiveResource(ResourcesRepository.GoldResourceId, user1Player.Id, 500);
-            // var resourcesByKeys = await ResourcesRepository.GetAllResourcesByKeys();
-            // await Task.WhenAll(resourcesByKeys.Values.Select(async x =>
-            // {
-            //     if (x.Id != ResourcesRepository.GoldResourceId)
-            //     {
-            //         await ResourcesRepository.GiveResource(x.Id, userPlayer.Id, 1);
-            //         await ResourcesRepository.GiveResource(x.Id, user1Player.Id, 1);
-            //     }
-            // }));
             
             var hero = await HeroesService.CreateNew(userPlayer.Name, userPlayer.Id);
             await PlayersService.SetActiveHero(userPlayer.Id, hero.Id);
@@ -126,10 +117,12 @@ namespace Epic.Server
             var preset2 = await GenerateRandomPreset(targetScore);
             
             int slot = 0;
-            var debugArmy = false;
+            var debugArmy = true;
             if (debugArmy)
             {
-                await GiveUnitByKey(hero.ArmyContainerId, 0, 2, "Dendroid");
+                await GiveUnitByKey(hero.ArmyContainerId, 0, 10, "Dragon Fly");
+                await GiveUnitByKey(hero.ArmyContainerId, 1, 10, "Dragon Fly");
+                await GiveUnitByKey(hero.ArmyContainerId, 2, 10, "Dragon Fly");
             }
             else
             {
@@ -148,6 +141,21 @@ namespace Epic.Server
                 slot++;
             }
 
+            var debugBattle = true;
+            if (debugBattle)
+            {
+                await BattlesGenerator.GenerateTestBattle(
+                    userPlayer.Id,
+                    width: 7,
+                    height: 7,
+                    new List<(string, int)>
+                    {
+                        ("Zombie", 30),
+                        ("Zombie", 30),
+                        ("Zombie", 30),
+                    });
+            }
+            
             // Generate battles for both players (effectiveDay and globalDay are the same for new players at day 1)
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);
             await BattlesGenerator.GenerateSingle(userPlayer.Id, userPlayer.Day, userPlayer.Day, userPlayer.Stage);

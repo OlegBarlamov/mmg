@@ -31,6 +31,21 @@ namespace Epic.Core.Services.Battles
 
         public IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; set; }
         public IReadOnlyList<IBuffObject> Buffs { get; set; } = Array.Empty<IBuffObject>();
+        
+        /// <summary>
+        /// Whether the unit is paralyzed (cannot perform any actions).
+        /// </summary>
+        public bool IsParalyzed => Buffs?.Any(buff => buff.BuffType?.Paralyzed == true) ?? false;
+        
+        /// <summary>
+        /// Whether the unit is stunned (cannot move but can still attack).
+        /// </summary>
+        public bool IsStunned => Buffs?.Any(buff => buff.BuffType?.Stunned == true) ?? false;
+        
+        /// <summary>
+        /// Whether the unit can act this turn (not paralyzed).
+        /// </summary>
+        public bool CanAct => !IsParalyzed;
 
         IGlobalUnitObject IBattleUnitObject.GlobalUnit => GlobalUnit;
 
