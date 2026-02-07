@@ -1,8 +1,9 @@
 using System;
+using Epic.Data.EffectType;
 
 namespace Epic.Data.BuffType
 {
-    public interface IBuffFields
+    public interface IBuffFields : IEffectTypeProperties
     {
         string Key { get; }
         string Name { get; }
@@ -29,12 +30,6 @@ namespace Epic.Data.BuffType
         int Heals { get; }
         int HealsPercentage { get; }
         bool HealCanResurrect { get; }
-        
-        int TakesDamageMin { get; }
-        int TakesDamageMax { get; }
-        
-        int DamageReturnPercentage { get; }
-        int DamageReturnMaxRange { get; }
         
         bool Permanent { get; }
         int Duration { get; }

@@ -10,6 +10,7 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
+using Epic.Core.Services.EffectTypes;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Heroes;
@@ -27,6 +28,7 @@ using Epic.Data.Artifact;
 using Epic.Data.ArtifactType;
 using Epic.Data.Buff;
 using Epic.Data.BuffType;
+using Epic.Data.EffectType;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.BattleObstacles;
 using Epic.Data.BattleReports;
@@ -85,6 +87,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IArtifactsService, DefaultArtifactsService>();
             serviceRegistrator.RegisterType<IArtifactTypesService, DefaultArtifactTypesService>();
             serviceRegistrator.RegisterType<IBuffTypesService, DefaultBuffTypesService>();
+            serviceRegistrator.RegisterType<IEffectTypesService, DefaultEffectTypesService>();
             serviceRegistrator.RegisterType<IBuffsService, DefaultBuffsService>();
             serviceRegistrator.RegisterType<IGameResourcesService, DefaultGameResourcesService>();
             serviceRegistrator.RegisterType<IBattleReportsService, DefaultBattleReportsService>();
@@ -94,6 +97,8 @@ namespace Epic.Server
             serviceRegistrator.RegisterFactory<IArtifactTypesRegistry>((locator, _) => locator.Resolve<DefaultArtifactTypesRegistry>());
             serviceRegistrator.RegisterType<DefaultBuffTypesRegistry, DefaultBuffTypesRegistry>();
             serviceRegistrator.RegisterFactory<IBuffTypesRegistry>((locator, _) => locator.Resolve<DefaultBuffTypesRegistry>());
+            serviceRegistrator.RegisterType<DefaultEffectTypesRegistry, DefaultEffectTypesRegistry>();
+            serviceRegistrator.RegisterFactory<IEffectTypesRegistry>((locator, _) => locator.Resolve<DefaultEffectTypesRegistry>());
             serviceRegistrator.RegisterType<DefaultGameResourcesRegistry, DefaultGameResourcesRegistry>();
             serviceRegistrator.RegisterFactory<IGameResourcesRegistry>((locator, _) => locator.Resolve<DefaultGameResourcesRegistry>());
             serviceRegistrator.RegisterType<IBattleObstaclesService, DefaultBattleObstaclesService>();
@@ -120,6 +125,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IArtifactsRepository, InMemoryArtifactsRepository>();
             serviceRegistrator.RegisterType<IArtifactTypesRepository, InMemoryArtifactTypesRepository>();
             serviceRegistrator.RegisterType<IBuffTypesRepository, InMemoryBuffTypesRepository>();
+            serviceRegistrator.RegisterType<IEffectTypesRepository, InMemoryEffectTypesRepository>();
             serviceRegistrator.RegisterType<IBuffsRepository, InMemoryBuffsRepository>();
             
             serviceRegistrator.RegisterType<IBattleLogicFactory, BattleLogicFactory>();
