@@ -1,93 +1,78 @@
 Buffs:
   HealthPlusOne:
-    Key: HealthPlusOne
     Name: "Max Health +1"
     HealthBonus: 1
     Permanent: true
     Duration: 0
   HealthPlusTwo:
-    Key: HealthPlusTwo
     Name: "Max Health +2"
     HealthBonus: 2
     Permanent: true
     Duration: 0
   SpeedPlusOne:
-    Key: SpeedPlusOne
     Name: "Speed +1"
     SpeedBonus: 1
     Permanent: true
     Duration: 0
   ElixirOfLifeBuff:
-    Key: ElixirOfLifeBuff
     Name: "Health +4; Health +25%"
     HealthBonus: 4
     HealthBonusPercentage: 25
     Permanent: true
     Duration: 0
   Blind:
-    Key: Blind
     Name: "Blind"
     Duration: 3
     ThumbnailUrl: "/resources/Blind.png"
     DeclinesWhenTakesDamage: true
     Paralyzed: true
   Bound:
-    Key: Bound
     Name: "Bound"
     Duration: 3
     ThumbnailUrl: "/resources/Bound.png"
     Stunned: true
   FireShield:
-    Key: FireShield
     Name: "Fire shield"
     ThumbnailUrl: "/resources/Fire_Shield.png"
     DamageReturnPercentage: 20
     DamageReturnMaxRange: 1
     Permanent: true
   Disease:
-    Key: Disease
     Name: "Disease"
     ThumbnailUrl: "/resources/Disease.png"
     AttackBonus: -2
     DefenseBonus: -2
     Duration: 3
   Regeneration:
-    Key: Regeneration
     Name: "Regeneration"
     Permanent: true
     Heals: 50
   Vampirism:
-    Key: Vampirism
     Name: "Vampirism"
     Permanent: true
     VampirePercentage: 100
   Vampirism_with_resurrect:
-    Key: Vampirism_with_resurrect
     Name: "Drain Life"
     Permanent: true
     VampirePercentage: 100
     VampireCanResurrect: true
   Curse:
-    Key: Curse
     Name: "Curse"
     ThumbnailUrl: "/resources/Curse.png"
     Permanent: true
     MaxDamageBonusPercentage: -100
   Aging:
-    Key: Aging
     Name: "Aging"
     ThumbnailUrl: "/resources/Aging.png"
     Permanent: true
     HealthBonusPercentage: -50
   Petrifying:
-    Key: Petrifying
     Name: "Petrifying"
     Duration: 3
     ThumbnailUrl: "/resources/Petrifying.png"
     DeclinesWhenTakesDamage: true
     Paralyzed: true
   Weakness:
-    Key: Weakness
     Name: "Weakness"
     Duration: 3
     ThumbnailUrl: "/resources/Weakness.png"

@@ -68,7 +68,7 @@ namespace Epic.Logic.Battle.Commands
             if (context.UnitsCarousel.ActiveUnit != null)
             {
                 var activeUnit = context.UnitsCarousel.ActiveUnit;
-                var unitCanAct = activeUnit.CanAct;
+                var unitCanAct = activeUnit.CanAct();
                 
                 await context.Connection.SendMessageAsync(new NextTurnCommandFromServer(
                     context.BattleObject.TurnNumber,

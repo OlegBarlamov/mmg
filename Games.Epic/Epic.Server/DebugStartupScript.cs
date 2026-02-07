@@ -110,7 +110,7 @@ namespace Epic.Server
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
 
             // Give some artifacts to the first player's hero for testing.
-            // await GiveTestArtifacts(hero.Id);
+            await GiveTestArtifacts(hero.Id);
             
             // Generate random presets for both heroes
             var preset1 = await GenerateRandomPreset(targetScore);
@@ -120,9 +120,9 @@ namespace Epic.Server
             var debugArmy = true;
             if (debugArmy)
             {
-                await GiveUnitByKey(hero.ArmyContainerId, 0, 10, "Dragon Fly");
-                await GiveUnitByKey(hero.ArmyContainerId, 1, 10, "Dragon Fly");
-                await GiveUnitByKey(hero.ArmyContainerId, 2, 10, "Dragon Fly");
+                await GiveUnitByKey(hero.ArmyContainerId, 0, 10, "Unicorn");
+                await GiveUnitByKey(hero.ArmyContainerId, 1, 10, "Unicorn");
+                await GiveUnitByKey(hero.ArmyContainerId, 2, 10, "Unicorn");
             }
             else
             {
@@ -150,9 +150,9 @@ namespace Epic.Server
                     height: 7,
                     new List<(string, int)>
                     {
-                        ("Zombie", 30),
-                        ("Zombie", 30),
-                        ("Zombie", 30),
+                        ("Unicorn", 30),
+                        ("Unicorn", 30),
+                        ("Unicorn", 30),
                     });
             }
             

@@ -22,39 +22,10 @@ namespace Epic.Core.Services.Battles
         IHeroStats HeroStats { get; }
         
         int MaxHealth { get; }
-        
         int CurrentAttack { get; }
-        
         int CurrentDefense { get; }
         
         IReadOnlyList<AttackFunctionStateEntity> AttackFunctionsData { get; }
-
         IReadOnlyList<IBuffObject> Buffs { get; }
-        
-        /// <summary>
-        /// Whether the unit is paralyzed (cannot perform any actions).
-        /// </summary>
-        bool IsParalyzed { get; }
-        
-        /// <summary>
-        /// Whether the unit is stunned (cannot move but can still attack).
-        /// </summary>
-        bool IsStunned { get; }
-        
-        /// <summary>
-        /// Whether the unit can act this turn (not paralyzed).
-        /// </summary>
-        bool CanAct { get; }
-        
-        /// <summary>
-        /// Calculates the effective MinDamage for an attack, applying buff bonuses.
-        /// </summary>
-        int GetEffectiveMinDamage(int baseMinDamage);
-        
-        /// <summary>
-        /// Calculates the effective MaxDamage for an attack, applying buff bonuses.
-        /// MaxDamage is guaranteed to be at least equal to effective MinDamage.
-        /// </summary>
-        int GetEffectiveMaxDamage(int baseMinDamage, int baseMaxDamage);
     }
 }

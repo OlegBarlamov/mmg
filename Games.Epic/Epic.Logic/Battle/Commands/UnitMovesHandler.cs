@@ -14,8 +14,7 @@ namespace Epic.Logic.Battle.Commands
             ValidateExpectedTurn(context, command.TurnIndex, command.Player);
             
             // Check if unit is stunned (cannot move)
-            var isStunned = TargetActor.Buffs?.Any(b => b.BuffType?.Stunned == true) ?? false;
-            if (isStunned)
+            if (TargetActor.IsStunned())
             {
                 throw new BattleLogicException("Stunned units cannot move");
             }

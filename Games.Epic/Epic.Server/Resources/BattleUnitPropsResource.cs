@@ -4,8 +4,8 @@ using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.Battles;
 using Epic.Data.BattleUnits;
-using Epic.Data.UnitTypes;
 using Epic.Data.UnitTypes.Subtypes;
+using static Epic.Logic.Battle.BattleUnitBuffExtensions;
 
 namespace Epic.Server.Resources
 {
@@ -29,12 +29,12 @@ namespace Epic.Server.Resources
             BattleImgUrl = battleUnitObject.GlobalUnit.UnitType.BattleImgUrl;
             Speed = battleUnitObject.GlobalUnit.UnitType.Speed;
             Waited = battleUnitObject.Waited;
-            Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.MaxHealth;
+            Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.GetEffectiveMaxHealth();
             Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks
                 .Select(a => new AttackTypeResource(a, buffTypesRegistry))
                 .ToList();
-            Attack = currentProps ? battleUnitObject.CurrentAttack : battleUnitObject.GlobalUnit.UnitType.Attack;
-            Defense = currentProps ? battleUnitObject.CurrentDefense : battleUnitObject.GlobalUnit.UnitType.Defense;
+            Attack = currentProps ? battleUnitObject.GetEffectiveAttack() : battleUnitObject.GlobalUnit.UnitType.Attack;
+            Defense = currentProps ? battleUnitObject.GetEffectiveDefense() : battleUnitObject.GlobalUnit.UnitType.Defense;
             Movement = battleUnitObject.GlobalUnit.UnitType.Movement;
             MovementType = battleUnitObject.GlobalUnit.UnitType.Movement.ToString();
             if (currentProps)

@@ -51,7 +51,7 @@ namespace Epic.Server
             var fields = config.Buffs.Select(kv =>
             {
                 var x = kv.Value ?? new BuffsConfig.BuffTypeDeclaration();
-                var key = string.IsNullOrWhiteSpace(x.Key) ? kv.Key : x.Key;
+                var key = kv.Key;
                 x.Key = key;
                 if (string.IsNullOrWhiteSpace(x.Name))
                     x.Name = key;

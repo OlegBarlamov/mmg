@@ -47,12 +47,10 @@ namespace Epic.Logic.Battle
             var enemies = Battle.Units.Where(x => x.PlayerIndex != unit.PlayerIndex && x.GlobalUnit.IsAlive).ToList();
             var attacks = unit.GlobalUnit.UnitType.Attacks;
             
-            // Check if unit is stunned (cannot move but can still attack)
-            var isStunned = unit.Buffs?.Any(b => b.BuffType?.Stunned == true) ?? false;
-
             Tuple<IBattleUnitObject, int> closestTarget = null;
+            var isStunned = unit.IsStunned();
             // Stunned units cannot move, so don't calculate move cells
-            var cellsToMove = isStunned 
+            var cellsToMove = isStunned
                 ? new List<HexoPoint>() 
                 : MapUtils.GetCellsForUnitMove(Battle, Battle.Obstacles, unit, unit.GlobalUnit.UnitType.Movement);
             var possibleAttacksWithTargets = new List<Tuple<IBattleUnitObject, IAttackFunctionType, HexoPoint, int>>();
@@ -145,19 +143,15 @@ namespace Epic.Logic.Battle
                         
                         // Check if this enemy has debuffs that decline when taking damage
                         // Attacking such targets would break their debuff - apply penalty
-                        if (targetDamage.DamageData.DamageTaken > 0 && targetDamage.Target.Buffs != null)
+                        if (targetDamage.DamageData.DamageTaken > 0)
                         {
                             // Large penalty for breaking paralysis (unit can't act at all)
-                            if (targetDamage.Target.Buffs.Any(b => 
-                                b.BuffType?.Paralyzed == true && 
-                                b.BuffType?.DeclinesWhenTakesDamage == true))
+                            if (targetDamage.Target.HasDecliningParalysis())
                             {
                                 debuffBreakPenalty += 5000;
                             }
                             // Smaller penalty for breaking stun (unit can't move but can still act)
-                            else if (targetDamage.Target.Buffs.Any(b => 
-                                b.BuffType?.Stunned == true && 
-                                b.BuffType?.DeclinesWhenTakesDamage == true))
+                            else if (targetDamage.Target.HasDecliningStun())
                             {
                                 debuffBreakPenalty += 100;
                             }

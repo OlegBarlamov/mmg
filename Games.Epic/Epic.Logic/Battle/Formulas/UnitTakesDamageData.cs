@@ -33,7 +33,7 @@ namespace Epic.Logic.Battle.Formulas
             var damage = randomSum * attacker.GlobalUnit.Count / Math.Max(1, dicesCounts);
             
             // Apply Attack vs Defense modifier
-            var attackDefenseDiff = attacker.CurrentAttack - target.CurrentDefense;
+            var attackDefenseDiff = attacker.GetEffectiveAttack() - target.GetEffectiveDefense();
             var multiplier = 1.0;
             if (attackDefenseDiff > 0)
             {
@@ -60,12 +60,13 @@ namespace Epic.Logic.Battle.Formulas
             
             damage = Math.Max(1, damage);
 
+            var targetMaxHealth = target.GetEffectiveMaxHealth();
             var finalHealth = target.CurrentHealth - damage;
             var newCount = target.GlobalUnit.Count;
             if (finalHealth <= 0)
             {
-                var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / target.MaxHealth) + 1;
-                finalHealth += killedUnits * target.MaxHealth;
+                var killedUnits = (int)Math.Truncate((double)finalHealth * (-1) / targetMaxHealth) + 1;
+                finalHealth += killedUnits * targetMaxHealth;
                 newCount = target.GlobalUnit.Count - killedUnits;
 
                 if (newCount < 1)
@@ -73,7 +74,7 @@ namespace Epic.Logic.Battle.Formulas
                     return new UnitTakesDamageData
                     {
                         DamageTaken =
-                            target.GlobalUnit.Count * target.MaxHealth + target.CurrentHealth,
+                            target.GlobalUnit.Count * targetMaxHealth + target.CurrentHealth,
                         KilledCount = target.GlobalUnit.Count,
                         RemainingHealth = finalHealth,
                         RemainingCount = 0,

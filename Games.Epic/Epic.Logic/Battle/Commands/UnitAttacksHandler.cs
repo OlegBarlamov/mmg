@@ -6,11 +6,11 @@ using Epic.Core.ClientMessages;
 using Epic.Core.Logic.Erros;
 using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
-using Epic.Core.Services.Buffs;
 using Epic.Data.BattleUnits;
 using Epic.Data.UnitTypes.Subtypes;
 using Epic.Logic.Battle.Formulas;
 using Epic.Logic.Battle.Map;
+using static Epic.Logic.Battle.BattleUnitBuffExtensions;
 
 namespace Epic.Logic.Battle.Commands
 {
@@ -39,8 +39,7 @@ namespace Epic.Logic.Battle.Commands
                 throw new BattleLogicException($"The target Attack Type {_attackFunction.Name} does not allow moving");
             
             // Stunned units cannot move as part of attack
-            var isStunned = TargetActor.Buffs?.Any(b => b.BuffType?.Stunned == true) ?? false;
-            if (isStunned && command.MoveToCell != new HexoPoint(TargetActor.Column, TargetActor.Row))
+            if (TargetActor.IsStunned() && command.MoveToCell != new HexoPoint(TargetActor.Column, TargetActor.Row))
                 throw new BattleLogicException("Stunned units cannot move");
             _range = OddRHexoGrid.Distance(command.MoveToCell, _targetTarget);
             if (_range < _attackFunction.AttackMinRange || _range > _attackFunction.AttackMaxRange)
@@ -79,7 +78,7 @@ namespace Epic.Logic.Battle.Commands
                 _range);
 
             // Paralyzed units cannot counterattack
-            var isTargetParalyzed = _targetTarget.IsParalyzed;
+            var isTargetParalyzed = _targetTarget.IsParalyzed();
             
             if (_attackFunction.CanTargetCounterattack && _targetTarget.GlobalUnit.IsAlive && !isTargetParalyzed)
             {
@@ -202,7 +201,7 @@ namespace Epic.Logic.Battle.Commands
                 // Remove buffs that decline when taking damage
                 if (targetDamage.DamageData.DamageTaken > 0)
                 {
-                    await RemoveBuffsThatDeclineOnDamage(context, mutableTarget, command);
+                    await context.BuffsLogic.RemoveBuffsThatDeclineOnDamage(mutableTarget, command.TurnIndex, command.Player);
                     
                     // Apply damage return from target's buffs back to attacker
                     if (attacker.GlobalUnit.IsAlive)
@@ -213,7 +212,7 @@ namespace Epic.Logic.Battle.Commands
                 
                 if (mutableTarget.GlobalUnit.IsAlive)
                 {
-                    await ApplyAttackBuffsToTarget(context, mutableTarget, attackType, command);
+                    await context.BuffsLogic.ApplyAttackBuffsToTarget(mutableTarget, attackType, command.TurnIndex, command.Player);
                 }
             }
             
@@ -232,25 +231,7 @@ namespace Epic.Logic.Battle.Commands
             int range,
             UnitAttackClientBattleMessage command)
         {
-            if (target.Buffs == null || target.Buffs.Count == 0)
-                return;
-
-            // Calculate total damage return percentage from all buffs that are in range
-            var totalReturnPercentage = 0;
-            
-            foreach (var buff in target.Buffs)
-            {
-                if (buff.BuffType == null || buff.BuffType.DamageReturnPercentage <= 0)
-                    continue;
-                
-                // Check if attacker is within the buff's max range (0 = any range)
-                var maxRange = buff.BuffType.DamageReturnMaxRange;
-                if (maxRange > 0 && range > maxRange)
-                    continue;
-                
-                totalReturnPercentage += buff.BuffType.DamageReturnPercentage;
-            }
-            
+            var totalReturnPercentage = target.GetDamageReturnPercentage(range);
             if (totalReturnPercentage <= 0)
                 return;
             
@@ -259,7 +240,7 @@ namespace Epic.Logic.Battle.Commands
             if (damageToReturn <= 0)
                 return;
             
-            var unitHealth = attacker.GlobalUnit.UnitType.Health;
+            var unitHealth = attacker.GetEffectiveMaxHealth();
             var currentCount = attacker.CurrentCount;
             var currentHealth = attacker.CurrentHealth;
             
@@ -316,134 +297,13 @@ namespace Epic.Logic.Battle.Commands
             await context.MessageBroadcaster.BroadcastMessageAsync(damageMessage);
         }
 
-        private static async Task RemoveBuffsThatDeclineOnDamage(
-            CommandExecutionContext context,
-            MutableBattleUnitObject target,
-            UnitAttackClientBattleMessage command)
-        {
-            if (target.Buffs == null || target.Buffs.Count == 0)
-                return;
-
-            var buffsToRemove = target.Buffs
-                .Where(b => b.BuffType?.DeclinesWhenTakesDamage == true)
-                .ToList();
-
-            if (buffsToRemove.Count == 0)
-                return;
-
-            foreach (var buff in buffsToRemove)
-            {
-                await context.BuffsService.DeleteById(buff.Id);
-                
-                var buffLostMessage = new UnitLosesBuffCommandFromServer(
-                    command.TurnIndex,
-                    command.Player,
-                    target.Id.ToString())
-                {
-                    BuffId = buff.Id.ToString(),
-                    BuffName = buff.BuffType?.Name ?? "Unknown"
-                };
-                await context.MessageBroadcaster.BroadcastMessageAsync(buffLostMessage);
-            }
-
-            // Update in-memory buffs list
-            var remainingBuffs = target.Buffs.Where(b => b.BuffType?.DeclinesWhenTakesDamage != true).ToList();
-            target.Buffs = remainingBuffs;
-        }
-
-        private static async Task ApplyAttackBuffsToTarget(
-            CommandExecutionContext context,
-            MutableBattleUnitObject target,
-            IAttackFunctionType attackType,
-            UnitAttackClientBattleMessage command)
-        {
-            if (attackType.ApplyBuffTypeIds == null || attackType.ApplyBuffTypeIds.Count == 0)
-                return;
-
-            var newBuffs = new List<IBuffObject>();
-            var replacedBuffTypeIds = new List<System.Guid>();
-            
-            for (int i = 0; i < attackType.ApplyBuffTypeIds.Count; i++)
-            {
-                var buffTypeId = attackType.ApplyBuffTypeIds[i];
-                
-                if (buffTypeId == System.Guid.Empty)
-                    continue;
-                
-                // Get the chance for this buff (default to 100% if not specified)
-                var chance = (attackType.ApplyBuffChances != null && i < attackType.ApplyBuffChances.Count) 
-                    ? attackType.ApplyBuffChances[i] 
-                    : 100;
-                
-                // Roll for buff application
-                if (chance < 100)
-                {
-                    var roll = context.RandomProvider.NextInteger(0, 100);
-                    if (roll >= chance)
-                        continue; // Buff not applied
-                }
-                    
-                var buffType = await context.BuffTypesService.GetById(buffTypeId);
-                if (buffType == null)
-                    continue;
-                
-                var durationRemaining = buffType.Permanent ? 0 : buffType.Duration;
-                // BuffsService.Create will automatically remove any existing buff of the same type
-                var buff = await context.BuffsService.Create(target.Id, buffType.Id, durationRemaining);
-                newBuffs.Add(buff);
-                replacedBuffTypeIds.Add(buffTypeId);
-                
-                var buffAppliedMessage = new UnitReceivesBuffCommandFromServer(
-                    command.TurnIndex, 
-                    command.Player, 
-                    target.Id.ToString())
-                {
-                    BuffId = buff.Id.ToString(),
-                    BuffTypeId = buffType.Id.ToString(),
-                    BuffName = buffType.Name,
-                    ThumbnailUrl = buffType.ThumbnailUrl,
-                    Permanent = buffType.Permanent,
-                    Stunned = buffType.Stunned,
-                    Paralyzed = buffType.Paralyzed,
-                    DurationRemaining = durationRemaining,
-                };
-                await context.MessageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
-            }
-            
-            // Update the in-memory buffs list for subsequent calculations in this battle session
-            if (newBuffs.Count > 0)
-            {
-                // Remove existing buffs of the same types (they were replaced in the repository)
-                var existingBuffs = target.Buffs?.ToList() ?? new List<IBuffObject>();
-                existingBuffs.RemoveAll(b => replacedBuffTypeIds.Contains(b.BuffTypeId));
-                existingBuffs.AddRange(newBuffs);
-                target.Buffs = existingBuffs;
-            }
-        }
-
         private static async Task ApplyVampireHealing(
             CommandExecutionContext context,
             MutableBattleUnitObject attacker,
             int damageDealt,
             UnitAttackClientBattleMessage command)
         {
-            // Calculate total vampire percentage from all buffs
-            var vampirePercentage = 0;
-            var canResurrect = false;
-            
-            if (attacker.Buffs != null)
-            {
-                foreach (var buff in attacker.Buffs)
-                {
-                    if (buff.BuffType != null && buff.BuffType.VampirePercentage > 0)
-                    {
-                        vampirePercentage += buff.BuffType.VampirePercentage;
-                        if (buff.BuffType.VampireCanResurrect)
-                            canResurrect = true;
-                    }
-                }
-            }
-            
+            var (vampirePercentage, canResurrect) = attacker.GetVampireStats();
             if (vampirePercentage <= 0)
                 return;
             
@@ -452,7 +312,7 @@ namespace Epic.Logic.Battle.Commands
             if (hpToHeal <= 0)
                 return;
             
-            var unitHealth = attacker.GlobalUnit.UnitType.Health;
+            var unitHealth = attacker.GetEffectiveMaxHealth();
             var initialCount = attacker.InitialCount;
             var currentCount = attacker.CurrentCount;
             var currentHealth = attacker.CurrentHealth;

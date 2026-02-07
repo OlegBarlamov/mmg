@@ -1,7 +1,5 @@
 using Epic.Core.Logic;
 using Epic.Core.Services.Battles;
-using Epic.Core.Services.Buffs;
-using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Units;
@@ -22,8 +20,7 @@ namespace Epic.Logic.Battle.Commands
         public IBattleClientConnection Connection { get; }
         public IBattlesService BattlesService { get; }
         public IGameResourcesRepository GameResourcesRepository { get; }
-        public IBuffsService BuffsService { get; }
-        public IBuffTypesService BuffTypesService { get; }
+        public IBuffsLogic BuffsLogic { get; }
 
         public CommandExecutionContext(
             MutableBattleObject battleObject,
@@ -36,8 +33,7 @@ namespace Epic.Logic.Battle.Commands
             IBattleClientConnection connection,
             IBattlesService battlesService,
             IGameResourcesRepository gameResourcesRepository,
-            IBuffsService buffsService,
-            IBuffTypesService buffTypesService)
+            IBuffsLogic buffsLogic)
         {
             BattleObject = battleObject;
             ExpectedTurn = expectedTurn;
@@ -49,8 +45,7 @@ namespace Epic.Logic.Battle.Commands
             GlobalUnitsService = globalUnitsService;
             BattlesService = battlesService;
             GameResourcesRepository = gameResourcesRepository;
-            BuffsService = buffsService;
-            BuffTypesService = buffTypesService;
+            BuffsLogic = buffsLogic;
         }
     }
 }

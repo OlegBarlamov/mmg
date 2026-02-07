@@ -21,6 +21,7 @@ using Epic.Data.GameResources;
 using Epic.Logic.Battle.Commands;
 using Epic.Logic.Generator;
 using FrameworkSDK.Common;
+using static Epic.Logic.Battle.BattleUnitBuffExtensions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -48,6 +49,7 @@ namespace Epic.Logic.Battle
         private TurnAwaiter TurnAwaiter { get; }
         private ClientConnectedHandler ClientConnectedHandler { get; }
         private BattleAI AI { get; }
+        private IBuffsLogic BuffsLogic { get; }
 
         private Dictionary<Type, ICommandsHandler> CommandsHandlers { get; } =
             new Dictionary<Type, ICommandsHandler>
@@ -110,6 +112,14 @@ namespace Epic.Logic.Battle
             TurnAwaiter = new TurnAwaiter();
             
             AI = new BattleAI(BattleObject, this);
+            
+            BuffsLogic = new BuffsLogic(
+                BuffsService,
+                BuffTypesService,
+                GlobalUnitsService,
+                BattleUnitsService,
+                RandomProvider,
+                ClientConnectedHandler);
         }
 
         public void Dispose()
@@ -132,6 +142,7 @@ namespace Epic.Logic.Battle
                     // Initialize the battle
                     BattleObject.TurnNumber = 0;
                     await BattlesService.UpdateBattle(BattleObject);
+                    await InitializeUnitsCurrentHealth();
                     await ClientConnectedHandler.WaitForFirstClientConnected();
                     
                     cancellationToken.ThrowIfCancellationRequested();
@@ -148,10 +159,13 @@ namespace Epic.Logic.Battle
                     }
                     
                     // Process buff expiration before the unit takes its turn
-                    await ProcessActiveUnitBuffs(BattleUnitsCarousel.ActiveUnit);
+                    await BuffsLogic.ProcessActiveUnitBuffs(
+                        BattleUnitsCarousel.ActiveUnit,
+                        BattleObject.TurnNumber,
+                        BattleUnitsCarousel.ActiveUnit.PlayerIndex.ToInBattlePlayerNumber());
                     
                     // Check if unit can act (not paralyzed) - include this info in NEXT_TURN message
-                    var unitCanAct = BattleUnitsCarousel.ActiveUnit.CanAct;
+                    var unitCanAct = BattleUnitsCarousel.ActiveUnit.CanAct();
                     
                     await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(
                         new NextTurnCommandFromServer(
@@ -224,6 +238,15 @@ namespace Epic.Logic.Battle
             return BattleResultLogic.BattleResult;
         }
 
+        private async Task InitializeUnitsCurrentHealth()
+        {
+            foreach (var unit in BattleObject.Units)
+            {
+                unit.CurrentHealth = unit.GetEffectiveMaxHealth();
+            }
+            await BattleUnitsService.UpdateUnits(BattleObject.Units);
+        }
+
         private bool IsHumanControlled(IBattleUnitObject unit, out bool runClaimed)
         {
             var playerInfo = BattleObject.FindPlayerInfo(unit.PlayerIndex.ToInBattlePlayerNumber());
@@ -260,8 +283,7 @@ namespace Epic.Logic.Battle
                 connection,
                 BattlesService,
                 ResourcesRepository,
-                BuffsService,
-                BuffTypesService);
+                BuffsLogic);
             
             await handler.Validate(context, command);
             
@@ -271,271 +293,6 @@ namespace Epic.Logic.Battle
             
             if (result.TurnFinished)
                 TurnAwaiter.TurnProcessed(command.Command);
-        }
-
-        /// <summary>
-        /// Processes buff expiration for the active unit before its turn.
-        /// Decrements duration for non-permanent buffs and removes expired ones.
-        /// </summary>
-        private async Task ProcessActiveUnitBuffs(IBattleUnitObject activeUnit)
-        {
-            if (activeUnit?.Buffs == null || activeUnit.Buffs.Count == 0)
-                return;
-
-            var buffsToUpdate = new List<IBuffObject>();
-            var buffsToRemove = new List<IBuffObject>();
-            var remainingBuffs = new List<IBuffObject>();
-
-            foreach (var buff in activeUnit.Buffs)
-            {
-                // Permanent buffs (DurationRemaining = 0 and Permanent = true) never expire
-                if (buff.BuffType?.Permanent == true)
-                {
-                    remainingBuffs.Add(buff);
-                    continue;
-                }
-
-                // Non-permanent buffs: decrement duration first
-                if (buff is MutableBuffObject mutableBuff)
-                {
-                    mutableBuff.DurationRemaining--;
-                    
-                    // Remove buff only when duration goes below 0
-                    if (mutableBuff.DurationRemaining < 0)
-                    {
-                        buffsToRemove.Add(buff);
-                    }
-                    else
-                    {
-                        buffsToUpdate.Add(buff);
-                        remainingBuffs.Add(buff);
-                    }
-                }
-            }
-
-            // Update buffs with decremented duration
-            if (buffsToUpdate.Count > 0)
-            {
-                await BuffsService.UpdateBatch(buffsToUpdate.ToArray());
-            }
-
-            // Remove expired buffs and notify clients
-            foreach (var expiredBuff in buffsToRemove)
-            {
-                await BuffsService.DeleteById(expiredBuff.Id);
-                
-                var buffExpiredMessage = new UnitLosesBuffCommandFromServer(
-                    BattleObject.TurnNumber,
-                    activeUnit.PlayerIndex.ToInBattlePlayerNumber(),
-                    activeUnit.Id.ToString())
-                {
-                    BuffId = expiredBuff.Id.ToString(),
-                    BuffName = expiredBuff.BuffType?.Name ?? "Unknown"
-                };
-                await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(buffExpiredMessage);
-            }
-
-            // Update the unit's in-memory buffs list
-            if (buffsToRemove.Count > 0 && activeUnit is MutableBattleUnitObject mutableUnit)
-            {
-                mutableUnit.Buffs = remainingBuffs;
-            }
-            
-            // Process healing from active buffs
-            await ProcessBuffHealing(activeUnit, remainingBuffs);
-            
-            // Process damage from active buffs
-            await ProcessBuffDamage(activeUnit, remainingBuffs);
-        }
-
-        /// <summary>
-        /// Processes healing effects from active buffs at the start of a unit's turn.
-        /// </summary>
-        private async Task ProcessBuffHealing(IBattleUnitObject activeUnit, List<IBuffObject> activeBuffs)
-        {
-            if (activeBuffs == null || activeBuffs.Count == 0)
-                return;
-
-            // Calculate total healing from all buffs
-            var totalFlatHeal = 0;
-            var totalPercentageHeal = 0;
-            var canResurrect = false;
-
-            foreach (var buff in activeBuffs)
-            {
-                if (buff.BuffType == null)
-                    continue;
-
-                totalFlatHeal += buff.BuffType.Heals;
-                totalPercentageHeal += buff.BuffType.HealsPercentage;
-                if (buff.BuffType.HealCanResurrect)
-                    canResurrect = true;
-            }
-
-            if (totalFlatHeal <= 0 && totalPercentageHeal <= 0)
-                return;
-
-            var mutableUnit = activeUnit as MutableBattleUnitObject;
-            if (mutableUnit == null)
-                return;
-
-            var unitHealth = mutableUnit.GlobalUnit.UnitType.Health;
-            var initialCount = mutableUnit.InitialCount;
-            var currentCount = mutableUnit.CurrentCount;
-            var currentHealth = mutableUnit.CurrentHealth;
-
-            // Calculate HP to heal
-            var percentageHeal = unitHealth * totalPercentageHeal / 100;
-            var hpToHeal = totalFlatHeal + percentageHeal;
-
-            if (hpToHeal <= 0)
-                return;
-
-            // Calculate new health values
-            var totalCurrentHp = (currentCount - 1) * unitHealth + currentHealth;
-            var totalNewHp = totalCurrentHp + hpToHeal;
-
-            // Cap at initial army size if resurrection is not allowed
-            var maxTotalHp = canResurrect
-                ? initialCount * unitHealth
-                : currentCount * unitHealth;
-
-            if (totalNewHp > maxTotalHp)
-                totalNewHp = maxTotalHp;
-
-            // Calculate new count and health
-            var newCount = (totalNewHp + unitHealth - 1) / unitHealth; // Ceiling division
-            var newHealth = totalNewHp - (newCount - 1) * unitHealth;
-
-            // Ensure we don't exceed initial count
-            if (newCount > initialCount)
-            {
-                newCount = initialCount;
-                newHealth = unitHealth;
-            }
-
-            var actualHealedAmount = totalNewHp - totalCurrentHp;
-            var resurrectedCount = newCount - currentCount;
-
-            if (actualHealedAmount <= 0)
-                return;
-
-            // Update the unit's state
-            mutableUnit.CurrentCount = newCount;
-            mutableUnit.CurrentHealth = newHealth;
-            mutableUnit.GlobalUnit.Count = newCount;
-
-            await GlobalUnitsService.UpdateUnits(new[] { mutableUnit.GlobalUnit });
-            await BattleUnitsService.UpdateUnits(new[] { mutableUnit });
-
-            // Broadcast healing message
-            var healMessage = new UnitHealsCommandFromServer(
-                BattleObject.TurnNumber,
-                activeUnit.PlayerIndex.ToInBattlePlayerNumber(),
-                activeUnit.Id.ToString())
-            {
-                HealedAmount = actualHealedAmount,
-                ResurrectedCount = resurrectedCount,
-                NewCount = newCount,
-                NewHealth = newHealth
-            };
-            await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(healMessage);
-        }
-
-        /// <summary>
-        /// Processes damage effects from active buffs at the start of a unit's turn.
-        /// </summary>
-        private async Task ProcessBuffDamage(IBattleUnitObject activeUnit, List<IBuffObject> activeBuffs)
-        {
-            if (activeBuffs == null || activeBuffs.Count == 0)
-                return;
-
-            // Calculate total damage from all buffs (random range only)
-            var totalDamage = 0;
-
-            foreach (var buff in activeBuffs)
-            {
-                if (buff.BuffType == null)
-                    continue;
-                
-                // Random damage range
-                var minDmg = buff.BuffType.TakesDamageMin;
-                var maxDmg = buff.BuffType.TakesDamageMax;
-                if (minDmg > 0 || maxDmg > 0)
-                {
-                    if (maxDmg < minDmg) maxDmg = minDmg;
-                    totalDamage += RandomProvider.NextInteger(minDmg, maxDmg + 1);
-                }
-            }
-
-            if (totalDamage <= 0)
-                return;
-
-            var mutableUnit = activeUnit as MutableBattleUnitObject;
-            if (mutableUnit == null)
-                return;
-
-            var unitHealth = mutableUnit.GlobalUnit.UnitType.Health;
-            var currentCount = mutableUnit.CurrentCount;
-            var currentHealth = mutableUnit.CurrentHealth;
-
-            // Calculate damage application
-            var totalCurrentHp = (currentCount - 1) * unitHealth + currentHealth;
-            var totalNewHp = totalCurrentHp - totalDamage;
-
-            if (totalNewHp < 0)
-                totalNewHp = 0;
-
-            // Calculate new count and health
-            int newCount;
-            int newHealth;
-            int killedCount;
-
-            if (totalNewHp <= 0)
-            {
-                newCount = 0;
-                newHealth = 0;
-                killedCount = currentCount;
-            }
-            else
-            {
-                newCount = (totalNewHp + unitHealth - 1) / unitHealth; // Ceiling division
-                newHealth = totalNewHp - (newCount - 1) * unitHealth;
-                killedCount = currentCount - newCount;
-            }
-
-            var actualDamageTaken = totalCurrentHp - totalNewHp;
-
-            if (actualDamageTaken <= 0)
-                return;
-
-            // Update the unit's state
-            mutableUnit.CurrentCount = newCount;
-            mutableUnit.CurrentHealth = newHealth;
-            mutableUnit.GlobalUnit.Count = newCount;
-
-            await GlobalUnitsService.UpdateUnits(new[] { mutableUnit.GlobalUnit });
-            await BattleUnitsService.UpdateUnits(new[] { mutableUnit });
-
-            // Broadcast damage message
-            var damageMessage = new UnitTakesDamageCommandFromServer(
-                BattleObject.TurnNumber,
-                activeUnit.PlayerIndex.ToInBattlePlayerNumber(),
-                activeUnit.Id.ToString())
-            {
-                DamageTaken = actualDamageTaken,
-                KilledCount = killedCount,
-                RemainingCount = newCount,
-                RemainingHealth = newHealth
-            };
-            await ClientConnectedHandler.BroadcastMessageToClientAndSaveAsync(damageMessage);
-
-            // Check if unit died from buff damage
-            if (newCount <= 0)
-            {
-                mutableUnit.GlobalUnit.IsAlive = false;
-                await GlobalUnitsService.UpdateUnits(new[] { mutableUnit.GlobalUnit });
-            }
         }
     }
 }

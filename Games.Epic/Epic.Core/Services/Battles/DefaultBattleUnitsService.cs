@@ -84,9 +84,6 @@ namespace Epic.Core.Services.Battles
             await PrecreatePermanentBuffsFromUnitTypes(createdBattleUnits);
             await PrecreatePermanentBuffsFromHeroArtifacts(hero, createdBattleUnits);
             
-            // Set initial health to max health (including buff bonuses)
-            createdBattleUnits.ForEach(u => u.CurrentHealth = u.MaxHealth);
-            
             return createdBattleUnits;
         }
 
@@ -105,12 +102,6 @@ namespace Epic.Core.Services.Battles
                 {
                     createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, permanentDurationRemaining));
                 }
-            }
-
-            if (createTasks.Count == 0)
-            {
-                createdBattleUnits.ForEach(u => u.Buffs = Array.Empty<IBuffObject>());
-                return;
             }
 
             var createdBuffs = await Task.WhenAll(createTasks);
