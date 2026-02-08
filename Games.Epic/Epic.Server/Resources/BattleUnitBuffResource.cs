@@ -17,7 +17,7 @@ namespace Epic.Server.Resources
             BuffTypeId = buffObject.BuffTypeId.ToString();
             Name = buffObject.BuffType?.Name;
             ThumbnailUrl = buffObject.BuffType?.ThumbnailUrl;
-            Permanent = buffObject.BuffType?.Permanent ?? false;
+            Permanent = buffObject.Permanent;
             DurationRemaining = buffObject.DurationRemaining;
         }
     }

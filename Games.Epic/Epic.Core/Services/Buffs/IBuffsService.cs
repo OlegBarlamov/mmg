@@ -7,8 +7,8 @@ namespace Epic.Core.Services.Buffs
     {
         Task<IBuffObject> GetById(Guid id);
         Task<IBuffObject[]> GetByTargetBattleUnitId(Guid targetBattleUnitId);
-
-        Task<IBuffObject> Create(Guid targetBattleUnitId, Guid buffTypeId, int durationRemaining);
+        
+        Task<IBuffObject> Create(Guid targetBattleUnitId, Guid buffTypeId, BuffExpressionsVariables variables);
         Task UpdateBatch(IBuffObject[] buffs);
         Task DeleteById(Guid id);
         Task DeleteByTargetBattleUnitId(Guid targetBattleUnitId);

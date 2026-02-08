@@ -32,7 +32,7 @@ namespace Epic.Core.Services.Buffs
         public async Task<IBuffObject[]> GetByTargetBattleUnitId(Guid targetBattleUnitId)
         {
             var entities = await BuffsRepository.GetByTargetBattleUnitId(targetBattleUnitId);
-            var objects = entities.Select(MutableBuffObject.FromEntity).ToArray();
+            var objects = entities.Select(e => MutableBuffObject.FromEntity(e)).ToArray();
 
             var typeIds = objects.Select(x => x.BuffTypeId).Distinct().ToArray();
             var types = await Task.WhenAll(typeIds.Select(BuffTypesService.GetById));
@@ -44,24 +44,25 @@ namespace Epic.Core.Services.Buffs
             return objects.ToArray<IBuffObject>();
         }
 
-        public async Task<IBuffObject> Create(Guid targetBattleUnitId, Guid buffTypeId, int durationRemaining)
+        public async Task<IBuffObject> Create(Guid targetBattleUnitId, Guid buffTypeId, BuffExpressionsVariables variables)
         {
             if (targetBattleUnitId == Guid.Empty) throw new ArgumentException("TargetBattleUnitId must not be empty.", nameof(targetBattleUnitId));
             if (buffTypeId == Guid.Empty) throw new ArgumentException("BuffTypeId must not be empty.", nameof(buffTypeId));
-            if (durationRemaining < 0) throw new ArgumentOutOfRangeException(nameof(durationRemaining));
 
-            // Validate type exists (helps avoid dangling references).
             var type = await BuffTypesService.GetById(buffTypeId);
+            var effectiveValues = BuffExpressionEvaluator.Evaluate(type, variables);
 
             var id = Guid.NewGuid();
-            var entity = await BuffsRepository.Create(id, new BuffEntityFields
+            var fields = new BuffEntityFields
             {
                 BuffTypeId = buffTypeId,
                 TargetBattleUnitId = targetBattleUnitId,
-                DurationRemaining = durationRemaining,
-            });
+                DurationRemaining = effectiveValues.Duration,
+            };
+            fields.SetEffectiveValues(effectiveValues);
+            var entity = await BuffsRepository.Create(id, fields);
 
-            var obj = MutableBuffObject.FromEntity(entity);
+            var obj = MutableBuffObject.FromEntity(entity, effectiveValues);
             obj.BuffType = type;
             return obj;
         }

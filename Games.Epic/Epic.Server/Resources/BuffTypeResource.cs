@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Epic.Core.Services.Buffs;
 using Epic.Data.BuffType;
 
 namespace Epic.Server.Resources
@@ -10,12 +12,13 @@ namespace Epic.Server.Resources
         public int Duration { get; set; }
         public int Chance { get; set; }
         
-        public BuffTypeResource(IBuffTypeEntity buffType, int chance = 100)
+        public BuffTypeResource(IBuffTypeEntity buffType, BuffExpressionsVariables variables, int chance = 100)
         {
             Name = buffType.Name;
             ThumbnailUrl = buffType.ThumbnailUrl;
             Permanent = buffType.Permanent;
-            Duration = buffType.Duration;
+            var defaultValues = BuffExpressionEvaluator.Evaluate(buffType, variables);
+            Duration = defaultValues.Duration;
             Chance = chance;
         }
     }

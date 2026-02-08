@@ -9,32 +9,32 @@ namespace Epic.Core.Services.BuffTypes
         public string Key { get; set; }
         public string Name { get; set; }
         public string ThumbnailUrl { get; set; }
-        public int HealthBonus { get; set; }
-        public int AttackBonus { get; set; }
-        public int DefenseBonus { get; set; }
-        public int SpeedBonus { get; set; }
-        public int MinDamageBonus { get; set; }
-        public int MaxDamageBonus { get; set; }
-        public int HealthBonusPercentage { get; set; }
-        public int AttackBonusPercentage { get; set; }
-        public int DefenseBonusPercentage { get; set; }
-        public int SpeedBonusPercentage { get; set; }
-        public int MinDamageBonusPercentage { get; set; }
-        public int MaxDamageBonusPercentage { get; set; }
+        public string HealthBonusExpression { get; set; }
+        public string AttackBonusExpression { get; set; }
+        public string DefenseBonusExpression { get; set; }
+        public string SpeedBonusExpression { get; set; }
+        public string MinDamageBonusExpression { get; set; }
+        public string MaxDamageBonusExpression { get; set; }
+        public string HealthBonusPercentageExpression { get; set; }
+        public string AttackBonusPercentageExpression { get; set; }
+        public string DefenseBonusPercentageExpression { get; set; }
+        public string SpeedBonusPercentageExpression { get; set; }
+        public string MinDamageBonusPercentageExpression { get; set; }
+        public string MaxDamageBonusPercentageExpression { get; set; }
+        public string VampirePercentageExpression { get; set; }
         public bool Paralyzed { get; set; }
         public bool Stunned { get; set; }
-        public int VampirePercentage { get; set; }
         public bool VampireCanResurrect { get; set; }
         public bool DeclinesWhenTakesDamage { get; set; }
-        public int Heals { get; set; }
-        public int HealsPercentage { get; set; }
+        public string HealsExpression { get; set; }
+        public string HealsPercentageExpression { get; set; }
         public bool HealCanResurrect { get; set; }
-        public int TakesDamageMin { get; set; }
-        public int TakesDamageMax { get; set; }
-        public int DamageReturnPercentage { get; set; }
-        public int DamageReturnMaxRange { get; set; }
+        public string TakesDamageMinExpression { get; set; }
+        public string TakesDamageMaxExpression { get; set; }
+        public string DamageReturnPercentageExpression { get; set; }
+        public string DamageReturnMaxRangeExpression { get; set; }
         public bool Permanent { get; set; }
-        public int Duration { get; set; }
+        public string DurationExpression { get; set; }
 
         private MutableBuffTypeObject() { }
 
@@ -46,32 +46,32 @@ namespace Epic.Core.Services.BuffTypes
                 Key = entity.Key,
                 Name = entity.Name,
                 ThumbnailUrl = entity.ThumbnailUrl,
-                HealthBonus = entity.HealthBonus,
-                AttackBonus = entity.AttackBonus,
-                DefenseBonus = entity.DefenseBonus,
-                SpeedBonus = entity.SpeedBonus,
-                MinDamageBonus = entity.MinDamageBonus,
-                MaxDamageBonus = entity.MaxDamageBonus,
-                HealthBonusPercentage = entity.HealthBonusPercentage,
-                AttackBonusPercentage = entity.AttackBonusPercentage,
-                DefenseBonusPercentage = entity.DefenseBonusPercentage,
-                SpeedBonusPercentage = entity.SpeedBonusPercentage,
-                MinDamageBonusPercentage = entity.MinDamageBonusPercentage,
-                MaxDamageBonusPercentage = entity.MaxDamageBonusPercentage,
+                HealthBonusExpression = entity.HealthBonusExpression,
+                AttackBonusExpression = entity.AttackBonusExpression,
+                DefenseBonusExpression = entity.DefenseBonusExpression,
+                SpeedBonusExpression = entity.SpeedBonusExpression,
+                MinDamageBonusExpression = entity.MinDamageBonusExpression,
+                MaxDamageBonusExpression = entity.MaxDamageBonusExpression,
+                HealthBonusPercentageExpression = entity.HealthBonusPercentageExpression,
+                AttackBonusPercentageExpression = entity.AttackBonusPercentageExpression,
+                DefenseBonusPercentageExpression = entity.DefenseBonusPercentageExpression,
+                SpeedBonusPercentageExpression = entity.SpeedBonusPercentageExpression,
+                MinDamageBonusPercentageExpression = entity.MinDamageBonusPercentageExpression,
+                MaxDamageBonusPercentageExpression = entity.MaxDamageBonusPercentageExpression,
+                VampirePercentageExpression = entity.VampirePercentageExpression,
                 Paralyzed = entity.Paralyzed,
                 Stunned = entity.Stunned,
-                VampirePercentage = entity.VampirePercentage,
                 VampireCanResurrect = entity.VampireCanResurrect,
                 DeclinesWhenTakesDamage = entity.DeclinesWhenTakesDamage,
-                Heals = entity.Heals,
-                HealsPercentage = entity.HealsPercentage,
+                HealsExpression = entity.HealsExpression,
+                HealsPercentageExpression = entity.HealsPercentageExpression,
                 HealCanResurrect = entity.HealCanResurrect,
-                TakesDamageMin = entity.TakesDamageMin,
-                TakesDamageMax = entity.TakesDamageMax,
-                DamageReturnPercentage = entity.DamageReturnPercentage,
-                DamageReturnMaxRange = entity.DamageReturnMaxRange,
+                TakesDamageMinExpression = entity.TakesDamageMinExpression,
+                TakesDamageMaxExpression = entity.TakesDamageMaxExpression,
+                DamageReturnPercentageExpression = entity.DamageReturnPercentageExpression,
+                DamageReturnMaxRangeExpression = entity.DamageReturnMaxRangeExpression,
                 Permanent = entity.Permanent,
-                Duration = entity.Duration,
+                DurationExpression = entity.DurationExpression,
             };
         }
 
@@ -81,4 +81,3 @@ namespace Epic.Core.Services.BuffTypes
         }
     }
 }
-

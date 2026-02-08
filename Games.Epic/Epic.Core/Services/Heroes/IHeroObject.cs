@@ -14,8 +14,6 @@ namespace Epic.Core.Services.Heroes
         string Name { get; }
         Guid ArmyContainerId { get; }
         bool IsKilled { get; }
-        int Level { get; }
-        int Experience { get; }
         
         
         bool HasAliveUnits { get; }

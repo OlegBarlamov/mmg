@@ -8,5 +8,7 @@ namespace Epic.Core.Objects
         
         public int Attack => 0;
         public int Defense => 0;
+        public int Level => 1;
+        public int Experience => 0;
     }
 }

@@ -1,39 +1,46 @@
 using System;
-using Epic.Data.EffectType;
 
 namespace Epic.Data.BuffType
 {
-    public interface IBuffFields : IEffectTypeProperties
+    public interface IBuffFields
     {
         string Key { get; }
         string Name { get; }
         string ThumbnailUrl { get; }
-        int HealthBonus { get; }
-        int AttackBonus { get; }
-        int DefenseBonus { get; }
-        int SpeedBonus { get; }
-        int MinDamageBonus { get; }
-        int MaxDamageBonus { get; }
-        int HealthBonusPercentage { get; }
-        int AttackBonusPercentage  { get; }
-        int DefenseBonusPercentage { get; }
-        int SpeedBonusPercentage { get; }
-        int MinDamageBonusPercentage { get; }
-        int MaxDamageBonusPercentage { get; }
         
+        string HealthBonusExpression { get; }
+        string AttackBonusExpression { get; }
+        string DefenseBonusExpression { get; }
+        string SpeedBonusExpression { get; }
+        string MinDamageBonusExpression { get; }
+        string MaxDamageBonusExpression { get; }
+        string HealthBonusPercentageExpression { get; }
+        string AttackBonusPercentageExpression { get; }
+        string DefenseBonusPercentageExpression { get; }
+        string SpeedBonusPercentageExpression { get; }
+        string MinDamageBonusPercentageExpression { get; }
+        string MaxDamageBonusPercentageExpression { get; }
+
+        string VampirePercentageExpression { get; }
+
         bool Paralyzed { get; }
         bool Stunned { get; }
-        int VampirePercentage { get; }
         bool VampireCanResurrect { get; }
         bool DeclinesWhenTakesDamage { get; }
-        
-        int DamageReturnPercentage { get; }
-        int DamageReturnMaxRange { get; }
-        
+
+        string HealsExpression { get; }
+        string HealsPercentageExpression { get; }
+        bool HealCanResurrect { get; }
+        string TakesDamageMinExpression { get; }
+        string TakesDamageMaxExpression { get; }
+
+        string DamageReturnPercentageExpression { get; }
+        string DamageReturnMaxRangeExpression { get; }
+
         bool Permanent { get; }
-        int Duration { get; }
+        string DurationExpression { get; }
     }
-    
+
     public interface IBuffTypeEntity : IBuffFields
     {
         Guid Id { get; }
@@ -44,32 +51,32 @@ namespace Epic.Data.BuffType
         public string Key { get; set; }
         public string Name { get; set; }
         public string ThumbnailUrl { get; set; }
-        public int HealthBonus { get; set; }
-        public int AttackBonus { get; set; }
-        public int DefenseBonus { get; set; }
-        public int SpeedBonus { get; set; }
-        public int MinDamageBonus { get; set; }
-        public int MaxDamageBonus { get; set; }
-        public int HealthBonusPercentage { get; set; }
-        public int AttackBonusPercentage { get; set; }
-        public int DefenseBonusPercentage { get; set; }
-        public int SpeedBonusPercentage { get; set; }
-        public int MinDamageBonusPercentage { get; set; }
-        public int MaxDamageBonusPercentage { get; set; }
+        public string HealthBonusExpression { get; set; }
+        public string AttackBonusExpression { get; set; }
+        public string DefenseBonusExpression { get; set; }
+        public string SpeedBonusExpression { get; set; }
+        public string MinDamageBonusExpression { get; set; }
+        public string MaxDamageBonusExpression { get; set; }
+        public string HealthBonusPercentageExpression { get; set; }
+        public string AttackBonusPercentageExpression { get; set; }
+        public string DefenseBonusPercentageExpression { get; set; }
+        public string SpeedBonusPercentageExpression { get; set; }
+        public string MinDamageBonusPercentageExpression { get; set; }
+        public string MaxDamageBonusPercentageExpression { get; set; }
+        public string VampirePercentageExpression { get; set; }
         public bool Paralyzed { get; set; }
         public bool Stunned { get; set; }
-        public int VampirePercentage { get; set; }
         public bool VampireCanResurrect { get; set; }
         public bool DeclinesWhenTakesDamage { get; set; }
-        public int Heals { get; set; }
-        public int HealsPercentage { get; set; }
+        public string HealsExpression { get; set; }
+        public string HealsPercentageExpression { get; set; }
         public bool HealCanResurrect { get; set; }
-        public int TakesDamageMin { get; set; }
-        public int TakesDamageMax { get; set; }
-        public int DamageReturnPercentage { get; set; }
-        public int DamageReturnMaxRange { get; set; }
+        public string TakesDamageMinExpression { get; set; }
+        public string TakesDamageMaxExpression { get; set; }
+        public string DamageReturnPercentageExpression { get; set; }
+        public string DamageReturnMaxRangeExpression { get; set; }
         public bool Permanent { get; set; }
-        public int Duration { get; set; }
+        public string DurationExpression { get; set; }
     }
 
     public class BuffTypeEntity : BuffFields, IBuffTypeEntity
@@ -86,32 +93,32 @@ namespace Epic.Data.BuffType
             Key = fields.Key;
             Name = fields.Name;
             ThumbnailUrl = fields.ThumbnailUrl;
-            HealthBonus = fields.HealthBonus;
-            AttackBonus = fields.AttackBonus;
-            DefenseBonus = fields.DefenseBonus;
-            SpeedBonus = fields.SpeedBonus;
-            MinDamageBonus = fields.MinDamageBonus;
-            MaxDamageBonus = fields.MaxDamageBonus;
-            HealthBonusPercentage = fields.HealthBonusPercentage;
-            AttackBonusPercentage = fields.AttackBonusPercentage;
-            DefenseBonusPercentage = fields.DefenseBonusPercentage;
-            SpeedBonusPercentage = fields.SpeedBonusPercentage;
-            MinDamageBonusPercentage = fields.MinDamageBonusPercentage;
-            MaxDamageBonusPercentage = fields.MaxDamageBonusPercentage;
+            HealthBonusExpression = fields.HealthBonusExpression;
+            AttackBonusExpression = fields.AttackBonusExpression;
+            DefenseBonusExpression = fields.DefenseBonusExpression;
+            SpeedBonusExpression = fields.SpeedBonusExpression;
+            MinDamageBonusExpression = fields.MinDamageBonusExpression;
+            MaxDamageBonusExpression = fields.MaxDamageBonusExpression;
+            HealthBonusPercentageExpression = fields.HealthBonusPercentageExpression;
+            AttackBonusPercentageExpression = fields.AttackBonusPercentageExpression;
+            DefenseBonusPercentageExpression = fields.DefenseBonusPercentageExpression;
+            SpeedBonusPercentageExpression = fields.SpeedBonusPercentageExpression;
+            MinDamageBonusPercentageExpression = fields.MinDamageBonusPercentageExpression;
+            MaxDamageBonusPercentageExpression = fields.MaxDamageBonusPercentageExpression;
+            VampirePercentageExpression = fields.VampirePercentageExpression;
             Paralyzed = fields.Paralyzed;
             Stunned = fields.Stunned;
-            VampirePercentage = fields.VampirePercentage;
             VampireCanResurrect = fields.VampireCanResurrect;
             DeclinesWhenTakesDamage = fields.DeclinesWhenTakesDamage;
-            Heals = fields.Heals;
-            HealsPercentage = fields.HealsPercentage;
+            HealsExpression = fields.HealsExpression;
+            HealsPercentageExpression = fields.HealsPercentageExpression;
             HealCanResurrect = fields.HealCanResurrect;
-            TakesDamageMin = fields.TakesDamageMin;
-            TakesDamageMax = fields.TakesDamageMax;
-            DamageReturnPercentage = fields.DamageReturnPercentage;
-            DamageReturnMaxRange = fields.DamageReturnMaxRange;
+            TakesDamageMinExpression = fields.TakesDamageMinExpression;
+            TakesDamageMaxExpression = fields.TakesDamageMaxExpression;
+            DamageReturnPercentageExpression = fields.DamageReturnPercentageExpression;
+            DamageReturnMaxRangeExpression = fields.DamageReturnMaxRangeExpression;
             Permanent = fields.Permanent;
-            Duration = fields.Duration;
+            DurationExpression = fields.DurationExpression;
         }
 
         public static BuffTypeEntity FromFields(Guid id, IBuffFields fields)

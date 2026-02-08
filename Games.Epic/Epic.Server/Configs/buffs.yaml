@@ -1,79 +1,90 @@
+# =============================================================================
+# BUFF TYPES CONFIG
+# =============================================================================
+#   - Constant: use a literal string, e.g. "1", "3", "-2", "0"
+#   - With variables: use variable names in the expression, e.g. "level * 2",
+#     "baseAttack * 0.1", "level + 3". Variables are doubles; the result is
+#     rounded to int for numeric fields.
+#   - Operators: +, -, *, /, parentheses, and common C#-style math. Empty or
+#     missing expression is treated as 0.
+# =============================================================================
+
 Buffs:
   HealthPlusOne:
     Name: "Max Health +1"
-    HealthBonus: 1
+    HealthBonusExpression: "1"
     Permanent: true
-    Duration: 0
+    DurationExpression: "0"
   HealthPlusTwo:
     Name: "Max Health +2"
-    HealthBonus: 2
+    HealthBonusExpression: "2"
     Permanent: true
-    Duration: 0
+    DurationExpression: "0"
   SpeedPlusOne:
     Name: "Speed +1"
-    SpeedBonus: 1
+    SpeedBonusExpression: "1"
     Permanent: true
-    Duration: 0
+    DurationExpression: "0"
   ElixirOfLifeBuff:
     Name: "Health +4; Health +25%"
-    HealthBonus: 4
-    HealthBonusPercentage: 25
+    HealthBonusExpression: "4"
+    HealthBonusPercentageExpression: "25"
     Permanent: true
-    Duration: 0
+    DurationExpression: "0"
   Blind:
     Name: "Blind"
-    Duration: 3
+    DurationExpression: "3"
     ThumbnailUrl: "/resources/Blind.png"
     DeclinesWhenTakesDamage: true
     Paralyzed: true
   Bound:
     Name: "Bound"
-    Duration: 3
+    DurationExpression: "3"
     ThumbnailUrl: "/resources/Bound.png"
     Stunned: true
   FireShield:
     Name: "Fire shield"
     ThumbnailUrl: "/resources/Fire_Shield.png"
-    DamageReturnPercentage: 20
-    DamageReturnMaxRange: 1
+    DamageReturnPercentageExpression: "20"
+    DamageReturnMaxRangeExpression: "1"
     Permanent: true
   Disease:
     Name: "Disease"
     ThumbnailUrl: "/resources/Disease.png"
-    AttackBonus: -2
-    DefenseBonus: -2
-    Duration: 3
+    AttackBonusExpression: "-2"
+    DefenseBonusExpression: "-2"
+    DurationExpression: "3"
   Regeneration:
     Name: "Regeneration"
     Permanent: true
-    Heals: 50
+    HealsExpression: "50"
   Vampirism:
     Name: "Vampirism"
     Permanent: true
-    VampirePercentage: 100
+    VampirePercentageExpression: "100"
   Vampirism_with_resurrect:
     Name: "Drain Life"
     Permanent: true
-    VampirePercentage: 100
+    VampirePercentageExpression: "100"
     VampireCanResurrect: true
   Curse:
     Name: "Curse"
     ThumbnailUrl: "/resources/Curse.png"
     Permanent: true
-    MaxDamageBonusPercentage: -100
+    MaxDamageBonusPercentageExpression: "-100"
   Aging:
     Name: "Aging"
     ThumbnailUrl: "/resources/Aging.png"
     Permanent: true
-    HealthBonusPercentage: -50
+    HealthBonusPercentageExpression: "-50"
   Petrifying:
     Name: "Petrifying"
-    Duration: 3
+    DurationExpression: "3"
     ThumbnailUrl: "/resources/Petrifying.png"
     DeclinesWhenTakesDamage: true
     Paralyzed: true
   Weakness:
     Name: "Weakness"
-    Duration: 3
+    DurationExpression: "3"
     ThumbnailUrl: "/resources/Weakness.png"
-    AttackBonus: -6
+    AttackBonusExpression: "-6"

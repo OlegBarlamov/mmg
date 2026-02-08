@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
 using Epic.Data.UnitTypes.Subtypes;
 
@@ -35,7 +36,7 @@ namespace Epic.Server.Resources
                         ? attackType.ApplyBuffChances[i]
                         : 100;
                     
-                    buffResources.Add(new BuffTypeResource(buffType, chance));
+                    buffResources.Add(new BuffTypeResource(buffType, BuffExpressionsVariables.Empty(), chance));
                 }
             }
             ApplyBuffs = buffResources;

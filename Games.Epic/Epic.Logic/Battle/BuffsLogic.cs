@@ -8,10 +8,8 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.GameManagement;
-using Epic.Core.Services.Units;
 using Epic.Data.UnitTypes.Subtypes;
 using FrameworkSDK.Common;
-using static Epic.Logic.Battle.BattleUnitBuffExtensions;
 
 namespace Epic.Logic.Battle
 {
@@ -38,8 +36,6 @@ namespace Epic.Logic.Battle
     {
         private readonly IBuffsService _buffsService;
         private readonly IBuffTypesService _buffTypesService;
-        private readonly IGlobalUnitsService _globalUnitsService;
-        private readonly IBattleUnitsService _battleUnitsService;
         private readonly IRandomService _randomProvider;
         private readonly IBattleMessageBroadcaster _messageBroadcaster;
         private readonly IEffectsLogic _effectsLogic;
@@ -47,16 +43,12 @@ namespace Epic.Logic.Battle
         public BuffsLogic(
             IBuffsService buffsService,
             IBuffTypesService buffTypesService,
-            IGlobalUnitsService globalUnitsService,
-            IBattleUnitsService battleUnitsService,
             IRandomService randomProvider,
             IBattleMessageBroadcaster messageBroadcaster,
             IEffectsLogic effectsLogic)
         {
             _buffsService = buffsService;
             _buffTypesService = buffTypesService;
-            _globalUnitsService = globalUnitsService;
-            _battleUnitsService = battleUnitsService;
             _randomProvider = randomProvider;
             _messageBroadcaster = messageBroadcaster;
             _effectsLogic = effectsLogic ?? throw new ArgumentNullException(nameof(effectsLogic));
@@ -76,7 +68,7 @@ namespace Epic.Logic.Battle
 
             foreach (var buff in activeUnit.Buffs)
             {
-                if (buff.BuffType?.Permanent == true)
+                if (buff.Permanent)
                 {
                     remainingBuffs.Add(buff);
                     continue;
@@ -192,8 +184,7 @@ namespace Epic.Logic.Battle
                 if (buffType == null)
                     continue;
                 
-                var durationRemaining = buffType.Permanent ? 0 : buffType.Duration;
-                var buff = await _buffsService.Create(target.Id, buffType.Id, durationRemaining);
+                var buff = await _buffsService.Create(target.Id, buffType.Id, BuffExpressionsVariables.Empty());
                 newBuffs.Add(buff);
                 replacedBuffTypeIds.Add(buffTypeId);
                 
@@ -206,10 +197,10 @@ namespace Epic.Logic.Battle
                     BuffTypeId = buffType.Id.ToString(),
                     BuffName = buffType.Name,
                     ThumbnailUrl = buffType.ThumbnailUrl,
-                    Permanent = buffType.Permanent,
-                    Stunned = buffType.Stunned,
-                    Paralyzed = buffType.Paralyzed,
-                    DurationRemaining = durationRemaining,
+                    Permanent = buff.Permanent,
+                    Stunned = buff.Stunned,
+                    Paralyzed = buff.Paralyzed,
+                    DurationRemaining = buff.DurationRemaining,
                 };
                 await _messageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
             }

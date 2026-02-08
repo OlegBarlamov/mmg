@@ -6,6 +6,8 @@ namespace Epic.Data.Heroes
     {
         int Attack { get; }
         int Defense { get; }
+        int Level { get; }
+        int Experience { get; }
     }
     
     public interface IHeroEntityFields : IHeroStats
@@ -13,8 +15,6 @@ namespace Epic.Data.Heroes
         string Name { get; }
         Guid ArmyContainerId { get; }
         bool IsKilled { get; }
-        int Level { get; }
-        int Experience { get; }
     }
     
     public interface IHeroEntity : IHeroEntityFields

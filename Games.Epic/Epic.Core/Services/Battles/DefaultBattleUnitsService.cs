@@ -92,15 +92,13 @@ namespace Epic.Core.Services.Battles
             if (createdBattleUnits == null || createdBattleUnits.Count == 0)
                 return;
 
-            const int permanentDurationRemaining = 0;
-
             var createTasks = new List<Task<IBuffObject>>();
             foreach (var unit in createdBattleUnits)
             {
                 var buffTypeIds = unit.GlobalUnit?.UnitType?.BuffTypeIds ?? Array.Empty<Guid>();
                 foreach (var buffTypeId in buffTypeIds.Where(x => x != Guid.Empty).Distinct())
                 {
-                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, permanentDurationRemaining));
+                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, BuffExpressionsVariables.Empty()));
                 }
             }
 
@@ -130,15 +128,13 @@ namespace Epic.Core.Services.Battles
             if (artifactBuffTypeIds.Length == 0)
                 return;
 
-            const int permanentDurationRemaining = 0;
-
             // Create buffs for each unit from each artifact buff type
             var createTasks = new List<Task<IBuffObject>>();
             foreach (var unit in createdBattleUnits)
             {
                 foreach (var buffTypeId in artifactBuffTypeIds)
                 {
-                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, permanentDurationRemaining));
+                    createTasks.Add(BuffsService.Create(unit.Id, buffTypeId, BuffExpressionsVariables.FromHero(hero)));
                 }
             }
 

@@ -116,8 +116,6 @@ namespace Epic.Logic.Battle
             BuffsLogic = new BuffsLogic(
                 BuffsService,
                 BuffTypesService,
-                GlobalUnitsService,
-                BattleUnitsService,
                 RandomProvider,
                 ClientConnectedHandler,
                 new EffectsLogic(GlobalUnitsService, BattleUnitsService, ClientConnectedHandler));
