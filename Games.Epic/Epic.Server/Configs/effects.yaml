@@ -1,0 +1,14 @@
+# =============================================================================
+# EFFECT TYPES CONFIG
+# =============================================================================
+#   - Constant: use a literal string, e.g. "10", "0"
+#   - With variables: use variable names in the expression, e.g. "level * 2".
+#     Variables are doubles; the result is rounded to int for numeric fields.
+#   - Empty or missing expression is treated as 0.
+# =============================================================================
+
+EffectTypes:
+  MagicArrow:
+    Name: "Magic Arrow"
+    TakesDamageMinExpression: "10"
+    TakesDamageMaxExpression: "10"
