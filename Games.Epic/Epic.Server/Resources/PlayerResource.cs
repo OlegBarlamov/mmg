@@ -19,7 +19,7 @@ namespace Epic.Server.Resources
         public string SupplyContainerId { get; }
         public int Experience { get; }
         public int Level { get; }
-        public IHeroStats Stats { get; }
+        public HeroStatsResource Stats { get; }
 
         public PlayerResource(IPlayerObject playerObject, bool isDefeated, Guid armyContainerId)
         {
@@ -34,7 +34,8 @@ namespace Epic.Server.Resources
             SupplyContainerId = playerObject.Supply.Id.ToString();
             Experience = playerObject.ActiveHero.Experience;
             Level = playerObject.ActiveHero.Level;
-            Stats = playerObject.ActiveHero?.GetCumulativeHeroStats() ?? DefaultHeroStats.Instance;
+            var stats = playerObject.ActiveHero?.GetCumulativeHeroStats() ?? DefaultHeroStats.Instance;
+            Stats = new HeroStatsResource(stats);
         }
     }
 }

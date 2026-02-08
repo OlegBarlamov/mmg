@@ -39,7 +39,10 @@ namespace Epic.Core.Services.Heroes
                 hero.GetCumulativeAttack(),
                 hero.GetCumulativeDefense(),
                 hero.Level,
-                hero.Experience);
+                hero.Experience,
+                hero.Power,
+                hero.Knowledge,
+                hero.CurrentMana);
         }
 
         private sealed class HeroStatsSnapshot : IHeroStats
@@ -48,13 +51,19 @@ namespace Epic.Core.Services.Heroes
             public int Defense { get; }
             public int Level { get; }
             public int Experience { get; }
+            public int Power { get; }
+            public int Knowledge { get; }
+            public int CurrentMana { get; }
 
-            public HeroStatsSnapshot(int attack, int defense, int level, int experience)
+            public HeroStatsSnapshot(int attack, int defense, int level, int experience, int power, int knowledge, int currentMana)
             {
                 Attack = attack;
                 Defense = defense;
                 Level = level;
                 Experience = experience;
+                Power = power;
+                Knowledge = knowledge;
+                CurrentMana = currentMana;
             }
         }
     }

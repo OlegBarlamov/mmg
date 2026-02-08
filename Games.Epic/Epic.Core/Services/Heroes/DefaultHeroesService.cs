@@ -19,19 +19,22 @@ namespace Epic.Core.Services.Heroes
         public IGlobalUnitsService GlobalUnitsService { get; }
         public IHeroesLevelsCalculator HeroesLevelsCalculator { get; }
         public IArtifactsService ArtifactsService { get; }
+        public IHeroStatsLogicService HeroStatsLogicService { get; }
 
         public DefaultHeroesService(
             [NotNull] IHeroEntitiesRepository heroEntitiesRepository,
             [NotNull] IUnitsContainersService unitsContainersService,
             [NotNull] IGlobalUnitsService globalUnitsService,
             [NotNull] IHeroesLevelsCalculator heroesLevelsCalculator,
-            [NotNull] IArtifactsService artifactsService)
+            [NotNull] IArtifactsService artifactsService,
+            [NotNull] IHeroStatsLogicService heroStatsLogicService)
         {
             HeroEntitiesRepository = heroEntitiesRepository ?? throw new ArgumentNullException(nameof(heroEntitiesRepository));
             UnitsContainersService = unitsContainersService ?? throw new ArgumentNullException(nameof(unitsContainersService));
             GlobalUnitsService = globalUnitsService ?? throw new ArgumentNullException(nameof(globalUnitsService));
             HeroesLevelsCalculator = heroesLevelsCalculator ?? throw new ArgumentNullException(nameof(heroesLevelsCalculator));
             ArtifactsService = artifactsService ?? throw new ArgumentNullException(nameof(artifactsService));
+            HeroStatsLogicService = heroStatsLogicService ?? throw new ArgumentNullException(nameof(heroStatsLogicService));
         }
         
         public async Task<IHeroObject> GetById(Guid id)
@@ -52,6 +55,11 @@ namespace Epic.Core.Services.Heroes
                 IsKilled = false,
                 Level = 1,
                 Experience = 0,
+                Attack = 1,
+                Defense = 1,
+                Power = 1,
+                Knowledge = 1,
+                CurrentMana = 10,
             }, playerId);
             var hero = MutableHeroObject.FromEntity(entity);
             await FillHeroObject(hero);
@@ -105,6 +113,15 @@ namespace Epic.Core.Services.Heroes
             var heroObject = await GetById(heroId);
             var mutableHeroObject = MutableHeroObject.CopyFrom(heroObject);
             mutableHeroObject.Defense += defenseAmount;
+            await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
+        }
+
+        public async Task RestoreMana(Guid heroId)
+        {
+            var heroObject = await GetById(heroId);
+            var newCurrentMana = HeroStatsLogicService.GetCurrentManaAfterRestore(heroObject);
+            var mutableHeroObject = MutableHeroObject.CopyFrom(heroObject);
+            mutableHeroObject.CurrentMana = newCurrentMana;
             await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
         }
 

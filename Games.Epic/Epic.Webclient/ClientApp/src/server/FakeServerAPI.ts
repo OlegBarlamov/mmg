@@ -177,6 +177,10 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
             stats: {
                 attack: 0,
                 defense: 0,
+                power: 0,
+                knowledge: 0,
+                currentMana: 0,
+                maxMana: 0,
             }
         })
     }
@@ -503,6 +507,10 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     heroStats: {
                         attack: 5,
                         defense: 3,
+                        power: 2,
+                        knowledge: 1,
+                        currentMana: 10,
+                        maxMana: 10,
                     },
                 },
                 {
@@ -514,6 +522,10 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     heroStats: {
                         attack: 4,
                         defense: 4,
+                        power: 1,
+                        knowledge: 2,
+                        currentMana: 8,
+                        maxMana: 20,
                     },
                 },
             ],

@@ -8,6 +8,9 @@ namespace Epic.Data.Heroes
         int Defense { get; }
         int Level { get; }
         int Experience { get; }
+        int Power { get; }
+        int Knowledge { get; }
+        int CurrentMana { get; }
     }
     
     public interface IHeroEntityFields : IHeroStats
@@ -31,6 +34,9 @@ namespace Epic.Data.Heroes
         public int Experience { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
+        public int Power { get; set; }
+        public int Knowledge { get; set; }
+        public int CurrentMana { get; set; }
 
         public MutableHeroEntityFields() { }
     }
@@ -53,6 +59,9 @@ namespace Epic.Data.Heroes
             Experience = fields.Experience;
             Attack = fields.Attack;
             Defense = fields.Defense;
+            Power = fields.Power;
+            Knowledge = fields.Knowledge;
+            CurrentMana = fields.CurrentMana;
             
             return this;
         }

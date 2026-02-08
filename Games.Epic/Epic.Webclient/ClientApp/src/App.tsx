@@ -174,7 +174,7 @@ export class App extends PureComponent<IAppProps, IAppState> {
                     
                     <div className="stats-badge">
                         <div className="stats-icon">S</div>
-                        ATK: {playerInfo.stats.attack} | DEF: {playerInfo.stats.defense}
+                        ATK: {playerInfo.stats.attack} | DEF: {playerInfo.stats.defense} | PWR: {playerInfo.stats.power} | KNW: {playerInfo.stats.knowledge} | Mana: {playerInfo.stats.currentMana}/{playerInfo.stats.maxMana}
                     </div>
 
                     <button

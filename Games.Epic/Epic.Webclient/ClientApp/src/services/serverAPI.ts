@@ -23,6 +23,10 @@ export interface IUserUnit {
 export interface IHeroStats {
     readonly attack: number
     readonly defense: number
+    readonly power: number
+    readonly knowledge: number
+    readonly currentMana: number
+    readonly maxMana: number
 }
 
 export interface IPlayerInfo {

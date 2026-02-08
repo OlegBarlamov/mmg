@@ -3,7 +3,7 @@ import './battleUnitInfoModal.css'
 import React, { PureComponent } from "react";
 import { IServiceLocator } from "../services/serviceLocator";
 import { IBattleController } from "../battle/battleController";
-import { BattleMap, BattleMapCell, BattleTurnInfo } from "../battleMap/battleMap";
+import { BattleMap, BattleMapCell, BattleTurnInfo, InBattlePlayerInfo } from "../battleMap/battleMap";
 import { HexagonStyle } from "../services/canvasService";
 import { EvenQGrid } from "../hexogrid/evenQGrid";
 import { OddRGrid } from "../hexogrid/oddRGrid";
@@ -412,6 +412,23 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
     }
 
+    private renderHeroStats(player: InBattlePlayerInfo): React.ReactNode {
+        const { heroStats } = player
+        if (!heroStats) return null
+        const myPlayerId = this.props.serviceLocator.playerService().currentPlayerInfo.id
+        const isMyself = player.playerId === myPlayerId
+        const parts: string[] = [
+            `Attack: ${heroStats.attack}`,
+            `Defense: ${heroStats.defense}`,
+            `Knowledge: ${heroStats.knowledge}`,
+            `Power: ${heroStats.power}`,
+        ]
+        if (isMyself) {
+            parts.push(`Mana: ${heroStats.currentMana}/${heroStats.maxMana}`)
+        }
+        return parts.join(' | ')
+    }
+
     private getMapHexagonStyle(map: BattleMap): HexagonStyle {
         if (map.grid instanceof EvenQGrid) {
             return HexagonStyle.QStyle
@@ -478,13 +495,13 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     <div className="battle-header">
                         {player1?.heroStats && (
                             <div className="hero-stats-text hero-stats-left">
-                                Attack: {player1.heroStats.attack} Defense: {player1.heroStats.defense}
+                                {this.renderHeroStats(player1)}
                             </div>
                         )}
                         <div className="round-number">Round {this.state.currentRoundNumber + 1}</div>
                         {player2?.heroStats && (
                             <div className="hero-stats-text hero-stats-right">
-                                Attack: {player2.heroStats.attack} Defense: {player2.heroStats.defense}
+                                {this.renderHeroStats(player2)}
                             </div>
                         )}
                     </div>

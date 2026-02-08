@@ -12,7 +12,7 @@ public class PlayerInBattleInfoResource
     public bool RunClaimed { get; }
     public string PlayerNumber { get; }
     public int Index { get; }
-    public IHeroStats HeroStats { get; }
+    public HeroStatsResource HeroStats { get; }
     
     public PlayerInBattleInfoResource(IPlayerInBattleInfoObject playerInBattleInfoObject, InBattlePlayerNumber playerNumber, IHeroStats heroStats)
     {
@@ -21,6 +21,6 @@ public class PlayerInBattleInfoResource
         PlayerNumber = playerNumber.ToString();
         Index = (int)playerNumber;
         RunClaimed = playerInBattleInfoObject.RunClaimed;
-        HeroStats = heroStats;
+        HeroStats = new HeroStatsResource(heroStats);
     }
 }

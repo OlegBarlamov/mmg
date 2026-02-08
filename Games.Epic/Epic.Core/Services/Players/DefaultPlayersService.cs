@@ -85,9 +85,15 @@ namespace Epic.Core.Services.Players
             return await Task.WhenAll(entities.Select(x => FromEntity(x)));
         }
 
-        public Task DayIncrement(IReadOnlyList<Guid> playerIds)
+        public async Task DayIncrement(IReadOnlyList<Guid> playerIds)
         {
-           return PlayersRepository.DayIncrement(playerIds);
+            await PlayersRepository.DayIncrement(playerIds);
+            foreach (var playerId in playerIds)
+            {
+                var player = await GetById(playerId);
+                if (player.ActiveHeroId.HasValue)
+                    await HeroesService.RestoreMana(player.ActiveHeroId.Value);
+            }
         }
 
         public Task StageIncrement(Guid playerId)

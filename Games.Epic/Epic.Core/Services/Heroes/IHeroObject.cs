@@ -33,8 +33,9 @@ namespace Epic.Core.Services.Heroes
         public int Experience { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
-        
-        
+        public int Power { get; set; }
+        public int Knowledge { get; set; }
+        public int CurrentMana { get; set; }
         
         public bool HasAliveUnits { get; set; }
         public IUnitsContainerObject ArmyContainer { get; set; }
@@ -61,6 +62,9 @@ namespace Epic.Core.Services.Heroes
                 Experience = heroObject.Experience,
                 Attack = heroObject.Attack,
                 Defense = heroObject.Defense,
+                Power = heroObject.Power,
+                Knowledge = heroObject.Knowledge,
+                CurrentMana = heroObject.CurrentMana,
                 Artifacts = heroObject.Artifacts,
             };
         }
@@ -77,6 +81,9 @@ namespace Epic.Core.Services.Heroes
                 Experience = entity.Experience,
                 Attack = entity.Attack,
                 Defense = entity.Defense,
+                Power = entity.Power,
+                Knowledge = entity.Knowledge,
+                CurrentMana = entity.CurrentMana,
                 Artifacts = Array.Empty<IArtifactObject>(),
             };
         }

@@ -12,5 +12,6 @@ namespace Epic.Core.Services.Heroes
         Task GiveExperience(Guid heroId, int experience);
         Task AddAttack(Guid heroId, int attackAmount);
         Task AddDefense(Guid heroId, int defenseAmount);
+        Task RestoreMana(Guid heroId);
     }
 }

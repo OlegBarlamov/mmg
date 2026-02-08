@@ -84,6 +84,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IPlayersService, DefaultPlayersService>();
             serviceRegistrator.RegisterType<IUnitsContainersService, DefaultUnitsContainerService>();
             serviceRegistrator.RegisterType<IContainersManipulator, DefaultContainersManipulator>();
+            serviceRegistrator.RegisterType<IHeroStatsLogicService, HeroStatsLogicService>();
             serviceRegistrator.RegisterType<IHeroesService, DefaultHeroesService>();
             serviceRegistrator.RegisterType<IArtifactsService, DefaultArtifactsService>();
             serviceRegistrator.RegisterType<IArtifactTypesService, DefaultArtifactTypesService>();

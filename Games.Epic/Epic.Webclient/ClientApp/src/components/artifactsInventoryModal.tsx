@@ -426,7 +426,7 @@ export class ArtifactsInventoryModal extends PureComponent<IArtifactsInventoryMo
                                     <div className="panel-title">Equipment</div>
                                     {this.props.heroStats && (
                                         <div className="hero-stats">
-                                            Hero stats: <b>ATK</b> {this.props.heroStats.attack} / <b>DEF</b> {this.props.heroStats.defense}
+                                            Hero stats: <b>ATK</b> {this.props.heroStats.attack} / <b>DEF</b> {this.props.heroStats.defense} / <b>PWR</b> {this.props.heroStats.power} / <b>KNW</b> {this.props.heroStats.knowledge} / <b>Mana</b> {this.props.heroStats.currentMana}/{this.props.heroStats.maxMana}
                                         </div>
                                     )}
                                     <div className="equipment-layout">

@@ -32,6 +32,10 @@ export type InBattlePlayerInfo = {
     heroStats?: {
         attack: number
         defense: number
+        power: number
+        knowledge: number
+        currentMana: number
+        maxMana: number
     }
 }
 
