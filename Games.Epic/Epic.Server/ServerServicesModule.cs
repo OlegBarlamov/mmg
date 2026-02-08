@@ -11,6 +11,7 @@ using Epic.Core.Services.Connection;
 using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.EffectTypes;
+using Epic.Core.Services.Effects;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Heroes;
@@ -88,6 +89,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<IArtifactTypesService, DefaultArtifactTypesService>();
             serviceRegistrator.RegisterType<IBuffTypesService, DefaultBuffTypesService>();
             serviceRegistrator.RegisterType<IEffectTypesService, DefaultEffectTypesService>();
+            serviceRegistrator.RegisterType<IEffectsService, DefaultEffectsService>();
             serviceRegistrator.RegisterType<IBuffsService, DefaultBuffsService>();
             serviceRegistrator.RegisterType<IGameResourcesService, DefaultGameResourcesService>();
             serviceRegistrator.RegisterType<IBattleReportsService, DefaultBattleReportsService>();

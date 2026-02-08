@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.Buffs;
-using Epic.Data.EffectType;
+using Epic.Data.Effect;
 
 namespace Epic.Logic.Battle
 {
@@ -160,7 +160,7 @@ namespace Epic.Logic.Battle
         /// <summary>
         /// Gets effect type properties from the unit (buffs and, when available, other effects).
         /// </summary>
-        public static IEnumerable<IEffectTypeProperties> GetEffectTypeProperties(this IBattleUnitObject unit)
+        public static IEnumerable<IEffectProperties> GetEffectTypeProperties(this IBattleUnitObject unit)
         {
             if (unit.Buffs == null || unit.Buffs.Count == 0)
                 yield break;

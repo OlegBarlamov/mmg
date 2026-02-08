@@ -3,25 +3,21 @@ using JetBrains.Annotations;
 
 namespace Epic.Data.EffectType
 {
-    public interface IEffectTypeProperties
-    {
-        int TakesDamageMin { get; }
-        int TakesDamageMax { get; }
-        
-        int Heals { get; }
-        int HealsPercentage { get; }
-        bool HealCanResurrect { get; }
-    }
-    
-    public interface IEffectTypeFields : IEffectTypeProperties
+    public interface IEffectTypeFields
     {
         string Key { get; }
         string Name { get; }
         
+        string TakesDamageMinExpression { get; }
+        string TakesDamageMaxExpression { get; }
+        string HealsExpression { get; }
+        string HealsPercentageExpression { get; }
+        bool HealCanResurrect { get; }
+
         [CanBeNull]
         string SpriteUrl { get; }
     }
-    
+
     public interface IEffectTypeEntity : IEffectTypeFields
     {
         Guid Id { get; }
@@ -32,10 +28,10 @@ namespace Epic.Data.EffectType
         public string Key { get; set; }
         public string Name { get; set; }
         public string SpriteUrl { get; set; }
-        public int TakesDamageMin { get; set; }
-        public int TakesDamageMax { get; set; }
-        public int Heals { get; set; }
-        public int HealsPercentage { get; set; }
+        public string TakesDamageMinExpression { get; set; }
+        public string TakesDamageMaxExpression { get; set; }
+        public string HealsExpression { get; set; }
+        public string HealsPercentageExpression { get; set; }
         public bool HealCanResurrect { get; set; }
     }
 
@@ -53,10 +49,10 @@ namespace Epic.Data.EffectType
             Key = fields.Key;
             Name = fields.Name;
             SpriteUrl = fields.SpriteUrl;
-            TakesDamageMin = fields.TakesDamageMin;
-            TakesDamageMax = fields.TakesDamageMax;
-            Heals = fields.Heals;
-            HealsPercentage = fields.HealsPercentage;
+            TakesDamageMinExpression = fields.TakesDamageMinExpression;
+            TakesDamageMaxExpression = fields.TakesDamageMaxExpression;
+            HealsExpression = fields.HealsExpression;
+            HealsPercentageExpression = fields.HealsPercentageExpression;
             HealCanResurrect = fields.HealCanResurrect;
         }
 

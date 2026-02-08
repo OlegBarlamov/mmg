@@ -6,28 +6,20 @@ using Epic.Core.ServerMessages;
 using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Units;
-using Epic.Data.EffectType;
-using static Epic.Logic.Battle.BattleUnitBuffExtensions;
+using Epic.Data.Effect;
 
 namespace Epic.Logic.Battle
 {
-    /// <summary>
-    /// Applies effect type properties to a target unit: computes healing and damage-over-time,
-    /// updates unit state, persists, and broadcasts messages.
-    /// </summary>
     public interface IEffectsLogic
     {
         Task ApplyEffects(
-            IEnumerable<IEffectTypeProperties> effectProperties,
+            IEnumerable<IEffectProperties> effectProperties,
             Func<int, int, int> randomInRange,
             MutableBattleUnitObject unit,
             int turnNumber,
             InBattlePlayerNumber playerNumber);
     }
-
-    /// <summary>
-    /// Encapsulates all logic for applying effect type properties (buffs, effects) to a unit.
-    /// </summary>
+    
     public class EffectsLogic : IEffectsLogic
     {
         private readonly IGlobalUnitsService _globalUnitsService;
@@ -45,7 +37,7 @@ namespace Epic.Logic.Battle
         }
 
         public async Task ApplyEffects(
-            IEnumerable<IEffectTypeProperties> effectProperties,
+            IEnumerable<IEffectProperties> effectProperties,
             Func<int, int, int> randomInRange,
             MutableBattleUnitObject unit,
             int turnNumber,

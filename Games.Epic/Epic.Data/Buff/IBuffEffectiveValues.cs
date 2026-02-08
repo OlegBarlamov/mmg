@@ -1,8 +1,8 @@
-using Epic.Data.EffectType;
+using Epic.Data.Effect;
 
 namespace Epic.Data.Buff
 {
-    public interface IBuffEffectiveValues : IEffectTypeProperties
+    public interface IBuffEffectiveValues : IEffectProperties
     {
         int HealthBonus { get; }
         int AttackBonus { get; }

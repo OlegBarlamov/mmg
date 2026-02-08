@@ -1,7 +1,6 @@
-using System;
 using Epic.Data.Buff;
 using Epic.Data.BuffType;
-using DynamicExpresso;
+using Epic.Core.Utils;
 
 namespace Epic.Core.Services.Buffs
 {
@@ -11,63 +10,36 @@ namespace Epic.Core.Services.Buffs
             IBuffFields buffType,
             BuffExpressionsVariables variables)
         {
-            var vars = variables.ToDictionary();
-            var interpreter = new Interpreter();
-            foreach (var kv in vars)
-                interpreter.SetVariable(kv.Key, kv.Value);
-
+            var interpreter = ExpressionEvaluator.CreateInterpreter(variables?.ToDictionary());
             return new BuffEffectiveValues
             {
-                HealthBonus = EvalInt(buffType.HealthBonusExpression, interpreter),
-                AttackBonus = EvalInt(buffType.AttackBonusExpression, interpreter),
-                DefenseBonus = EvalInt(buffType.DefenseBonusExpression, interpreter),
-                SpeedBonus = EvalInt(buffType.SpeedBonusExpression, interpreter),
-                MinDamageBonus = EvalInt(buffType.MinDamageBonusExpression, interpreter),
-                MaxDamageBonus = EvalInt(buffType.MaxDamageBonusExpression, interpreter),
-                HealthBonusPercentage = EvalInt(buffType.HealthBonusPercentageExpression, interpreter),
-                AttackBonusPercentage = EvalInt(buffType.AttackBonusPercentageExpression, interpreter),
-                DefenseBonusPercentage = EvalInt(buffType.DefenseBonusPercentageExpression, interpreter),
-                SpeedBonusPercentage = EvalInt(buffType.SpeedBonusPercentageExpression, interpreter),
-                MinDamageBonusPercentage = EvalInt(buffType.MinDamageBonusPercentageExpression, interpreter),
-                MaxDamageBonusPercentage = EvalInt(buffType.MaxDamageBonusPercentageExpression, interpreter),
+                HealthBonus = ExpressionEvaluator.EvalInt(buffType.HealthBonusExpression, interpreter),
+                AttackBonus = ExpressionEvaluator.EvalInt(buffType.AttackBonusExpression, interpreter),
+                DefenseBonus = ExpressionEvaluator.EvalInt(buffType.DefenseBonusExpression, interpreter),
+                SpeedBonus = ExpressionEvaluator.EvalInt(buffType.SpeedBonusExpression, interpreter),
+                MinDamageBonus = ExpressionEvaluator.EvalInt(buffType.MinDamageBonusExpression, interpreter),
+                MaxDamageBonus = ExpressionEvaluator.EvalInt(buffType.MaxDamageBonusExpression, interpreter),
+                HealthBonusPercentage = ExpressionEvaluator.EvalInt(buffType.HealthBonusPercentageExpression, interpreter),
+                AttackBonusPercentage = ExpressionEvaluator.EvalInt(buffType.AttackBonusPercentageExpression, interpreter),
+                DefenseBonusPercentage = ExpressionEvaluator.EvalInt(buffType.DefenseBonusPercentageExpression, interpreter),
+                SpeedBonusPercentage = ExpressionEvaluator.EvalInt(buffType.SpeedBonusPercentageExpression, interpreter),
+                MinDamageBonusPercentage = ExpressionEvaluator.EvalInt(buffType.MinDamageBonusPercentageExpression, interpreter),
+                MaxDamageBonusPercentage = ExpressionEvaluator.EvalInt(buffType.MaxDamageBonusPercentageExpression, interpreter),
                 Paralyzed = buffType.Paralyzed,
                 Stunned = buffType.Stunned,
-                VampirePercentage = EvalInt(buffType.VampirePercentageExpression, interpreter),
+                VampirePercentage = ExpressionEvaluator.EvalInt(buffType.VampirePercentageExpression, interpreter),
                 VampireCanResurrect = buffType.VampireCanResurrect,
                 DeclinesWhenTakesDamage = buffType.DeclinesWhenTakesDamage,
-                Heals = EvalInt(buffType.HealsExpression, interpreter),
-                HealsPercentage = EvalInt(buffType.HealsPercentageExpression, interpreter),
+                Heals = ExpressionEvaluator.EvalInt(buffType.HealsExpression, interpreter),
+                HealsPercentage = ExpressionEvaluator.EvalInt(buffType.HealsPercentageExpression, interpreter),
                 HealCanResurrect = buffType.HealCanResurrect,
-                TakesDamageMin = EvalInt(buffType.TakesDamageMinExpression, interpreter),
-                TakesDamageMax = EvalInt(buffType.TakesDamageMaxExpression, interpreter),
-                DamageReturnPercentage = EvalInt(buffType.DamageReturnPercentageExpression, interpreter),
-                DamageReturnMaxRange = EvalInt(buffType.DamageReturnMaxRangeExpression, interpreter),
+                TakesDamageMin = ExpressionEvaluator.EvalInt(buffType.TakesDamageMinExpression, interpreter),
+                TakesDamageMax = ExpressionEvaluator.EvalInt(buffType.TakesDamageMaxExpression, interpreter),
+                DamageReturnPercentage = ExpressionEvaluator.EvalInt(buffType.DamageReturnPercentageExpression, interpreter),
+                DamageReturnMaxRange = ExpressionEvaluator.EvalInt(buffType.DamageReturnMaxRangeExpression, interpreter),
                 Permanent = buffType.Permanent,
-                Duration = EvalInt(buffType.DurationExpression, interpreter),
+                Duration = ExpressionEvaluator.EvalInt(buffType.DurationExpression, interpreter),
             };
         }
-
-        private static int EvalInt(string expression, Interpreter interpreter)
-        {
-            if (string.IsNullOrWhiteSpace(expression))
-                return 0;
-            try
-            {
-                var result = interpreter.Eval(expression);
-                if (result == null)
-                    return 0;
-                if (result is int i)
-                    return i;
-                if (result is double d)
-                    return (int)Math.Round(d);
-                
-                return Convert.ToInt32(result);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to evaluate expression \"{expression}\": {ex.Message}", ex);
-            }
-        }
-
     }
 }

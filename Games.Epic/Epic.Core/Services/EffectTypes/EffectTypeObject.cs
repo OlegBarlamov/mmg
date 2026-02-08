@@ -9,10 +9,10 @@ namespace Epic.Core.Services.EffectTypes
         public string Key { get; set; }
         public string Name { get; set; }
         public string SpriteUrl { get; set; }
-        public int TakesDamageMin { get; set; }
-        public int TakesDamageMax { get; set; }
-        public int Heals { get; set; }
-        public int HealsPercentage { get; set; }
+        public string TakesDamageMinExpression { get; set; }
+        public string TakesDamageMaxExpression { get; set; }
+        public string HealsExpression { get; set; }
+        public string HealsPercentageExpression { get; set; }
         public bool HealCanResurrect { get; set; }
 
         private MutableEffectTypeObject() { }
@@ -25,10 +25,10 @@ namespace Epic.Core.Services.EffectTypes
                 Key = entity.Key,
                 Name = entity.Name,
                 SpriteUrl = entity.SpriteUrl,
-                TakesDamageMin = entity.TakesDamageMin,
-                TakesDamageMax = entity.TakesDamageMax,
-                Heals = entity.Heals,
-                HealsPercentage = entity.HealsPercentage,
+                TakesDamageMinExpression = entity.TakesDamageMinExpression,
+                TakesDamageMaxExpression = entity.TakesDamageMaxExpression,
+                HealsExpression = entity.HealsExpression,
+                HealsPercentageExpression = entity.HealsPercentageExpression,
                 HealCanResurrect = entity.HealCanResurrect,
             };
         }
