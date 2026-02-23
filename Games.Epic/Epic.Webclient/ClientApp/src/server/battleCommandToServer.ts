@@ -47,6 +47,12 @@ interface PlayerRunCommandToServer extends BaseCommandToServer {
 interface PlayerMagicCommandToServer extends BaseCommandToServer {
     command: 'PLAYER_MAGIC'
     magicTypeId: string
+    /** Required for Enemy/Ally: the chosen unit. */
+    targetUnitId?: string
+    /** Required for Location: row of the target cell. */
+    targetRow?: number
+    /** Required for Location: column of the target cell. */
+    targetColumn?: number
 }
 
 export type BattleCommandToServer = 

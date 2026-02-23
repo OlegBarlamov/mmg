@@ -8,6 +8,8 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.GameManagement;
+using Epic.Core.Services.Magic;
+using Epic.Data.Effect;
 using Epic.Data.UnitTypes.Subtypes;
 using FrameworkSDK.Common;
 
@@ -19,15 +21,29 @@ namespace Epic.Logic.Battle
             MutableBattleUnitObject activeUnit,
             int turnNumber,
             InBattlePlayerNumber playerNumber);
-        
+
         Task RemoveBuffsThatDeclineOnDamage(
             MutableBattleUnitObject target,
             int turnIndex,
             InBattlePlayerNumber player);
-        
+
         Task ApplyAttackBuffsToTarget(
             MutableBattleUnitObject target,
             IAttackFunctionType attackType,
+            int turnIndex,
+            InBattlePlayerNumber player);
+
+        /// <summary>Apply effect properties (e.g. from magic) to a unit: damage, healing.</summary>
+        Task ApplyEffectPropertiesToUnit(
+            MutableBattleUnitObject unit,
+            IEnumerable<IEffectProperties> effectProperties,
+            int turnNumber,
+            InBattlePlayerNumber playerNumber);
+
+        /// <summary>Apply magic buffs (pre-evaluated) to a target unit.</summary>
+        Task ApplyMagicBuffsToTarget(
+            MutableBattleUnitObject target,
+            IEnumerable<EvaluatedBuffToApply> evaluatedBuffs,
             int turnIndex,
             InBattlePlayerNumber player);
     }
@@ -214,5 +230,65 @@ namespace Epic.Logic.Battle
             }
         }
 
+        public Task ApplyEffectPropertiesToUnit(
+            MutableBattleUnitObject unit,
+            IEnumerable<IEffectProperties> effectProperties,
+            int turnNumber,
+            InBattlePlayerNumber playerNumber)
+        {
+            return _effectsLogic.ApplyEffects(
+                effectProperties,
+                _randomProvider.NextInteger,
+                unit,
+                turnNumber,
+                playerNumber);
+        }
+
+        public async Task ApplyMagicBuffsToTarget(
+            MutableBattleUnitObject target,
+            IEnumerable<EvaluatedBuffToApply> evaluatedBuffs,
+            int turnIndex,
+            InBattlePlayerNumber player)
+        {
+            if (evaluatedBuffs == null) return;
+
+            var newBuffs = new List<IBuffObject>();
+            var replacedBuffTypeIds = new List<Guid>();
+
+            foreach (var evaluated in evaluatedBuffs)
+            {
+                if (evaluated?.BuffType == null || evaluated.EffectiveValues == null)
+                    continue;
+
+                var buffType = evaluated.BuffType;
+                var buff = await _buffsService.Create(target.Id, buffType.Id, evaluated.EffectiveValues);
+                newBuffs.Add(buff);
+                replacedBuffTypeIds.Add(buffType.Id);
+
+                var buffAppliedMessage = new UnitReceivesBuffCommandFromServer(
+                    turnIndex,
+                    player,
+                    target.Id.ToString())
+                {
+                    BuffId = buff.Id.ToString(),
+                    BuffTypeId = buffType.Id.ToString(),
+                    BuffName = buffType.Name,
+                    ThumbnailUrl = buffType.ThumbnailUrl,
+                    Permanent = buff.Permanent,
+                    Stunned = buff.Stunned,
+                    Paralyzed = buff.Paralyzed,
+                    DurationRemaining = buff.DurationRemaining,
+                };
+                await _messageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
+            }
+
+            if (newBuffs.Count > 0)
+            {
+                var existingBuffs = target.Buffs?.ToList() ?? new List<IBuffObject>();
+                existingBuffs.RemoveAll(b => replacedBuffTypeIds.Contains(b.BuffTypeId));
+                existingBuffs.AddRange(newBuffs);
+                target.Buffs = existingBuffs;
+            }
+        }
     }
 }

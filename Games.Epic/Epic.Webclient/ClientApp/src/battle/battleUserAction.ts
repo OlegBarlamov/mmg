@@ -41,6 +41,10 @@ interface PlayerRunAction extends BaseUserAction {
 interface PlayerMagicAction extends BaseUserAction {
     command: 'PLAYER_MAGIC'
     magicTypeId: string
+    targetUnitId?: string
+    /** For Location cast target type: target cell. */
+    targetRow?: number
+    targetColumn?: number
 }
 
 export type BattleUserAction =

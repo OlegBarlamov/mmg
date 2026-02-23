@@ -7,8 +7,8 @@ export interface IMagicBookModalProps {
     isVisible: boolean;
     serviceLocator: IServiceLocator;
     onClose: () => void;
-    /** When set (e.g. in battle), show a Cast button to use this magic. */
-    onCastMagic?: (magicTypeId: string) => void;
+    /** When set (e.g. in battle), show a Cast button to use this magic. For Location spells pass targetRow/targetColumn. */
+    onCastMagic?: (magicTypeId: string, options?: { targetUnitId?: string; targetRow?: number; targetColumn?: number }) => void;
     /** Whether casting is allowed (e.g. one magic per round). */
     canCast?: boolean;
 }

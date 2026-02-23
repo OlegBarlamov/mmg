@@ -301,7 +301,10 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
     }
 
-    private handleMagicAction = async (magicTypeId: string) => {
+    private handleMagicAction = async (
+        magicTypeId: string,
+        options?: { targetUnitId?: string; targetRow?: number; targetColumn?: number }
+    ) => {
         if (!this.battleController) return;
         try {
             const playerService = this.props.serviceLocator.playerService();
@@ -318,6 +321,9 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     command: 'PLAYER_MAGIC' as const,
                     player: currentPlayer.playerNumber,
                     magicTypeId,
+                    targetUnitId: options?.targetUnitId,
+                    targetRow: options?.targetRow,
+                    targetColumn: options?.targetColumn,
                 });
             }
         } catch (error) {

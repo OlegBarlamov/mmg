@@ -14,6 +14,7 @@ using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Heroes;
+using Epic.Core.Services.Magic;
 using Epic.Core.Services.MagicTypes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
@@ -22,7 +23,6 @@ using Epic.Data.GameResources;
 using Epic.Logic.Battle.Commands;
 using Epic.Logic.Generator;
 using FrameworkSDK.Common;
-using static Epic.Logic.Battle.BattleUnitBuffExtensions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
@@ -42,6 +42,7 @@ namespace Epic.Logic.Battle
         private IRandomService RandomProvider { get; }
         private IHeroesService HeroesService { get; }
         private IMagicTypesService MagicTypesService { get; }
+        private IMagicsService MagicsService { get; }
         public IGameResourcesRepository ResourcesRepository { get; }
         private IBuffsService BuffsService { get; }
         private IBuffTypesService BuffTypesService { get; }
@@ -80,6 +81,7 @@ namespace Epic.Logic.Battle
             [NotNull] IRandomService randomProvider,
             [NotNull] IHeroesService heroesService,
             [NotNull] IMagicTypesService magicTypesService,
+            [NotNull] IMagicsService magicsService,
             [NotNull] IGameResourcesRepository resourcesRepository,
             [NotNull] IBuffsService buffsService,
             [NotNull] IBuffTypesService buffTypesService)
@@ -96,6 +98,7 @@ namespace Epic.Logic.Battle
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
             MagicTypesService = magicTypesService ?? throw new ArgumentNullException(nameof(magicTypesService));
+            MagicsService = magicsService ?? throw new ArgumentNullException(nameof(magicsService));
             ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
             BuffsService = buffsService ?? throw new ArgumentNullException(nameof(buffsService));
             BuffTypesService = buffTypesService ?? throw new ArgumentNullException(nameof(buffTypesService));
@@ -290,7 +293,8 @@ namespace Epic.Logic.Battle
                 BuffsLogic,
                 HeroesService,
                 PlayersService,
-                MagicTypesService);
+                MagicTypesService,
+                MagicsService);
             
             await handler.Validate(context, command);
             

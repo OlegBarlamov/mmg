@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Epic.Core.Services.BuffTypes;
 using Epic.Data.Buff;
 using JetBrains.Annotations;
+using IBuffEffectiveValues = Epic.Data.Buff.IBuffEffectiveValues;
 
 namespace Epic.Core.Services.Buffs
 {
@@ -51,7 +52,26 @@ namespace Epic.Core.Services.Buffs
 
             var type = await BuffTypesService.GetById(buffTypeId);
             var effectiveValues = BuffExpressionEvaluator.Evaluate(type, variables);
+            return await CreateFromEffectiveValues(targetBattleUnitId, buffTypeId, effectiveValues, type);
+        }
 
+        public async Task<IBuffObject> Create(Guid targetBattleUnitId, Guid buffTypeId, IBuffEffectiveValues effectiveValues)
+        {
+            if (targetBattleUnitId == Guid.Empty) throw new ArgumentException("TargetBattleUnitId must not be empty.", nameof(targetBattleUnitId));
+            if (buffTypeId == Guid.Empty) throw new ArgumentException("BuffTypeId must not be empty.", nameof(buffTypeId));
+            if (effectiveValues == null) throw new ArgumentNullException(nameof(effectiveValues));
+
+            var type = await BuffTypesService.GetById(buffTypeId);
+            return await CreateFromEffectiveValues(targetBattleUnitId, buffTypeId, effectiveValues, type);
+        }
+
+        private async Task<IBuffObject> CreateFromEffectiveValues(
+            Guid targetBattleUnitId,
+            Guid buffTypeId,
+            IBuffEffectiveValues effectiveValues,
+            IBuffTypeObject type)
+        {
+            var ev = effectiveValues is BuffEffectiveValues bv ? bv : BuffEffectiveValues.From(effectiveValues);
             var id = Guid.NewGuid();
             var fields = new BuffEntityFields
             {
@@ -61,8 +81,7 @@ namespace Epic.Core.Services.Buffs
             };
             fields.SetEffectiveValues(effectiveValues);
             var entity = await BuffsRepository.Create(id, fields);
-
-            var obj = MutableBuffObject.FromEntity(entity, effectiveValues);
+            var obj = MutableBuffObject.FromEntity(entity, ev);
             obj.BuffType = type;
             return obj;
         }

@@ -3,6 +3,7 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.Connection;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Heroes;
+using Epic.Core.Services.Magic;
 using Epic.Core.Services.MagicTypes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Units;
@@ -27,6 +28,7 @@ namespace Epic.Logic.Battle.Commands
         public IHeroesService HeroesService { get; }
         public IPlayersService PlayersService { get; }
         public IMagicTypesService MagicTypesService { get; }
+        public IMagicsService MagicsService { get; }
 
         public CommandExecutionContext(
             MutableBattleObject battleObject,
@@ -42,7 +44,8 @@ namespace Epic.Logic.Battle.Commands
             IBuffsLogic buffsLogic,
             IHeroesService heroesService,
             IPlayersService playersService,
-            IMagicTypesService magicTypesService)
+            IMagicTypesService magicTypesService,
+            IMagicsService magicsService)
         {
             BattleObject = battleObject;
             ExpectedTurn = expectedTurn;
@@ -58,6 +61,7 @@ namespace Epic.Logic.Battle.Commands
             HeroesService = heroesService;
             PlayersService = playersService;
             MagicTypesService = magicTypesService;
+            MagicsService = magicsService;
         }
     }
 }
