@@ -21,6 +21,7 @@ namespace Epic.Server
                  .AddComponent<InitializeResourcesScript>()
                  .AddComponent<InitializeBuffsScript>()
                  .AddComponent<InitializeEffectsScript>()
+                 .AddComponent<InitializeMagicTypesScript>()
                  .AddComponent<InitializeUnitsScript>()
                  .AddComponent<InitializeArtifactsScript>()
                  .AddComponent<InitializeRewardDefinitionsScript>()

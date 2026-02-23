@@ -13,5 +13,7 @@ namespace Epic.Core.Services.Heroes
         Task AddAttack(Guid heroId, int attackAmount);
         Task AddDefense(Guid heroId, int defenseAmount);
         Task RestoreMana(Guid heroId);
+        Task AddKnownMagic(Guid heroId, Guid magicTypeId);
+        Task AddKnownMagicByKey(Guid heroId, string magicTypeKey);
     }
 }

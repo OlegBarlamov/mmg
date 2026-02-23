@@ -62,7 +62,6 @@ namespace Epic.Data.Heroes
             Power = fields.Power;
             Knowledge = fields.Knowledge;
             CurrentMana = fields.CurrentMana;
-            
             return this;
         }
 

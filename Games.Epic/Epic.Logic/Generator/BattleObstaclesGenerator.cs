@@ -81,7 +81,7 @@ namespace Epic.Logic.Battle.Obstacles
             var largeObstacleMinHeight = 2;
             var largeObstacleMaxHeight = 5;
             
-            var closeToArmy = _random.Next(100) < 20;
+            var closeToArmy = _random.Next(100) < 10;
             var minColumn = closeToArmy ? 1 : 2;
             var minRow = 0;
 

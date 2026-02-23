@@ -4,6 +4,7 @@ namespace Epic.Core.Utils
 {
     public abstract class ExpressionVariables
     {
-        public abstract IReadOnlyDictionary<string, double> ToDictionary(); 
+        protected Dictionary<string, double>  Variables { get; set; } = new Dictionary<string, double>();
+        public IReadOnlyDictionary<string, double> ToDictionary() => Variables; 
     }
 }

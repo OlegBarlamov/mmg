@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Epic.Core.Services.Artifacts;
+using Epic.Core.Services.MagicTypes;
 using Epic.Core.Objects;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.Heroes;
@@ -14,8 +15,9 @@ namespace Epic.Core.Services.Heroes
         string Name { get; }
         Guid ArmyContainerId { get; }
         bool IsKilled { get; }
-        
-        
+        Guid[] KnownMagicTypeIds { get; }
+        IReadOnlyList<IMagicTypeObject> KnownMagicTypes { get; }
+
         bool HasAliveUnits { get; }
         IUnitsContainerObject ArmyContainer { get; }
         IReadOnlyList<IArtifactObject> Artifacts { get; }
@@ -36,7 +38,10 @@ namespace Epic.Core.Services.Heroes
         public int Power { get; set; }
         public int Knowledge { get; set; }
         public int CurrentMana { get; set; }
-        
+
+        public Guid[] KnownMagicTypeIds { get; set; }
+        public IReadOnlyList<IMagicTypeObject> KnownMagicTypes { get; set; }
+
         public bool HasAliveUnits { get; set; }
         public IUnitsContainerObject ArmyContainer { get; set; }
         public IReadOnlyList<IArtifactObject> Artifacts { get; set; }
@@ -65,6 +70,8 @@ namespace Epic.Core.Services.Heroes
                 Power = heroObject.Power,
                 Knowledge = heroObject.Knowledge,
                 CurrentMana = heroObject.CurrentMana,
+                KnownMagicTypeIds = heroObject.KnownMagicTypeIds,
+                KnownMagicTypes = heroObject.KnownMagicTypes,
                 Artifacts = heroObject.Artifacts,
             };
         }
@@ -84,10 +91,12 @@ namespace Epic.Core.Services.Heroes
                 Power = entity.Power,
                 Knowledge = entity.Knowledge,
                 CurrentMana = entity.CurrentMana,
+                KnownMagicTypeIds = Array.Empty<Guid>(),
+                KnownMagicTypes = Array.Empty<IMagicTypeObject>(),
                 Artifacts = Array.Empty<IArtifactObject>(),
             };
         }
-        
+
         public IHeroEntity ToEntity()
         {
             return MutableHeroEntity.FromFields(Id, this);

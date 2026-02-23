@@ -10,7 +10,7 @@ namespace Epic.Core.Services.Buffs
             IBuffFields buffType,
             BuffExpressionsVariables variables)
         {
-            var interpreter = ExpressionEvaluator.CreateInterpreter(variables?.ToDictionary());
+            var interpreter = ExpressionEvaluator.CreateInterpreter(variables.ToDictionary());
             return new BuffEffectiveValues
             {
                 HealthBonus = ExpressionEvaluator.EvalInt(buffType.HealthBonusExpression, interpreter),
@@ -43,3 +43,4 @@ namespace Epic.Core.Services.Buffs
         }
     }
 }
+

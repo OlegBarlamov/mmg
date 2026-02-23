@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Epic.Data.Effect;
 using Epic.Data.EffectType;
 using Epic.Core.Utils;
@@ -9,9 +8,9 @@ namespace Epic.Core.Services.Effects
     {
         public static EffectEffectiveValues Evaluate(
             IEffectTypeFields effectType,
-            IReadOnlyDictionary<string, double> variables)
+            EffectExpressionsVariables variables)
         {
-            var interpreter = ExpressionEvaluator.CreateInterpreter(variables);
+            var interpreter = ExpressionEvaluator.CreateInterpreter(variables?.ToDictionary());
             return new EffectEffectiveValues
             {
                 TakesDamageMin = ExpressionEvaluator.EvalInt(effectType.TakesDamageMinExpression, interpreter),

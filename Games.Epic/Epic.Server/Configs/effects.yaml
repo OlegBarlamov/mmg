@@ -10,5 +10,6 @@
 EffectTypes:
   MagicArrow:
     Name: "Magic Arrow"
-    TakesDamageMinExpression: "10"
-    TakesDamageMaxExpression: "10"
+    TakesDamageMinExpression: "10 + power * 10"
+    TakesDamageMaxExpression: "10 + power * 10"
+    SpriteUrl: "/resources/Magic_Arrow.png"

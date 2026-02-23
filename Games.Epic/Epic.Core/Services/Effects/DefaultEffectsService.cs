@@ -20,8 +20,7 @@ namespace Epic.Core.Services.Effects
             if (effectTypeId == Guid.Empty) throw new ArgumentException("EffectTypeId must not be empty.", nameof(effectTypeId));
 
             var type = await EffectTypesService.GetById(effectTypeId);
-            var vars = variables?.ToDictionary();
-            var effectiveValues = EffectExpressionEvaluator.Evaluate(type, vars);
+            var effectiveValues = EffectExpressionEvaluator.Evaluate(type, variables);
 
             var obj = MutableEffectObject.Create(effectTypeId, effectiveValues);
             obj.EffectType = type;
