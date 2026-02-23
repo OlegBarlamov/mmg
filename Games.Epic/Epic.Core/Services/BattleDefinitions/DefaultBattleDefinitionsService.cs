@@ -7,7 +7,6 @@ using Epic.Core.Services.Units;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Players;
-using Epic.Data.Reward;
 using JetBrains.Annotations;
 
 namespace Epic.Core.Services.BattleDefinitions
@@ -35,6 +34,11 @@ namespace Epic.Core.Services.BattleDefinitions
         public Task<int> GetBattlesCountForPlayer(IPlayerObject player)
         {
             return BattleDefinitionsRepository.CountBattles(player.Id, player.Day);
+        }
+
+        public Task<int> GetBattlesCountForPlayerAndStage(IPlayerObject player, int stage)
+        {
+            return BattleDefinitionsRepository.CountBattlesByStage(player.Id, stage, player.Day);
         }
 
         public async Task<IReadOnlyCollection<IBattleDefinitionObject>> GetNotExpiredActiveBattleDefinitionsByPlayerAsync(Guid playerId)
