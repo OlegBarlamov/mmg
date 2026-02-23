@@ -84,6 +84,15 @@ export class BattleActionsProcessor implements IBattleActionsProcessor {
                     player: action.player,
                     turnIndex: this.mapController.map.turnInfo.index,
                 })
+        } else if (action.command === 'PLAYER_MAGIC') {
+            response = await this.battleServerConnection.sendMessage(
+                {
+                    command: 'PLAYER_MAGIC',
+                    commandId: getRandomStringKey(10),
+                    player: action.player,
+                    turnIndex: this.mapController.map.turnInfo.index,
+                    magicTypeId: action.magicTypeId,
+                })
         } else {
             throw new Error("Unknown type of user action")
         }

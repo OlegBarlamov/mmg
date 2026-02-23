@@ -11,6 +11,7 @@ namespace Epic.Data.Battles
         bool RunClaimed { get; }
         int? RunRoundsRemaining { get; }
         int? RunClaimedUnitIndex { get; }
+        int? LastRoundMagicUsed { get; }
     }
 
     public class PlayerToBattleEntity : IPlayerToBattleEntity
@@ -22,6 +23,7 @@ namespace Epic.Data.Battles
         public bool RunClaimed { get; set; } = false;
         public int? RunRoundsRemaining { get; set; } = null;
         public int? RunClaimedUnitIndex { get; set; }  = null;
+        public int? LastRoundMagicUsed { get; set; } = null;
 
         public void UpdateFrom(IPlayerToBattleEntity entity)
         {
@@ -31,6 +33,7 @@ namespace Epic.Data.Battles
             RunClaimed = entity.RunClaimed;
             RunRoundsRemaining = entity.RunRoundsRemaining;
             RunClaimedUnitIndex = entity.RunClaimedUnitIndex;
+            LastRoundMagicUsed = entity.LastRoundMagicUsed;
         }
     }
 }

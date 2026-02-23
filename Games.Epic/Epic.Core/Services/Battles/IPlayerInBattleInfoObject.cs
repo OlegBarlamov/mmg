@@ -11,6 +11,7 @@ namespace Epic.Core.Services.Battles
         bool RansomClaimed { get; }
         bool RunClaimed { get; }
         PlayerRunInfo RunInfo { get; }
+        int? LastRoundMagicUsed { get; }
     }
 
     public class MutablePlayerInBattleInfoObject : IPlayerInBattleInfoObject
@@ -21,6 +22,7 @@ namespace Epic.Core.Services.Battles
         
         public bool RunClaimed { get; set; }
         public PlayerRunInfo RunInfo { get; set; }
+        public int? LastRoundMagicUsed { get; set; }
 
         private MutablePlayerInBattleInfoObject(Guid id)
         {
@@ -38,7 +40,8 @@ namespace Epic.Core.Services.Battles
                 {
                     RunClaimedUnitIndex = entity.RunClaimedUnitIndex.Value,
                     RunRoundsRemaining = entity.RunRoundsRemaining.Value,
-                } : null
+                } : null,
+                LastRoundMagicUsed = entity.LastRoundMagicUsed
             };
         }
 
@@ -52,6 +55,7 @@ namespace Epic.Core.Services.Battles
                 RunClaimed = RunClaimed,
                 RunClaimedUnitIndex = RunInfo?.RunClaimedUnitIndex,
                 RunRoundsRemaining = RunInfo?.RunRoundsRemaining,
+                LastRoundMagicUsed = LastRoundMagicUsed,
             };
         }
     }

@@ -64,6 +64,11 @@ export interface PlayerRunCommandFromServer extends PlayerCommandFromServer {
     command: 'PLAYER_RUN'
 }
 
+export interface PlayerMagicCommandFromServer extends PlayerCommandFromServer {
+    command: 'PLAYER_MAGIC'
+    magicTypeId: string
+}
+
 export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer {
     command: 'RECEIVE_BUFF'
     buffId: string
@@ -100,6 +105,7 @@ export type BattleCommandFromServer =
     | BattleFinishedCommandFromServer
     | PlayerRansomCommandFromServer
     | PlayerRunCommandFromServer
+    | PlayerMagicCommandFromServer
     | UnitReceivesBuffCommandFromServer
     | UnitLosesBuffCommandFromServer
     | UnitHealsCommandFromServer

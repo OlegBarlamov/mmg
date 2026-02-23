@@ -132,6 +132,15 @@ namespace Epic.Core.Services.Heroes
             await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
         }
 
+        public async Task SpendMana(Guid heroId, int amount)
+        {
+            if (amount <= 0) return;
+            var heroObject = await GetById(heroId);
+            var mutableHeroObject = MutableHeroObject.CopyFrom(heroObject);
+            mutableHeroObject.CurrentMana = Math.Max(0, heroObject.CurrentMana - amount);
+            await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
+        }
+
         public Task AddKnownMagic(Guid heroId, Guid magicTypeId)
         {
             return HeroMagicTypesRepository.Add(heroId, magicTypeId);

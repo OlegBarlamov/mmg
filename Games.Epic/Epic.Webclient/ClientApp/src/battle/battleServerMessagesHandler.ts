@@ -195,6 +195,10 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             this.cancelCurrentUserActionPending(message)
             this.mapController.map.players.find(player => player.playerNumber === message.player)!.runClaimed = true
             return enqueue(() => undefined)
+        } else if (message.command === 'PLAYER_MAGIC') {
+            this.cancelCurrentUserActionPending(message)
+            this.mapController.map.players.find(player => player.playerNumber === message.player)!.magicUsedThisRound = true
+            return enqueue(() => undefined)
         } else if (message.command === 'RECEIVE_BUFF') {
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {

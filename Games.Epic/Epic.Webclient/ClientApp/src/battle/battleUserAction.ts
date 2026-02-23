@@ -38,6 +38,11 @@ interface PlayerRunAction extends BaseUserAction {
     command: 'PLAYER_RUN'
 }
 
+interface PlayerMagicAction extends BaseUserAction {
+    command: 'PLAYER_MAGIC'
+    magicTypeId: string
+}
+
 export type BattleUserAction =
  UnitMoveAction
   | UnitAttackAction
@@ -45,3 +50,4 @@ export type BattleUserAction =
   | UnitWaitAction
   | PlayerRansomAction
   | PlayerRunAction
+  | PlayerMagicAction

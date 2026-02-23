@@ -301,6 +301,30 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         }
     }
 
+    private handleMagicAction = async (magicTypeId: string) => {
+        if (!this.battleController) return;
+        try {
+            const playerService = this.props.serviceLocator.playerService();
+            const currentPlayer = this.props.battleMap.players.find(
+                player => player.playerId === playerService.currentPlayerInfo.id
+            );
+            if (!currentPlayer) {
+                console.error('Current player not found in battle');
+                return;
+            }
+            const battleActionProcessor = (this.battleController as any).battleActionProcessor;
+            if (battleActionProcessor) {
+                await battleActionProcessor.processAction({
+                    command: 'PLAYER_MAGIC' as const,
+                    player: currentPlayer.playerNumber,
+                    magicTypeId,
+                });
+            }
+        } catch (error) {
+            console.error('Failed to process magic action:', error);
+        }
+    }
+
     private async startBattle() {
         const battleResult = await this.battleController!.startBattle()
 
@@ -522,6 +546,13 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                         battleLogLines={this.state.battleLog}
                         onRansomAction={this.handleRansomAction}
                         onRunAction={this.handleRunAction}
+                        onMagicCast={this.handleMagicAction}
+                        canUseMagic={this.state.isPlayerTurn && (() => {
+                            const currentPlayer = this.props.battleMap.players.find(
+                                (p: InBattlePlayerInfo) => p.playerId === this.props.serviceLocator.playerService().currentPlayerInfo.id
+                            );
+                            return currentPlayer != null && !currentPlayer.magicUsedThisRound && !currentPlayer.ransomClaimed && !currentPlayer.runClaimed;
+                        })()}
                     />
                 </div>
 

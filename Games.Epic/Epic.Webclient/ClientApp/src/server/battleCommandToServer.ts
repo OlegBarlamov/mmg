@@ -44,6 +44,11 @@ interface PlayerRunCommandToServer extends BaseCommandToServer {
     command: 'PLAYER_RUN'
 }
 
+interface PlayerMagicCommandToServer extends BaseCommandToServer {
+    command: 'PLAYER_MAGIC'
+    magicTypeId: string
+}
+
 export type BattleCommandToServer = 
     UnitMoveCommandToServer 
     | UnitAttackCommandToServer
@@ -52,3 +57,4 @@ export type BattleCommandToServer =
     | ClientConnectedCommandToServer 
     | PlayerRansomCommandToServer
     | PlayerRunCommandToServer
+    | PlayerMagicCommandToServer

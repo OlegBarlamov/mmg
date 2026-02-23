@@ -5,6 +5,7 @@ using Epic.Core.Services.Buffs;
 using Epic.Core.Services.BuffTypes;
 using Epic.Core.Services.GameManagement;
 using Epic.Core.Services.Heroes;
+using Epic.Core.Services.MagicTypes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards;
 using Epic.Core.Services.Units;
@@ -28,6 +29,7 @@ namespace Epic.Logic.Battle
         public ILoggerFactory LoggerFactory { get; }
         public IRandomService RandomProvider { get; }
         public IHeroesService HeroesService { get; }
+        public IMagicTypesService MagicTypesService { get; }
         public IGameResourcesRepository ResourcesRepository { get; }
         public IBuffsService BuffsService { get; }
         public IBuffTypesService BuffTypesService { get; }
@@ -42,6 +44,7 @@ namespace Epic.Logic.Battle
             [NotNull] ILoggerFactory loggerFactory,
             [NotNull] IRandomService randomProvider,
             [NotNull] IHeroesService heroesService,
+            [NotNull] IMagicTypesService magicTypesService,
             [NotNull] IGameResourcesRepository resourcesRepository,
             [NotNull] IBuffsService buffsService,
             [NotNull] IBuffTypesService buffTypesService)
@@ -55,6 +58,7 @@ namespace Epic.Logic.Battle
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             RandomProvider = randomProvider ?? throw new ArgumentNullException(nameof(randomProvider));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
+            MagicTypesService = magicTypesService ?? throw new ArgumentNullException(nameof(magicTypesService));
             ResourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
             BuffsService = buffsService ?? throw new ArgumentNullException(nameof(buffsService));
             BuffTypesService = buffTypesService ?? throw new ArgumentNullException(nameof(buffTypesService));
@@ -73,6 +77,7 @@ namespace Epic.Logic.Battle
                 LoggerFactory.CreateLogger<BattleLogic>(),
                 RandomProvider,
                 HeroesService,
+                MagicTypesService,
                 ResourcesRepository,
                 BuffsService,
                 BuffTypesService);

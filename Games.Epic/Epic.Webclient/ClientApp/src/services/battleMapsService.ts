@@ -58,6 +58,7 @@ export class BattleMapsService implements IBattleMapsService {
                     index: 0,
                     ransomClaimed: false,
                     runClaimed: false,
+                    magicUsedThisRound: false,
                 },
             ],
             obstacles: [],

@@ -29,6 +29,7 @@ export type InBattlePlayerInfo = {
     index: number
     ransomClaimed: boolean
     runClaimed: boolean
+    magicUsedThisRound: boolean
     heroStats?: {
         attack: number
         defense: number

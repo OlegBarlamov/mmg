@@ -7,6 +7,10 @@ export interface IMagicBookModalProps {
     isVisible: boolean;
     serviceLocator: IServiceLocator;
     onClose: () => void;
+    /** When set (e.g. in battle), show a Cast button to use this magic. */
+    onCastMagic?: (magicTypeId: string) => void;
+    /** Whether casting is allowed (e.g. one magic per round). */
+    canCast?: boolean;
 }
 
 interface IMagicBookModalState {
@@ -152,6 +156,21 @@ export class MagicBookModal extends PureComponent<IMagicBookModalProps, IMagicBo
                                 </li>
                             ))}
                         </ul>
+                    </div>
+                )}
+                {this.props.onCastMagic && (
+                    <div className="magic-book-detail-section magic-book-cast-row">
+                        <button
+                            type="button"
+                            className="magic-book-cast-button"
+                            disabled={!this.props.canCast}
+                            onClick={() => {
+                                this.props.onCastMagic!(m.magicTypeId);
+                                this.props.onClose();
+                            }}
+                        >
+                            Cast
+                        </button>
                     </div>
                 )}
             </div>

@@ -12,6 +12,7 @@ namespace Epic.Core.ClientMessages
         public const string UNIT_PASS = "UNIT_PASS";
         public const string PLAYER_RANSOM = "PLAYER_RANSOM";
         public const string PLAYER_RUN = "PLAYER_RUN";
+        public const string PLAYER_MAGIC = "PLAYER_MAGIC";
         
         public static IReadOnlyDictionary<string, Type> CommandTypes { get; } = new Dictionary<string, Type>
         {
@@ -22,6 +23,7 @@ namespace Epic.Core.ClientMessages
             { UNIT_PASS, typeof(UnitPassClientBattleMessage) },
             { PLAYER_RANSOM, typeof(PlayerRansomClientBattleMessage) },
             { PLAYER_RUN, typeof(PlayerRunClientBattleMessage) },
+            { PLAYER_MAGIC, typeof(PlayerMagicClientBattleMessage) },
         };
     }
 }

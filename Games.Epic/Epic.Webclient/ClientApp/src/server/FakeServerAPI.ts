@@ -507,6 +507,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     index: 0,
                     ransomClaimed: false,
                     runClaimed: false,
+                    magicUsedThisRound: false,
                     heroStats: {
                         attack: 5,
                         defense: 3,
@@ -522,6 +523,7 @@ export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
                     index: 1,
                     ransomClaimed: false,
                     runClaimed: false,
+                    magicUsedThisRound: false,
                     heroStats: {
                         attack: 4,
                         defense: 4,

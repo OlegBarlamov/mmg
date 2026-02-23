@@ -19,6 +19,8 @@ export interface IBattleControlPanelProps {
     battleLogLines: string[];
     onRansomAction?: () => void;
     onRunAction?: () => void;
+    onMagicCast?: (magicTypeId: string) => void;
+    canUseMagic?: boolean;
 }
 
 interface IBattleControlPanelState {
@@ -257,6 +259,8 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                         <button 
                             className="control-button magic-button"
                             onClick={() => this.setState({ showMagicBook: true })}
+                            disabled={this.props.onMagicCast != null && this.props.canUseMagic === false}
+                            title={this.props.canUseMagic === false ? 'Already used magic this round' : undefined}
                         >
                             Magic
                         </button>
@@ -280,6 +284,8 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                     isVisible={this.state.showMagicBook}
                     serviceLocator={this.props.serviceLocator}
                     onClose={() => this.setState({ showMagicBook: false })}
+                    onCastMagic={this.props.onMagicCast}
+                    canCast={this.props.canUseMagic}
                 />
                 <RansomConfirmationModal
                     isVisible={this.state.showRansomModal}

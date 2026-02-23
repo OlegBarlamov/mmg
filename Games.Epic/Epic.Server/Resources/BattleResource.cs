@@ -26,12 +26,12 @@ namespace Epic.Server.Resources
             Units = battleObject.Units.Select(x => new BattleUnitResource(x, buffTypesRegistry)).ToList();
             TurnInfo = new TurnInfoResource(battleObject.TurnNumber, battleObject.TurnPlayerIndex, battleObject.RoundNumber);
             Players = battleObject.PlayerInfos
-                .Select(x => 
+                .Select(x =>
                 {
-                    var heroStats = playerHeroStats.TryGetValue(x.PlayerId, out var stats) 
-                        ? stats 
+                    var heroStats = playerHeroStats.TryGetValue(x.PlayerId, out var stats)
+                        ? stats
                         : DefaultHeroStats.Instance;
-                    return new PlayerInBattleInfoResource(x, battleObject.FindPlayerNumber(x).Value, heroStats);
+                    return new PlayerInBattleInfoResource(x, battleObject.FindPlayerNumber(x).Value, heroStats, battleObject.RoundNumber);
                 })
                 .ToList();
             Obstacles = battleObject.Obstacles.Select(x => new BattleObstacleResource(x)).ToList();
