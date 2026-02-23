@@ -7,6 +7,7 @@ using Epic.Core.Services.Artifacts;
 using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.BattleDefinitions;
 using Epic.Core.Services.Heroes;
+using Epic.Core.Services.MagicTypes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.UnitsContainers;
 using Epic.Core.Services.Users;
@@ -43,7 +44,8 @@ namespace Epic.Server
         public IBattleDefinitionsRepository BattleDefinitionsRepository { get; }
         [NotNull] public IUnitTypesRepository UnitTypesRepository { get; set; }
         [NotNull] public IGameModeProvider GameModeProvider { get; }
-        
+        public IMagicTypesService MagicTypesService { get; }
+
         public DebugStartupScript(
             [NotNull] IUsersRepository usersRepository,
             [NotNull] ISessionsRepository sessionsRepository,
@@ -60,9 +62,11 @@ namespace Epic.Server
             [NotNull] IHeroesService heroesService,
             [NotNull] IGameResourcesRepository resourcesRepository,
             [NotNull] IBattlesGenerator battlesGenerator,
-            [NotNull] IGameModeProvider gameModeProvider)
+            [NotNull] IGameModeProvider gameModeProvider,
+            [NotNull] IMagicTypesService magicTypesService)
         {
             UsersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
+            MagicTypesService = magicTypesService ?? throw new ArgumentNullException(nameof(magicTypesService));
             GlobalUnitsRepository = globalUnitsRepository ?? throw new ArgumentNullException(nameof(globalUnitsRepository));
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             PlayersService = playersService ?? throw new ArgumentNullException(nameof(playersService));
@@ -108,6 +112,14 @@ namespace Epic.Server
             
             var hero1 = await HeroesService.CreateNew(user1Player.Name, user1Player.Id);
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
+
+            var debugMagic = true;
+            if (debugMagic)
+            {
+                var allMagicTypes = await MagicTypesService.GetAll();
+                foreach (var magicType in allMagicTypes ?? Array.Empty<IMagicTypeObject>())
+                    await HeroesService.AddKnownMagic(hero.Id, magicType.Id);
+            }
 
             // Give some artifacts to the first player's hero for testing.
             // await GiveTestArtifacts(hero.Id);

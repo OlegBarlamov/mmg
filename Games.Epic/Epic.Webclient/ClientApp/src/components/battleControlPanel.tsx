@@ -4,6 +4,7 @@ import { IBattlePanelActionsController } from '../battle/IBattlePanelActionsCont
 import { BattleMapUnit } from '../battleMap/battleMapUnit';
 import { IServiceLocator } from '../services/serviceLocator';
 import { IRansomPrice, IResourceInfo } from '../services/serverAPI';
+import { MagicBookModal } from './magicBookModal';
 import { RansomConfirmationModal } from './ransomConfirmationModal';
 import { RunConfirmationModal } from './runConfirmationModal';
 
@@ -27,6 +28,7 @@ interface IBattleControlPanelState {
     isLoadingRansomPrice: boolean;
     showRunModal: boolean;
     runPenaltyRounds: number;
+    showMagicBook: boolean;
 }
 
 // Helper function to render log lines with colored highlights
@@ -84,7 +86,8 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
             playerGold: null,
             isLoadingRansomPrice: false,
             showRunModal: false,
-            runPenaltyRounds: 0
+            runPenaltyRounds: 0,
+            showMagicBook: false
         };
     }
 
@@ -252,6 +255,12 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                     </div>
                     <div className="right-buttons-container">
                         <button 
+                            className="control-button magic-button"
+                            onClick={() => this.setState({ showMagicBook: true })}
+                        >
+                            Magic
+                        </button>
+                        <button 
                             className="control-button ransom-button"
                             onClick={this.handleRansomClick}
                             disabled={!this.props.isPlayerTurn}
@@ -267,6 +276,11 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                         </button>
                     </div>
                 </div>
+                <MagicBookModal
+                    isVisible={this.state.showMagicBook}
+                    serviceLocator={this.props.serviceLocator}
+                    onClose={() => this.setState({ showMagicBook: false })}
+                />
                 <RansomConfirmationModal
                     isVisible={this.state.showRansomModal}
                     ransomPrice={this.state.ransomPrice}

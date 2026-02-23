@@ -1,6 +1,6 @@
 import {IBattleDefinition, IBattleDefinitionReward, IBattleDefinitionUnit} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell} from "../battleMap/battleMap";
-import {IAcceptedReward, IArtifactInfo, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IArtifactInfo, IKnownMagicInfo, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {getSessionCookie, setSessionCookie} from "../units/cookiesHelper";
 import {BattleMapUnit} from "../battleMap/battleMapUnit";
 import {OddRGrid} from "../hexogrid/oddRGrid";
@@ -42,6 +42,9 @@ class ServerSideBattle implements IBattleDefinition {
 const FakeUserToken = 'FakeToken123'
 
 export class FakeServerAPI implements IServerAPI, IBattleServerConnection {
+    getHeroKnownMagic(): Promise<IKnownMagicInfo[]> {
+        throw new Error("Method not implemented.");
+    }
     getRansomPrice(): Promise<IRansomPrice> {
         throw new Error("Method not implemented.");
     }

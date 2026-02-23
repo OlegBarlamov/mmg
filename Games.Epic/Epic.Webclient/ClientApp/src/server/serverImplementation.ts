@@ -1,6 +1,6 @@
 import {IBattleDefinition} from "../battle/IBattleDefinition";
 import {BattleMap, BattleMapCell, IBattleObstacle as IBattleMapObstacle} from "../battleMap/battleMap";
-import {IAcceptedReward, IArtifactInfo, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
+import {IAcceptedReward, IArtifactInfo, IKnownMagicInfo, IPlayerInfo, IRansomPrice, IReportInfo, IResourceInfo, IServerAPI, IUnitTypeInfo, IUnitsContainerInfo, IUserInfo, IUserUnit} from "../services/serverAPI";
 import {
     BattleServerConnection,
     IBattleConnectionMessagesHandler,
@@ -13,7 +13,7 @@ import { AcceptRewardBody } from "../rewards/AcceptRewardBody";
 
 //export const SERVER_BASE_URL = "http://localhost:5000"
 //export const SERVER_BASE_URL = "http://192.168.1.8:5000"
-export const SERVER_BASE_URL = "https://d81f-62-108-10-215.ngrok-free.app"
+export const SERVER_BASE_URL = "https://f228-62-108-10-215.ngrok-free.app"
 
 export class ServerImplementation extends BaseServer implements IServerAPI {
     constructor(baseUrl: string) {
@@ -152,5 +152,8 @@ export class ServerImplementation extends BaseServer implements IServerAPI {
     getBattleUnitInfo(battleId: string, unitId: string): Promise<import("../services/serverAPI").IBattleUnitInfo> {
         return this.fetchResource(`api/battle/${battleId}/unit/${unitId}`, "GET", "battle_unit_info")
     }
-    
+
+    getHeroKnownMagic(): Promise<IKnownMagicInfo[]> {
+        return this.fetchResource("api/heroes/known-magic", "GET", "hero_known_magic")
+    }
 }

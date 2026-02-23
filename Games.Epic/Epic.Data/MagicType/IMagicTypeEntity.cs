@@ -6,6 +6,7 @@ namespace Epic.Data.MagicType
     {
         string Key { get; }
         string Name { get; }
+        string Description { get; }
         string ThumbnailUrl { get; }
         int Value { get; }
         int MannaCost { get; }
@@ -24,6 +25,7 @@ namespace Epic.Data.MagicType
     {
         public string Key { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public string ThumbnailUrl { get; set; }
         public int Value { get; set; }
         public int MannaCost { get; set; }
@@ -41,6 +43,7 @@ namespace Epic.Data.MagicType
         {
             Key = fields.Key;
             Name = fields.Name;
+            Description = fields.Description;
             ThumbnailUrl = fields.ThumbnailUrl;
             Value = fields.Value;
             MannaCost = fields.MannaCost;

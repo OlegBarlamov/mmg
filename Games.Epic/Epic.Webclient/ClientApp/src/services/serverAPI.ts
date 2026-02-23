@@ -147,6 +147,8 @@ export interface IServerAPI {
     getUnitTypesInfos(unitTypeIds: string[]): Promise<IUnitTypeInfo[]>
 
     getBattleUnitInfo(battleId: string, unitId: string): Promise<IBattleUnitInfo>
+
+    getHeroKnownMagic(): Promise<IKnownMagicInfo[]>
 }
 
 // Battle unit info fetched from server with computed buff effects
@@ -189,4 +191,36 @@ export interface IBattleUnitBuff {
     name?: string
     permanent?: boolean
     durationRemaining: number
+}
+
+export interface IKnownMagicInfo {
+    readonly magicTypeId: string
+    readonly name: string
+    readonly description: string | null
+    readonly thumbnailUrl: string | null
+    readonly mannaCost: number
+    readonly castTargetType: string
+    readonly effectRadius: number
+    readonly applyBuffs: IKnownMagicBuffEntry[]
+    readonly applyEffects: IKnownMagicEffectEntry[]
+}
+
+export interface IKnownMagicBuffEntry {
+    readonly name: string | null
+    readonly key: string | null
+    readonly duration: number
+    readonly durationExpression: string | null
+}
+
+export interface IKnownMagicEffectEntry {
+    readonly name: string | null
+    readonly key: string | null
+    readonly takesDamageMin: number
+    readonly takesDamageMax: number
+    readonly heals: number
+    readonly healsPercentage: number
+    readonly takesDamageMinExpression: string | null
+    readonly takesDamageMaxExpression: string | null
+    readonly healsExpression: string | null
+    readonly healsPercentageExpression: string | null
 }

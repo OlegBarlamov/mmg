@@ -1,6 +1,7 @@
 # =============================================================================
 # MAGIC TYPES CONFIG
 # =============================================================================
+#   Description: optional text shown in the magic book.
 #   ApplyBuffs: list of buff type keys (resolved to IDs at load).
 #   ApplyEffects: list of effect type keys (resolved to IDs at load).
 #   CastTargetType: Enemy | Ally | Location | AllUnits | AllEnemies | AllAllies
@@ -9,6 +10,7 @@
 MagicTypes:
   MagicArrow:
     Name: "Magic Arrow"
+    Description: "Deals damage to a single enemy unit."
     ThumbnailUrl: "/resources/Magic_Arrow.png"
     Value: 500
     MannaCost: 5

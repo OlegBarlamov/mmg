@@ -13,6 +13,7 @@ namespace Epic.Core.Services.MagicTypes
         public Guid Id { get; set; }
         public string Key { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public string ThumbnailUrl { get; set; }
         public int Value { get; set; }
         public int MannaCost { get; set; }
@@ -46,6 +47,7 @@ namespace Epic.Core.Services.MagicTypes
                 Id = entity.Id,
                 Key = entity.Key,
                 Name = entity.Name,
+                Description = entity.Description,
                 ThumbnailUrl = entity.ThumbnailUrl,
                 Value = entity.Value,
                 MannaCost = entity.MannaCost,
