@@ -13,6 +13,7 @@ namespace Epic.Data.BattleDefinitions
         Task<IBattleDefinitionEntity> GetById(Guid battleDefinitionId);
         Task SetFinished(Guid battleDefinitionId);
         Task<int> CountBattles(Guid playerId, int? day = null);
+        Task<int> CountBattlesByStage(Guid playerId, int stage, int? day = null);
         Task<IBattleDefinitionEntity[]> GetActiveBattlesDefinitionsWithRewardType(Guid playerId, int currentDay, RewardType rewardType);
     }
 }

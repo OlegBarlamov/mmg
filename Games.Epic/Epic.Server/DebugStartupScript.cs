@@ -110,14 +110,14 @@ namespace Epic.Server
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
 
             // Give some artifacts to the first player's hero for testing.
-            await GiveTestArtifacts(hero.Id);
+            // await GiveTestArtifacts(hero.Id);
             
             // Generate random presets for both heroes
             var preset1 = await GenerateRandomPreset(targetScore);
             var preset2 = await GenerateRandomPreset(targetScore);
             
             int slot = 0;
-            var debugArmy = true;
+            var debugArmy = false;
             if (debugArmy)
             {
                 await GiveUnitByKey(hero.ArmyContainerId, 0, 10, "Unicorn");
@@ -141,7 +141,7 @@ namespace Epic.Server
                 slot++;
             }
 
-            var debugBattle = true;
+            var debugBattle = false;
             if (debugBattle)
             {
                 await BattlesGenerator.GenerateTestBattle(

@@ -38,12 +38,24 @@ Modes:
     InitialArmyScore: 1200
     Stages:
       - GuardDifficulty: 0
+        RewardsFactor: 2
+        DifficultyFactor: 1
+        MinDifficultyFactor: 1.5
+        StartMinDifficulty: 120
+        MaxDifficultyFactor: 15
+        StartMaxDifficulty: 700
+        PvpBattles: false
+        BattlesLimit: 40
+        DaysLimit: 25
+        WideStdChance: 10
+        BattlesCountFactor: 1
+      - GuardDifficulty: 3000
         RewardsFactor: 3
         DifficultyFactor: 1
-        MinDifficultyFactor: 3
-        StartMinDifficulty: 120
+        MinDifficultyFactor: 5
+        StartMinDifficulty: 1200
         MaxDifficultyFactor: 35
-        StartMaxDifficulty: 700
+        StartMaxDifficulty: 6000
         PvpBattles: false
         BattlesLimit: 30
         DaysLimit: 20

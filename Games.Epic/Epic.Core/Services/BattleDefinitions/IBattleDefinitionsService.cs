@@ -8,6 +8,7 @@ namespace Epic.Core.Services.BattleDefinitions
     public interface IBattleDefinitionsService
     {
         Task<int> GetBattlesCountForPlayer(IPlayerObject player);
+        Task<int> GetBattlesCountForPlayerAndStage(IPlayerObject player, int stage);
         Task<IReadOnlyCollection<IBattleDefinitionObject>> GetNotExpiredActiveBattleDefinitionsByPlayerAsync(Guid playerId);
         
         Task<IBattleDefinitionObject> GetBattleDefinitionById(Guid battleDefinitionId);

@@ -92,6 +92,18 @@ namespace Epic.Data.BattleDefinitions
                                 targetDay)));
         }
 
+        public Task<int> CountBattlesByStage(Guid playerId, int stage, int? day = null)
+        {
+            var targetDay = day ?? 0;
+            return Task.FromResult(_playerBattleDefinitions
+                .Where(x => x.PlayerId == playerId)
+                .Count(x =>
+                {
+                    var bd = _battleDefinitions.First(b => b.Id == x.BattleDefinitionId);
+                    return bd.Stage == stage && !IsFinishedOrExpired(bd, targetDay);
+                }));
+        }
+
         public async Task<IBattleDefinitionEntity[]> GetActiveBattlesDefinitionsWithRewardType(Guid playerId, int currentDay, RewardType rewardType)
         {
             var activeBattles = await GetActiveBattleDefinitionsByPlayer(playerId, currentDay);
