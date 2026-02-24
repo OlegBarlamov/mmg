@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Epic.Core.Services.Magic;
+using Epic.Data.EffectType;
 
 namespace Epic.Server.Resources
 {
@@ -13,8 +14,8 @@ namespace Epic.Server.Resources
         public int MannaCost { get; }
         public string CastTargetType { get; }
         public int EffectRadius { get; }
-        public MagicBuffEntry[] ApplyBuffs { get; }
-        public MagicEffectEntry[] ApplyEffects { get; }
+        public MagicBuffResource[] ApplyBuffs { get; }
+        public MagicEffectResource[] ApplyEffects { get; }
 
         public MagicResource(IMagicObject magic)
         {
@@ -28,26 +29,27 @@ namespace Epic.Server.Resources
             CastTargetType = type?.CastTargetType.ToString();
             EffectRadius = type?.EffectRadius ?? 0;
             ApplyBuffs = magic.ApplyBuffs?
-                .Select(b => new MagicBuffEntry(b.BuffType?.Name, b.BuffType?.Key, b.EffectiveValues?.Duration ?? 0, b.BuffType?.DurationExpression))
-                .ToArray() ?? Array.Empty<MagicBuffEntry>();
+                .Select(b => new MagicBuffResource(b.BuffType?.Name, b.BuffType?.Key, b.EffectiveValues?.Duration ?? 0, b.BuffType?.DurationExpression))
+                .ToArray() ?? Array.Empty<MagicBuffResource>();
             ApplyEffects = magic.ApplyEffects?
-                .Select(e => new MagicEffectEntry(
+                .Select(e => new MagicEffectResource(
                     e.EffectType?.Name, e.EffectType?.Key,
                     e.TakesDamageMin, e.TakesDamageMax, e.Heals, e.HealsPercentage,
                     e.EffectType?.TakesDamageMinExpression, e.EffectType?.TakesDamageMaxExpression,
-                    e.EffectType?.HealsExpression, e.EffectType?.HealsPercentageExpression))
-                .ToArray() ?? Array.Empty<MagicEffectEntry>();
+                    e.EffectType?.HealsExpression, e.EffectType?.HealsPercentageExpression,
+                    e.Animation, e.AnimationTimeMs))
+                .ToArray() ?? Array.Empty<MagicEffectResource>();
         }
     }
 
-    public class MagicBuffEntry
+    public class MagicBuffResource
     {
         public string Name { get; }
         public string Key { get; }
         public int Duration { get; }
         public string DurationExpression { get; }
 
-        public MagicBuffEntry(string name, string key, int duration, string durationExpression)
+        public MagicBuffResource(string name, string key, int duration, string durationExpression)
         {
             Name = name;
             Key = key;
@@ -56,7 +58,7 @@ namespace Epic.Server.Resources
         }
     }
 
-    public class MagicEffectEntry
+    public class MagicEffectResource
     {
         public string Name { get; }
         public string Key { get; }
@@ -68,9 +70,12 @@ namespace Epic.Server.Resources
         public string TakesDamageMaxExpression { get; }
         public string HealsExpression { get; }
         public string HealsPercentageExpression { get; }
+        public EffectAnimation Animation { get; }
+        public int AnimationTimeMs { get; }
 
-        public MagicEffectEntry(string name, string key, int takesDamageMin, int takesDamageMax, int heals, int healsPercentage,
-            string takesDamageMinExpression, string takesDamageMaxExpression, string healsExpression, string healsPercentageExpression)
+        public MagicEffectResource(string name, string key, int takesDamageMin, int takesDamageMax, int heals, int healsPercentage,
+            string takesDamageMinExpression, string takesDamageMaxExpression, string healsExpression, string healsPercentageExpression,
+            EffectAnimation animation = EffectAnimation.None, int animationTimeMs = 0)
         {
             Name = name;
             Key = key;
@@ -82,6 +87,8 @@ namespace Epic.Server.Resources
             TakesDamageMaxExpression = takesDamageMaxExpression;
             HealsExpression = healsExpression;
             HealsPercentageExpression = healsPercentageExpression;
+            Animation = animation;
+            AnimationTimeMs = animationTimeMs;
         }
     }
 }

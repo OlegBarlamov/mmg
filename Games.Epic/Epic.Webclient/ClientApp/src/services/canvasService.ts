@@ -32,6 +32,17 @@ export interface ICanvasService {
     animateUnitWait(unit: IUnitTile, animationOptions?: Partial<{ duration: number; easing: 'linear' | 'easeInOut' | 'easeIn' | 'easeOut' }>): Promise<void>
     updateUnitBuffIcons(unit: IUnitTile, buffs: BuffIconInfo[]): Promise<void>
     destroyUnit(unit: IUnitTile): void
+
+    /** Play an effect animation (Instant, TopDown, or FromSource). Coordinates in canvas space. */
+    playEffectAnimation(params: {
+        spriteUrl: string
+        animationType: 'Instant' | 'TopDown' | 'FromSource'
+        targetX: number
+        targetY: number
+        sourceX?: number
+        sourceY?: number
+        animationTimeMs: number
+    }): Promise<void>
     
     setCursorForHexagon(hex: IHexagon, cursor?: string): void
     setCursorForUnit(unit: IUnitTile, cursor?: string): void
@@ -39,10 +50,13 @@ export interface ICanvasService {
     toLocal(point: Point): Point
 }
 
+const EFFECT_SPRITE_SIZE = 48
+
 export class CanvasService implements ICanvasService {
     private app: PIXI.Application = new PIXI.Application()
     private hexagonStyle: HexagonStyle = HexagonStyle.QStyle
     private buffIconsLayer: PIXI.Container = new PIXI.Container()
+    private effectsLayer: PIXI.Container = new PIXI.Container()
 
     setCursorForHexagon(hex: IHexagon, cursor?: string): void {
         const pixiHex = hex as PixiHexagon
@@ -91,6 +105,10 @@ export class CanvasService implements ICanvasService {
         this.buffIconsLayer = new PIXI.Container()
         this.buffIconsLayer.zIndex = 1000
         this.app.stage.addChild(this.buffIconsLayer)
+
+        this.effectsLayer = new PIXI.Container()
+        this.effectsLayer.zIndex = 900
+        this.app.stage.addChild(this.effectsLayer)
     }
 
     clear(): void {
@@ -212,7 +230,46 @@ export class CanvasService implements ICanvasService {
         if (!pixiUnit) throw new Error("The input unit is not PIXI based")
         pixiUnit.dispose()
     }
-    
+
+    async playEffectAnimation(params: {
+        spriteUrl: string
+        animationType: 'Instant' | 'TopDown' | 'FromSource'
+        targetX: number
+        targetY: number
+        sourceX?: number
+        sourceY?: number
+        animationTimeMs: number
+    }): Promise<void> {
+        const texture = await getTexture(params.spriteUrl)
+        const sprite = new PIXI.Sprite(texture)
+        sprite.anchor.set(0.5, 0.5)
+        sprite.width = EFFECT_SPRITE_SIZE
+        sprite.height = EFFECT_SPRITE_SIZE
+        this.effectsLayer.addChild(sprite)
+
+        const durationMs = Math.max(50, params.animationTimeMs)
+
+        try {
+            if (params.animationType === 'Instant') {
+                sprite.x = params.targetX
+                sprite.y = params.targetY
+                await new Promise<void>(resolve => setTimeout(resolve, durationMs))
+            } else if (params.animationType === 'TopDown') {
+                const startY = params.targetY - 120
+                sprite.x = params.targetX
+                sprite.y = startY
+                await Animation.animatePosition(sprite, params.targetX, params.targetY, { duration: durationMs, easing: 'easeIn' })
+            } else if (params.animationType === 'FromSource' && params.sourceX != null && params.sourceY != null) {
+                sprite.x = params.sourceX
+                sprite.y = params.sourceY
+                await Animation.animatePosition(sprite, params.targetX, params.targetY, { duration: durationMs, easing: 'linear' })
+            }
+        } finally {
+            this.effectsLayer.removeChild(sprite)
+            sprite.destroy()
+        }
+    }
+
     async createUnit(props: IUnitTileProps): Promise<IUnitTile> {
         const container = new PIXI.Container()
         container.x = props.hexagon.x

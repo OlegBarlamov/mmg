@@ -67,6 +67,8 @@ export interface PlayerRunCommandFromServer extends PlayerCommandFromServer {
 export interface PlayerMagicCommandFromServer extends PlayerCommandFromServer {
     command: 'PLAYER_MAGIC'
     magicTypeId: string
+    magicName?: string
+    currentMana?: number
 }
 
 export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer {
@@ -95,6 +97,28 @@ export interface UnitHealsCommandFromServer extends UnitCommandFromServer {
     newHealth: number
 }
 
+export type EffectAnimationType = 'None' | 'Instant' | 'FromSource' | 'TopDown'
+
+const EFFECT_ANIMATION_BY_NUM: EffectAnimationType[] = ['None', 'Instant', 'FromSource', 'TopDown']
+
+export function normalizeEffectAnimationType(v: number | string | undefined): EffectAnimationType {
+    if (typeof v === 'string' && (v === 'None' || v === 'Instant' || v === 'FromSource' || v === 'TopDown')) return v
+    if (typeof v === 'number' && v >= 0 && v <= 3) return EFFECT_ANIMATION_BY_NUM[v]
+    return 'None'
+}
+
+export interface EffectAnimationCommandFromServer extends BaseCommandFromServer {
+    command: 'EFFECT_ANIMATION'
+    effectSpriteUrl: string
+    /** Server may send number (enum) or string */
+    animationType: EffectAnimationType | number
+    targetRow: number
+    targetColumn: number
+    sourceUnitId?: string | null
+    sourcePlayer?: string | null
+    animationTimeMs: number
+}
+
 export type BattleCommandFromServer = 
     UnitMoveCommandFromServer
     | UnitAttackCommandFromServer
@@ -109,3 +133,4 @@ export type BattleCommandFromServer =
     | UnitReceivesBuffCommandFromServer
     | UnitLosesBuffCommandFromServer
     | UnitHealsCommandFromServer
+    | EffectAnimationCommandFromServer

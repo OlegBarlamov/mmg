@@ -1,6 +1,7 @@
 using System;
 using Epic.Core.Services.EffectTypes;
 using Epic.Data.Effect;
+using Epic.Data.EffectType;
 
 namespace Epic.Core.Services.Effects
 {
@@ -19,6 +20,8 @@ namespace Epic.Core.Services.Effects
         public int Heals => _effectiveValues?.Heals ?? 0;
         public int HealsPercentage => _effectiveValues?.HealsPercentage ?? 0;
         public bool HealCanResurrect => _effectiveValues?.HealCanResurrect ?? false;
+        public EffectAnimation Animation => EffectType?.Animation ?? EffectAnimation.None;
+        public int AnimationTimeMs => EffectType?.AnimationTimeMs ?? 0;
 
         private MutableEffectObject(IEffectProperties effectiveValues)
         {

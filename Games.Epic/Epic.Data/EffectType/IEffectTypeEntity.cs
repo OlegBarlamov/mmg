@@ -13,6 +13,8 @@ namespace Epic.Data.EffectType
         string HealsExpression { get; }
         string HealsPercentageExpression { get; }
         bool HealCanResurrect { get; }
+        EffectAnimation Animation { get; }
+        int AnimationTimeMs { get; }
 
         [CanBeNull]
         string SpriteUrl { get; }
@@ -33,6 +35,8 @@ namespace Epic.Data.EffectType
         public string HealsExpression { get; set; }
         public string HealsPercentageExpression { get; set; }
         public bool HealCanResurrect { get; set; }
+        public EffectAnimation Animation { get; set; }
+        public int AnimationTimeMs { get; set; }
     }
 
     public class EffectTypeEntity : EffectTypeFields, IEffectTypeEntity
@@ -54,6 +58,8 @@ namespace Epic.Data.EffectType
             HealsExpression = fields.HealsExpression;
             HealsPercentageExpression = fields.HealsPercentageExpression;
             HealCanResurrect = fields.HealCanResurrect;
+            Animation = fields.Animation;
+            AnimationTimeMs = fields.AnimationTimeMs;
         }
 
         public static EffectTypeEntity FromFields(Guid id, IEffectTypeFields fields)

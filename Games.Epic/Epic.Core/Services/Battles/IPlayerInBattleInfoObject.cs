@@ -7,6 +7,7 @@ namespace Epic.Core.Services.Battles
     public interface IPlayerInBattleInfoObject : IGameObject<IPlayerToBattleEntity>
     {
         Guid Id { get; }
+        Guid BattleId { get; }
         Guid PlayerId { get; }
         bool RansomClaimed { get; }
         bool RunClaimed { get; }
@@ -18,6 +19,7 @@ namespace Epic.Core.Services.Battles
     {
         public Guid Id { get; set; }
         public Guid PlayerId { get; set; }
+        public Guid BattleId { get; set; }
         public bool RansomClaimed { get; set; }
         
         public bool RunClaimed { get; set; }
@@ -33,6 +35,7 @@ namespace Epic.Core.Services.Battles
         {
             return new MutablePlayerInBattleInfoObject(entity.Id)
             {
+                BattleId = entity.BattleId,
                 PlayerId = entity.PlayerId,
                 RansomClaimed = entity.RansomClaimed,
                 RunClaimed = entity.RunClaimed,
@@ -50,6 +53,7 @@ namespace Epic.Core.Services.Battles
             return new PlayerToBattleEntity
             {
                 Id = Id,
+                BattleId = BattleId,
                 PlayerId = PlayerId,
                 RansomClaimed = RansomClaimed,
                 RunClaimed = RunClaimed,

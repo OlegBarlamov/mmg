@@ -212,6 +212,9 @@ export interface IKnownMagicBuffEntry {
     readonly durationExpression: string | null
 }
 
+/** Effect animation: None, Instant, FromSource, TopDown */
+export type EffectAnimation = 'None' | 'Instant' | 'FromSource' | 'TopDown'
+
 export interface IKnownMagicEffectEntry {
     readonly name: string | null
     readonly key: string | null
@@ -223,4 +226,6 @@ export interface IKnownMagicEffectEntry {
     readonly takesDamageMaxExpression: string | null
     readonly healsExpression: string | null
     readonly healsPercentageExpression: string | null
+    readonly animation: EffectAnimation
+    readonly animationTimeMs: number
 }

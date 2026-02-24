@@ -16,12 +16,34 @@ export interface IBattleMapHighlighter {
     restoreHighlightingForAttackTargets(attackTargets: IAttackTarget[]): void
 
     setActiveUnit(unit: BattleMapUnit | null): Promise<void>
+
+    /** Clear active unit and move/attack highlights (e.g. for magic target selection). Restore with restoreTurnHighlights(). */
+    clearTurnHighlights(): Promise<void>
+    /** Re-apply the last turn highlights after clearTurnHighlights(). */
+    restoreTurnHighlights(): void
+
+    /** Set cursor on a map cell (e.g. for magic target selection feedback). */
+    setCursorForMapCell(cell: BattleMapCell, cursor?: string): void
+    /** Set cursor on a map unit (e.g. for magic target selection feedback). */
+    setCursorForMapUnit(unit: BattleMapUnit, cursor?: string): void
+
+    /** Highlight cells (e.g. magic Location target area) with yellow. */
+    highlightMagicTargetCells(cells: BattleMapCell[]): void
+    /** Restore cells highlighted by highlightMagicTargetCells. */
+    restoreMagicTargetCells(cells: BattleMapCell[]): void
+    /** Highlight a unit's hexagon stroke (e.g. valid magic unit target) with yellow. */
+    highlightMagicTargetUnit(unit: BattleMapUnit): Promise<void>
+    /** Restore unit stroke after highlightMagicTargetUnit. */
+    restoreMagicTargetUnit(unit: BattleMapUnit): Promise<void>
 } 
 
 export class BattleMapHighlighter implements IBattleMapHighlighter {
     activeUnit: BattleMapUnit | null = null
 
     private isHighlighted: boolean = false
+    private lastCellsForMove: BattleMapCell[] = []
+    private lastAttackTargets: IAttackTarget[] = []
+    private lastActiveUnitForRestore: BattleMapUnit | null = null
 
     private readonly unitHighlightTimer: NodeJS.Timeout
 
@@ -31,7 +53,9 @@ export class BattleMapHighlighter implements IBattleMapHighlighter {
     private readonly movableCellsHoverColor = 0x32a852
     private readonly cellAttackFromHighlightColor = 0xffa08f 
     private readonly cellsAttackFromHoverColor = 0xfa3b19 
-    
+    private readonly magicTargetHighlightColor = 0xffea5e
+    private readonly defaultUnitStrokeColor = 0x111111
+
     private readonly canvasService: ICanvasService
     private readonly battleMapController: BattleMapController
     private readonly defaultCellsFillColor: number
@@ -51,6 +75,7 @@ export class BattleMapHighlighter implements IBattleMapHighlighter {
     }
 
     highlightCellsForMove(cellsForMove: BattleMapCell[]): void {
+        this.lastCellsForMove = cellsForMove.slice()
         cellsForMove.forEach(cell => this.setCellDefaultColor(cell.r, cell.c, this.movableCellsColor))
         this.battleMapController.onCellMouseEnter = (cell) => {
             if (cellsForMove.indexOf(cell) >= 0) {
@@ -75,6 +100,7 @@ export class BattleMapHighlighter implements IBattleMapHighlighter {
         })
     }
     highlightAttackTargets(attackTargets: IAttackTarget[]): void {
+        this.lastAttackTargets = attackTargets.slice()
         this.battleMapController.onUnitMouseEnter = (unit) => {
             const target = attackTargets.find(x => x.target === unit)
             if (target) {
@@ -124,6 +150,63 @@ export class BattleMapHighlighter implements IBattleMapHighlighter {
         }
 
         this.activeUnit = unit
+    }
+
+    async clearTurnHighlights(): Promise<void> {
+        if (this.activeUnit == null && this.lastCellsForMove.length === 0 && this.lastAttackTargets.length === 0) return
+        this.lastActiveUnitForRestore = this.activeUnit
+        this.restoreHighlightingForCells(this.lastCellsForMove)
+        this.restoreHighlightingForAttackTargets(this.lastAttackTargets)
+        if (this.activeUnit != null) {
+            await this.deactivateUnit()
+        }
+        this.activeUnit = null
+    }
+
+    restoreTurnHighlights(): void {
+        if (this.lastActiveUnitForRestore == null) return
+        this.highlightCellsForMove(this.lastCellsForMove)
+        this.highlightAttackTargets(this.lastAttackTargets)
+        this.activeUnit = this.lastActiveUnitForRestore
+        this.lastActiveUnitForRestore = null
+    }
+
+    setCursorForMapCell(cell: BattleMapCell, cursor?: string): void {
+        this.setCursorForCell(cell.r, cell.c, cursor)
+    }
+
+    setCursorForMapUnit(unit: BattleMapUnit, cursor?: string): void {
+        this.setCursorForUnit(unit, cursor)
+    }
+
+    highlightMagicTargetCells(cells: BattleMapCell[]): void {
+        cells.forEach(cell => this.setCellCustomColor(cell.r, cell.c, this.magicTargetHighlightColor))
+    }
+
+    restoreMagicTargetCells(cells: BattleMapCell[]): void {
+        cells.forEach(cell => this.setCellCustomColor(cell.r, cell.c, this.defaultCellsFillColor))
+    }
+
+    async highlightMagicTargetUnit(unit: BattleMapUnit): Promise<void> {
+        const unitTile = this.battleMapController.getUnitTile(unit)
+        await this.canvasService.changeUnit(unitTile, {
+            ...unitTile,
+            hexagon: {
+                ...unitTile.hexagon,
+                strokeColor: this.magicTargetHighlightColor
+            }
+        })
+    }
+
+    async restoreMagicTargetUnit(unit: BattleMapUnit): Promise<void> {
+        const unitTile = this.battleMapController.getUnitTile(unit)
+        await this.canvasService.changeUnit(unitTile, {
+            ...unitTile,
+            hexagon: {
+                ...unitTile.hexagon,
+                strokeColor: this.defaultUnitStrokeColor
+            }
+        })
     }
 
     private async deactivateUnit(): Promise<void> {

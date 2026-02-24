@@ -13,11 +13,10 @@ export class BattleUserInputController {
     ) {}
     
     getUserInputAction(
-        originalUnit: BattleMapUnit, 
-        cellsToMove: BattleMapCell[], 
-        attackTargets: IAttackTarget[],
-         cancellationToken: CancellationToken,
-        ): Promise<BattleUserAction> {
+        originalUnit: BattleMapUnit,
+        getCellsAndTargets: () => { cellsForMove: BattleMapCell[], attackTargets: IAttackTarget[] },
+        cancellationToken: CancellationToken,
+    ): Promise<BattleUserAction> {
         return new Promise((resolve, reject) => {
             cancellationToken.onCancel(() => {
                 this.dispose()
@@ -25,7 +24,8 @@ export class BattleUserInputController {
             })
 
             this.mapController.onCellMouseClick = (cell) => {
-                if (cellsToMove.indexOf(cell) >= 0) {
+                const { cellsForMove } = getCellsAndTargets()
+                if (cellsForMove.indexOf(cell) >= 0) {
                     this.dispose()
                     resolve({
                         command: 'UNIT_MOVE',
@@ -36,6 +36,7 @@ export class BattleUserInputController {
                 }
             }
             this.mapController.onUnitMouseClick = (unit, event) => {
+                const { attackTargets } = getCellsAndTargets()
                 const target = attackTargets.find(x => x.target === unit)
                 if (target) {
                     this.dispose()

@@ -1,11 +1,12 @@
 import { IBattleMapController } from "../battleMap/battleMapController";
 import { BattleMapUnit } from "../battleMap/battleMapUnit";
-import { BattleMap, BattleTurnInfo, InBattlePlayerInfo } from "../battleMap/battleMap";
+import { BattleMap, BattleMapCell, BattleTurnInfo, InBattlePlayerInfo } from "../battleMap/battleMap";
 import { BattleUserAction } from "./battleUserAction";
 import { wait } from "../common/wait";
 import { BattlePlayerNumber } from "../player/playerNumber";
 import { BattleUserInputController } from "./battleUserInputController";
 import { getAttackTargets, getCellsForUnitMove } from "./battleLogic";
+import { IAttackTarget } from "./attackTarget";
 import { IBattleActionsProcessor } from "./battleActionsProcessor";
 import { ITurnAwaiter } from "./battleServerMessagesHandler";
 import { SignalBasedCancellationToken, TaskCancelledError } from "../common/cancellationToken";
@@ -147,6 +148,9 @@ export class BattleController implements IBattleController {
         this.map.units.forEach(unit => {
             unit.currentProps.waited = false
         })
+        this.map.players.forEach(player => {
+            player.magicUsedThisRound = false
+        })
     }
 
     private getActiveUnit(unitId: string): BattleMapUnit | null {
@@ -156,30 +160,38 @@ export class BattleController implements IBattleController {
     private async processStep(unit: BattleMapUnit): Promise<void> {
         await this.mapController.battleMapHighlighter.setActiveUnit(unit)
 
-        // Check if unit is stunned (cannot move but can still attack from current position)
-        const isStunned = unit.currentProps.buffs?.some(b => b.stunned) ?? false
-        const cellsForMove = isStunned ? [] : getCellsForUnitMove(this.map, unit, unit.currentProps.movementType)
-        const reachableCells = [this.map.grid.getCell(unit.position.r, unit.position.c), ...cellsForMove]
-        const attackTargets = getAttackTargets(this.map, unit, reachableCells)
+        const context = this.buildMoveInputContext(unit)
 
-        this.mapController.battleMapHighlighter.highlightCellsForMove(cellsForMove)
-        this.mapController.battleMapHighlighter.highlightAttackTargets(attackTargets)
+        const refreshHighlights = () => {
+            this.updateMoveInputContext(context)
+            this.mapController.battleMapHighlighter.highlightCellsForMove(context.cellsForMove)
+            this.mapController.battleMapHighlighter.highlightAttackTargets(context.attackTargets)
+        }
+
+        refreshHighlights()
 
         const cancellationTokenSource = new SignalBasedCancellationToken(this.turnAwaiter.onCurrentPlayerActionReceived)
 
+        const previousOnUnitRemoved = this.mapController.onUnitRemoved
+        this.mapController.onUnitRemoved = refreshHighlights
+
         let action: BattleUserAction | null = null
         try {
-            action = await this.battleUserInputController.getUserInputAction(unit, cellsForMove, attackTargets, cancellationTokenSource.token)
+            action = await this.battleUserInputController.getUserInputAction(
+                unit,
+                () => ({ cellsForMove: context.cellsForMove, attackTargets: context.attackTargets }),
+                cancellationTokenSource.token)
         } catch (e) {
             if (e instanceof TaskCancelledError) {
                 // Do nothing
             } else {
-            throw e
+                throw e
             }
         } finally {
+            this.mapController.onUnitRemoved = previousOnUnitRemoved
             cancellationTokenSource.dispose()
-            this.mapController.battleMapHighlighter.restoreHighlightingForCells(cellsForMove)
-            this.mapController.battleMapHighlighter.restoreHighlightingForAttackTargets(attackTargets)
+            this.mapController.battleMapHighlighter.restoreHighlightingForCells(context.cellsForMove)
+            this.mapController.battleMapHighlighter.restoreHighlightingForAttackTargets(context.attackTargets)
             await this.mapController.battleMapHighlighter.setActiveUnit(null)
         }
 
@@ -188,5 +200,22 @@ export class BattleController implements IBattleController {
         }
 
         await wait(500)
+    }
+
+    private buildMoveInputContext(unit: BattleMapUnit): { unit: BattleMapUnit, cellsForMove: BattleMapCell[], attackTargets: IAttackTarget[] } {
+        const isStunned = unit.currentProps.buffs?.some(b => b.stunned) ?? false
+        const cellsForMove = isStunned ? [] : getCellsForUnitMove(this.map, unit, unit.currentProps.movementType)
+        const reachableCells = [this.map.grid.getCell(unit.position.r, unit.position.c), ...cellsForMove]
+        const attackTargets = getAttackTargets(this.map, unit, reachableCells)
+        return { unit, cellsForMove, attackTargets }
+    }
+
+    private updateMoveInputContext(context: { unit: BattleMapUnit, cellsForMove: BattleMapCell[], attackTargets: IAttackTarget[] }): void {
+        const isStunned = context.unit.currentProps.buffs?.some(b => b.stunned) ?? false
+        context.cellsForMove.length = 0
+        context.cellsForMove.push(...(isStunned ? [] : getCellsForUnitMove(this.map, context.unit, context.unit.currentProps.movementType)))
+        const reachableCells = [this.map.grid.getCell(context.unit.position.r, context.unit.position.c), ...context.cellsForMove]
+        context.attackTargets.length = 0
+        context.attackTargets.push(...getAttackTargets(this.map, context.unit, reachableCells))
     }
 }

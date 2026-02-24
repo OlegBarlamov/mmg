@@ -10,6 +10,7 @@ using Epic.Core.Services.Magic;
 using Epic.Core;
 using Epic.Core.Services.Heroes;
 using Epic.Core.Services.MagicTypes;
+using Epic.Data.EffectType;
 using Epic.Data.MagicType;
 using Epic.Logic.Battle.Map;
 
@@ -90,29 +91,79 @@ namespace Epic.Logic.Battle.Commands
             if (hero != null && manaCost > 0)
                 await context.HeroesService.SpendMana(hero.Id, manaCost);
 
-            var variables = MagicExpressionsVariables.FromHero(hero?.GetCumulativeHeroStats());
+            var heroStats = hero?.GetCumulativeHeroStats();
+            var currentManaAfterSpend = heroStats != null ? Math.Max(0, heroStats.CurrentMana - manaCost) : (int?)null;
+
+            var variables = MagicExpressionsVariables.FromHero(heroStats);
             var magic = await context.MagicsService.Create(command.MagicTypeId, variables);
 
             var targets = ResolveTargets(context, command, magic.MagicType);
             var turnIndex = command.TurnIndex;
             var playerNumber = command.Player;
+            var castTargetType = magic.MagicType.CastTargetType;
 
+            // Send the magic message right after validation, before effects and buffs take place
+            var magicName = magic.MagicType?.Name;
+            var serverCommand = new PlayerMagicCommandFromServer(command.TurnIndex, command.Player, command.MagicTypeId, magicName, currentManaAfterSpend);
+            await context.MessageBroadcaster.BroadcastMessageAsync(serverCommand);
+
+            // Effect animations: once at casting point for Location, or once per target otherwise
+            if (magic.ApplyEffects != null && magic.ApplyEffects.Count > 0)
+            {
+                if (castTargetType == CastTargetType.Location && command.TargetRow.HasValue && command.TargetColumn.HasValue)
+                {
+                    foreach (var effect in magic.ApplyEffects)
+                    {
+                        if (effect.Animation != EffectAnimation.None && !string.IsNullOrEmpty(effect.EffectType?.SpriteUrl))
+                        {
+                            await context.MessageBroadcaster.BroadcastMessageAsync(new EffectAnimationCommandFromServer(
+                                turnIndex,
+                                effect.EffectType.SpriteUrl,
+                                effect.Animation,
+                                command.TargetRow.Value,
+                                command.TargetColumn.Value,
+                                sourceUnitId: null,
+                                sourcePlayer: playerNumber.ToString(),
+                                effect.AnimationTimeMs));
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var target in targets)
+                    {
+                        if (!target.GlobalUnit.IsAlive)
+                            continue;
+                        foreach (var effect in magic.ApplyEffects)
+                        {
+                            if (effect.Animation != EffectAnimation.None && !string.IsNullOrEmpty(effect.EffectType?.SpriteUrl))
+                            {
+                                await context.MessageBroadcaster.BroadcastMessageAsync(new EffectAnimationCommandFromServer(
+                                    turnIndex,
+                                    effect.EffectType.SpriteUrl,
+                                    effect.Animation,
+                                    target.Row,
+                                    target.Column,
+                                    sourceUnitId: null,
+                                    sourcePlayer: playerNumber.ToString(),
+                                    effect.AnimationTimeMs));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Apply effects and buffs to each target
             foreach (var target in targets)
             {
                 if (!target.GlobalUnit.IsAlive)
                     continue;
 
+                if (magic.ApplyEffects != null && magic.ApplyEffects.Count > 0)
+                    await context.BuffsLogic.ApplyEffectPropertiesToUnit(target, magic.ApplyEffects, turnIndex, playerNumber);
+
                 if (magic.ApplyBuffs != null && magic.ApplyBuffs.Count > 0)
                     await context.BuffsLogic.ApplyMagicBuffsToTarget(target, magic.ApplyBuffs, turnIndex, playerNumber);
-
-                if (magic.ApplyEffects != null && magic.ApplyEffects.Count > 0)
-                {
-                    await context.BuffsLogic.ApplyEffectPropertiesToUnit(
-                        target,
-                        magic.ApplyEffects,
-                        turnIndex,
-                        playerNumber);
-                }
             }
 
             var playerInfo = context.BattleObject.PlayerInfos.First(x => x.PlayerId == _playerId);
@@ -120,9 +171,6 @@ namespace Epic.Logic.Battle.Commands
             mutableInfo.LastRoundMagicUsed = context.BattleObject.RoundNumber;
 
             await context.BattlesService.UpdateInBattlePlayerInfo(mutableInfo);
-
-            var serverCommand = new PlayerMagicCommandFromServer(command.TurnIndex, command.Player, command.MagicTypeId);
-            await context.MessageBroadcaster.BroadcastMessageAsync(serverCommand);
 
             return new CmdExecutionResult(false);
         }

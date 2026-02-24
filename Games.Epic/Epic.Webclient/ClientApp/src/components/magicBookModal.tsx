@@ -7,8 +7,8 @@ export interface IMagicBookModalProps {
     isVisible: boolean;
     serviceLocator: IServiceLocator;
     onClose: () => void;
-    /** When set (e.g. in battle), show a Cast button to use this magic. For Location spells pass targetRow/targetColumn. */
-    onCastMagic?: (magicTypeId: string, options?: { targetUnitId?: string; targetRow?: number; targetColumn?: number }) => void;
+    /** When set (e.g. in battle), show a Cast button. Options may include castTargetType (to request target selection) or targetUnitId/targetRow/targetColumn. */
+    onCastMagic?: (magicTypeId: string, options?: { castTargetType?: string; effectRadius?: number; targetUnitId?: string; targetRow?: number; targetColumn?: number }) => void;
     /** Whether casting is allowed (e.g. one magic per round). */
     canCast?: boolean;
 }
@@ -165,7 +165,7 @@ export class MagicBookModal extends PureComponent<IMagicBookModalProps, IMagicBo
                             className="magic-book-cast-button"
                             disabled={!this.props.canCast}
                             onClick={() => {
-                                this.props.onCastMagic!(m.magicTypeId);
+                                this.props.onCastMagic!(m.magicTypeId, { castTargetType: m.castTargetType, effectRadius: m.effectRadius });
                                 this.props.onClose();
                             }}
                         >

@@ -1,4 +1,4 @@
-import { BattleCommandFromServer, PlayerCommandFromServer } from "../server/battleCommandFromServer";
+import { BattleCommandFromServer, EffectAnimationCommandFromServer, PlayerCommandFromServer } from "../server/battleCommandFromServer";
 import {IBattleConnectionMessagesHandler} from "../server/battleServerConnection";
 import {getUnitById} from "./battleLogic";
 import {IBattleMapController} from "../battleMap/battleMapController";
@@ -196,8 +196,12 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             this.mapController.map.players.find(player => player.playerNumber === message.player)!.runClaimed = true
             return enqueue(() => undefined)
         } else if (message.command === 'PLAYER_MAGIC') {
-            this.cancelCurrentUserActionPending(message)
-            this.mapController.map.players.find(player => player.playerNumber === message.player)!.magicUsedThisRound = true
+            // Magic does not end the turn; do not cancel current user input so the player can still move/attack/pass/wait
+            const playerInfo = this.mapController.map.players.find(player => player.playerNumber === message.player)!
+            playerInfo.magicUsedThisRound = true
+            if (message.currentMana != null && playerInfo.heroStats) {
+                playerInfo.heroStats.currentMana = message.currentMana
+            }
             return enqueue(() => undefined)
         } else if (message.command === 'RECEIVE_BUFF') {
             const unit = getUnitById(this.mapController.map, message.actorId)
@@ -249,6 +253,14 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
             }
+        } else if (message.command === 'EFFECT_ANIMATION') {
+            // Do not emit onServerMessageHandlingStarted - effect animations are not added to battle log
+            const effectMsg = message as EffectAnimationCommandFromServer
+            this.previousAnimationPromise = this.previousAnimationPromise.then(async () => {
+                if (this.disposed) return
+                await this.mapController.playEffectAnimation(effectMsg)
+            })
+            return this.previousAnimationPromise
         }
 
         throw Error("Unknown or invalid command from server")

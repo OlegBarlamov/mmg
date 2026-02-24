@@ -73,7 +73,8 @@ export function getCellsForUnitMove(map: BattleMap, unit: BattleMapUnit, movemen
     const cellToString = (cell: BattleMapCell) => `${cell.r},${cell.c}`
 
     const isCellBlocked = (cell: BattleMapCell) => {
-        return getUnit(map, cell.r, cell.c) || cell.isObstacle
+        const unit = getUnit(map, cell.r, cell.c)
+        return (unit != null && unit.isAlive) || cell.isObstacle
     }
 
     // Start BFS

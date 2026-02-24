@@ -14,6 +14,8 @@ namespace Epic.Core.Services.EffectTypes
         public string HealsExpression { get; set; }
         public string HealsPercentageExpression { get; set; }
         public bool HealCanResurrect { get; set; }
+        public EffectAnimation Animation { get; set; }
+        public int AnimationTimeMs { get; set; }
 
         private MutableEffectTypeObject() { }
 
@@ -30,6 +32,8 @@ namespace Epic.Core.Services.EffectTypes
                 HealsExpression = entity.HealsExpression,
                 HealsPercentageExpression = entity.HealsPercentageExpression,
                 HealCanResurrect = entity.HealCanResurrect,
+                Animation = entity.Animation,
+                AnimationTimeMs = entity.AnimationTimeMs,
             };
         }
 

@@ -1,6 +1,7 @@
 using System;
 using Epic.Core.Services.EffectTypes;
 using Epic.Data.Effect;
+using Epic.Data.EffectType;
 
 namespace Epic.Core.Services.Effects
 {
@@ -8,5 +9,7 @@ namespace Epic.Core.Services.Effects
     {
         Guid EffectTypeId { get; }
         IEffectTypeObject EffectType { get; }
+        EffectAnimation Animation { get; }
+        int AnimationTimeMs { get; }
     }
 }

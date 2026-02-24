@@ -7,6 +7,9 @@ import { BattleMapUnit } from "./battleMapUnit";
 import { Point } from "../common/Point";
 import { distance } from "../common/math";
 import { BattleMapHighlighter, IBattleMapHighlighter } from "./battleMapHighlighter";
+import { EffectAnimationCommandFromServer, normalizeEffectAnimationType } from "../server/battleCommandFromServer";
+import { getUnitById } from "../battle/battleLogic";
+import { BattlePlayerNumber } from "../player/playerNumber";
 
 export interface IBattleMapController {
     readonly cellRadius: number
@@ -26,9 +29,24 @@ export interface IBattleMapController {
     
     updateUnitBuffIcons(unit: BattleMapUnit): Promise<void>
 
+    /** Play effect animation (e.g. from magic). Does not add to battle log. */
+    playEffectAnimation(message: EffectAnimationCommandFromServer): Promise<void>
+
+    /** Called when a unit is removed from the map (e.g. killed). Use to refresh move highlights. */
+    onUnitRemoved: (() => void) | null
+
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
+    /** If set and returns true, the click is consumed and onCellMouseClick is not called. */
+    onCellClickIntercept: ((cell: BattleMapCell, event: PointerEvent) => boolean) | null
+    /** If set and returns true, the click is consumed and onUnitMouseClick is not called. */
+    onUnitClickIntercept: ((unit: BattleMapUnit, event: PointerEvent) => boolean) | null
     onUnitRightMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
+
+    onCellMouseEnter: ((cell: BattleMapCell, event: PointerEvent) => void) | null
+    onCellMouseLeave: ((cell: BattleMapCell, event: PointerEvent) => void) | null
+    onUnitMouseEnter: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
+    onUnitMouseLeave: ((unit: BattleMapUnit, event: PointerEvent) => void) | null
 
     destroy(): void
 }
@@ -39,6 +57,8 @@ export class BattleMapController implements IBattleMapController {
 
     onCellMouseClick: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
     onUnitMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
+    onCellClickIntercept: ((cell: BattleMapCell, event: PointerEvent) => boolean) | null = null
+    onUnitClickIntercept: ((unit: BattleMapUnit, event: PointerEvent) => boolean) | null = null
     onUnitRightMouseClick: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
 
     onCellMouseEnter: ((cell: BattleMapCell, event: PointerEvent) => void) | null = null
@@ -47,6 +67,8 @@ export class BattleMapController implements IBattleMapController {
     onUnitMouseMove: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
     onUnitMouseEnter: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
     onUnitMouseLeave: ((unit: BattleMapUnit, event: PointerEvent) => void) | null = null
+
+    onUnitRemoved: (() => void) | null = null
 
     private hexagons: IHexagon[][] = []
     private units: IUnitTile[] = []
@@ -166,6 +188,46 @@ export class BattleMapController implements IBattleMapController {
         })
     }
 
+    async playEffectAnimation(message: EffectAnimationCommandFromServer): Promise<void> {
+        const animationType = normalizeEffectAnimationType(message.animationType)
+        if (animationType === 'None' || !message.effectSpriteUrl) return
+
+        const targetPoint = this.map.grid.getCellCenterPoint(message.targetRow, message.targetColumn, this.cellRadius)
+        const targetX = targetPoint.x + this.visualOffset.x
+        const targetY = targetPoint.y + this.visualOffset.y
+
+        let sourceX: number | undefined
+        let sourceY: number | undefined
+        if (animationType === 'FromSource') {
+            if (message.sourceUnitId) {
+                const sourceUnit = getUnitById(this.map, message.sourceUnitId)
+                if (sourceUnit) {
+                    const pt = this.map.grid.getCellCenterPoint(sourceUnit.position.r, sourceUnit.position.c, this.cellRadius)
+                    sourceX = pt.x + this.visualOffset.x
+                    sourceY = pt.y + this.visualOffset.y
+                }
+            }
+            if (sourceX == null || sourceY == null) {
+                // No source unit: use top corner of canvas (Player1 = top-left, Player2 = top-right)
+                const canvasSize = this.canvasService.size()
+                const inset = 24
+                const playerNum = message.sourcePlayer === 'Player2' ? BattlePlayerNumber.Player2 : BattlePlayerNumber.Player1
+                sourceX = playerNum === BattlePlayerNumber.Player1 ? inset : canvasSize.width - inset
+                sourceY = inset
+            }
+        }
+
+        await this.canvasService.playEffectAnimation({
+            spriteUrl: message.effectSpriteUrl,
+            animationType,
+            targetX,
+            targetY,
+            sourceX,
+            sourceY,
+            animationTimeMs: message.animationTimeMs,
+        })
+    }
+
     removeUnit(unit: BattleMapUnit): Promise<void> {
         const unitTile = this.getUnitTile(unit)
         this.canvasService.destroyUnit(unitTile)
@@ -174,6 +236,7 @@ export class BattleMapController implements IBattleMapController {
             this.map.units.splice(this.map.units.indexOf(unit), 1)
         }
         this.units.splice(this.units.indexOf(unitTile), 1)
+        this.onUnitRemoved?.()
         return Promise.resolve()
     }
 
@@ -257,7 +320,11 @@ export class BattleMapController implements IBattleMapController {
 
                 hexagonView.onMouseEnters = (sender, event) => this.onCellMouseEnter?.(cell, this.translatePointerEvent(event, this.canvasService))
                 hexagonView.onMouseLeaves = (sender, event) => this.onCellMouseLeave?.(cell, this.translatePointerEvent(event, this.canvasService))
-                hexagonView.onMouseUp = (sender, event) => this.onCellMouseClick?.(cell, this.translatePointerEvent(event, this.canvasService))
+                hexagonView.onMouseUp = (sender, event) => {
+                    const e = this.translatePointerEvent(event, this.canvasService)
+                    if (this.onCellClickIntercept?.(cell, e)) return
+                    this.onCellMouseClick?.(cell, e)
+                }
 
                 row.push(hexagonView);
             }
@@ -296,7 +363,11 @@ export class BattleMapController implements IBattleMapController {
             unitTile.onMouseMove = (sender, event) => this.onUnitMouseMove?.(unit, this.translatePointerEvent(event, this.canvasService))
             unitTile.onMouseEnters = (sender, event) => this.onUnitMouseEnter?.(unit, this.translatePointerEvent(event, this.canvasService))
             unitTile.onMouseLeaves = (sender, event) => this.onUnitMouseLeave?.(unit, this.translatePointerEvent(event, this.canvasService))
-            unitTile.onMouseUp = (sender, event) => this.onUnitMouseClick?.(unit, this.translatePointerEvent(event, this.canvasService))
+            unitTile.onMouseUp = (sender, event) => {
+                const e = this.translatePointerEvent(event, this.canvasService)
+                if (this.onUnitClickIntercept?.(unit, e)) return
+                this.onUnitMouseClick?.(unit, e)
+            }
             unitTile.onRightClick = (sender, event) => this.onUnitRightMouseClick?.(unit, this.translatePointerEvent(event, this.canvasService))
 
             this.units.push(unitTile)

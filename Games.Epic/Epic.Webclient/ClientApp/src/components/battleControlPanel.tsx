@@ -19,7 +19,7 @@ export interface IBattleControlPanelProps {
     battleLogLines: string[];
     onRansomAction?: () => void;
     onRunAction?: () => void;
-    onMagicCast?: (magicTypeId: string, options?: { targetUnitId?: string; targetRow?: number; targetColumn?: number }) => void;
+    onMagicCast?: (magicTypeId: string, options?: { castTargetType?: string; effectRadius?: number; targetUnitId?: string; targetRow?: number; targetColumn?: number }) => void;
     canUseMagic?: boolean;
 }
 

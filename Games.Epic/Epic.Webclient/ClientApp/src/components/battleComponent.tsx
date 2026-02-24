@@ -28,6 +28,8 @@ export interface IBattleComponentProps {
     onBattleFinished(newBattleMap?: BattleMap): void
 }
 
+const NO_TARGET_CAST_TYPES = ['AllEnemies', 'AllAllies', 'AllUnits']
+
 interface IBattleComponentState {
     battleLoaded: boolean
     currentReward: IRewardToAccept | null
@@ -40,6 +42,8 @@ interface IBattleComponentState {
     showUnitInfoModal: boolean
     selectedUnit: BattleMapUnit | null
     battleLog: string[]
+    /** When set, the next map click (cell or unit) is used as the magic target, then we send the message. */
+    awaitingMagicTarget: { magicTypeId: string; castTargetType: string; effectRadius?: number } | null
 }
 
 export class BattleComponent extends PureComponent<IBattleComponentProps, IBattleComponentState> {
@@ -48,6 +52,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
     private contextMenuHandler: ((e: Event) => void) | null = null
     private rewardManager: RewardManager
     private readonly maxBattleLogLines = 200
+    /** Used during magic target selection to restore previous hover highlight when moving to another cell/unit. */
+    private lastMagicTargetHighlight: { cells?: BattleMapCell[]; unit?: BattleMapUnit } | null = null
 
     constructor(props: IBattleComponentProps) {
         super(props)
@@ -63,7 +69,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             activeUnit: null,
             showUnitInfoModal: false,
             selectedUnit: null,
-            battleLog: []
+            battleLog: [],
+            awaitingMagicTarget: null
         }
 
         // Initialize reward manager with callbacks
@@ -123,6 +130,91 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
         })
     }
 
+    componentDidUpdate(prevProps: IBattleComponentProps, prevState: IBattleComponentState) {
+        const mapController = this.battleController?.mapController;
+        if (!mapController) return;
+        const wasAwaiting = prevState.awaitingMagicTarget != null;
+        const isAwaiting = this.state.awaitingMagicTarget != null;
+        if (isAwaiting && !wasAwaiting) {
+            this.lastMagicTargetHighlight = null;
+            const { magicTypeId, castTargetType, effectRadius } = this.state.awaitingMagicTarget!;
+            const highlighter = mapController.battleMapHighlighter;
+            const map = this.props.battleMap;
+            mapController.battleMapHighlighter.clearTurnHighlights();
+            if (castTargetType === 'Location') {
+                const radius = effectRadius ?? 0;
+                mapController.onCellClickIntercept = (cell) => {
+                    this.handleMagicAction(magicTypeId, { targetRow: cell.r, targetColumn: cell.c });
+                    return true;
+                };
+                mapController.onUnitClickIntercept = null;
+                mapController.onCellMouseEnter = (cell) => {
+                    if (cell.isObstacle) return;
+                    if (this.lastMagicTargetHighlight?.cells) {
+                        highlighter.restoreMagicTargetCells(this.lastMagicTargetHighlight.cells);
+                    }
+                    const cellsInRange = map.grid.getCellsInRange(cell.r, cell.c, radius);
+                    highlighter.highlightMagicTargetCells(cellsInRange);
+                    highlighter.setCursorForMapCell(cell, 'pointer');
+                    this.lastMagicTargetHighlight = { cells: cellsInRange };
+                };
+                mapController.onCellMouseLeave = (cell) => {
+                    if (this.lastMagicTargetHighlight?.cells) {
+                        highlighter.restoreMagicTargetCells(this.lastMagicTargetHighlight.cells);
+                        this.lastMagicTargetHighlight = null;
+                    }
+                    highlighter.setCursorForMapCell(cell, undefined);
+                };
+                mapController.onUnitMouseEnter = null;
+                mapController.onUnitMouseLeave = null;
+            } else {
+                // Enemy/Ally: consume cell clicks so they don't trigger move; only valid unit clicks select target
+                const currentPlayerNumber = this.props.battleMap.players.find(
+                    p => p.playerId === this.props.serviceLocator.playerService().currentPlayerInfo.id
+                )?.playerNumber;
+                const isValidUnitTarget = (unit: BattleMapUnit) => {
+                    if (currentPlayerNumber == null) return false;
+                    if (castTargetType === 'Enemy') return unit.player !== currentPlayerNumber;
+                    if (castTargetType === 'Ally') return unit.player === currentPlayerNumber;
+                    return false;
+                };
+                mapController.onCellClickIntercept = () => true;
+                mapController.onUnitClickIntercept = (unit) => {
+                    if (!isValidUnitTarget(unit)) return true; // consume click but don't send
+                    this.handleMagicAction(magicTypeId, { targetUnitId: unit.id });
+                    return true;
+                };
+                mapController.onCellMouseEnter = null;
+                mapController.onCellMouseLeave = null;
+                mapController.onUnitMouseEnter = async (unit) => {
+                    if (!isValidUnitTarget(unit)) return;
+                    if (this.lastMagicTargetHighlight?.unit) {
+                        await highlighter.restoreMagicTargetUnit(this.lastMagicTargetHighlight.unit);
+                    }
+                    await highlighter.highlightMagicTargetUnit(unit);
+                    highlighter.setCursorForMapUnit(unit, 'pointer');
+                    this.lastMagicTargetHighlight = { unit };
+                };
+                mapController.onUnitMouseLeave = async (unit) => {
+                    if (this.lastMagicTargetHighlight?.unit) {
+                        await highlighter.restoreMagicTargetUnit(this.lastMagicTargetHighlight.unit);
+                        this.lastMagicTargetHighlight = null;
+                    }
+                    highlighter.setCursorForMapUnit(unit, undefined);
+                };
+            }
+        } else if (!isAwaiting && wasAwaiting) {
+            this.lastMagicTargetHighlight = null;
+            mapController.onCellClickIntercept = null;
+            mapController.onUnitClickIntercept = null;
+            mapController.onCellMouseEnter = null;
+            mapController.onCellMouseLeave = null;
+            mapController.onUnitMouseEnter = null;
+            mapController.onUnitMouseLeave = null;
+            mapController.battleMapHighlighter.restoreTurnHighlights();
+        }
+    }
+
     private handleServerMessage = (message: BattleCommandFromServer) => {
         const line = this.formatBattleServerMessage(message)
         this.setState(prev => {
@@ -175,6 +267,11 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                 return `${this.getPlayerLabel(message.player)} offered a ransom.`
             case 'PLAYER_RUN':
                 return `${this.getPlayerLabel(message.player)} tried to run away.`
+            case 'PLAYER_MAGIC':
+                {
+                    const magicLabel = message.magicName ?? message.magicTypeId.replace(/_/g, ' ')
+                    return `${this.getPlayerLabel(message.player)} cast ${magicLabel}.`
+                }
             case 'BATTLE_FINISHED':
                 if (message.winner) {
                     const winnerLabel = this.getPlayerLabel(message.winner)
@@ -303,23 +400,63 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
 
     private handleMagicAction = async (
         magicTypeId: string,
+        options?: { castTargetType?: string; effectRadius?: number; targetUnitId?: string; targetRow?: number; targetColumn?: number }
+    ) => {
+        if (!this.battleController) return;
+        const playerService = this.props.serviceLocator.playerService();
+        const currentPlayer = this.props.battleMap.players.find(
+            player => player.playerId === playerService.currentPlayerInfo.id
+        );
+        if (!currentPlayer) {
+            console.error('Current player not found in battle');
+            return;
+        }
+
+        const castTargetType = options?.castTargetType;
+        const hasTarget = options?.targetUnitId != null || (options?.targetRow != null && options?.targetColumn != null);
+
+        if (castTargetType != null && NO_TARGET_CAST_TYPES.includes(castTargetType)) {
+            // No target selection: send immediately
+            await this.sendPlayerMagic(currentPlayer.playerNumber, magicTypeId, undefined);
+            return;
+        }
+        if (castTargetType != null && (castTargetType === 'Enemy' || castTargetType === 'Ally' || castTargetType === 'Location')) {
+            // Enter target selection mode
+            this.setState({ awaitingMagicTarget: { magicTypeId, castTargetType, effectRadius: options?.effectRadius } });
+            return;
+        }
+        if (hasTarget) {
+            // Completing target selection: restore highlight then send and clear
+            if (this.battleController) {
+                const highlighter = this.battleController.mapController.battleMapHighlighter;
+                if (this.lastMagicTargetHighlight?.unit) {
+                    await highlighter.restoreMagicTargetUnit(this.lastMagicTargetHighlight.unit);
+                }
+                if (this.lastMagicTargetHighlight?.cells) {
+                    highlighter.restoreMagicTargetCells(this.lastMagicTargetHighlight.cells);
+                }
+                this.lastMagicTargetHighlight = null;
+            }
+            this.setState({ awaitingMagicTarget: null });
+            await this.sendPlayerMagic(currentPlayer.playerNumber, magicTypeId, options);
+            return;
+        }
+        // Fallback: send with no target (e.g. legacy call with just magicTypeId)
+        await this.sendPlayerMagic(currentPlayer.playerNumber, magicTypeId, options);
+    }
+
+    private sendPlayerMagic = async (
+        playerNumber: BattlePlayerNumber,
+        magicTypeId: string,
         options?: { targetUnitId?: string; targetRow?: number; targetColumn?: number }
     ) => {
         if (!this.battleController) return;
         try {
-            const playerService = this.props.serviceLocator.playerService();
-            const currentPlayer = this.props.battleMap.players.find(
-                player => player.playerId === playerService.currentPlayerInfo.id
-            );
-            if (!currentPlayer) {
-                console.error('Current player not found in battle');
-                return;
-            }
             const battleActionProcessor = (this.battleController as any).battleActionProcessor;
             if (battleActionProcessor) {
                 await battleActionProcessor.processAction({
                     command: 'PLAYER_MAGIC' as const,
-                    player: currentPlayer.playerNumber,
+                    player: playerNumber,
                     magicTypeId,
                     targetUnitId: options?.targetUnitId,
                     targetRow: options?.targetRow,
@@ -432,6 +569,8 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
             this.battleController.onNextTurn.disconnect(this.handleNextTurn)
             this.battleController.onServerMessageHandlingStarted.disconnect(this.handleServerMessage)
             this.battleController.mapController.onUnitRightMouseClick = null
+            this.battleController.mapController.onCellClickIntercept = null
+            this.battleController.mapController.onUnitClickIntercept = null
             this.battleController.dispose()
         }
 
@@ -537,7 +676,24 @@ export class BattleComponent extends PureComponent<IBattleComponentProps, IBattl
                     </div>
                 )}
 
-                <div id={CanvasContainerId} style={canvasStyle}></div>
+                <div className="battle-canvas-wrapper">
+                    <div id={CanvasContainerId} style={canvasStyle}></div>
+                    {this.state.awaitingMagicTarget && (
+                        <div className="battle-magic-target-overlay">
+                            <span className="battle-magic-target-hint">
+                                Select target on the map
+                                {this.state.awaitingMagicTarget.castTargetType === 'Location' ? ' (click a cell)' : ' (click a unit)'}
+                            </span>
+                            <button
+                                type="button"
+                                className="battle-magic-target-cancel"
+                                onClick={() => this.setState({ awaitingMagicTarget: null })}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 <div className="battle-control-panel-wrapper">
                     <BattleControlPanel
