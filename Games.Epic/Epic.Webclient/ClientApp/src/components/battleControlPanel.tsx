@@ -286,6 +286,7 @@ export class BattleControlPanel extends Component<IBattleControlPanelProps, IBat
                     onClose={() => this.setState({ showMagicBook: false })}
                     onCastMagic={this.props.onMagicCast}
                     canCast={this.props.canUseMagic}
+                    currentMana={this.props.battleMap?.players?.find((p: { playerId: string }) => p.playerId === this.props.currentPlayerId)?.heroStats?.currentMana}
                 />
                 <RansomConfirmationModal
                     isVisible={this.state.showRansomModal}

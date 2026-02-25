@@ -88,3 +88,85 @@ Buffs:
     DurationExpression: "3"
     ThumbnailUrl: "/resources/Weakness.png"
     AttackBonusExpression: "-6"
+
+# -----------------------------------------------------------------------------
+# Magic-oriented buffs: same effects as above but expressions use Hero stats
+# (power, knowledge, level, etc.) when cast via magic. Used by magic.yaml.
+# -----------------------------------------------------------------------------
+  MagicBlind:
+    Name: "Blind"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/Blind.png"
+    DeclinesWhenTakesDamage: true
+    Paralyzed: true
+  MagicWeakness:
+    Name: "Weakness"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/Weakness.png"
+    AttackBonusExpression: "-2 * power"
+  MagicDisease:
+    Name: "Disease"
+    ThumbnailUrl: "/resources/Disease.png"
+    AttackBonusExpression: "-1 * power"
+    DefenseBonusExpression: "-1 * power"
+    DurationExpression: "2 + power / 2"
+  MagicFireShield:
+    Name: "Fire shield"
+    ThumbnailUrl: "/resources/Fire_Shield.png"
+    DamageReturnPercentageExpression: "10 + power * 5"
+    DamageReturnMaxRangeExpression: "1"
+    DurationExpression: "2 + power / 2"
+
+  MagicHealthBonus:
+    Name: "Max Health"
+    HealthBonusExpression: "power"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/HealthBonus.png"
+  MagicSpeedBonus:
+    Name: "Speed"
+    SpeedBonusExpression: "1 + power / 2"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/Haste.png"
+  MagicElixirOfLife:
+    Name: "Elixir of Life"
+    HealthBonusExpression: "2 + power * 2"
+    HealthBonusPercentageExpression: "10 + power * 3"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/ElexirOfLife.png"
+  MagicBound:
+    Name: "Bound"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/Bound.png"
+    Stunned: true
+  MagicRegeneration:
+    Name: "Regeneration (Magic)"
+    DurationExpression: "2 + power / 2"
+    HealsExpression: "20 + power * 10"
+    ThumbnailUrl: "/resources/RegenerationSpell.png"
+  MagicVampirism:
+    Name: "Vampirism"
+    ThumbnailUrl: "/resources/Vampirism.png"
+    DurationExpression: "2 + power / 2"
+    VampirePercentageExpression: "10 + power * 10"
+  MagicVampirismResurrect:
+    Name: "Drain Life"
+    DurationExpression: "2 + power / 2"
+    VampirePercentageExpression: "10 + power * 10"
+    ThumbnailUrl: "/resources/Vampirism_with_resurrect.png"
+    VampireCanResurrect: true
+  MagicCurse:
+    Name: "Curse"
+    ThumbnailUrl: "/resources/Curse.png"
+    DurationExpression: "2 + power / 2"
+    MaxDamageBonusPercentageExpression: "-50 - power * 10"
+  MagicAging:
+    Name: "Aging"
+    ThumbnailUrl: "/resources/Aging.png"
+    DurationExpression: "2 + power / 2"
+    HealthBonusPercentageExpression: "-10 - power * 5"
+  MagicPetrifying:
+    Name: "Petrifying"
+    DurationExpression: "2 + power / 2"
+    ThumbnailUrl: "/resources/Petrifying.png"
+    DeclinesWhenTakesDamage: true
+    Paralyzed: true

@@ -51,7 +51,9 @@
 }
 
 .magic-book-content {
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     max-height: calc(90vh - 64px);
 }
 
@@ -69,13 +71,23 @@
     display: grid;
     grid-template-columns: 240px 1fr;
     gap: 20px;
-    min-height: 320px;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.magic-book-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .magic-book-list-title {
     font-weight: bold;
     margin-bottom: 8px;
     color: #e94560;
+    flex-shrink: 0;
 }
 
 .magic-book-empty {
@@ -91,6 +103,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex-shrink: 0;
 }
 
 .magic-book-item {
@@ -112,6 +125,25 @@
 .magic-book-item.selected {
     background: rgba(233, 69, 96, 0.25);
     border-color: #e94560;
+}
+
+.magic-book-item-insufficient-mana {
+    opacity: 0.6;
+    color: #888;
+}
+
+.magic-book-item-insufficient-mana .magic-book-item-name {
+    color: #888;
+}
+
+.magic-book-item-mana {
+    margin-left: auto;
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.magic-book-item-insufficient-mana .magic-book-item-mana {
+    color: #e94560;
 }
 
 .magic-book-item-thumb {
@@ -141,7 +173,8 @@
 .magic-book-detail {
     border-left: 1px solid #0f3460;
     padding-left: 20px;
-    overflow: auto;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .magic-book-detail-placeholder {
@@ -219,31 +252,21 @@
     margin-bottom: 6px;
 }
 
+.magic-book-detail-sublist {
+    margin: 4px 0 0 0;
+    padding-left: 18px;
+    color: #ccc;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.magic-book-detail-sublist li {
+    margin-bottom: 2px;
+}
+
 .magic-book-expression {
     color: #888;
     font-size: 0.9em;
     font-family: monospace;
 }
 
-.magic-book-cast-row {
-    margin-top: 16px;
-}
-
-.magic-book-cast-button {
-    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 24px;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.magic-book-cast-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #7B1FA2, #6A1B9A);
-}
-
-.magic-book-cast-button:disabled {
-    background: #555;
-    cursor: not-allowed;
-}

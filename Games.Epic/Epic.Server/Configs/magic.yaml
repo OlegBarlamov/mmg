@@ -2,7 +2,8 @@
 # MAGIC TYPES CONFIG
 # =============================================================================
 #   Description: optional text shown in the magic book.
-#   ApplyBuffs: list of buff type keys (resolved to IDs at load).
+#   ApplyBuffs: list of buff type keys (resolved to IDs at load). Buff expressions
+#     (duration, bonuses, etc.) are evaluated with Hero stats (power, knowledge, level).
 #   ApplyEffects: list of effect type keys (resolved to IDs at load).
 #   CastTargetType: Enemy | Ally | Location | AllUnits | AllEnemies | AllAllies
 # =============================================================================
@@ -13,9 +14,169 @@ MagicTypes:
     Description: "Deals damage to a single enemy unit."
     ThumbnailUrl: "/resources/Magic_Arrow.png"
     Value: 500
-    MannaCost: 5
+    MannaCost: 3
     CastTargetType: Enemy
     EffectRadius: 0
     ApplyBuffs: []
     ApplyEffects:
       - MagicArrow
+
+  BlindSpell:
+    Name: "Blind"
+    Description: "Blinds an enemy unit (duration scales with Power)."
+    ThumbnailUrl: "/resources/Blind.png"
+    Value: 1000
+    MannaCost: 6
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicBlind
+    ApplyEffects: []
+
+  WeaknessSpell:
+    Name: "Weakness"
+    Description: "Reduces enemy attack (strength and duration scale with Power)."
+    ThumbnailUrl: "/resources/Weakness.png"
+    Value: 400
+    MannaCost: 4
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicWeakness
+    ApplyEffects: []
+
+  DiseaseSpell:
+    Name: "Disease"
+    Description: "Weakens enemy attack and defense (scales with Power)."
+    ThumbnailUrl: "/resources/Disease.png"
+    Value: 450
+    MannaCost: 5
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicDisease
+    ApplyEffects: []
+
+  FireShieldSpell:
+    Name: "Fire Shield"
+    Description: "Grants an ally a fire shield that returns damage (scales with Power)."
+    ThumbnailUrl: "/resources/Fire_Shield.png"
+    Value: 1000
+    MannaCost: 6
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicFireShield
+    ApplyEffects: []
+
+  BlessingHealthSpell:
+    Name: "Blessing Health"
+    Description: "Increases an ally's max health (scales with Power)."
+    ThumbnailUrl: "/resources/HealthBonus.png"
+    Value: 600
+    MannaCost: 5
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicHealthBonus
+    ApplyEffects: []
+  BlessingSpeedSpell:
+    Name: "Blessing Speed"
+    Description: "Increases an ally's speed (scales with Power)."
+    ThumbnailUrl: "/resources/Haste.png"
+    Value: 500
+    MannaCost: 4
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicSpeedBonus
+    ApplyEffects: []
+  ElixirOfLifeSpell:
+    Name: "Elixir of Life"
+    Description: "Grants an ally bonus max health and percentage (scales with Power)."
+    ThumbnailUrl: "/resources/ElexirOfLife.png"
+    Value: 1000
+    MannaCost: 6
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicElixirOfLife
+    ApplyEffects: []
+
+  BoundSpell:
+    Name: "Bound"
+    Description: "Stuns an enemy unit (duration scales with Power)."
+    ThumbnailUrl: "/resources/Bound.png"
+    Value: 600
+    MannaCost: 6
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicBound
+    ApplyEffects: []
+  RegenerationSpell:
+    Name: "Regeneration"
+    Description: "Grants an ally regeneration (heal per turn scales with Power)."
+    Value: 300
+    MannaCost: 3
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicRegeneration
+    ApplyEffects: []
+    ThumbnailUrl: "/resources/RegenerationSpell.png"
+  VampirismSpell:
+    Name: "Vampirism"
+    Description: "Grants an ally life steal (percentage scales with Power)."
+    ThumbnailUrl: "/resources/Vampirism.png"
+    Value: 600
+    MannaCost: 6
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicVampirism
+    ApplyEffects: []
+  DrainLifeSpell:
+    Name: "Drain Life"
+    Description: "Grants an ally life steal with resurrect (scales with Power)."
+    ThumbnailUrl: "/resources/Vampirism_with_resurrect.png"
+    Value: 1200
+    MannaCost: 12
+    CastTargetType: Ally
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicVampirismResurrect
+    ApplyEffects: []
+  CurseSpell:
+    Name: "Curse"
+    Description: "Curses an enemy to deal minimal damage (scales with Power)."
+    ThumbnailUrl: "/resources/Curse.png"
+    Value: 450
+    MannaCost: 5
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicCurse
+    ApplyEffects: []
+  AgingSpell:
+    Name: "Aging"
+    Description: "Ages an enemy, reducing max health (scales with Power)."
+    ThumbnailUrl: "/resources/Aging.png"
+    Value: 1000
+    MannaCost: 10
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicAging
+    ApplyEffects: []
+  PetrifyingSpell:
+    Name: "Petrifying"
+    Description: "Petrifies an enemy unit (duration scales with Power)."
+    ThumbnailUrl: "/resources/Petrifying.png"
+    Value: 600
+    MannaCost: 6
+    CastTargetType: Enemy
+    EffectRadius: 0
+    ApplyBuffs:
+      - MagicPetrifying
+    ApplyEffects: []

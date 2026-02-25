@@ -208,8 +208,33 @@ export interface IKnownMagicInfo {
 export interface IKnownMagicBuffEntry {
     readonly name: string | null
     readonly key: string | null
-    readonly duration: number
     readonly durationExpression: string | null
+    readonly duration: number
+    readonly permanent: boolean
+    readonly healthBonus: number
+    readonly attackBonus: number
+    readonly defenseBonus: number
+    readonly speedBonus: number
+    readonly minDamageBonus: number
+    readonly maxDamageBonus: number
+    readonly healthBonusPercentage: number
+    readonly attackBonusPercentage: number
+    readonly defenseBonusPercentage: number
+    readonly speedBonusPercentage: number
+    readonly minDamageBonusPercentage: number
+    readonly maxDamageBonusPercentage: number
+    readonly paralyzed: boolean
+    readonly stunned: boolean
+    readonly vampirePercentage: number
+    readonly vampireCanResurrect: boolean
+    readonly declinesWhenTakesDamage: boolean
+    readonly heals: number
+    readonly healsPercentage: number
+    readonly healCanResurrect: boolean
+    readonly takesDamageMin: number
+    readonly takesDamageMax: number
+    readonly damageReturnPercentage: number
+    readonly damageReturnMaxRange: number
 }
 
 /** Effect animation: None, Instant, FromSource, TopDown */

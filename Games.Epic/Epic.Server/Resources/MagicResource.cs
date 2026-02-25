@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Epic.Core.Services.Magic;
+using Epic.Data.Buff;
 using Epic.Data.EffectType;
 
 namespace Epic.Server.Resources
@@ -29,7 +30,7 @@ namespace Epic.Server.Resources
             CastTargetType = type?.CastTargetType.ToString();
             EffectRadius = type?.EffectRadius ?? 0;
             ApplyBuffs = magic.ApplyBuffs?
-                .Select(b => new MagicBuffResource(b.BuffType?.Name, b.BuffType?.Key, b.EffectiveValues?.Duration ?? 0, b.BuffType?.DurationExpression))
+                .Select(b => new MagicBuffResource(b.BuffType?.Name, b.BuffType?.Key, b.BuffType?.DurationExpression, b.EffectiveValues))
                 .ToArray() ?? Array.Empty<MagicBuffResource>();
             ApplyEffects = magic.ApplyEffects?
                 .Select(e => new MagicEffectResource(
@@ -46,15 +47,66 @@ namespace Epic.Server.Resources
     {
         public string Name { get; }
         public string Key { get; }
-        public int Duration { get; }
         public string DurationExpression { get; }
+        public int Duration { get; }
+        public bool Permanent { get; }
+        public int HealthBonus { get; }
+        public int AttackBonus { get; }
+        public int DefenseBonus { get; }
+        public int SpeedBonus { get; }
+        public int MinDamageBonus { get; }
+        public int MaxDamageBonus { get; }
+        public int HealthBonusPercentage { get; }
+        public int AttackBonusPercentage { get; }
+        public int DefenseBonusPercentage { get; }
+        public int SpeedBonusPercentage { get; }
+        public int MinDamageBonusPercentage { get; }
+        public int MaxDamageBonusPercentage { get; }
+        public bool Paralyzed { get; }
+        public bool Stunned { get; }
+        public int VampirePercentage { get; }
+        public bool VampireCanResurrect { get; }
+        public bool DeclinesWhenTakesDamage { get; }
+        public int Heals { get; }
+        public int HealsPercentage { get; }
+        public bool HealCanResurrect { get; }
+        public int TakesDamageMin { get; }
+        public int TakesDamageMax { get; }
+        public int DamageReturnPercentage { get; }
+        public int DamageReturnMaxRange { get; }
 
-        public MagicBuffResource(string name, string key, int duration, string durationExpression)
+        public MagicBuffResource(string name, string key, string durationExpression, IBuffEffectiveValues effectiveValues)
         {
             Name = name;
             Key = key;
-            Duration = duration;
             DurationExpression = durationExpression;
+            var ev = effectiveValues;
+            Duration = ev?.Duration ?? 0;
+            Permanent = ev?.Permanent ?? false;
+            HealthBonus = ev?.HealthBonus ?? 0;
+            AttackBonus = ev?.AttackBonus ?? 0;
+            DefenseBonus = ev?.DefenseBonus ?? 0;
+            SpeedBonus = ev?.SpeedBonus ?? 0;
+            MinDamageBonus = ev?.MinDamageBonus ?? 0;
+            MaxDamageBonus = ev?.MaxDamageBonus ?? 0;
+            HealthBonusPercentage = ev?.HealthBonusPercentage ?? 0;
+            AttackBonusPercentage = ev?.AttackBonusPercentage ?? 0;
+            DefenseBonusPercentage = ev?.DefenseBonusPercentage ?? 0;
+            SpeedBonusPercentage = ev?.SpeedBonusPercentage ?? 0;
+            MinDamageBonusPercentage = ev?.MinDamageBonusPercentage ?? 0;
+            MaxDamageBonusPercentage = ev?.MaxDamageBonusPercentage ?? 0;
+            Paralyzed = ev?.Paralyzed ?? false;
+            Stunned = ev?.Stunned ?? false;
+            VampirePercentage = ev?.VampirePercentage ?? 0;
+            VampireCanResurrect = ev?.VampireCanResurrect ?? false;
+            DeclinesWhenTakesDamage = ev?.DeclinesWhenTakesDamage ?? false;
+            Heals = ev?.Heals ?? 0;
+            HealsPercentage = ev?.HealsPercentage ?? 0;
+            HealCanResurrect = ev?.HealCanResurrect ?? false;
+            TakesDamageMin = ev?.TakesDamageMin ?? 0;
+            TakesDamageMax = ev?.TakesDamageMax ?? 0;
+            DamageReturnPercentage = ev?.DamageReturnPercentage ?? 0;
+            DamageReturnMaxRange = ev?.DamageReturnMaxRange ?? 0;
         }
     }
 

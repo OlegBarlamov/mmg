@@ -7,10 +7,12 @@ export interface IMagicBookModalProps {
     isVisible: boolean;
     serviceLocator: IServiceLocator;
     onClose: () => void;
-    /** When set (e.g. in battle), show a Cast button. Options may include castTargetType (to request target selection) or targetUnitId/targetRow/targetColumn. */
+    /** When set (e.g. in battle), clicking a spell in the list casts it. */
     onCastMagic?: (magicTypeId: string, options?: { castTargetType?: string; effectRadius?: number; targetUnitId?: string; targetRow?: number; targetColumn?: number }) => void;
     /** Whether casting is allowed (e.g. one magic per round). */
     canCast?: boolean;
+    /** Current hero mana (when in battle). Spells with cost > currentMana are greyed out. */
+    currentMana?: number;
 }
 
 interface IMagicBookModalState {
@@ -80,20 +82,36 @@ export class MagicBookModal extends PureComponent<IMagicBookModalProps, IMagicBo
                                         <div className="magic-book-empty">No magic learned yet.</div>
                                     ) : (
                                         <ul className="magic-book-items">
-                                            {magics.map(m => (
-                                                <li
-                                                    key={m.magicTypeId}
-                                                    className={`magic-book-item ${selectedMagic?.magicTypeId === m.magicTypeId ? 'selected' : ''}`}
-                                                    onMouseEnter={() => this.setState({ selectedMagic: m })}
-                                                >
-                                                    {m.thumbnailUrl ? (
-                                                        <img src={m.thumbnailUrl} alt="" className="magic-book-item-thumb" />
-                                                    ) : (
-                                                        <div className="magic-book-item-thumb-placeholder">?</div>
-                                                    )}
-                                                    <span className="magic-book-item-name">{m.name || m.magicTypeId}</span>
-                                                </li>
-                                            ))}
+                                            {magics.map(m => {
+                                                const canAfford = this.props.currentMana == null || m.mannaCost <= this.props.currentMana;
+                                                const canCastThis = this.props.onCastMagic && this.props.canCast && canAfford;
+                                                const insufficientMana = this.props.onCastMagic != null && this.props.currentMana != null && m.mannaCost > this.props.currentMana;
+                                                return (
+                                                    <li
+                                                        key={m.magicTypeId}
+                                                        className={`magic-book-item ${selectedMagic?.magicTypeId === m.magicTypeId ? 'selected' : ''} ${insufficientMana ? 'magic-book-item-insufficient-mana' : ''}`}
+                                                        onMouseEnter={() => this.setState({ selectedMagic: m })}
+                                                        onClick={() => {
+                                                            if (canCastThis) {
+                                                                this.props.onCastMagic!(m.magicTypeId, { castTargetType: m.castTargetType, effectRadius: m.effectRadius });
+                                                                this.props.onClose();
+                                                            } else {
+                                                                this.setState({ selectedMagic: m });
+                                                            }
+                                                        }}
+                                                    >
+                                                        {m.thumbnailUrl ? (
+                                                            <img src={m.thumbnailUrl} alt="" className="magic-book-item-thumb" />
+                                                        ) : (
+                                                            <div className="magic-book-item-thumb-placeholder">?</div>
+                                                        )}
+                                                        <span className="magic-book-item-name">{m.name || m.magicTypeId}</span>
+                                                        {this.props.currentMana != null && (
+                                                            <span className="magic-book-item-mana">{m.mannaCost}</span>
+                                                        )}
+                                                    </li>
+                                                );
+                                            })}
                                         </ul>
                                     )}
                                 </div>
@@ -136,10 +154,12 @@ export class MagicBookModal extends PureComponent<IMagicBookModalProps, IMagicBo
                         <ul className="magic-book-detail-list magic-book-detail-entries">
                             {m.applyBuffs.map((b, i) => (
                                 <li key={i}>
-                                    {this.formatBuffEntry(b)}
-                                    {b.durationExpression && (
-                                        <span className="magic-book-expression"> ← {b.durationExpression}</span>
-                                    )}
+                                    <strong>{b.name || b.key || 'Buff'}</strong>
+                                    <ul className="magic-book-detail-sublist">
+                                        {this.getBuffDetailLines(b).map((line, j) => (
+                                            <li key={j}>{line}</li>
+                                        ))}
+                                    </ul>
                                 </li>
                             ))}
                         </ul>
@@ -158,29 +178,51 @@ export class MagicBookModal extends PureComponent<IMagicBookModalProps, IMagicBo
                         </ul>
                     </div>
                 )}
-                {this.props.onCastMagic && (
-                    <div className="magic-book-detail-section magic-book-cast-row">
-                        <button
-                            type="button"
-                            className="magic-book-cast-button"
-                            disabled={!this.props.canCast}
-                            onClick={() => {
-                                this.props.onCastMagic!(m.magicTypeId, { castTargetType: m.castTargetType, effectRadius: m.effectRadius });
-                                this.props.onClose();
-                            }}
-                        >
-                            Cast
-                        </button>
-                    </div>
-                )}
             </div>
         );
     }
 
-    private formatBuffEntry(b: IKnownMagicBuffEntry): string {
-        const name = b.name || b.key || 'Buff';
-        if (b.duration > 0) return `${name} (${b.duration} turns)`;
-        return name;
+    private getBuffDetailLines(b: IKnownMagicBuffEntry): string[] {
+        const lines: string[] = [];
+        const perm = b.permanent ?? false;
+        const dur = b.duration ?? 0;
+        if (perm) {
+            lines.push('Permanent');
+        } else if (dur > 0) {
+            lines.push(`Duration: ${dur} turns${b.durationExpression ? ` (${b.durationExpression})` : ''}`);
+        } else if (b.durationExpression) {
+            lines.push(`Duration: ${b.durationExpression}`);
+        }
+        const n = (v: number | undefined) => v ?? 0;
+        if (n(b.healthBonus) !== 0) lines.push(`Health: ${(b.healthBonus ?? 0) > 0 ? '+' : ''}${b.healthBonus}`);
+        if (n(b.attackBonus) !== 0) lines.push(`Attack: ${(b.attackBonus ?? 0) > 0 ? '+' : ''}${b.attackBonus}`);
+        if (n(b.defenseBonus) !== 0) lines.push(`Defense: ${(b.defenseBonus ?? 0) > 0 ? '+' : ''}${b.defenseBonus}`);
+        if (n(b.speedBonus) !== 0) lines.push(`Speed: ${(b.speedBonus ?? 0) > 0 ? '+' : ''}${b.speedBonus}`);
+        if (n(b.minDamageBonus) !== 0 || n(b.maxDamageBonus) !== 0) {
+            lines.push(`Damage: ${(b.minDamageBonus ?? 0) > 0 ? '+' : ''}${b.minDamageBonus ?? 0} / ${(b.maxDamageBonus ?? 0) > 0 ? '+' : ''}${b.maxDamageBonus ?? 0}`);
+        }
+        if (n(b.healthBonusPercentage) !== 0) lines.push(`Health: ${(b.healthBonusPercentage ?? 0) > 0 ? '+' : ''}${b.healthBonusPercentage}%`);
+        if (n(b.attackBonusPercentage) !== 0) lines.push(`Attack: ${(b.attackBonusPercentage ?? 0) > 0 ? '+' : ''}${b.attackBonusPercentage}%`);
+        if (n(b.defenseBonusPercentage) !== 0) lines.push(`Defense: ${(b.defenseBonusPercentage ?? 0) > 0 ? '+' : ''}${b.defenseBonusPercentage}%`);
+        if (n(b.speedBonusPercentage) !== 0) lines.push(`Speed: ${(b.speedBonusPercentage ?? 0) > 0 ? '+' : ''}${b.speedBonusPercentage}%`);
+        if (n(b.minDamageBonusPercentage) !== 0 || n(b.maxDamageBonusPercentage) !== 0) {
+            lines.push(`Damage: ${(b.minDamageBonusPercentage ?? 0) > 0 ? '+' : ''}${b.minDamageBonusPercentage ?? 0}% / ${(b.maxDamageBonusPercentage ?? 0) > 0 ? '+' : ''}${b.maxDamageBonusPercentage ?? 0}%`);
+        }
+        if (b.paralyzed) lines.push('Paralyzed');
+        if (b.stunned) lines.push('Stunned');
+        if (n(b.vampirePercentage) > 0) {
+            lines.push(`Vampire: ${b.vampirePercentage}%${b.vampireCanResurrect ? ' (can resurrect)' : ''}`);
+        }
+        if (b.declinesWhenTakesDamage) lines.push('Declines when takes damage');
+        if (n(b.heals) > 0) lines.push(`Heals: ${b.heals}/turn${b.healCanResurrect ? ' (can resurrect)' : ''}`);
+        if (n(b.healsPercentage) > 0) lines.push(`Heals: ${b.healsPercentage}%/turn${b.healCanResurrect ? ' (can resurrect)' : ''}`);
+        if (n(b.takesDamageMin) !== 0 || n(b.takesDamageMax) !== 0) {
+            lines.push(`Takes damage: ${b.takesDamageMin ?? 0}-${b.takesDamageMax ?? 0}`);
+        }
+        if (n(b.damageReturnPercentage) > 0) {
+            lines.push(`Damage return: ${b.damageReturnPercentage}%${(b.damageReturnMaxRange ?? 0) > 0 ? ` (range ${b.damageReturnMaxRange})` : ''}`);
+        }
+        return lines.length > 0 ? lines : ['(no values)'];
     }
 
     private formatEffectEntry(e: IKnownMagicEffectEntry): string {
