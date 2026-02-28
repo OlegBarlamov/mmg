@@ -150,6 +150,7 @@ namespace Epic.Server
             serviceRegistrator.RegisterType<GlobalUnitsForBattleGenerator, GlobalUnitsForBattleGenerator>();
 
             PredefinedStaticResources.QuestionIconUrl = "/resources/question.png";
+            PredefinedStaticResources.MagicScrollIconUrl = "/resources/scroll.png";
         }
     }
 }

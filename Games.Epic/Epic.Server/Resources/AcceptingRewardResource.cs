@@ -73,13 +73,15 @@ namespace Epic.Server.Resources
 
         private static string GetIconUrl(IRewardObject reward)
         {
-            // Set default icons for Attack and Defense reward types
+            // Set default icons for Attack, Defense, and Magic reward types
             switch (reward.RewardType)
             {
                 case Epic.Data.Reward.RewardType.Attack:
                     return "/resources/Attack_skill.png";
                 case Epic.Data.Reward.RewardType.Defense:
                     return "/resources/Defense_skill.png";
+                case Epic.Data.Reward.RewardType.Magic:
+                    return "/resources/scroll.png";
                 default:
                     return reward.IconUrl;
             }

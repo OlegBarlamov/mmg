@@ -13,6 +13,8 @@ export interface ITurnAwaiter {
      * (i.e. after previously queued animations complete).
      */
     onServerMessageHandlingStarted: Signal<(message: BattleCommandFromServer) => void>
+    /** Fired when unit props (e.g. speed) changed so move/attack highlights should be refreshed. */
+    onRefreshMoveHighlightsRequested: Signal<() => void>
     readonly currentTurnIndex: number
     readonly currentRoundNumber: number
     getCurrentTurnInfo(): BattleTurnInfo 
@@ -23,6 +25,7 @@ export interface ITurnAwaiter {
 export class BattleServerMessagesHandler implements IBattleConnectionMessagesHandler, ITurnAwaiter {
     onCurrentPlayerActionReceived: Signal<() => void> = new Signal()
     onServerMessageHandlingStarted: Signal<(message: BattleCommandFromServer) => void> = new Signal()
+    onRefreshMoveHighlightsRequested: Signal<() => void> = new Signal()
     currentTurnIndex: number
     currentRoundNumber: number
     
@@ -88,6 +91,7 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
         
         this.onCurrentPlayerActionReceived.disconnectAll()
         this.onServerMessageHandlingStarted.disconnectAll()
+        this.onRefreshMoveHighlightsRequested.disconnectAll()
 
         this.rejectAwaitingPromises.forEach((reject: (error: Error) => void, key: number) =>
             this.rejectAwaitingPromiseForTurn(key, new Error("The battle is disposed"))
@@ -204,9 +208,11 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
             }
             return enqueue(() => undefined)
         } else if (message.command === 'RECEIVE_BUFF') {
+            // Do not cancel current user action: RECEIVE_BUFF is a side effect of magic; the player
+            // is still in the same turn and may move/attack/pass/wait. Cancelling would drop the
+            // input flow and leave the client waiting for NEXT_TURN that never comes.
             const unit = getUnitById(this.mapController.map, message.actorId)
             if (unit) {
-                this.cancelCurrentUserActionPending(message)
                 return enqueue(async () => {
                     // Add the buff to the unit's buffs list
                     if (!unit.currentProps.buffs) {
@@ -222,8 +228,12 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                         paralyzed: message.paralyzed,
                         durationRemaining: message.durationRemaining,
                     })
+                    if (message.speed != null) {
+                        unit.currentProps.speed = message.speed
+                    }
                     // Update buff icons on the battlefield
                     await this.mapController.updateUnitBuffIcons(unit)
+                    this.onRefreshMoveHighlightsRequested.emit()
                 })
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)
@@ -240,8 +250,12 @@ export class BattleServerMessagesHandler implements IBattleConnectionMessagesHan
                             unit.currentProps.buffs.splice(buffIndex, 1)
                         }
                     }
+                    if (message.speed != null) {
+                        unit.currentProps.speed = message.speed
+                    }
                     // Update buff icons on the battlefield
                     await this.mapController.updateUnitBuffIcons(unit)
+                    this.onRefreshMoveHighlightsRequested.emit()
                 })
             } else {
                 throw Error("Target unit from server not found: " + message.actorId)

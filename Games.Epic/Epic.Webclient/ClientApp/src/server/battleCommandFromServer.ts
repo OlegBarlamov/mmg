@@ -81,12 +81,16 @@ export interface UnitReceivesBuffCommandFromServer extends UnitCommandFromServer
     stunned: boolean
     paralyzed: boolean
     durationRemaining: number
+    /** Unit's effective speed after this buff (for refreshing move highlight). */
+    speed?: number
 }
 
 export interface UnitLosesBuffCommandFromServer extends UnitCommandFromServer {
     command: 'LOSE_BUFF'
     buffId: string
     buffName: string
+    /** Unit's effective speed after this buff is removed (for refreshing move highlight). */
+    speed?: number
 }
 
 export interface UnitHealsCommandFromServer extends UnitCommandFromServer {

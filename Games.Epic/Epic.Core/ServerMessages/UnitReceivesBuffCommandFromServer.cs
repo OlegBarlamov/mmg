@@ -48,5 +48,10 @@ namespace Epic.Core.ServerMessages
         /// The remaining duration of the buff in rounds (0 for permanent buffs).
         /// </summary>
         public int DurationRemaining { get; set; }
+
+        /// <summary>
+        /// Unit's effective speed after this buff is applied (so client can refresh move highlight).
+        /// </summary>
+        public int Speed { get; set; }
     }
 }

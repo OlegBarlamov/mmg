@@ -87,6 +87,18 @@ namespace Epic.Logic.Battle
             
             return baseDefense + heroBonus + flatBonus + (baseDefense * percentageBonus / 100);
         }
+
+        public static int GetEffectiveSpeed(this IBattleUnitObject unit)
+        {
+            var baseSpeed = unit.GlobalUnit?.UnitType?.Speed ?? 0;
+            if (unit.Buffs == null || unit.Buffs.Count == 0)
+                return baseSpeed;
+
+            var flatBonus = unit.Buffs.Sum(b => b.SpeedBonus);
+            var percentageBonus = unit.Buffs.Sum(b => b.SpeedBonusPercentage);
+            var result = baseSpeed + flatBonus + (baseSpeed * percentageBonus / 100);
+            return Math.Max(0, result);
+        }
         
         public static int GetEffectiveMinDamage(this IBattleUnitObject unit, int baseMinDamage)
         {

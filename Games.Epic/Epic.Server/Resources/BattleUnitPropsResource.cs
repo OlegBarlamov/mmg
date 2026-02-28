@@ -27,7 +27,7 @@ namespace Epic.Server.Resources
         public BattleUnitPropsResource(IBattleUnitObject battleUnitObject, bool currentProps, IBuffTypesRegistry buffTypesRegistry)
         {
             BattleImgUrl = battleUnitObject.GlobalUnit.UnitType.BattleImgUrl;
-            Speed = battleUnitObject.GlobalUnit.UnitType.Speed;
+            Speed = battleUnitObject.GetEffectiveSpeed();
             Waited = battleUnitObject.Waited;
             Health = currentProps ? battleUnitObject.CurrentHealth : battleUnitObject.GetEffectiveMaxHealth();
             Attacks = battleUnitObject.GlobalUnit.UnitType.Attacks

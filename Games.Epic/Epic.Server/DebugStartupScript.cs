@@ -113,11 +113,25 @@ namespace Epic.Server
             var hero1 = await HeroesService.CreateNew(user1Player.Name, user1Player.Id);
             await PlayersService.SetActiveHero(user1Player.Id, hero1.Id);
 
-            var debugMagic = true;
+            // Give each player a random magic with value not exceeding 500
+            var allMagicTypes = await MagicTypesService.GetAll();
+            var magicWithValue500 = (allMagicTypes ?? Array.Empty<IMagicTypeObject>())
+                .Where(m => m.Value <= 500)
+                .ToList();
+            if (magicWithValue500.Count > 0)
+            {
+                var random = new Random();
+                var magicForHero = magicWithValue500[random.Next(magicWithValue500.Count)];
+                await HeroesService.AddKnownMagic(hero.Id, magicForHero.Id);
+                var magicForHero1 = magicWithValue500[random.Next(magicWithValue500.Count)];
+                await HeroesService.AddKnownMagic(hero1.Id, magicForHero1.Id);
+            }
+
+            var debugMagic = false;
             if (debugMagic)
             {
-                var allMagicTypes = await MagicTypesService.GetAll();
-                foreach (var magicType in allMagicTypes ?? Array.Empty<IMagicTypeObject>())
+                var allMagic = await MagicTypesService.GetAll();
+                foreach (var magicType in allMagic ?? Array.Empty<IMagicTypeObject>())
                     await HeroesService.AddKnownMagic(hero.Id, magicType.Id);
             }
 

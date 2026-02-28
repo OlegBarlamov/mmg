@@ -111,24 +111,24 @@ namespace Epic.Logic.Battle
                 await _buffsService.UpdateBatch(buffsToUpdate.ToArray());
             }
 
-            foreach (var expiredBuff in buffsToRemove)
-            {
-                await _buffsService.DeleteById(expiredBuff.Id);
-                
-                var buffExpiredMessage = new UnitLosesBuffCommandFromServer(
-                    turnNumber,
-                    playerNumber,
-                    activeUnit.Id.ToString())
-                {
-                    BuffId = expiredBuff.Id.ToString(),
-                    BuffName = expiredBuff.BuffType?.Name ?? "Unknown"
-                };
-                await _messageBroadcaster.BroadcastMessageAsync(buffExpiredMessage);
-            }
-
             if (buffsToRemove.Count > 0)
             {
                 activeUnit.Buffs = remainingBuffs;
+                var effectiveSpeed = activeUnit.GetEffectiveSpeed();
+                foreach (var expiredBuff in buffsToRemove)
+                {
+                    await _buffsService.DeleteById(expiredBuff.Id);
+                    var buffExpiredMessage = new UnitLosesBuffCommandFromServer(
+                        turnNumber,
+                        playerNumber,
+                        activeUnit.Id.ToString())
+                    {
+                        BuffId = expiredBuff.Id.ToString(),
+                        BuffName = expiredBuff.BuffType?.Name ?? "Unknown",
+                        Speed = effectiveSpeed,
+                    };
+                    await _messageBroadcaster.BroadcastMessageAsync(buffExpiredMessage);
+                }
             }
 
             await _effectsLogic.ApplyEffects(
@@ -148,22 +148,22 @@ namespace Epic.Logic.Battle
             if (buffsToRemove.Count == 0)
                 return;
 
+            target.Buffs = target.GetBuffsRemainingAfterDamage();
+            var effectiveSpeed = target.GetEffectiveSpeed();
             foreach (var buff in buffsToRemove)
             {
                 await _buffsService.DeleteById(buff.Id);
-                
                 var buffLostMessage = new UnitLosesBuffCommandFromServer(
                     turnIndex,
                     player,
                     target.Id.ToString())
                 {
                     BuffId = buff.Id.ToString(),
-                    BuffName = buff.BuffType?.Name ?? "Unknown"
+                    BuffName = buff.BuffType?.Name ?? "Unknown",
+                    Speed = effectiveSpeed,
                 };
                 await _messageBroadcaster.BroadcastMessageAsync(buffLostMessage);
             }
-
-            target.Buffs = target.GetBuffsRemainingAfterDamage();
         }
 
         public async Task ApplyAttackBuffsToTarget(
@@ -264,22 +264,6 @@ namespace Epic.Logic.Battle
                 var buff = await _buffsService.Create(target.Id, buffType.Id, evaluated.EffectiveValues);
                 newBuffs.Add(buff);
                 replacedBuffTypeIds.Add(buffType.Id);
-
-                var buffAppliedMessage = new UnitReceivesBuffCommandFromServer(
-                    turnIndex,
-                    player,
-                    target.Id.ToString())
-                {
-                    BuffId = buff.Id.ToString(),
-                    BuffTypeId = buffType.Id.ToString(),
-                    BuffName = buffType.Name,
-                    ThumbnailUrl = buffType.ThumbnailUrl,
-                    Permanent = buff.Permanent,
-                    Stunned = buff.Stunned,
-                    Paralyzed = buff.Paralyzed,
-                    DurationRemaining = buff.DurationRemaining,
-                };
-                await _messageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
             }
 
             if (newBuffs.Count > 0)
@@ -288,6 +272,28 @@ namespace Epic.Logic.Battle
                 existingBuffs.RemoveAll(b => replacedBuffTypeIds.Contains(b.BuffTypeId));
                 existingBuffs.AddRange(newBuffs);
                 target.Buffs = existingBuffs;
+
+                var effectiveSpeed = target.GetEffectiveSpeed();
+                foreach (var buff in newBuffs)
+                {
+                    var buffType = await _buffTypesService.GetById(buff.BuffTypeId);
+                    var buffAppliedMessage = new UnitReceivesBuffCommandFromServer(
+                        turnIndex,
+                        player,
+                        target.Id.ToString())
+                    {
+                        BuffId = buff.Id.ToString(),
+                        BuffTypeId = buff.BuffTypeId.ToString(),
+                        BuffName = buffType?.Name ?? "",
+                        ThumbnailUrl = buffType?.ThumbnailUrl,
+                        Permanent = buff.Permanent,
+                        Stunned = buff.Stunned,
+                        Paralyzed = buff.Paralyzed,
+                        DurationRemaining = buff.DurationRemaining,
+                        Speed = effectiveSpeed,
+                    };
+                    await _messageBroadcaster.BroadcastMessageAsync(buffAppliedMessage);
+                }
             }
         }
     }

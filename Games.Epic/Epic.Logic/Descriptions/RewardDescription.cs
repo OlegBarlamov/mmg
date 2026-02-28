@@ -431,6 +431,34 @@ namespace Epic.Logic.Descriptions
                 }
             }
 
+            if (reward.RewardType == RewardType.Magic)
+            {
+                switch (visibility)
+                {
+                    case DescriptionVisibility.None:
+                        return new[] { new RewardDescription
+                        {
+                            Name = "Unknown",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.QuestionIconUrl,
+                            Tooltip = "Secret reward",
+                        } };
+                    case DescriptionVisibility.TypeOnly:
+                    case DescriptionVisibility.MaskedSize:
+                    case DescriptionVisibility.ApproximateSize:
+                    case DescriptionVisibility.Full:
+                        return new[] { new RewardDescription
+                        {
+                            Name = reward.Title ?? "Magic",
+                            Amount = string.Empty,
+                            IconUrl = PredefinedStaticResources.MagicScrollIconUrl,
+                            Tooltip = reward.Description ?? "Learn a new spell",
+                        } };
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
+                }
+            }
+
             throw new NotImplementedException();
         }
 

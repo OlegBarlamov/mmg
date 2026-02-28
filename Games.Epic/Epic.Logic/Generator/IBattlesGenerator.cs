@@ -8,6 +8,7 @@ using Epic.Core.Services.GameResources;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.RewardDefinitions;
 using Epic.Core.Services.ArtifactTypes;
+using Epic.Core.Services.MagicTypes;
 using Epic.Data.BattleDefinitions;
 using Epic.Data.Players;
 using Epic.Core.Services.UnitsContainers;
@@ -69,6 +70,7 @@ namespace Epic.Logic.Generator
         public GlobalUnitsForBattleGenerator GlobalUnitsForBattleGenerator { get; }
         public IGameModeProvider GameModeProvider { get; }
         public IArtifactTypesRegistry ArtifactTypesRegistry { get; }
+        public IMagicTypesRegistry MagicTypesRegistry { get; }
 
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
         
@@ -89,7 +91,8 @@ namespace Epic.Logic.Generator
             [NotNull] IRewardDefinitionsRegistry rewardDefinitionsRegistry,
             [NotNull] GlobalUnitsForBattleGenerator globalUnitsForBattleGenerator,
             [NotNull] IGameModeProvider gameModeProvider,
-            [NotNull] IArtifactTypesRegistry artifactTypesRegistry)
+            [NotNull] IArtifactTypesRegistry artifactTypesRegistry,
+            [NotNull] IMagicTypesRegistry magicTypesRegistry)
         {
             BattleDefinitionsService = battleDefinitionsService ?? throw new ArgumentNullException(nameof(battleDefinitionsService));
             BattleDefinitionsRepository = battleDefinitionsRepository ?? throw new ArgumentNullException(nameof(battleDefinitionsRepository));
@@ -108,6 +111,7 @@ namespace Epic.Logic.Generator
             GlobalUnitsForBattleGenerator = globalUnitsForBattleGenerator ?? throw new ArgumentNullException(nameof(globalUnitsForBattleGenerator));
             GameModeProvider = gameModeProvider ?? throw new ArgumentNullException(nameof(gameModeProvider));
             ArtifactTypesRegistry = artifactTypesRegistry ?? throw new ArgumentNullException(nameof(artifactTypesRegistry));
+            MagicTypesRegistry = magicTypesRegistry ?? throw new ArgumentNullException(nameof(magicTypesRegistry));
         }
 
         public async Task GenerateSingle(Guid playerId, int effectiveDay, int globalDay, int stage)
@@ -324,108 +328,154 @@ namespace Epic.Logic.Generator
             }
             else if (rewardType == GeneratedRewardTypes.ArtifactsGain)
             {
-                var orderedArtifacts = ArtifactTypesRegistry.AllOrderedByValue;
-                if (orderedArtifacts.Count == 0)
+                var isMagicReward = _random.Next(2) == 0;
+                var orderedMagic = isMagicReward ? MagicTypesRegistry.All.OrderBy(x => x.Value).ToList() : null;
+
+                if (isMagicReward)
                 {
-                    // fallback to gold if artifacts are not configured
-                    var goldAmount = RoundToFriendlyNumber(difficulty.TargetDifficulty);
-                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                    if (orderedMagic.Count == 0)
                     {
-                        RewardType = RewardType.ResourcesGain,
-                        Amounts = new[] { (int)(goldAmount * rewardFactor) },
-                        CanDecline = true,
-                        GuardBattleDefinitionId = null,
-                        IconUrl = null,
-                        Title = null,
-                        Ids = new[] { GameResourcesRepository.GoldResourceId },
-                    });
+                        var goldAmount = RoundToFriendlyNumber(difficulty.TargetDifficulty);
+                        await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                        {
+                            RewardType = RewardType.ResourcesGain,
+                            Amounts = new[] { (int)(goldAmount * rewardFactor) },
+                            CanDecline = true,
+                            GuardBattleDefinitionId = null,
+                            IconUrl = null,
+                            Title = null,
+                            Ids = new[] { GameResourcesRepository.GoldResourceId },
+                        });
+                    }
+                    else
+                    {
+                        var maxMagicIndex = BinarySearch.FindClosestNotExceedingIndex(orderedMagic,
+                            x => x.Value, difficulty.TargetDifficulty);
+                        if (maxMagicIndex < 0)
+                        {
+                            var minValue = orderedMagic[0].Value;
+                            maxMagicIndex = 0;
+                            while (maxMagicIndex < orderedMagic.Count - 1 && orderedMagic[maxMagicIndex + 1].Value == minValue)
+                                maxMagicIndex++;
+                        }
+
+                        var magicToGain = orderedMagic[_random.Next(0, maxMagicIndex + 1)];
+                        await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                        {
+                            RewardType = RewardType.Magic,
+                            Amounts = new[] { 1 },
+                            CanDecline = true,
+                            GuardBattleDefinitionId = null,
+                            IconUrl = null,
+                            Title = magicToGain.Name,
+                            Message = $"You learned {magicToGain.Name}",
+                            Description = magicToGain.Description,
+                            Ids = new[] { magicToGain.Id },
+                        });
+                    }
                 }
                 else
                 {
-                    var maxArtifactIndex = BinarySearch.FindClosestNotExceedingIndex(orderedArtifacts,
-                        x => x.Value, difficulty.TargetDifficulty);
-                    
-                    // If difficulty is below the minimum artifact value, select from all artifacts 
-                    // with the minimum value (instead of always picking the first one)
-                    if (maxArtifactIndex < 0)
+                    var orderedArtifacts = ArtifactTypesRegistry.AllOrderedByValue;
+                    if (orderedArtifacts.Count == 0)
                     {
-                        var minValue = orderedArtifacts[0].Value;
-                        maxArtifactIndex = 0;
-                        while (maxArtifactIndex < orderedArtifacts.Count - 1 && 
-                               orderedArtifacts[maxArtifactIndex + 1].Value == minValue)
+                        // fallback to gold if artifacts are not configured
+                        var goldAmount = RoundToFriendlyNumber(difficulty.TargetDifficulty);
+                        await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
                         {
-                            maxArtifactIndex++;
-                        }
+                            RewardType = RewardType.ResourcesGain,
+                            Amounts = new[] { (int)(goldAmount * rewardFactor) },
+                            CanDecline = true,
+                            GuardBattleDefinitionId = null,
+                            IconUrl = null,
+                            Title = null,
+                            Ids = new[] { GameResourcesRepository.GoldResourceId },
+                        });
                     }
-                    
-                    var artifactToGain = orderedArtifacts[_random.Next(0, maxArtifactIndex + 1)];
-
-                    const int artifactAmount = 1;
-                    await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                    else
                     {
-                        RewardType = RewardType.ArtifactsGain,
-                        Amounts = new[] { artifactAmount },
-                        CanDecline = true,
-                        GuardBattleDefinitionId = null,
-                        IconUrl = artifactToGain.ThumbnailUrl,
-                        Title = artifactToGain.Name,
-                        Message = $"You found {artifactToGain.Name}",
-                        Ids = new[] { artifactToGain.Id },
-                    });
-
-                    var remainingValue = difficulty.TargetDifficulty - artifactToGain.Value * artifactAmount;
-                    if (remainingValue > 500)
-                    {
-                        // Fill remaining value with either gold or resources, similar to Template rewards
-                        if (_random.NextDouble() < 0.5)
+                        var maxArtifactIndex = BinarySearch.FindClosestNotExceedingIndex(orderedArtifacts,
+                            x => x.Value, difficulty.TargetDifficulty);
+                        
+                        if (maxArtifactIndex < 0)
                         {
-                            var goldAmount = RoundToFriendlyNumber(remainingValue);
-                            await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                            var minValue = orderedArtifacts[0].Value;
+                            maxArtifactIndex = 0;
+                            while (maxArtifactIndex < orderedArtifacts.Count - 1 && 
+                                   orderedArtifacts[maxArtifactIndex + 1].Value == minValue)
                             {
-                                RewardType = RewardType.ResourcesGain,
-                                Amounts = new[] { (int)(goldAmount * rewardFactor) },
-                                CanDecline = true,
-                                GuardBattleDefinitionId = null,
-                                IconUrl = null,
-                                Title = null,
-                                Ids = new[] { GameResourcesRepository.GoldResourceId },
-                            });
-                        }
-                        else
-                        {
-                            var resourcesValue = remainingValue;
-                            var resourceTypes = new List<IGameResourceEntity>();
-                            var resourcesAmounts = new List<int>();
-                            var nonGoldResources = resources.Where(x => x.Id != GameResourcesRepository.GoldResourceId).ToList();
-                            var availablePool = nonGoldResources.Any() ? nonGoldResources : resources;
-                            var resourceTypesCount = resourcesValue > availablePool.Sum(x => x.Price) / 2
-                                ? _random.Next(1, availablePool.Count)
-                                : 1;
-                            var valuePerResource = (double)resourcesValue / resourceTypesCount;
-                            var availableResources = new List<IGameResourceEntity>(availablePool);
-                            for (var i = 0; i < resourceTypesCount; i++)
-                            {
-                                var resourceType = availableResources[_random.Next(0, availableResources.Count)];
-                                availableResources.Remove(resourceType);
-
-                                var resourceAmount = Math.Max(1,
-                                    (int)Math.Ceiling(valuePerResource / resourceType.Price));
-                                resourceAmount = RoundToFriendlyNumber(resourceAmount);
-
-                                resourceTypes.Add(resourceType);
-                                resourcesAmounts.Add((int)(resourceAmount * rewardFactor));
+                                maxArtifactIndex++;
                             }
+                        }
+                        
+                        var artifactToGain = orderedArtifacts[_random.Next(0, maxArtifactIndex + 1)];
 
-                            await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                        const int artifactAmount = 1;
+                        await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                        {
+                            RewardType = RewardType.ArtifactsGain,
+                            Amounts = new[] { artifactAmount },
+                            CanDecline = true,
+                            GuardBattleDefinitionId = null,
+                            IconUrl = artifactToGain.ThumbnailUrl,
+                            Title = artifactToGain.Name,
+                            Message = $"You found {artifactToGain.Name}",
+                            Ids = new[] { artifactToGain.Id },
+                        });
+
+                        var remainingValue = difficulty.TargetDifficulty - artifactToGain.Value * artifactAmount;
+                        if (remainingValue > 500)
+                        {
+                            if (_random.NextDouble() < 0.5)
                             {
-                                RewardType = RewardType.ResourcesGain,
-                                Amounts = resourcesAmounts.ToArray(),
-                                CanDecline = true,
-                                GuardBattleDefinitionId = null,
-                                IconUrl = null,
-                                Title = null,
-                                Ids = resourceTypes.Select(x => x.Id).ToArray(),
-                            });
+                                var goldAmount = RoundToFriendlyNumber(remainingValue);
+                                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                                {
+                                    RewardType = RewardType.ResourcesGain,
+                                    Amounts = new[] { (int)(goldAmount * rewardFactor) },
+                                    CanDecline = true,
+                                    GuardBattleDefinitionId = null,
+                                    IconUrl = null,
+                                    Title = null,
+                                    Ids = new[] { GameResourcesRepository.GoldResourceId },
+                                });
+                            }
+                            else
+                            {
+                                var resourcesValue = remainingValue;
+                                var resourceTypes = new List<IGameResourceEntity>();
+                                var resourcesAmounts = new List<int>();
+                                var nonGoldResources = resources.Where(x => x.Id != GameResourcesRepository.GoldResourceId).ToList();
+                                var availablePool = nonGoldResources.Any() ? nonGoldResources : resources;
+                                var resourceTypesCount = resourcesValue > availablePool.Sum(x => x.Price) / 2
+                                    ? _random.Next(1, availablePool.Count)
+                                    : 1;
+                                var valuePerResource = (double)resourcesValue / resourceTypesCount;
+                                var availableResources = new List<IGameResourceEntity>(availablePool);
+                                for (var i = 0; i < resourceTypesCount; i++)
+                                {
+                                    var resourceType = availableResources[_random.Next(0, availableResources.Count)];
+                                    availableResources.Remove(resourceType);
+
+                                    var resourceAmount = Math.Max(1,
+                                        (int)Math.Ceiling(valuePerResource / resourceType.Price));
+                                    resourceAmount = RoundToFriendlyNumber(resourceAmount);
+
+                                    resourceTypes.Add(resourceType);
+                                    resourcesAmounts.Add((int)(resourceAmount * rewardFactor));
+                                }
+
+                                await RewardsRepository.CreateRewardAsync(battleDefinition.Id, new MutableRewardFields
+                                {
+                                    RewardType = RewardType.ResourcesGain,
+                                    Amounts = resourcesAmounts.ToArray(),
+                                    CanDecline = true,
+                                    GuardBattleDefinitionId = null,
+                                    IconUrl = null,
+                                    Title = null,
+                                    Ids = resourceTypes.Select(x => x.Id).ToArray(),
+                                });
+                            }
                         }
                     }
                 }

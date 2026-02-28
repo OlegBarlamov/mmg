@@ -18,5 +18,10 @@ namespace Epic.Core.ServerMessages
         /// The name of the buff for display purposes.
         /// </summary>
         public string BuffName { get; set; }
+
+        /// <summary>
+        /// Unit's effective speed after this buff is removed (so client can refresh move highlight).
+        /// </summary>
+        public int Speed { get; set; }
     }
 }

@@ -6,6 +6,7 @@ namespace Epic.Data.Reward
         ResourcesGain,
         UnitsGain, 
         ArtifactsGain,
+        Magic,
         UnitsToBuy,
         UnitsToUpgrade,
         Attack,

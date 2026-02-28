@@ -111,7 +111,7 @@ namespace Epic.Logic.Battle.Map
             IBattleUnitObject unit,
             MovementType movementType)
         {
-            int moveRange = unit.GlobalUnit.UnitType.Speed;
+            int moveRange = unit.GetEffectiveSpeed();
             var start = new HexoPoint(unit.Column, unit.Row);
 
             return BfsExplore(map, obstacles, start, movementType, false, moveRange).ToList();
@@ -150,7 +150,7 @@ namespace Epic.Logic.Battle.Map
                 return null;
 
             var start = new HexoPoint(unit.Column, unit.Row);
-            int moveRange = unit.GlobalUnit.UnitType.Speed;
+            int moveRange = unit.GetEffectiveSpeed();
 
             // First, try to find the closest reachable cell to the target using longer-range exploration
             // This helps when obstacles block the direct path

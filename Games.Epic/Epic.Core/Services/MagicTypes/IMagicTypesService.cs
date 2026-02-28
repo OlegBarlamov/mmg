@@ -8,5 +8,6 @@ namespace Epic.Core.Services.MagicTypes
         Task<IMagicTypeObject> GetById(Guid id);
         Task<IMagicTypeObject> GetByKey(string key);
         Task<IMagicTypeObject[]> GetAll();
+        Task<IMagicTypeObject[]> GetByIds(Guid[] ids);
     }
 }

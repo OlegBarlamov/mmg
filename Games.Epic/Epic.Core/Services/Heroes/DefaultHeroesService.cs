@@ -91,6 +91,8 @@ namespace Epic.Core.Services.Heroes
             mutableHeroObject.Level += gainResult.LevelsGain;
             mutableHeroObject.Attack += gainResult.AttacksGain;
             mutableHeroObject.Defense += gainResult.DefenseGain;
+            mutableHeroObject.Knowledge += gainResult.KnowledgeGain;
+            mutableHeroObject.Power += gainResult.PowerGain;
 
             await HeroEntitiesRepository.Update(mutableHeroObject.Id, mutableHeroObject);
 

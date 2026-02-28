@@ -38,11 +38,11 @@ namespace Epic.Logic.Battle.Commands
             var playerIndex = (int)context.BattleObject.FindPlayerNumber(playerInfo);
             var playerMinSpeed = context.BattleObject.Units
                 .Where(x => x.GlobalUnit.IsAlive && x.PlayerIndex == playerIndex)
-                .Min(x => x.GlobalUnit.UnitType.Speed);
+                .Min(x => x.GetEffectiveSpeed());
             
             var enemyMaxSpeed = context.BattleObject.Units
                 .Where(x => x.GlobalUnit.IsAlive && x.PlayerIndex != playerIndex)
-                .Max(x => x.GlobalUnit.UnitType.Speed);
+                .Max(x => x.GetEffectiveSpeed());
 
             playerInfo.RunInfo = new PlayerRunInfo
             {

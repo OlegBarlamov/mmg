@@ -112,8 +112,8 @@ namespace Epic.Logic.Battle
                 if (waitedCompare != 0)
                     return waitedCompare;
 
-                // 2. Compare Speed: higher speed comes first
-                int speedCompare = y.GlobalUnit.UnitType.Speed.CompareTo(x.GlobalUnit.UnitType.Speed);
+                // 2. Compare Speed: higher speed comes first (use effective speed including buffs)
+                int speedCompare = y.GetEffectiveSpeed().CompareTo(x.GetEffectiveSpeed());
                 if (speedCompare != 0)
                     return speedCompare;
 

@@ -40,6 +40,9 @@ export class BattleController implements IBattleController {
     private readonly map: BattleMap
     private readonly playerService: IPlayerService
 
+    /** Set during processStep so RECEIVE_BUFF/LOSE_BUFF can refresh move highlights. */
+    private currentStepRefreshHighlights: (() => void) | null = null
+
     private readonly battleUserInputController: BattleUserInputController
     private readonly battleActionProcessor: IBattleActionsProcessor
     private readonly turnAwaiter: ITurnAwaiter
@@ -64,6 +67,12 @@ export class BattleController implements IBattleController {
         this.battleUserInputController = new BattleUserInputController(mapController, panelController)
 
         this.npcControl = this.isAbleToControlNpc()
+
+        this.turnAwaiter.onRefreshMoveHighlightsRequested.connect(() => {
+            if (this.currentStepRefreshHighlights) {
+                this.currentStepRefreshHighlights()
+            }
+        })
     }
 
     dispose(): void {
@@ -169,6 +178,7 @@ export class BattleController implements IBattleController {
         }
 
         refreshHighlights()
+        this.currentStepRefreshHighlights = refreshHighlights
 
         const cancellationTokenSource = new SignalBasedCancellationToken(this.turnAwaiter.onCurrentPlayerActionReceived)
 
@@ -188,6 +198,7 @@ export class BattleController implements IBattleController {
                 throw e
             }
         } finally {
+            this.currentStepRefreshHighlights = null
             this.mapController.onUnitRemoved = previousOnUnitRemoved
             cancellationTokenSource.dispose()
             this.mapController.battleMapHighlighter.restoreHighlightingForCells(context.cellsForMove)

@@ -10,6 +10,7 @@ using Epic.Core.Services.Battles;
 using Epic.Core.Services.GameResources;
 using Epic.Core.Services.GameResources.Errors;
 using Epic.Core.Services.Heroes;
+using Epic.Core.Services.MagicTypes;
 using Epic.Core.Services.Players;
 using Epic.Core.Services.Rewards.Errors;
 using Epic.Core.Services.Units;
@@ -39,6 +40,7 @@ namespace Epic.Core.Services.Rewards
         public IBattlesService BattlesService { get; }
         public IGameResourcesService GameResourcesService { get; }
         public IHeroesService HeroesService { get; }
+        public IMagicTypesService MagicTypesService { get; }
 
         public DefaultRewardsService(
             [NotNull] IRewardsRepository rewardsRepository,
@@ -53,7 +55,8 @@ namespace Epic.Core.Services.Rewards
             [NotNull] IBattleDefinitionsService battleDefinitionsService,
             [NotNull] IBattlesService battlesService,
             [NotNull] IGameResourcesService gameResourcesService,
-            [NotNull] IHeroesService heroesService)
+            [NotNull] IHeroesService heroesService,
+            [NotNull] IMagicTypesService magicTypesService)
         {
             RewardsRepository = rewardsRepository ?? throw new ArgumentNullException(nameof(rewardsRepository));
             UnitTypesService = unitTypesService ?? throw new ArgumentNullException(nameof(unitTypesService));
@@ -68,6 +71,7 @@ namespace Epic.Core.Services.Rewards
             BattlesService = battlesService ?? throw new ArgumentNullException(nameof(battlesService));
             GameResourcesService = gameResourcesService ?? throw new ArgumentNullException(nameof(gameResourcesService));
             HeroesService = heroesService ?? throw new ArgumentNullException(nameof(heroesService));
+            MagicTypesService = magicTypesService ?? throw new ArgumentNullException(nameof(magicTypesService));
         }
         public async Task<IRewardObject[]> GetNotAcceptedPlayerRewards(Guid playerId)
         {
@@ -132,6 +136,17 @@ namespace Epic.Core.Services.Rewards
                         {
                             await ArtifactsService.Create(player.ActiveHero.Id, rewardObject.Ids[i]);
                         }
+                    }
+                }
+
+                if (rewardObject.RewardType == RewardType.Magic)
+                {
+                    if (player.ActiveHero == null)
+                        throw new InvalidOperationException("Active hero is not set.");
+
+                    for (var i = 0; i < rewardObject.Ids.Length; i++)
+                    {
+                        await HeroesService.AddKnownMagic(player.ActiveHero.Id, rewardObject.Ids[i]);
                     }
                 }
 
@@ -374,6 +389,9 @@ namespace Epic.Core.Services.Rewards
                     break;
                 case RewardType.ArtifactsGain:
                     rewardObject.ArtifactTypes = await Task.WhenAll(entity.Ids.Select(ArtifactTypesService.GetById));
+                    break;
+                case RewardType.Magic:
+                    rewardObject.Magics = (await MagicTypesService.GetByIds(entity.Ids)).ToArray();
                     break;
                 case RewardType.UnitsToBuy:
                 case RewardType.UnitsToUpgrade:

@@ -45,5 +45,13 @@ namespace Epic.Core.Services.MagicTypes
                 result[i] = await MutableMagicTypeObject.FromEntityAsync(entities[i], BuffTypesService, EffectTypesService);
             return result;
         }
+
+        public async Task<IMagicTypeObject[]> GetByIds(Guid[] ids)
+        {
+            if (ids == null || ids.Length == 0)
+                return Array.Empty<IMagicTypeObject>();
+            var tasks = ids.Select(id => GetById(id)).ToArray();
+            return await Task.WhenAll(tasks);
+        }
     }
 }

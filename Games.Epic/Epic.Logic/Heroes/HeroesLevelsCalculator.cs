@@ -19,7 +19,7 @@ namespace Epic.Logic.Heroes
         public IExperienceGainResult GiveExperience(IHeroObject hero, int experienceGain)
         {
             int gainedExp = experienceGain;
-            int gainedLevels = 0, gainedAttacks = 0, gainedDefense = 0;
+            int gainedLevels = 0, gainedAttacks = 0, gainedDefense = 0, gainedKnowledge = 0, gainedPower = 0;
             int gainedArmySlots = 0;
 
             var currentExp = hero.Experience + gainedExp;
@@ -45,6 +45,16 @@ namespace Epic.Logic.Heroes
                     gainedDefense++;
                 }
 
+                // Randomly choose Knowledge or Power
+                if (RandomProvider.NextInteger(0, 2) == 0)
+                {
+                    gainedKnowledge++;
+                }
+                else
+                {
+                    gainedPower++;
+                }
+
                 if (currentLevel % 4 == 0)
                 {
                     gainedArmySlots++;
@@ -57,6 +67,8 @@ namespace Epic.Logic.Heroes
             {
                 AttacksGain = gainedAttacks,
                 DefenseGain = gainedDefense,
+                KnowledgeGain = gainedKnowledge,
+                PowerGain = gainedPower,
                 ArmySlotsGain = gainedArmySlots,
             };
         }
@@ -106,6 +118,8 @@ namespace Epic.Logic.Heroes
         public int LevelsGain { get; }
         public int AttacksGain { get; set; }
         public int DefenseGain { get; set; }
+        public int KnowledgeGain { get; set; }
+        public int PowerGain { get; set; }
         public int ArmySlotsGain { get; set; }
 
         public ExperienceGainResult(int exp, int levels)
