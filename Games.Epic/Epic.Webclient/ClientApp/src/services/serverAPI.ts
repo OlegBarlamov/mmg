@@ -27,6 +27,7 @@ export interface IHeroStats {
     readonly knowledge: number
     readonly currentMana: number
     readonly maxMana: number
+    readonly manaRestorationBonus: number
 }
 
 export interface IPlayerInfo {
@@ -80,6 +81,9 @@ export interface IArtifactInfo {
     readonly slots: ArtifactSlot[]
     readonly attackBonus: number
     readonly defenseBonus: number
+    readonly knowledgeBonus: number
+    readonly powerBonus: number
+    readonly manaRestorationBonus: number
     readonly equippedSlotsIndexes: number[]
     readonly buffNames: string[]
 }

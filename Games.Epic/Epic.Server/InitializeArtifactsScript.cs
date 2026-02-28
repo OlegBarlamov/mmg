@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Epic.Core.Services.ArtifactTypes;
 using Epic.Core.Services.BuffTypes;
+using Epic.Core.Services.MagicTypes;
 using Epic.Data.ArtifactType;
 using Epic.Data.Artifacts;
 using FrameworkSDK;
@@ -24,9 +25,14 @@ namespace Epic.Server
             public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
             public int AttackBonus { get; set; }
             public int DefenseBonus { get; set; }
+            public int KnowledgeBonus { get; set; }
+            public int PowerBonus { get; set; }
+            public int ManaRestorationBonus { get; set; }
             
             [UsedImplicitly]
             public string[] Buffs { get; set; } = Array.Empty<string>();
+            [UsedImplicitly]
+            public string[] GrantMagic { get; set; } = Array.Empty<string>();
         }
 
         [UsedImplicitly]
@@ -39,15 +45,18 @@ namespace Epic.Server
         public IArtifactTypesRepository ArtifactTypesRepository { get; }
         public DefaultArtifactTypesRegistry ArtifactTypesRegistry { get; }
         public IBuffTypesRegistry BuffTypesRegistry { get; }
+        public IMagicTypesRegistry MagicTypesRegistry { get; }
 
         public InitializeArtifactsScript(
             [NotNull] IArtifactTypesRepository artifactTypesRepository,
             [NotNull] DefaultArtifactTypesRegistry artifactTypesRegistry,
-            [NotNull] IBuffTypesRegistry buffTypesRegistry)
+            [NotNull] IBuffTypesRegistry buffTypesRegistry,
+            [NotNull] IMagicTypesRegistry magicTypesRegistry)
         {
             ArtifactTypesRepository = artifactTypesRepository ?? throw new ArgumentNullException(nameof(artifactTypesRepository));
             ArtifactTypesRegistry = artifactTypesRegistry ?? throw new ArgumentNullException(nameof(artifactTypesRegistry));
             BuffTypesRegistry = buffTypesRegistry ?? throw new ArgumentNullException(nameof(buffTypesRegistry));
+            MagicTypesRegistry = magicTypesRegistry ?? throw new ArgumentNullException(nameof(magicTypesRegistry));
         }
 
         public void Configure()
@@ -77,6 +86,9 @@ namespace Epic.Server
                     Slots = x.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>(),
                     AttackBonus = x.AttackBonus,
                     DefenseBonus = x.DefenseBonus,
+                    KnowledgeBonus = x.KnowledgeBonus,
+                    PowerBonus = x.PowerBonus,
+                    ManaRestorationBonus = x.ManaRestorationBonus,
                 };
                 
                 // Resolve BuffTypes string keys to GUIDs
@@ -85,6 +97,15 @@ namespace Epic.Server
                     fieldsObj.BuffTypeIds = x.Buffs
                         .Where(buffKey => !string.IsNullOrWhiteSpace(buffKey))
                         .Select(buffKey => BuffTypesRegistry.ByKey(buffKey).Id)
+                        .ToArray();
+                }
+
+                // Resolve GrantMagic string keys to magic type GUIDs (magic types must be initialized before artifacts)
+                if (x.GrantMagic != null && x.GrantMagic.Length > 0)
+                {
+                    fieldsObj.GrantMagicTypeIds = x.GrantMagic
+                        .Where(magicKey => !string.IsNullOrWhiteSpace(magicKey))
+                        .Select(magicKey => MagicTypesRegistry.ByKey(magicKey).Id)
                         .ToArray();
                 }
                 

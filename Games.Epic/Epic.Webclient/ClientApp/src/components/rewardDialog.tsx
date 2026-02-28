@@ -815,7 +815,7 @@ export class RewardDialog extends PureComponent<IRewardDialogProps, IRewardDialo
                                         <div
                                             key={index}
                                             className="unit-horizontal-item"
-                                            title={`${artifact.name}${artifact.attackBonus ? ` | ATK ${artifact.attackBonus > 0 ? '+' : ''}${artifact.attackBonus}` : ''}${artifact.defenseBonus ? ` | DEF ${artifact.defenseBonus > 0 ? '+' : ''}${artifact.defenseBonus}` : ''}`}
+                                            title={`${artifact.name}${artifact.attackBonus ? ` | ATK ${artifact.attackBonus > 0 ? '+' : ''}${artifact.attackBonus}` : ''}${artifact.defenseBonus ? ` | DEF ${artifact.defenseBonus > 0 ? '+' : ''}${artifact.defenseBonus}` : ''}${artifact.knowledgeBonus ? ` | KNO ${artifact.knowledgeBonus > 0 ? '+' : ''}${artifact.knowledgeBonus}` : ''}${artifact.powerBonus ? ` | PWR ${artifact.powerBonus > 0 ? '+' : ''}${artifact.powerBonus}` : ''}${artifact.manaRestorationBonus ? ` | Mana +${artifact.manaRestorationBonus}/turn` : ''}`}
                                         >
                                             <img
                                                 src={artifact.thumbnailUrl ?? "/resources/question.png"}

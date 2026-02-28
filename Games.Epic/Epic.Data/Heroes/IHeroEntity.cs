@@ -11,6 +11,7 @@ namespace Epic.Data.Heroes
         int Power { get; }
         int Knowledge { get; }
         int CurrentMana { get; }
+        int ManaRestorationBonus { get; }
     }
     
     public interface IHeroEntityFields : IHeroStats
@@ -37,6 +38,8 @@ namespace Epic.Data.Heroes
         public int Power { get; set; }
         public int Knowledge { get; set; }
         public int CurrentMana { get; set; }
+        /// <summary>Not stored on entity; computed from equipped artifacts when building cumulative stats. Base entity uses 0.</summary>
+        public int ManaRestorationBonus => 0;
 
         public MutableHeroEntityFields() { }
     }

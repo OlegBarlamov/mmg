@@ -16,12 +16,12 @@ namespace Epic.Logic.Heroes
         public static int GetMaxMana(this IHeroStats stats)
             => HeroManaConstants.MaxManaPerKnowledge * stats.Knowledge;
 
-        /// <summary>Returns current mana after restoring: min(currentMana + knowledge, maxMana). One mana per knowledge.</summary>
-        public static int GetCurrentManaAfterRestore(int currentMana, int knowledge, int maxMana)
-            => Math.Min(currentMana + knowledge, maxMana);
+        /// <summary>Returns current mana after restoring: min(currentMana + knowledge + restorationBonus, maxMana).</summary>
+        public static int GetCurrentManaAfterRestore(int currentMana, int knowledge, int maxMana, int restorationBonus = 0)
+            => Math.Min(currentMana + knowledge + restorationBonus, maxMana);
 
-        /// <summary>Returns current mana after restoring using stats.</summary>
+        /// <summary>Returns current mana after restoring using stats (includes ManaRestorationBonus from artifacts).</summary>
         public static int GetCurrentManaAfterRestore(this IHeroStats stats)
-            => GetCurrentManaAfterRestore(stats.CurrentMana, stats.Knowledge, stats.GetMaxMana());
+            => GetCurrentManaAfterRestore(stats.CurrentMana, stats.Knowledge, stats.GetMaxMana(), stats.ManaRestorationBonus);
     }
 }

@@ -12,8 +12,12 @@ namespace Epic.Data.ArtifactType
         string ThumbnailUrl { get; }
         ArtifactSlot[] Slots { get; }
         Guid[] BuffTypeIds { get; }
+        Guid[] GrantMagicTypeIds { get; }
         int AttackBonus { get; }
         int DefenseBonus { get; }
+        int KnowledgeBonus { get; }
+        int PowerBonus { get; }
+        int ManaRestorationBonus { get; }
     }
     
     public interface IArtifactTypeEntity : IArtifactTypeEntityFields
@@ -29,8 +33,12 @@ namespace Epic.Data.ArtifactType
         public string ThumbnailUrl { get; set; }
         public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
         public Guid[] BuffTypeIds { get; set; } = Array.Empty<Guid>();
+        public Guid[] GrantMagicTypeIds { get; set; } = Array.Empty<Guid>();
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
+        public int KnowledgeBonus { get; set; }
+        public int PowerBonus { get; set; }
+        public int ManaRestorationBonus { get; set; }
     }
     
     public class ArtifactTypeEntity : ArtifactTypeEntityFields, IArtifactTypeEntity
@@ -50,8 +58,12 @@ namespace Epic.Data.ArtifactType
             ThumbnailUrl = fields.ThumbnailUrl;
             Slots = fields.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>();
             BuffTypeIds = fields.BuffTypeIds?.ToArray() ?? Array.Empty<Guid>();
+            GrantMagicTypeIds = fields.GrantMagicTypeIds?.ToArray() ?? Array.Empty<Guid>();
             AttackBonus = fields.AttackBonus;
             DefenseBonus = fields.DefenseBonus;
+            KnowledgeBonus = fields.KnowledgeBonus;
+            PowerBonus = fields.PowerBonus;
+            ManaRestorationBonus = fields.ManaRestorationBonus;
         }
 
         public static ArtifactTypeEntity FromFields(Guid id, IArtifactTypeEntityFields fields)

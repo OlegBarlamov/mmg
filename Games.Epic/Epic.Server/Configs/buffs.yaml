@@ -25,6 +25,11 @@ Buffs:
     SpeedBonusExpression: "1"
     Permanent: true
     DurationExpression: "0"
+  SpeedPlusTwo:
+    Name: "Speed +2"
+    SpeedBonusExpression: "2"
+    Permanent: true
+    DurationExpression: "0"
   ElixirOfLifeBuff:
     Name: "Health +4; Health +25%"
     HealthBonusExpression: "4"

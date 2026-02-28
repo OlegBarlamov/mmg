@@ -78,6 +78,9 @@ function artifactHoverText(a: IArtifactInfo): string {
     const statParts: string[] = []
     if ((a.attackBonus ?? 0) !== 0) statParts.push(`ATK ${formatSigned(a.attackBonus)}`)
     if ((a.defenseBonus ?? 0) !== 0) statParts.push(`DEF ${formatSigned(a.defenseBonus)}`)
+    if ((a.knowledgeBonus ?? 0) !== 0) statParts.push(`KNO ${formatSigned(a.knowledgeBonus)}`)
+    if ((a.powerBonus ?? 0) !== 0) statParts.push(`PWR ${formatSigned(a.powerBonus)}`)
+    if ((a.manaRestorationBonus ?? 0) !== 0) statParts.push(`Mana +${a.manaRestorationBonus}/turn`)
     if (statParts.length > 0) lines.push(statParts.join(" | "))
     
     // Show slots if artifact takes more than one slot

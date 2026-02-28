@@ -48,7 +48,8 @@ namespace Epic.Logic.Battle.Commands
             if (hero == null)
                 throw new BattleLogicException($"Player {command.Player} has no active hero");
 
-            if (!hero.KnownMagicTypeIds?.Contains(command.MagicTypeId) ?? true)
+            var effectiveKnownMagic = hero.GetEffectiveKnownMagicTypeIds();
+            if (!effectiveKnownMagic.Contains(command.MagicTypeId))
                 throw new BattleLogicException($"Hero does not know magic type {magicType.Name ?? command.MagicTypeId.ToString()}");
 
             var manaCost = magicType.MannaCost;

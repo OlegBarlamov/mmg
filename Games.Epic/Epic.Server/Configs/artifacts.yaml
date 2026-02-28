@@ -28,6 +28,9 @@ Misc: &Misc
 MiscRingRing: &MiscRingRing
   Slots: [Bag, Wrist, Wrist]
 
+# Artifacts: Buffs = list of buff type keys. GrantMagic = list of magic type keys
+# (hero can cast these spells while the artifact is equipped).
+# ManaRestorationBonus: extra mana restored per round when equipped (flat integer).
 Artifacts:
   CentaursAxe:
     <<: *Weapon
@@ -91,8 +94,10 @@ Artifacts:
     Key: SwordOfJudgement
     Name: "Sword of Judgement"
     Value: 10000
-    AttackBonus: 10
-    DefenseBonus: 10
+    AttackBonus: 5
+    DefenseBonus: 5
+    KnowledgeBonus: 5
+    PowerBonus: 5
     ThumbnailUrl: "/resources/Artifact_Sword_of_Judgement.gif"
 
   TitansGladius:
@@ -103,6 +108,17 @@ Artifacts:
     AttackBonus: 12
     DefenseBonus: -3
     ThumbnailUrl: "/resources/Artifact_Titan's_Gladius.gif"
+  
+  ArmageddonsBlade:
+    <<: *Weapon
+    Key: ArmageddonsBlade
+    Name: "Armageddon's Blade"
+    Value: 25000
+    AttackBonus: 3
+    DefenseBonus: 3
+    KnowledgeBonus: 3
+    PowerBonus: 6
+    ThumbnailUrl: "/resources/Artifact_Armageddon's_Blade.gif"
 
   # Shields
   ShieldOfTheDwarvenLords:
@@ -167,9 +183,10 @@ Artifacts:
     Key: LionsShieldOfCourage
     Name: "Lion's Shield of Courage"
     Value: 8000
-    # Original includes Power/Knowledge; we only support ATK/DEF, so we scale ATK/DEF up.
-    AttackBonus: 8
-    DefenseBonus: 8
+    AttackBonus: 4
+    DefenseBonus: 4
+    KnowledgeBonus: 4
+    PowerBonus: 4
     ThumbnailUrl: "/resources/Artifact_Lion's_Shield_of_Courage.gif"
 
   SentinelsShield:
@@ -187,7 +204,7 @@ Artifacts:
     Key: BreastplateOfPetrifiedWood
     Name: "Breastplate of Petrified Wood"
     Value: 1000
-    DefenseBonus: 1
+    PowerBonus: 1
     ThumbnailUrl: "/resources/Artifact_Breastplate_of_Petrified_Wood.gif"
 
   RibCage:
@@ -195,7 +212,7 @@ Artifacts:
     Key: RibCage
     Name: "Rib Cage"
     Value: 1500
-    DefenseBonus: 2
+    PowerBonus: 2
     ThumbnailUrl: "/resources/Artifact_Rib_Cage.gif"
 
   ScalesOfTheGreaterBasilisk:
@@ -203,7 +220,7 @@ Artifacts:
     Key: ScalesOfTheGreaterBasilisk
     Name: "Scales of the Greater Basilisk"
     Value: 2000
-    DefenseBonus: 3
+    PowerBonus: 3
     ThumbnailUrl: "/resources/Artifact_Scales_of_the_Greater_Basilisk.gif"
 
   TunicOfTheCyclopsKing:
@@ -211,7 +228,7 @@ Artifacts:
     Key: TunicOfTheCyclopsKing
     Name: "Tunic of the Cyclops King"
     Value: 2500
-    DefenseBonus: 4
+    PowerBonus: 4
     ThumbnailUrl: "/resources/Artifact_Tunic_of_the_Cyclops_King.gif"
 
   BreastplateOfBrimstone:
@@ -219,7 +236,7 @@ Artifacts:
     Key: BreastplateOfBrimstone
     Name: "Breastplate of Brimstone"
     Value: 3000
-    DefenseBonus: 5
+    PowerBonus: 5
     ThumbnailUrl: "/resources/Artifact_Breastplate_of_Brimstone.gif"
 
   RoyalArmorOfNix:
@@ -227,7 +244,7 @@ Artifacts:
     Key: RoyalArmorOfNix
     Name: "Royal Armor of Nix"
     Value: 3500
-    DefenseBonus: 6
+    PowerBonus: 6
     ThumbnailUrl: "/resources/Artifact_Royal_Armor_of_Nix.gif"
 
   ArmorOfWonder:
@@ -235,9 +252,10 @@ Artifacts:
     Key: ArmorOfWonder
     Name: "Armor of Wonder"
     Value: 2000
-    # Original includes Power/Knowledge; we only support ATK/DEF, so we scale ATK/DEF up.
-    AttackBonus: 2
-    DefenseBonus: 2
+    AttackBonus: 1
+    DefenseBonus: 1
+    PowerBonus: 1
+    KnowledgeBonus: 1
     ThumbnailUrl: "/resources/Artifact_Armor_of_Wonder.gif"
 
   DragonScaleArmor:
@@ -254,8 +272,8 @@ Artifacts:
     Key: TitansCuirass
     Name: "Titan's Cuirass"
     Value: 5000
-    DefenseBonus: 10
-    AttackBonus: -2
+    PowerBonus: 10
+    KnowledgeBonus: -2
     ThumbnailUrl: "/resources/Artifact_Titan's_Cuirass.gif"
 
   # Helmets (Knowledge -> Defense, Power -> Attack)
@@ -264,7 +282,7 @@ Artifacts:
     Key: HelmOfTheAlabasterUnicorn
     Name: "Helm of the Alabaster Unicorn"
     Value: 1000
-    DefenseBonus: 1
+    KnowledgeBonus: 1
     ThumbnailUrl: "/resources/Artifact_Helm_of_the_Alabaster_Unicorn.gif"
 
   SkullHelmet:
@@ -272,7 +290,7 @@ Artifacts:
     Key: SkullHelmet
     Name: "Skull Helmet"
     Value: 1500
-    DefenseBonus: 2
+    KnowledgeBonus: 2
     ThumbnailUrl: "/resources/Artifact_Skull_Helmet.gif"
 
   HelmOfChaos:
@@ -280,7 +298,7 @@ Artifacts:
     Key: HelmOfChaos
     Name: "Helm of Chaos"
     Value: 2000
-    DefenseBonus: 3
+    KnowledgeBonus: 3
     ThumbnailUrl: "/resources/Artifact_Helm_of_Chaos.gif"
 
   CrownOfTheSupremeMagi:
@@ -288,7 +306,7 @@ Artifacts:
     Key: CrownOfTheSupremeMagi
     Name: "Crown of the Supreme Magi"
     Value: 2500
-    DefenseBonus: 4
+    KnowledgeBonus: 4
     ThumbnailUrl: "/resources/Artifact_Crown_of_the_Supreme_Magi.gif"
 
   HellstormHelmet:
@@ -296,7 +314,7 @@ Artifacts:
     Key: HellstormHelmet
     Name: "Hellstorm Helmet"
     Value: 3000
-    DefenseBonus: 5
+    KnowledgeBonus: 5
     ThumbnailUrl: "/resources/Artifact_Hellstorm_Helmet.gif"
 
   CrownOfTheFiveSeas:
@@ -304,7 +322,7 @@ Artifacts:
     Key: CrownOfTheFiveSeas
     Name: "Crown of the Five Seas"
     Value: 3500
-    DefenseBonus: 6
+    KnowledgeBonus: 6
     ThumbnailUrl: "/resources/Artifact_Crown_of_the_Five_Seas.gif"
 
   CrownOfDragontooth:
@@ -312,8 +330,8 @@ Artifacts:
     Key: CrownOfDragontooth
     Name: "Crown of Dragontooth"
     Value: 4000
-    AttackBonus: 4
-    DefenseBonus: 4
+    PowerBonus: 4
+    KnowledgeBonus: 4
     ThumbnailUrl: "/resources/Artifact_Crown_of_Dragontooth.gif"
 
   ThunderHelmet:
@@ -321,8 +339,8 @@ Artifacts:
     Key: ThunderHelmet
     Name: "Thunder Helmet"
     Value: 5000
-    AttackBonus: -2
-    DefenseBonus: 10
+    PowerBonus: -2
+    KnowledgeBonus: 10
     ThumbnailUrl: "/resources/Artifact_Thunder_Helmet.gif"
 
   HelmOfHeavenlyEnlightenment:
@@ -330,8 +348,10 @@ Artifacts:
     Key: HelmOfHeavenlyEnlightenment
     Name: "Helm of Heavenly Enlightenment"
     Value: 12000
-    AttackBonus: 12
-    DefenseBonus: 12
+    AttackBonus: 6
+    DefenseBonus: 6
+    PowerBonus: 6
+    KnowledgeBonus: 6
     ThumbnailUrl: "/resources/Artifact_Helm_of_Heavenly_Enlightenment.gif"
 
   # Feet (Power -> Attack, Knowledge -> Defense)
@@ -340,8 +360,8 @@ Artifacts:
     Key: DragonboneGreaves
     Name: "Dragonbone Greaves"
     Value: 1000
-    AttackBonus: 1
-    DefenseBonus: 1
+    PowerBonus: 1
+    KnowledgeBonus: 1
     ThumbnailUrl: "/resources/Artifact_Dragonbone_Greaves.gif"
 
   SandalsOfTheSaint:
@@ -349,8 +369,10 @@ Artifacts:
     Key: SandalsOfTheSaint
     Name: "Sandals of the Saint"
     Value: 4000
-    AttackBonus: 4
-    DefenseBonus: 4
+    AttackBonus: 2
+    DefenseBonus: 2
+    PowerBonus: 2
+    KnowledgeBonus: 2
     ThumbnailUrl: "/resources/Artifact_Sandals_of_the_Saint.gif"
 
   BootsOfSpeed:
@@ -362,13 +384,20 @@ Artifacts:
     ThumbnailUrl: "/resources/Artifact_Boots_of_Speed.gif"
 
   # Cape (Power -> Attack, Knowledge -> Defense)
+  CapeOfVelocity:
+    <<: *Cape
+    Key: CapeOfVelocity
+    Name: "Cape of Velocity"
+    Value: 5000
+    Buffs: [SpeedPlusTwo]
+    ThumbnailUrl: "/resources/Artifact_Cape_of_Velocity.gif"
   DragonWingTabard:
     <<: *Cape
     Key: DragonWingTabard
     Name: "Dragon Wing Tabard"
     Value: 2000
-    AttackBonus: 2
-    DefenseBonus: 2
+    PowerBonus: 2
+    KnowledgeBonus: 2
     ThumbnailUrl: "/resources/Artifact_Dragon_Wing_Tabard.gif"
 
   # Necklaces (Power -> Attack, Knowledge -> Defense)
@@ -377,8 +406,8 @@ Artifacts:
     Key: NecklaceOfDragonteeth
     Name: "Necklace of Dragonteeth"
     Value: 3000
-    AttackBonus: 3
-    DefenseBonus: 3
+    PowerBonus: 3
+    KnowledgeBonus: 3
     ThumbnailUrl: "/resources/Artifact_Necklace_of_Dragonteeth.gif"
 
   CelestialNecklaceOfBliss:
@@ -386,8 +415,10 @@ Artifacts:
     Key: CelestialNecklaceOfBliss
     Name: "Celestial Necklace of Bliss"
     Value: 6000
-    AttackBonus: 6
-    DefenseBonus: 6
+    AttackBonus: 3
+    DefenseBonus: 3
+    PowerBonus: 3
+    KnowledgeBonus: 3
     ThumbnailUrl: "/resources/Artifact_Celestial_Necklace_of_Bliss.gif"
 
   NecklaceOfSwiftness:
@@ -399,6 +430,14 @@ Artifacts:
     ThumbnailUrl: "/resources/Artifact_Necklace_of_Swiftness.gif"
 
   # Rings
+  EquestriansGloves:
+    <<: *Ring
+    Key: EquestriansGloves
+    Name: "Equestrian's Gloves"
+    Value: 1500
+    Buffs: [SpeedPlusOne]
+    ThumbnailUrl: "/resources/Artifact_Equestrians_Gloves.gif"
+
   QuietEyeOfTheDragon:
     <<: *Ring
     Key: QuietEyeOfTheDragon
@@ -433,6 +472,27 @@ Artifacts:
     ThumbnailUrl: "/resources/Artifact_Ring_of_Vitality.gif"
 
   # Misc
+  CharmOfMana:
+    <<: *Misc
+    Key: CharmOfMana
+    Name: "Charm of Mana"
+    Value: 250
+    ManaRestorationBonus: 1
+    ThumbnailUrl: "/resources/Artifact_Charm_of_Mana.gif"
+  TalismanOfMana:
+    <<: *Misc
+    Key: TalismanOfMana
+    Name: "Talisman of Mana"
+    Value: 500
+    ManaRestorationBonus: 2
+    ThumbnailUrl: "/resources/Artifact_Talisman_of_Mana.gif"
+  MysticOrbOfMana:
+    <<: *Misc
+    Key: MysticOrbOfMana
+    Name: "Mystic Orb of Mana"
+    Value: 750
+    ManaRestorationBonus: 3
+    ThumbnailUrl: "/resources/Artifact_Mystic_Orb_of_Mana.gif"
   VialOfLifeblood:
     <<: *Misc
     Key: VialOfLifeblood

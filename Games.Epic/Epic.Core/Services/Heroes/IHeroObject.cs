@@ -38,6 +38,8 @@ namespace Epic.Core.Services.Heroes
         public int Power { get; set; }
         public int Knowledge { get; set; }
         public int CurrentMana { get; set; }
+        
+        public int ManaRestorationBonus => this.GetEquippedArtifactsManaRestorationBonus();
 
         public Guid[] KnownMagicTypeIds { get; set; }
         public IReadOnlyList<IMagicTypeObject> KnownMagicTypes { get; set; }

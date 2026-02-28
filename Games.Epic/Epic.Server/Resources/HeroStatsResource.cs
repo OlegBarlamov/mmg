@@ -14,6 +14,7 @@ namespace Epic.Server.Resources
         public int Knowledge { get; }
         public int CurrentMana { get; }
         public int MaxMana { get; }
+        public int ManaRestorationBonus { get; }
 
         public HeroStatsResource(IHeroStats stats)
         {
@@ -25,6 +26,7 @@ namespace Epic.Server.Resources
             Knowledge = stats.Knowledge;
             CurrentMana = stats.CurrentMana;
             MaxMana = stats.GetMaxMana();
+            ManaRestorationBonus = stats.ManaRestorationBonus;
         }
     }
 }

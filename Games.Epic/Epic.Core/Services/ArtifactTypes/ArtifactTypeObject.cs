@@ -16,9 +16,13 @@ namespace Epic.Core.Services.ArtifactTypes
         public string ThumbnailUrl { get; set; }
         public ArtifactSlot[] Slots { get; set; } = Array.Empty<ArtifactSlot>();
         public Guid[] BuffTypeIds { get; set; } = Array.Empty<Guid>();
+        public Guid[] GrantMagicTypeIds { get; set; } = Array.Empty<Guid>();
         public IReadOnlyList<IBuffTypeObject> BuffTypes { get; set; } = Array.Empty<IBuffTypeObject>();
         public int AttackBonus { get; set; }
         public int DefenseBonus { get; set; }
+        public int KnowledgeBonus { get; set; }
+        public int PowerBonus { get; set; }
+        public int ManaRestorationBonus { get; set; }
 
         private MutableArtifactTypeObject() { }
 
@@ -33,9 +37,13 @@ namespace Epic.Core.Services.ArtifactTypes
                 ThumbnailUrl = entity.ThumbnailUrl,
                 Slots = entity.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>(),
                 BuffTypeIds = entity.BuffTypeIds?.ToArray() ?? Array.Empty<Guid>(),
+                GrantMagicTypeIds = entity.GrantMagicTypeIds?.ToArray() ?? Array.Empty<Guid>(),
                 BuffTypes = Array.Empty<IBuffTypeObject>(),
                 AttackBonus = entity.AttackBonus,
                 DefenseBonus = entity.DefenseBonus,
+                KnowledgeBonus = entity.KnowledgeBonus,
+                PowerBonus = entity.PowerBonus,
+                ManaRestorationBonus = entity.ManaRestorationBonus,
             };
         }
 

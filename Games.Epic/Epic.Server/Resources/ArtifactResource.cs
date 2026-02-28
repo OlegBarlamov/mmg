@@ -15,6 +15,9 @@ namespace Epic.Server.Resources
         public ArtifactSlot[] Slots { get; }
         public int AttackBonus { get; }
         public int DefenseBonus { get; }
+        public int KnowledgeBonus { get; }
+        public int PowerBonus { get; }
+        public int ManaRestorationBonus { get; }
         public int[] EquippedSlotsIndexes { get; }
         public string[] BuffNames { get; }
 
@@ -28,6 +31,9 @@ namespace Epic.Server.Resources
             Slots = artifact.ArtifactType?.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>();
             AttackBonus = artifact.ArtifactType?.AttackBonus ?? 0;
             DefenseBonus = artifact.ArtifactType?.DefenseBonus ?? 0;
+            KnowledgeBonus = artifact.ArtifactType?.KnowledgeBonus ?? 0;
+            PowerBonus = artifact.ArtifactType?.PowerBonus ?? 0;
+            ManaRestorationBonus = artifact.ArtifactType?.ManaRestorationBonus ?? 0;
             EquippedSlotsIndexes = artifact.EquippedSlotsIndexes?.ToArray() ?? Array.Empty<int>();
             BuffNames = artifact.ArtifactType?.BuffTypes?
                 .Where(b => b != null && !string.IsNullOrEmpty(b.Name))

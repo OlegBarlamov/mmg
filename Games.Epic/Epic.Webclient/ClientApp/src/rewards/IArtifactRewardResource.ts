@@ -8,6 +8,9 @@ export interface IArtifactRewardResource {
     slots: ArtifactSlot[]
     attackBonus: number
     defenseBonus: number
+    knowledgeBonus: number
+    powerBonus: number
+    manaRestorationBonus: number
     amount: number
 }
 

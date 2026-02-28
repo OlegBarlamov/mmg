@@ -42,7 +42,7 @@ namespace Epic.Server.Controllers
             var heroStats = hero.GetCumulativeHeroStats();
             var variables = MagicExpressionsVariables.FromHero(heroStats);
 
-            var magicTypeIds = hero.KnownMagicTypeIds ?? Array.Empty<Guid>();
+            var magicTypeIds = hero.GetEffectiveKnownMagicTypeIds();
             var result = new MagicResource[magicTypeIds.Length];
             for (var i = 0; i < magicTypeIds.Length; i++)
             {

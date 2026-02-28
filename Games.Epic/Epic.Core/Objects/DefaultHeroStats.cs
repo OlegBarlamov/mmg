@@ -13,5 +13,6 @@ namespace Epic.Core.Objects
         public int Power => 0;
         public int Knowledge => 0;
         public int CurrentMana => 0;
+        public int ManaRestorationBonus => 0;
     }
 }

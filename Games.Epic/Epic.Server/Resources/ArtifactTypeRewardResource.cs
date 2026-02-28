@@ -14,6 +14,9 @@ namespace Epic.Server.Resources
         public ArtifactSlot[] Slots { get; }
         public int AttackBonus { get; }
         public int DefenseBonus { get; }
+        public int KnowledgeBonus { get; }
+        public int PowerBonus { get; }
+        public int ManaRestorationBonus { get; }
         public int Amount { get; }
 
         public ArtifactTypeRewardResource(IArtifactTypeObject artifactType, int amount)
@@ -25,6 +28,9 @@ namespace Epic.Server.Resources
             Slots = artifactType.Slots?.ToArray() ?? Array.Empty<ArtifactSlot>();
             AttackBonus = artifactType.AttackBonus;
             DefenseBonus = artifactType.DefenseBonus;
+            KnowledgeBonus = artifactType.KnowledgeBonus;
+            PowerBonus = artifactType.PowerBonus;
+            ManaRestorationBonus = artifactType.ManaRestorationBonus;
             Amount = amount;
         }
     }
