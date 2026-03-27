@@ -102,10 +102,7 @@ namespace Atom.Client.Scenes
         {
             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
-                if (!(obj is WorldMapCellContent))
-                {
-                    RemoveView(obj);
-                }
+                RemoveView(obj);
             }, CancellationToken.None));
         }
 
@@ -113,10 +110,7 @@ namespace Atom.Client.Scenes
         {
             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
-                if (!(obj is WorldMapCellContent))
-                {
-                    AddView(obj);
-                }
+                AddView(obj);
             }, CancellationToken.None));
         }
 
@@ -220,8 +214,8 @@ namespace Atom.Client.Scenes
             var vertexBuffer2 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
             var indexBuffer2 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(5000);
             
-            var vertexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 100);
-            var indexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(200);
+            var vertexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
+            var indexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(3000);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)

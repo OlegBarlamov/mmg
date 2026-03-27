@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -160,7 +160,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 			CheckInitialized();
 			if (view == null) throw new ArgumentNullException(nameof(view));
 			
-            if (Views.Find(mapping => mapping.View == view) == null)
+            if (Views.Find(mapping => mapping.View == view) != null)
                 throw new ScenesException(Strings.Exceptions.Scenes.ViewAlreadyExists, view, this);
 
             var scheme = MvcStrategy.ResolveByView(view);

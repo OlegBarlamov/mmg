@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>Console.GameFrameworkAdapter</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MonoGame.Framework.Portable" Version="3.7.1.189" />
+      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
     </ItemGroup>
 
     <ItemGroup>

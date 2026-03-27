@@ -21,7 +21,18 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools.Internal
 		    Rectangle? sourceRectangle = null, Vector2? origin = null, float rotation = 0, Vector2? scale = null,
 		    Color? color = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0)
 	    {
-		    SpriteBatch.Draw(texture, position, destinationRectangle, sourceRectangle, origin, rotation, scale, color, effects, layerDepth);
+		    var drawColor = color ?? Color.White;
+		    var drawOrigin = origin ?? Vector2.Zero;
+		    var drawScale = scale ?? Vector2.One;
+
+		    if (destinationRectangle.HasValue)
+		    {
+			    SpriteBatch.Draw(texture, destinationRectangle.Value, sourceRectangle, drawColor, rotation, drawOrigin, effects, layerDepth);
+		    }
+		    else
+		    {
+			    SpriteBatch.Draw(texture, position ?? Vector2.Zero, sourceRectangle, drawColor, rotation, drawOrigin, drawScale, effects, layerDepth);
+		    }
 	    }
 
 	    public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin,

@@ -7,7 +7,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Geometries
 {
     public class PlaneGeometry : StaticMeshGeometry<VertexPositionNormalTexture>
     {
-        public PlaneGeometry() : base(VertexPositionColorTexture.VertexDeclaration, PrimitiveType.TriangleList, CreateVertices(), new short[] {0, 1, 2, 0, 2, 3}, 2)
+        public PlaneGeometry() : base(VertexPositionNormalTexture.VertexDeclaration, PrimitiveType.TriangleList, CreateVertices(), new short[] {0, 1, 2, 0, 2, 3}, 2)
         {
         }
 

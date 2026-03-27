@@ -1,44 +1,59 @@
 using System;
 using Atom.Client.Resources;
-using FrameworkSDK.MonoGame.Basic;
-using FrameworkSDK.MonoGame.Graphics;
-using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.SceneComponents.Geometries;
-using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions;
-using X4World;
 using X4World.Objects;
 
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public sealed class StarAsPointViewComponent : SingleMeshComponent<StarAsPoint>
+    public sealed class StarAsPointViewComponent : SingleMeshComponent<StarAsPoint, StarAsPointController>
     {
-        public MainResourcePackage ResourcePackage { get; }
-        
-        public StarAsPointViewComponent([NotNull] StarAsPoint model, [NotNull] MainResourcePackage resourcePackage,
-            [NotNull] ICamera3DProvider camera3DProvider, IDisplayService displayService)
-            : base(new FixedSimpleMesh(StaticGeometries.TetrahedronGeometry), "Render_Textured")
+        public StarAsPointViewComponent(
+            [NotNull] StarAsPoint model,
+            [NotNull] MainResourcePackage resourcePackage)
+            : base(new FixedSimpleMesh(StaticGeometries.Plane), "Render_Textured_No_Lights")
         {
-            ResourcePackage = resourcePackage ?? throw new ArgumentNullException(nameof(resourcePackage));
-            
+            if (resourcePackage == null) throw new ArgumentNullException(nameof(resourcePackage));
+
             SetDataModel(model);
-            
-            Mesh.Material = new TextureMaterial(ResourcePackage.White);
+
+            Mesh.Material = new TextureMaterial(resourcePackage.StarTexture);
             Mesh.SetPosition(DataModel.GetWorldPosition());
-            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 10);
+            Mesh.Scale = new Vector3(DataModel.AggregatedData.Power * 40);
+            Mesh.Rotation = DataModel.AggregatedData.Rotation;
+        }
+
+        protected override void OnAttached(SceneBase scene)
+        {
+            base.OnAttached(scene);
+
+            Mesh.Rotation = DataModel.AggregatedData.Rotation;
+            DataModel.AggregatedData.RotationChanged += OnRotationChanged;
+        }
+
+        protected override void OnDetached(SceneBase scene)
+        {
+            base.OnDetached(scene);
+
+            DataModel.AggregatedData.RotationChanged -= OnRotationChanged;
+        }
+
+        private void OnRotationChanged()
+        {
+            Mesh.Rotation = DataModel.AggregatedData.Rotation;
         }
 
         protected override BoundingBox? ConstructBoundingBox()
         {
             var size = Mesh.Scale;
-            return new BoundingBox(DataModel.GetWorldPosition() -  size / 2, DataModel.GetWorldPosition() + size / 2);
+            return new BoundingBox(DataModel.GetWorldPosition() - size / 2, DataModel.GetWorldPosition() + size / 2);
         }
     }
 }

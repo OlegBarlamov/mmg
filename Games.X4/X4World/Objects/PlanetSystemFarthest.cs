@@ -17,6 +17,20 @@ namespace X4World.Objects
         public IReadOnlyCollection<Vector3> PointsPositions { get; }
         public StarAsPointAggregatedData StarData { get; }
 
+        private Matrix _rotation = Matrix.Identity;
+
+        public Matrix Rotation
+        {
+            get => _rotation;
+            set
+            {
+                _rotation = value;
+                RotationChanged?.Invoke();
+            }
+        }
+
+        public event Action RotationChanged;
+
         public PlanetSystemFarthestAggregatedData([NotNull] IReadOnlyCollection<Vector3> pointsPositions,
             [NotNull] StarAsPointAggregatedData starData)
         {

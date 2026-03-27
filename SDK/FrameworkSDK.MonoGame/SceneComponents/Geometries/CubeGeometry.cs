@@ -7,7 +7,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Geometries
 {
     public class CubeGeometry : StaticMeshGeometry<VertexPositionNormalTexture>
     {
-        public CubeGeometry() : base(VertexPositionColorTexture.VertexDeclaration, PrimitiveType.TriangleList, CreateVertices(), CreateIndices(), 12)
+        public CubeGeometry() : base(VertexPositionNormalTexture.VertexDeclaration, PrimitiveType.TriangleList, CreateVertices(), CreateIndices(), 12)
         {
         }
 

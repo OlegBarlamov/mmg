@@ -4,6 +4,8 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/oleg/.nuget/packages/netstandard.library/2.0.3/build/netstandard2.0/ref/netstandard.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/usr/local/share/dotnet/sdk/10.0.101/MSBuild.dll</s:String>
+	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MsbuildVersion/@EntryValue">1179648</s:Int64>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=6433e232_002D4a48_002D420d_002Da2c1_002D0befda8a5ad2_0023ConsoleWindow/@EntryIndexedValue">True</s:Boolean>
 	
 	

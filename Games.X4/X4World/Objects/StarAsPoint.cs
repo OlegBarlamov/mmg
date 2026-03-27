@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FrameworkSDK.Common;
 using Microsoft.Xna.Framework;
@@ -10,6 +11,20 @@ namespace X4World.Objects
     {
         public float Power { get; }
         public Color Color { get; }
+
+        private Matrix _rotation = Matrix.Identity;
+
+        public Matrix Rotation
+        {
+            get => _rotation;
+            set
+            {
+                _rotation = value;
+                RotationChanged?.Invoke();
+            }
+        }
+
+        public event Action RotationChanged;
 
         public StarAsPointAggregatedData(float power)
         {
