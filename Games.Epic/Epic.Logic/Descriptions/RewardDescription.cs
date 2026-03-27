@@ -446,14 +446,21 @@ namespace Epic.Logic.Descriptions
                     case DescriptionVisibility.TypeOnly:
                     case DescriptionVisibility.MaskedSize:
                     case DescriptionVisibility.ApproximateSize:
-                    case DescriptionVisibility.Full:
-                        return new[] { new RewardDescription
+                        return reward.Magics.Select(x => new RewardDescription
                         {
-                            Name = reward.Title ?? "Magic",
+                            Name = "Magic",
                             Amount = string.Empty,
                             IconUrl = PredefinedStaticResources.MagicScrollIconUrl,
                             Tooltip = reward.Description ?? "Learn a new spell",
-                        } };
+                        }).ToArray();
+                    case DescriptionVisibility.Full:
+                        return reward.Magics.Select(x => new RewardDescription
+                        {
+                            Name = x.Name,
+                            Amount = string.Empty,
+                            IconUrl = x.ThumbnailUrl,
+                            Tooltip = reward.Description ?? "Learn a new spell",
+                        }).ToArray();
                     default:
                         throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
                 }
