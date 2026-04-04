@@ -1,0 +1,42 @@
+FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:8.0
+
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y wine wine32:i386 wine64 wget cabextract xvfb unzip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN ln -sf /usr/lib/wine/wine64 /usr/bin/wine64
+
+RUN wget -q https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks -O /usr/local/bin/winetricks && \
+    chmod +x /usr/local/bin/winetricks
+
+ENV WINEARCH=win64
+ENV WINEPREFIX=/root/.wine
+ENV DISPLAY=:99
+
+RUN Xvfb :99 -screen 0 1024x768x24 & \
+    sleep 2 && \
+    wineboot --init && \
+    winetricks -q d3dcompiler_47 && \
+    wineserver -k || true
+
+# Install .NET 8 Windows runtime inside Wine prefix
+RUN wget "https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.0/dotnet-runtime-8.0.0-win-x64.zip" -O /tmp/dotnet-win.zip && \
+    mkdir -p /root/.wine/drive_c/dotnet && \
+    unzip -q /tmp/dotnet-win.zip -d /root/.wine/drive_c/dotnet && \
+    rm /tmp/dotnet-win.zip
+
+# Add dotnet to Wine's PATH via registry
+RUN Xvfb :99 -screen 0 1024x768x24 & \
+    sleep 2 && \
+    wine64 reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" /v PATH /t REG_EXPAND_SZ /d "C:\\windows\\system32;C:\\windows;C:\\dotnet" /f 2>&1 || true && \
+    wineserver -k || true
+
+RUN dotnet tool install -g dotnet-mgfxc --version 3.8.2.1105
+
+ENV PATH="${PATH}:/root/.dotnet/tools"
+ENV MGFXC_WINE_PATH=/root/.wine
+
+WORKDIR /content
+ENTRYPOINT ["bash"]

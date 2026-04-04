@@ -53,6 +53,7 @@ namespace Atom.Client.Scenes
         private BasicEffect _texturesShader;
         private BasicEffect _texturesShaderNoLights;
         private BasicEffect _coloredShader;
+        private Graphics.StarEffect _starShader;
 
         public MainScene(
             MainSceneDataModel model,
@@ -187,6 +188,7 @@ namespace Atom.Client.Scenes
             _texturesShader?.Dispose();
             _coloredShader?.Dispose();
             _texturesShaderNoLights?.Dispose();
+            _starShader?.Dispose();
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
@@ -208,6 +210,8 @@ namespace Atom.Client.Scenes
                 VertexColorEnabled = false, TextureEnabled = true
             };
 
+            _starShader = DataModel.MainResourcePackage.StarShader;
+
             var vertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
             var indexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(200);
             
@@ -216,6 +220,9 @@ namespace Atom.Client.Scenes
             
             var vertexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
             var indexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(3000);
+
+            var starVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
+            var starIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(3000);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
@@ -226,6 +233,10 @@ namespace Atom.Client.Scenes
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3,  "Render_Textured_No_Lights")
                 .ApplyActiveCameraToShader(_texturesShader)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")
+                .SetRenderingConfigs(BlendState.Additive, DepthStencilState.DepthRead, RasterizerStates.Default)
+                .ApplyActiveCameraToShader(_starShader)
+                .RenderGrouped<VertexPositionNormalTexture>(_starShader, starVertexBuffer, starIndexBuffer, "Render_Stars")
+                .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()
                 .DrawComponents("debug")

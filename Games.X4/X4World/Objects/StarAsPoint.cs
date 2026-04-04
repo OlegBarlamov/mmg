@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using FrameworkSDK.Common;
 using Microsoft.Xna.Framework;
@@ -12,34 +11,34 @@ namespace X4World.Objects
         public float Power { get; }
         public Color Color { get; }
 
-        private Matrix _rotation = Matrix.Identity;
-
-        public Matrix Rotation
-        {
-            get => _rotation;
-            set
-            {
-                _rotation = value;
-                RotationChanged?.Invoke();
-            }
-        }
-
-        public event Action RotationChanged;
-
-        public StarAsPointAggregatedData(float power)
+        public StarAsPointAggregatedData(float power, Color color)
         {
             Power = power;
+            Color = color;
+        }
+
+        public static Color ColorFromTemperature(float temperature)
+        {
+            var t = MathHelper.Clamp((temperature - 1000f) / 9000f, 0f, 1f);
+            if (t < 0.3f)
+            {
+                var s = t / 0.3f;
+                return new Color(1.0f, 0.4f + 0.4f * s, 0.2f * s);
+            }
+            if (t < 0.6f)
+            {
+                var s = (t - 0.3f) / 0.3f;
+                return new Color(1.0f, 0.8f + 0.2f * s, 0.2f + 0.8f * s);
+            }
+            var u = (t - 0.6f) / 0.4f;
+            return new Color(0.7f + 0.3f * (1f - u), 0.8f + 0.2f * (1f - u), 1.0f);
         }
     }
     
     public class StarAsPoint : IWrappedDetails 
     {
-        public Vector3 Position { get; set; }
-        public void SetPosition(Vector3 position)
-        {
-            Position = position;
-        }
-
+        public Vector3 Position { get; private set; }
+        public string Name { get; }
         public IWrappedDetails Parent { get; }
 
         object IWrappedDetails.AggregatedData => AggregatedData;
@@ -50,7 +49,6 @@ namespace X4World.Objects
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
         
         public StarAsPointAggregatedData AggregatedData { get; }
-        
 
         public StarAsPoint(IWrappedDetails parent, Vector3 localPosition, StarAsPointAggregatedData aggregatedData)
         {
@@ -60,7 +58,12 @@ namespace X4World.Objects
             Name = $"{Parent.Name}_s{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 100, 10);
         }
-        
+
+        public void SetPosition(Vector3 position)
+        {
+            Position = position;
+        }
+
         public Vector3 GetWorldPosition()
         {
             return Parent.GetWorldPosition() + Position;
@@ -74,7 +77,5 @@ namespace X4World.Objects
                 Details.Add(wrappedDetail);
             }
         }
-
-        public string Name { get; }
     }
 }

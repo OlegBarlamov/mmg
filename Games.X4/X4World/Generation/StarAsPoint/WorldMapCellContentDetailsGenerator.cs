@@ -14,7 +14,8 @@ namespace X4World.Generation
 
             foreach (var dataGalaxiesPoint in aggregatedData.GalaxiesPoints)
             {
-                var itemAggregatedData = new StarAsPointAggregatedData(1);
+                var color = StarAsPointAggregatedData.ColorFromTemperature(dataGalaxiesPoint.Temperature);
+                var itemAggregatedData = new StarAsPointAggregatedData(1, color);
                 var item = new StarAsPoint(target, dataGalaxiesPoint.LocalPositionFromCenter, itemAggregatedData);
                 objects.Add(item);
             }

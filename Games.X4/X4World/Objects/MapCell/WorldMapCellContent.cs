@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -9,17 +10,12 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class WorldMapCellContent : IWrappedDetails
+    public class WorldMapCellContent : ViewModel3D, IWrappedDetails
     {
         public IWrappedDetails Parent { get; } = null;
-        public Vector3 Position
-        {
-            get => _position;
-        }
 
-        public void SetPosition(Vector3 position)
+        public override void SetPosition(Vector3 position)
         {
-            
         }
 
         object IWrappedDetails.AggregatedData => WorldMapCellAggregatedData;
@@ -33,14 +29,12 @@ namespace X4World.Objects
         
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
-        
-        private readonly Vector3 _position;
 
         public WorldMapCellContent(Point3D point, Vector3 position, float size, [NotNull] WorldMapCellAggregatedData worldMapCellAggregatedData)
         {
             MapPoint = point;
             Name = $"{point.X},{point.Y},{point.Z}";
-            _position = position;
+            Position = position;
             Size = new Vector3(size);
             WorldMapCellAggregatedData = worldMapCellAggregatedData ?? throw new ArgumentNullException(nameof(worldMapCellAggregatedData));
             

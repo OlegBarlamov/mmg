@@ -93,7 +93,7 @@ namespace Atom.Client
             ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Error);
             ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Critical);
             ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Warning);
-            //((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Information);
+            ((InGameConsoleController)ConsoleController).AddFilter(ConsoleLogLevel.Information);
             
             _loadingScene = (LoadingScene) ScenesResolver.ResolveScene(LoadingSceneResources);
             _currentScene = _loadingScene;

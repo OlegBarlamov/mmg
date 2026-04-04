@@ -41,4 +41,8 @@
     </MonoGameContentReference>
   </ItemGroup>
 
+  <Target Name="CompileShaders" BeforeTargets="RunContentBuilder">
+    <Exec Command="bash &quot;$(ProjectDir)..\Atom.Client\__Content\build-shaders.sh&quot;" />
+  </Target>
+
 </Project>
