@@ -1,13 +1,12 @@
-using Atom.Client.ViewModels;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
 using JetBrains.Annotations;
 
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public sealed class StarAsPointViewComponent : BillboardPrimitive<StarViewModel3D, StarAsPointController>
+    public sealed class GalaxyAsPointViewComponent : BillboardPrimitive<GalaxyAsPointViewModel3D, GalaxyAsPointController>
     {
-        public StarAsPointViewComponent([NotNull] StarViewModel3D viewModel)
+        public GalaxyAsPointViewComponent([NotNull] GalaxyAsPointViewModel3D viewModel)
             : base(viewModel, viewModel.GraphicsPassName)
         {
         }

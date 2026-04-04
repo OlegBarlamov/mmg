@@ -10,13 +10,13 @@ namespace X4World.Generation
         public void Generate(WorldMapCellContent target)
         {
             var aggregatedData = target.WorldMapCellAggregatedData;
-            var objects = new List<StarAsPoint>();
+            var objects = new List<GalaxyAsPoint>();
 
             foreach (var dataGalaxiesPoint in aggregatedData.GalaxiesPoints)
             {
-                var color = StarAsPointAggregatedData.ColorFromTemperature(dataGalaxiesPoint.Temperature);
-                var itemAggregatedData = new StarAsPointAggregatedData(1, color);
-                var item = new StarAsPoint(target, dataGalaxiesPoint.LocalPositionFromCenter, itemAggregatedData);
+                var color = GalaxyAsPointAggregatedData.ColorFromTemperature(dataGalaxiesPoint.Temperature);
+                var itemAggregatedData = new GalaxyAsPointAggregatedData(1, color);
+                var item = new GalaxyAsPoint(target, dataGalaxiesPoint.LocalPositionFromCenter, itemAggregatedData);
                 objects.Add(item);
             }
 

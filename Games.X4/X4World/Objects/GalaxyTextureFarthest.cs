@@ -8,20 +8,20 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class PlanetSystemFarthestAggregatedData
+    public class GalaxyTextureFarthestAggregatedData
     {
         public IReadOnlyCollection<Vector3> PointsPositions { get; }
-        public StarAsPointAggregatedData StarData { get; }
+        public GalaxyAsPointAggregatedData GalaxyData { get; }
 
-        public PlanetSystemFarthestAggregatedData([NotNull] IReadOnlyCollection<Vector3> pointsPositions,
-            [NotNull] StarAsPointAggregatedData starData)
+        public GalaxyTextureFarthestAggregatedData([NotNull] IReadOnlyCollection<Vector3> pointsPositions,
+            [NotNull] GalaxyAsPointAggregatedData galaxyData)
         {
             PointsPositions = pointsPositions ?? throw new ArgumentNullException(nameof(pointsPositions));
-            StarData = starData ?? throw new ArgumentNullException(nameof(starData));
+            GalaxyData = galaxyData ?? throw new ArgumentNullException(nameof(galaxyData));
         }
     }
     
-    public class PlanetSystemFarthest : IWrappedDetails 
+    public class GalaxyTextureFarthest : IWrappedDetails 
     {
         public Vector3 Position { get; private set; }
         public string Name { get; }
@@ -34,14 +34,14 @@ namespace X4World.Objects
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
         
-        public PlanetSystemFarthestAggregatedData AggregatedData { get; }
+        public GalaxyTextureFarthestAggregatedData AggregatedData { get; }
 
-        public PlanetSystemFarthest(IWrappedDetails parent, Vector3 localPosition, PlanetSystemFarthestAggregatedData aggregatedData)
+        public GalaxyTextureFarthest(IWrappedDetails parent, Vector3 localPosition, GalaxyTextureFarthestAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            Name = $"{Parent.Name}_ps{NamesGenerator.Hash(HashType.Number)}";
+            Name = $"{Parent.Name}_gt{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 1, 10);
         }
 

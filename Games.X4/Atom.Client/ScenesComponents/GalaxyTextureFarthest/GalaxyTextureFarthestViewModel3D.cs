@@ -4,14 +4,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using X4World.Objects;
 
-namespace Atom.Client.ViewModels
+namespace Atom.Client.Components
 {
-    public class PlanetSystemViewModel3D : ViewModel3D
+    public class GalaxyTextureFarthestViewModel3D : ViewModel3D
     {
-        public PlanetSystemViewModel3D(PlanetSystemFarthest model, Texture2D galaxyTexture)
+        public GalaxyTextureFarthestViewModel3D(GalaxyTextureFarthest model, Texture2D galaxyTexture)
         {
             Position = model.GetWorldPosition();
-            Scale = new Vector3(model.AggregatedData.StarData.Power * 50f);
+            Scale = new Vector3(model.AggregatedData.GalaxyData.Power * 50f);
             MeshMaterial = new TextureMaterial(galaxyTexture);
             GraphicsPassName = "Render_Textured_No_Lights";
         }

@@ -6,12 +6,12 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class StarAsPointAggregatedData
+    public class GalaxyAsPointAggregatedData
     {
         public float Power { get; }
         public Color Color { get; }
 
-        public StarAsPointAggregatedData(float power, Color color)
+        public GalaxyAsPointAggregatedData(float power, Color color)
         {
             Power = power;
             Color = color;
@@ -35,7 +35,7 @@ namespace X4World.Objects
         }
     }
     
-    public class StarAsPoint : IWrappedDetails 
+    public class GalaxyAsPoint : IWrappedDetails 
     {
         public Vector3 Position { get; private set; }
         public string Name { get; }
@@ -48,14 +48,14 @@ namespace X4World.Objects
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
         
-        public StarAsPointAggregatedData AggregatedData { get; }
+        public GalaxyAsPointAggregatedData AggregatedData { get; }
 
-        public StarAsPoint(IWrappedDetails parent, Vector3 localPosition, StarAsPointAggregatedData aggregatedData)
+        public GalaxyAsPoint(IWrappedDetails parent, Vector3 localPosition, GalaxyAsPointAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            Name = $"{Parent.Name}_s{NamesGenerator.Hash(HashType.Number)}";
+            Name = $"{Parent.Name}_g{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 100, 10);
         }
 

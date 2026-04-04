@@ -8,16 +8,16 @@ using X4World.Objects;
 
 namespace X4World.Generation
 {
-    public class StarAsPointDetailsGenerator : IDetailsGenerator<StarAsPoint>
+    public class GalaxyAsPointDetailsGenerator : IDetailsGenerator<GalaxyAsPoint>
     {
         public IRandomService RandomService { get; }
 
-        public StarAsPointDetailsGenerator([NotNull] IRandomService randomService)
+        public GalaxyAsPointDetailsGenerator([NotNull] IRandomService randomService)
         {
             RandomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
         }
         
-        public void Generate(StarAsPoint target)
+        public void Generate(GalaxyAsPoint target)
         {
             var planetsCount = RandomService.NextInteger(1, 30);
 
@@ -28,15 +28,15 @@ namespace X4World.Generation
                 planetsPositions.Add(position);
             };
             
-            var itemAggregatedData = new PlanetSystemFarthestAggregatedData(planetsPositions, target.AggregatedData);
-            var item = new PlanetSystemFarthest(target, Vector3.Zero, itemAggregatedData);
+            var itemAggregatedData = new GalaxyTextureFarthestAggregatedData(planetsPositions, target.AggregatedData);
+            var item = new GalaxyTextureFarthest(target, Vector3.Zero, itemAggregatedData);
 
             target.SetGeneratedData(new []{item});
         }
         
         void IDetailsGenerator.Generate(IGeneratorTarget target)
         {
-            Generate((StarAsPoint) target);
+            Generate((GalaxyAsPoint) target);
         }
     }
 }

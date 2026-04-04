@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Atom.Client.Controllers;
 using Atom.Client.Services;
-using Atom.Client.ViewModels;
+using Atom.Client.Components;
 using Console.Core;
 using Console.Core.CommandExecution;
 using Console.Core.Commands;
@@ -141,10 +141,10 @@ namespace Atom.Client.Scenes
         {
             switch (obj)
             {
-                case StarAsPoint star:
-                    return new StarViewModel3D(star);
-                case PlanetSystemFarthest ps:
-                    return new PlanetSystemViewModel3D(ps, DataModel.MainResourcePackage.GalaxyTexture);
+                case GalaxyAsPoint galaxy:
+                    return new GalaxyAsPointViewModel3D(galaxy);
+                case GalaxyTextureFarthest gt:
+                    return new GalaxyTextureFarthestViewModel3D(gt, DataModel.MainResourcePackage.GalaxyTexture);
                 default:
                     return null;
             }
@@ -165,10 +165,10 @@ namespace Atom.Client.Scenes
 
         protected override void Initialize()
         {
-            AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
-            {
-                GraphicsPassName = "Render_Grouped",
-            }));
+            // AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
+            // {
+            //     GraphicsPassName = "Render_Grouped",
+            // }));
 
             AddView(new DebugInfoComponentData
             {
