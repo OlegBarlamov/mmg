@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Atom.Client.Controllers;
 using Atom.Client.Services;
+using Atom.Client.ViewModels;
 using Console.Core;
 using Console.Core.CommandExecution;
 using Console.Core.Commands;
@@ -10,6 +12,7 @@ using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Core;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.GraphicsPipeline;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
 using FrameworkSDK.MonoGame.Graphics.RenderingTools;
 using FrameworkSDK.MonoGame.InputManagement;
 using FrameworkSDK.MonoGame.Mvc;
@@ -49,6 +52,7 @@ namespace Atom.Client.Scenes
         private readonly FirstPersonCameraController _cameraController;
         private readonly IGlobalWorldMapController _globalWorldMapController;
         private readonly IWrappedObjectsController _wrappedObjectsController;
+        private readonly Dictionary<IWrappedDetails, ViewModel3D> _viewModels = new Dictionary<IWrappedDetails, ViewModel3D>();
 
         private BasicEffect _texturesShader;
         private BasicEffect _texturesShaderNoLights;
@@ -103,7 +107,16 @@ namespace Atom.Client.Scenes
         {
             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
-                RemoveView(obj);
+                if (_viewModels.TryGetValue(obj, out var viewModel))
+                {
+                    RemoveView(viewModel);
+                    viewModel.Dispose();
+                    _viewModels.Remove(obj);
+                }
+                else
+                {
+                    RemoveView(obj);
+                }
             }, CancellationToken.None));
         }
 
@@ -111,8 +124,30 @@ namespace Atom.Client.Scenes
         {
             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
-                AddView(obj);
+                var viewModel = CreateViewModel(obj);
+                if (viewModel != null)
+                {
+                    _viewModels[obj] = viewModel;
+                    AddView(viewModel);
+                }
+                else
+                {
+                    AddView(obj);
+                }
             }, CancellationToken.None));
+        }
+
+        private ViewModel3D CreateViewModel(IWrappedDetails obj)
+        {
+            switch (obj)
+            {
+                case StarAsPoint star:
+                    return new StarViewModel3D(star);
+                case PlanetSystemFarthest ps:
+                    return new PlanetSystemViewModel3D(ps, DataModel.MainResourcePackage.GalaxyTexture);
+                default:
+                    return null;
+            }
         }
 
         private void GlobalWorldMapControllerOnCellHidden(WorldMapCellContent cell)

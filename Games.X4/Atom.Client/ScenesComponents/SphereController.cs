@@ -1,33 +1,18 @@
+using Atom.Client.ViewModels;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
-using FrameworkSDK.MonoGame.Mvc;
+using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
 using JetBrains.Annotations;
-using Microsoft.Xna.Framework;
-using X4World.Objects;
 
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public class SphereController : Controller<PlanetSystemFarthest>
+    public class SphereController : BillboardController<PlanetSystemViewModel3D>
     {
-        private readonly ICamera3DProvider _camera3DProvider;
-
         public SphereController(
-            [NotNull] PlanetSystemFarthest model,
+            [NotNull] PlanetSystemViewModel3D viewModel,
             [NotNull] ICamera3DProvider camera3DProvider)
+            : base(viewModel, camera3DProvider)
         {
-            _camera3DProvider = camera3DProvider;
-            SetModel(model);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-
-            if (((IController)this).View is SphereViewComponent view)
-            {
-                var cameraPos = _camera3DProvider.GetActiveCamera().GetPosition();
-                view.UpdateBillboardRotation(cameraPos);
-            }
         }
     }
 }

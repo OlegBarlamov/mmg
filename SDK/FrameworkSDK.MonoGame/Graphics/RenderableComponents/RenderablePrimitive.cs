@@ -40,6 +40,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents
             Mesh.CopyWorldParameters(DataModel);
             CurrentBoundingBox = ConstructBoundingBox();
         }
+
     }
 
     public abstract class RenderablePrimitive<TData> : RenderablePrimitive<TData, EmptyController>

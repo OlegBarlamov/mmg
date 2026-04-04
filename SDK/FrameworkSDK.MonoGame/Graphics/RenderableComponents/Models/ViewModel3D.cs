@@ -45,7 +45,7 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models
         private Vector3 _scale = Vector3.One;
         private Matrix _rotation = Matrix.Identity;
         
-        public void Dispose()
+        public virtual void Dispose()
         {
             PlacementChanged = null;
         }
