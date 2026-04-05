@@ -1,4 +1,4 @@
-namespace X4World.Generation
+namespace X4World.Maps
 {
     public interface IDetailsGenerator
     {

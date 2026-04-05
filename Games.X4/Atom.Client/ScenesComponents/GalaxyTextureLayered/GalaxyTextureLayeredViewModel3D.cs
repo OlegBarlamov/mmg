@@ -5,15 +5,15 @@ using X4World.Objects;
 
 namespace Atom.Client.Components
 {
-    public class GalaxyTextureFarthestViewModel3D : ViewModel3D
+    public class GalaxyTextureLayeredViewModel3D : ViewModel3D
     {
-        public GalaxyTextureFarthestAggregatedData AggregatedData { get; }
+        public GalaxyTextureLayeredAggregatedData AggregatedData { get; }
 
-        public GalaxyTextureFarthestViewModel3D(GalaxyTextureFarthest model)
+        public GalaxyTextureLayeredViewModel3D(GalaxyTextureLayered model)
         {
             AggregatedData = model.AggregatedData;
             Position = model.GetWorldPosition();
-            Scale = new Vector3(model.AggregatedData.DiskRadius);
+            Scale = new Vector3(model.AggregatedData.DiskRadius * 2f);
             Rotation = Matrix.CreateRotationX(model.AggregatedData.Inclination)
                      * Matrix.CreateRotationY(model.AggregatedData.SpinAngle);
             GraphicsPassName = GraphicsPasses.TexturedNoLights;
@@ -21,7 +21,8 @@ namespace Atom.Client.Components
 
         public override void Dispose()
         {
-            AggregatedData.TextureData.Dispose();
+            foreach (var textureData in AggregatedData.LayerTextures)
+                textureData.Dispose();
             base.Dispose();
         }
     }

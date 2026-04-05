@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using NetExtensions.Collections;
-using X4World.Objects;
+using X4World.Maps;
 
-namespace X4World.Generation
+namespace X4World.Objects
 {
     public class WorldMapCellContentDetailsGenerator : IDetailsGenerator<WorldMapCellContent>
     {

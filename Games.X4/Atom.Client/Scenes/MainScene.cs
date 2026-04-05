@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Atom.Client.Controllers;
+using Atom.Client.Graphics;
 using Atom.Client.Services;
 using Atom.Client.Components;
 using Console.Core;
@@ -144,7 +145,17 @@ namespace Atom.Client.Scenes
                 case GalaxyAsPoint galaxy:
                     return new GalaxyAsPointViewModel3D(galaxy);
                 case GalaxyTextureFarthest gt:
-                    return new GalaxyTextureFarthestViewModel3D(gt, DataModel.MainResourcePackage.GalaxyTexture);
+                    return new GalaxyTextureFarthestViewModel3D(gt);
+                case GalaxyTextureLayered gtl:
+                    return new GalaxyTextureLayeredViewModel3D(gtl);
+                case GalaxyBackgroundTexture bg:
+                    return new GalaxyBackgroundTextureViewModel3D(bg);
+                case GalaxySector sector:
+                    return new GalaxySectorViewModel3D(sector);
+                case SectorDimStarField dimField:
+                    return new SectorDimStarFieldViewModel3D(dimField);
+                case StarSystemAsPoint ss:
+                    return new StarSystemAsPointViewModel3D(ss);
                 default:
                     return null;
             }
@@ -167,7 +178,7 @@ namespace Atom.Client.Scenes
         {
             // AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
             // {
-            //     GraphicsPassName = "Render_Grouped",
+            //     GraphicsPassName = GraphicsPasses.Grouped,
             // }));
 
             AddView(new DebugInfoComponentData
@@ -176,12 +187,12 @@ namespace Atom.Client.Scenes
                 FontColor = Color.White,
                 Position = new Vector2(10f),
                 Tab = 20f,
-                GraphicsPassName = "debug"
+                GraphicsPassName = GraphicsPasses.Debug
             });
 
             AddView(new FpsCounterComponentData
             {
-                GraphicsPassName = "debug",
+                GraphicsPassName = GraphicsPasses.Debug,
                 Font = DataModel.MainResourcePackage.DebugInfoFont,
                 Position = new Vector2(DisplayService.PreferredBackBufferWidth - 100, 20),
             });
@@ -254,27 +265,34 @@ namespace Atom.Client.Scenes
             var indexBuffer2 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(5000);
             
             var vertexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
-            var indexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(3000);
+            var indexBuffer3 = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(5000);
 
-            var starVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
-            var starIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(3000);
+            var starVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 6000);
+            var starIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(9000);
+
+            var coloredStarVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 16000);
+            var coloredStarIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(30000);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .ApplyActiveCameraToShader(_coloredShader)
-                .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer,  "Render_Grouped")
+                .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer, GraphicsPasses.Grouped)
+                .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.DepthRead, RasterizerStates.NoCull)
                 .ApplyActiveCameraToShader(_texturesShaderNoLights)
-                .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3,  "Render_Textured_No_Lights")
+                .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3, GraphicsPasses.TexturedNoLights)
+                .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .ApplyActiveCameraToShader(_texturesShader)
-                .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2,  "Render_Textured")
+                .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2, GraphicsPasses.Textured)
                 .SetRenderingConfigs(BlendState.Additive, DepthStencilState.DepthRead, RasterizerStates.Default)
                 .ApplyActiveCameraToShader(_starShader)
-                .RenderGrouped<VertexPositionNormalTexture>(_starShader, starVertexBuffer, starIndexBuffer, "Render_Stars")
+                .RenderGrouped<VertexPositionNormalTexture>(_starShader, starVertexBuffer, starIndexBuffer, GraphicsPasses.Stars)
+                .ApplyActiveCameraToShader(_coloredShader)
+                .RenderGrouped<VertexPositionColor>(_coloredShader, coloredStarVertexBuffer, coloredStarIndexBuffer, GraphicsPasses.ColoredStars)
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .BeginDraw(new BeginDrawConfig())
                 .DrawComponents()
-                .DrawComponents("debug")
+                .DrawComponents(GraphicsPasses.Debug)
                 .EndDraw()
                 .Build();
         }

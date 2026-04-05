@@ -1,3 +1,4 @@
+using Atom.Client.Graphics;
 using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
 using FrameworkSDK.MonoGame.Mvc;
@@ -8,7 +9,7 @@ namespace Atom.Client.Components
     public sealed class WorldMapCellContentViewComponent : BillboardPrimitive<WorldMapCellContent, WorldMapCellContentController>
     {
         public WorldMapCellContentViewComponent(WorldMapCellContent model)
-            : base(model, "Render_Textured_No_Lights")
+            : base(model, GraphicsPasses.TexturedNoLights)
         {
             DataModel.Scale = model.Size;
         }

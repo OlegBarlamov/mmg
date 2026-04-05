@@ -5,12 +5,14 @@ using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Resources.Generation;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using X4World.Objects;
 
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public class GalaxyTextureFarthestController : Controller<GalaxyTextureFarthestViewModel3D>
+    public class GalaxyTextureLayeredController : Controller<GalaxyTextureLayeredViewModel3D>
     {
         [NotNull] private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
         [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
@@ -18,8 +20,8 @@ namespace Atom.Client.Components
         private CancellationTokenSource _cancellationTokenSource;
         private readonly object _locker = new object();
 
-        public GalaxyTextureFarthestController(
-            [NotNull] GalaxyTextureFarthestViewModel3D viewModel,
+        public GalaxyTextureLayeredController(
+            [NotNull] GalaxyTextureLayeredViewModel3D viewModel,
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
             [NotNull] ITextureGeneratorService textureGeneratorService)
         {
@@ -40,31 +42,44 @@ namespace Atom.Client.Components
             _cancellationTokenSource = new CancellationTokenSource();
             var aggData = DataModel.AggregatedData;
 
-            BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask((time, token) =>
+            var angleStep = MathHelper.TwoPi / GalaxyTextureLayeredAggregatedData.LayerCount;
+
+            for (int i = 0; i < GalaxyTextureLayeredAggregatedData.LayerCount; i++)
             {
-                try
+                var layerIndex = i;
+                var layerSeed = aggData.LayerSeeds[i];
+                var starCount = aggData.LayerStarCounts[i];
+                var angleOffset = (i - 1) * angleStep;
+
+                BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask((time, token) =>
                 {
-                    var texture = GalaxyTextureGenerator.Generate(
-                        aggData.ArmCount,
-                        aggData.Seed,
-                        aggData.GalaxyColor,
-                        TextureGeneratorService,
-                        token);
-
-                    token.ThrowIfCancellationRequested();
-
-                    Texture2D oldTexture;
-                    lock (_locker)
+                    try
                     {
-                        oldTexture = aggData.TextureData.Texture;
-                        aggData.TextureData.AssignTexture(texture);
+                        var texture = GalaxyTextureGenerator.Generate(
+                            aggData.ArmCount,
+                            layerSeed,
+                            aggData.GalaxyColor,
+                            TextureGeneratorService,
+                            token,
+                            textureSize: 512,
+                            starCount: starCount,
+                            armAngleOffset: angleOffset);
+
+                        token.ThrowIfCancellationRequested();
+
+                        Texture2D oldTexture;
+                        lock (_locker)
+                        {
+                            oldTexture = aggData.LayerTextures[layerIndex].Texture;
+                            aggData.LayerTextures[layerIndex].AssignTexture(texture);
+                        }
+                        oldTexture?.Dispose();
                     }
-                    oldTexture?.Dispose();
-                }
-                catch (OperationCanceledException)
-                {
-                }
-            }, _cancellationTokenSource.Token));
+                    catch (OperationCanceledException)
+                    {
+                    }
+                }, _cancellationTokenSource.Token));
+            }
         }
 
         protected override void OnDetached(SceneBase scene)

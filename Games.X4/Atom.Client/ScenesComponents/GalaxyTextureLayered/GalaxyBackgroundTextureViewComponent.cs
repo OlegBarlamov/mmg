@@ -9,11 +9,11 @@ using Microsoft.Xna.Framework;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public sealed class GalaxyTextureFarthestViewComponent : RenderablePrimitive<GalaxyTextureFarthestViewModel3D, GalaxyTextureFarthestController>
+    public sealed class GalaxyBackgroundTextureViewComponent : RenderablePrimitive<GalaxyBackgroundTextureViewModel3D, GalaxyBackgroundTextureController>
     {
         private readonly Vector3 _targetScale;
 
-        public GalaxyTextureFarthestViewComponent([NotNull] GalaxyTextureFarthestViewModel3D viewModel)
+        public GalaxyBackgroundTextureViewComponent([NotNull] GalaxyBackgroundTextureViewModel3D viewModel)
             : base(new FixedSimpleMesh(StaticGeometries.Plane), viewModel)
         {
             _targetScale = viewModel.Scale;

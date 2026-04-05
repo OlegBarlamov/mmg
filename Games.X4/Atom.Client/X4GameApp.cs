@@ -17,7 +17,7 @@ using FrameworkSDK.MonoGame.Resources;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using X4World.Generation;
+using X4World.Maps;
 using X4World.Maps;
 
 namespace Atom.Client

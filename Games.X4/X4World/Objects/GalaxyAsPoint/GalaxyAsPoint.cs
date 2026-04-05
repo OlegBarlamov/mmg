@@ -43,7 +43,7 @@ namespace X4World.Objects
 
         object IWrappedDetails.AggregatedData => AggregatedData;
 
-        public float DistanceToUnwrapDetails { get; } = 1000;
+        public float DistanceToUnwrapDetails { get; } = 500;
         
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }

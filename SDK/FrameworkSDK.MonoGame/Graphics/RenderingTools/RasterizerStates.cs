@@ -15,5 +15,11 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
             FillMode = FillMode.WireFrame,
             CullMode = CullMode.CullCounterClockwiseFace,
         };
+        
+        public static RasterizerState NoCull { get; } = new RasterizerState 
+        {
+            FillMode = FillMode.Solid,
+            CullMode = CullMode.None,
+        };
     }
 }

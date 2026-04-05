@@ -10,9 +10,9 @@ namespace Atom.Client.Components
         public GalaxyAsPointViewModel3D(GalaxyAsPoint galaxy)
         {
             Position = galaxy.GetWorldPosition();
-            Scale = new Vector3(galaxy.AggregatedData.Power * 40);
+            Scale = new Vector3(galaxy.AggregatedData.Power * 60);
             MeshMaterial = new StarMaterial(galaxy.AggregatedData.Color, galaxy.AggregatedData.Power);
-            GraphicsPassName = "Render_Stars";
+            GraphicsPassName = GraphicsPasses.Stars;
         }
     }
 }

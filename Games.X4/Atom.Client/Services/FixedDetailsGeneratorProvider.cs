@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using FrameworkSDK.Common;
 using JetBrains.Annotations;
-using X4World.Generation;
+using X4World.Maps;
 using X4World.Objects;
 
 namespace Atom.Client.Services
@@ -17,7 +17,11 @@ namespace Atom.Client.Services
             _dictionary = new Dictionary<Type, IDetailsGenerator>
             {
                 {typeof(WorldMapCellContent), new WorldMapCellContentDetailsGenerator()},
-                {typeof(GalaxyAsPoint), new GalaxyAsPointDetailsGenerator(randomService)}
+                {typeof(GalaxyAsPoint), new GalaxyAsPointDetailsGenerator(randomService)},
+                {typeof(GalaxyTextureFarthest), new GalaxyTextureFarthestDetailsGenerator()},
+                {typeof(GalaxyTextureLayered), new GalaxyTextureLayeredDetailsGenerator()},
+                {typeof(GalaxySector), new GalaxySectorDetailsGenerator()},
+                {typeof(StarSystemAsPoint), new StarSystemAsPointDetailsGenerator()}
             };
         }
         

@@ -1,27 +1,28 @@
-using System;
 using System.Collections.Generic;
 using FrameworkSDK.Common;
-using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.DataStructures;
 using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class GalaxyTextureFarthestAggregatedData
+    public class StarSystemAggregatedData
     {
-        public IReadOnlyCollection<Vector3> PointsPositions { get; }
-        public GalaxyAsPointAggregatedData GalaxyData { get; }
+        public float Temperature { get; }
+        public float Luminosity { get; }
+        public Color Color { get; }
+        public int Seed { get; }
 
-        public GalaxyTextureFarthestAggregatedData([NotNull] IReadOnlyCollection<Vector3> pointsPositions,
-            [NotNull] GalaxyAsPointAggregatedData galaxyData)
+        public StarSystemAggregatedData(float temperature, float luminosity, int seed)
         {
-            PointsPositions = pointsPositions ?? throw new ArgumentNullException(nameof(pointsPositions));
-            GalaxyData = galaxyData ?? throw new ArgumentNullException(nameof(galaxyData));
+            Temperature = temperature;
+            Luminosity = luminosity;
+            Color = GalaxyAsPointAggregatedData.ColorFromTemperature(temperature);
+            Seed = seed;
         }
     }
-    
-    public class GalaxyTextureFarthest : IWrappedDetails 
+
+    public class StarSystemAsPoint : IWrappedDetails
     {
         public Vector3 Position { get; private set; }
         public string Name { get; }
@@ -30,18 +31,18 @@ namespace X4World.Objects
         object IWrappedDetails.AggregatedData => AggregatedData;
 
         public float DistanceToUnwrapDetails { get; } = 0;
-        
+
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
-        
-        public GalaxyTextureFarthestAggregatedData AggregatedData { get; }
 
-        public GalaxyTextureFarthest(IWrappedDetails parent, Vector3 localPosition, GalaxyTextureFarthestAggregatedData aggregatedData)
+        public StarSystemAggregatedData AggregatedData { get; }
+
+        public StarSystemAsPoint(IWrappedDetails parent, Vector3 localPosition, StarSystemAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            Name = $"{Parent.Name}_gt{NamesGenerator.Hash(HashType.Number)}";
+            Name = $"{Parent.Name}_ss{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 1, 10);
         }
 

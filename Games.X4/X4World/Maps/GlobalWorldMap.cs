@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using MonoGameExtensions.DataStructures;
 using MonoGameExtensions.Geometry;
 using NetExtensions.Geometry;
-using X4World.Generation;
 using Point3DExtensions = MonoGameExtensions.Geometry.Point3DExtensions;
 
 namespace X4World.Maps

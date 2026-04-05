@@ -2,7 +2,7 @@ using FrameworkSDK;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions;
 using MonoGameExtensions.DataStructures;
-using X4World.Generation;
+using X4World.Maps;
 
 namespace X4World
 {

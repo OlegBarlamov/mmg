@@ -16,7 +16,7 @@ using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
 using JetBrains.Annotations;
 using NetExtensions;
-using X4World.Generation;
+using X4World.Maps;
 using X4World.Maps;
 using X4World.Objects;
 

@@ -5,10 +5,9 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Geometry;
-using X4World.Maps;
 using X4World.Objects;
 
-namespace X4World.Generation
+namespace X4World.Maps
 {
     public interface IWorldMapCellGenerator
     {

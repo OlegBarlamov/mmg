@@ -4,9 +4,8 @@ using JetBrains.Annotations;
 using MonoGameExtensions.DataStructures;
 using NetExtensions.Geometry;
 using NetExtensions.Helpers;
-using X4World.Maps;
 
-namespace X4World.Generation
+namespace X4World.Maps
 {
     public interface IWorldMapGenerator
     {

@@ -1,4 +1,4 @@
-using X4World.Generation;
+using X4World.Maps;
 
 namespace Atom.Client.Services
 {
