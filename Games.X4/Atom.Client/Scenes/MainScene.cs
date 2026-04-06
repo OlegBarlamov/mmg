@@ -54,6 +54,7 @@ namespace Atom.Client.Scenes
         private readonly IGlobalWorldMapController _globalWorldMapController;
         private readonly IWrappedObjectsController _wrappedObjectsController;
         private readonly Dictionary<IWrappedDetails, ViewModel3D> _viewModels = new Dictionary<IWrappedDetails, ViewModel3D>();
+        private readonly LodStatsComponentData _lodStats = new LodStatsComponentData();
 
         private BasicEffect _texturesShader;
         private BasicEffect _texturesShaderNoLights;
@@ -118,6 +119,8 @@ namespace Atom.Client.Scenes
                 {
                     RemoveView(obj);
                 }
+
+                TrackLayerCount(obj, -1);
             }, CancellationToken.None));
         }
 
@@ -135,7 +138,14 @@ namespace Atom.Client.Scenes
                 {
                     AddView(obj);
                 }
+
+                TrackLayerCount(obj, 1);
             }, CancellationToken.None));
+        }
+
+        private void TrackLayerCount(IWrappedDetails obj, int delta)
+        {
+            _lodStats.Track(obj.GetType().Name, delta);
         }
 
         private ViewModel3D CreateViewModel(IWrappedDetails obj)
@@ -148,12 +158,12 @@ namespace Atom.Client.Scenes
                     return new GalaxyTextureFarthestViewModel3D(gt);
                 case GalaxyTextureLayered gtl:
                     return new GalaxyTextureLayeredViewModel3D(gtl);
-                case GalaxyBackgroundTexture bg:
-                    return new GalaxyBackgroundTextureViewModel3D(bg);
+                case GalaxySectorTexture sectorTexture:
+                    return new GalaxySectorTextureViewModel3D(sectorTexture);
                 case GalaxySector sector:
                     return new GalaxySectorViewModel3D(sector);
-                case SectorDimStarField dimField:
-                    return new SectorDimStarFieldViewModel3D(dimField);
+                case GalaxySectorChunk chunk:
+                    return new GalaxySectorChunkViewModel3D(chunk);
                 case StarSystemAsPoint ss:
                     return new StarSystemAsPointViewModel3D(ss);
                 default:
@@ -196,6 +206,10 @@ namespace Atom.Client.Scenes
                 Font = DataModel.MainResourcePackage.DebugInfoFont,
                 Position = new Vector2(DisplayService.PreferredBackBufferWidth - 100, 20),
             });
+
+            _lodStats.Font = DataModel.MainResourcePackage.DebugInfoFont;
+            _lodStats.Position = new Vector2(DisplayService.PreferredBackBufferWidth - 20, 50);
+            AddView(_lodStats);
 
             ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<float, float, float>("pos", "Set camera position",
                 (x, y, z) =>
@@ -270,8 +284,8 @@ namespace Atom.Client.Scenes
             var starVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 6000);
             var starIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(9000);
 
-            var coloredStarVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 16000);
-            var coloredStarIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(30000);
+            var coloredStarVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 512000);
+            var coloredStarIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(1024000);
 
             return graphicsPipelineBuilder
                 .Clear(Color.Black)

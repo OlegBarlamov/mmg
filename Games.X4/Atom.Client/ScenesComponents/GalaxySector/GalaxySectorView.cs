@@ -22,7 +22,9 @@ namespace Atom.Client.Components
             var agg = viewModel.AggregatedData;
             var cameraPos = camera3DProvider.GetActiveCamera().GetPosition();
             var localCameraDir = cameraPos - viewModel.Position;
-            return new SectorStarFieldGeometry(agg.SectorRadius, agg.Seed, localCameraDir);
+            var galaxyRotation = Matrix.CreateRotationX(agg.Inclination)
+                               * Matrix.CreateRotationY(agg.SpinAngle);
+            return new SectorStarFieldGeometry(agg.ClusterPoints, agg.SectorRadius, localCameraDir, galaxyRotation);
         }
 
         protected override BoundingBox? ConstructBoundingBox()

@@ -9,11 +9,11 @@ using Microsoft.Xna.Framework;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public sealed class GalaxyBackgroundTextureViewComponent : RenderablePrimitive<GalaxyBackgroundTextureViewModel3D, GalaxyBackgroundTextureController>
+    public sealed class GalaxySectorTextureView : RenderablePrimitive<GalaxySectorTextureViewModel3D, GalaxySectorTextureController>
     {
         private readonly Vector3 _targetScale;
 
-        public GalaxyBackgroundTextureViewComponent([NotNull] GalaxyBackgroundTextureViewModel3D viewModel)
+        public GalaxySectorTextureView([NotNull] GalaxySectorTextureViewModel3D viewModel)
             : base(new FixedSimpleMesh(StaticGeometries.Plane), viewModel)
         {
             _targetScale = viewModel.Scale;

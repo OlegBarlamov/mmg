@@ -13,17 +13,8 @@ namespace Atom.Client.Components
     [UsedImplicitly]
     public sealed class GalaxyTextureLayeredViewComponent : MultiMeshPrimitive<GalaxyTextureLayeredViewModel3D, GalaxyTextureLayeredController>
     {
-        private const float TiltAngle = 0.1f;
-        private const float LayerSpacing = 0.03f; // fraction of DiskRadius
-
-        private static readonly Matrix[] LayerTilts =
-        {
-            Matrix.CreateRotationX(-TiltAngle) * Matrix.CreateRotationZ(TiltAngle),
-            Matrix.Identity,
-            Matrix.CreateRotationZ(-TiltAngle) * Matrix.CreateRotationX(TiltAngle),
-        };
-
-        private static readonly float[] LayerOffsets = { -1f, 0f, 1f };
+        private const float TiltAngle = 0.05f;
+        private const float LayerSpacing = 0.02f;
 
         public GalaxyTextureLayeredViewComponent([NotNull] GalaxyTextureLayeredViewModel3D viewModel)
             : base(CreateMeshes(), viewModel)
@@ -50,17 +41,20 @@ namespace Atom.Client.Components
 
         protected override void UpdateMeshTransforms()
         {
+            var count = Meshes.Count;
             var baseRotation = DataModel.Rotation;
             var diskRadius = DataModel.AggregatedData.DiskRadius;
             var normal = Vector3.TransformNormal(Vector3.Up, baseRotation);
             var spacing = diskRadius * LayerSpacing;
 
-            for (int i = 0; i < Meshes.Count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var mesh = (FixedSimpleMesh)Meshes[i];
-                mesh.SetPosition(DataModel.Position + normal * (LayerOffsets[i] * spacing));
+                var offset = count > 1 ? (i - (count - 1) / 2f) : 0f;
+                var tilt = count > 1 ? GetLayerTilt(i, count) : Matrix.Identity;
+                mesh.SetPosition(DataModel.Position + normal * (offset * spacing));
                 mesh.Scale = DataModel.Scale;
-                mesh.Rotation = LayerTilts[i] * baseRotation;
+                mesh.Rotation = tilt * baseRotation;
             }
         }
 
@@ -78,14 +72,18 @@ namespace Atom.Client.Components
             }
         }
 
+        private static Matrix GetLayerTilt(int index, int count)
+        {
+            var t = (index - (count - 1) / 2f) / ((count - 1) / 2f);
+            return Matrix.CreateRotationX(t * -TiltAngle) * Matrix.CreateRotationZ(t * TiltAngle);
+        }
+
         private static IRenderableMesh[] CreateMeshes()
         {
-            return new IRenderableMesh[]
-            {
-                new FixedSimpleMesh(new PlaneGeometry()),
-                new FixedSimpleMesh(new PlaneGeometry()),
-                new FixedSimpleMesh(new PlaneGeometry()),
-            };
+            var meshes = new IRenderableMesh[GalaxyTextureLayeredAggregatedData.LayerCount];
+            for (int i = 0; i < meshes.Length; i++)
+                meshes[i] = new FixedSimpleMesh(new PlaneGeometry());
+            return meshes;
         }
     }
 }

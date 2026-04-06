@@ -6,26 +6,24 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class GalaxySectorAggregatedData
+    public class GalaxySectorChunkAggregatedData
     {
-        public Color ClusterColor { get; }
-        public float SectorRadius { get; }
+        public float ChunkRadius { get; }
         public float Inclination { get; }
         public float SpinAngle { get; }
         public GalaxyClusterPoint[] ClusterPoints { get; }
 
-        public GalaxySectorAggregatedData(Color clusterColor, float sectorRadius,
+        public GalaxySectorChunkAggregatedData(float chunkRadius,
             float inclination, float spinAngle, GalaxyClusterPoint[] clusterPoints)
         {
-            ClusterColor = clusterColor;
-            SectorRadius = sectorRadius;
+            ChunkRadius = chunkRadius;
             Inclination = inclination;
             SpinAngle = spinAngle;
             ClusterPoints = clusterPoints;
         }
     }
 
-    public class GalaxySector : IWrappedDetails
+    public class GalaxySectorChunk : IWrappedDetails
     {
         public Vector3 Position { get; private set; }
         public string Name { get; }
@@ -38,16 +36,17 @@ namespace X4World.Objects
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }
 
-        public GalaxySectorAggregatedData AggregatedData { get; }
+        public GalaxySectorChunkAggregatedData AggregatedData { get; }
 
-        public GalaxySector(IWrappedDetails parent, Vector3 localPosition, float unwrapDistance, GalaxySectorAggregatedData aggregatedData)
+        public GalaxySectorChunk(IWrappedDetails parent, Vector3 localPosition, float unwrapDistance,
+            GalaxySectorChunkAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
             DistanceToUnwrapDetails = unwrapDistance;
-            Name = $"{Parent.Name}_sec{NamesGenerator.Hash(HashType.Number)}";
-            Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.SectorRadius * 4f, 10);
+            Name = $"{Parent.Name}_ch{NamesGenerator.Hash(HashType.Number)}";
+            Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.ChunkRadius * 10f, 10);
         }
 
         public void SetPosition(Vector3 position)

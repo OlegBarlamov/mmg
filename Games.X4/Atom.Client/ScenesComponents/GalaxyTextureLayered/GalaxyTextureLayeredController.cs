@@ -42,27 +42,25 @@ namespace Atom.Client.Components
             _cancellationTokenSource = new CancellationTokenSource();
             var aggData = DataModel.AggregatedData;
 
-            var angleStep = MathHelper.TwoPi / GalaxyTextureLayeredAggregatedData.LayerCount;
+            var layerCount = GalaxyTextureLayeredAggregatedData.LayerCount;
+            var angleStep = layerCount > 1 ? MathHelper.TwoPi / layerCount : 0f;
 
-            for (int i = 0; i < GalaxyTextureLayeredAggregatedData.LayerCount; i++)
+            for (int i = 0; i < layerCount; i++)
             {
                 var layerIndex = i;
-                var layerSeed = aggData.LayerSeeds[i];
-                var starCount = aggData.LayerStarCounts[i];
-                var angleOffset = (i - 1) * angleStep;
+                var angleOffset = layerCount > 1 ? (i - (layerCount - 1) / 2f) * angleStep : 0f;
 
                 BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask((time, token) =>
                 {
                     try
                     {
                         var texture = GalaxyTextureGenerator.Generate(
-                            aggData.ArmCount,
-                            layerSeed,
+                            aggData.Sectors,
+                            aggData.DiskRadius,
                             aggData.GalaxyColor,
                             TextureGeneratorService,
                             token,
                             textureSize: 512,
-                            starCount: starCount,
                             armAngleOffset: angleOffset);
 
                         token.ThrowIfCancellationRequested();

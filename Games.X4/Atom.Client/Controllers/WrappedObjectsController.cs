@@ -73,7 +73,8 @@ namespace Atom.Client.Controllers
                 var objectToWrap = _objectsToWrap.Dequeue();
                 _unwrappedHashtable.Remove(objectToWrap.Name);
                 _unwrappedObjects.Remove(objectToWrap);
-                ObjectRevealed?.Invoke(objectToWrap);
+                if (objectToWrap.Parent == null || _unwrappedHashtable.ContainsKey(objectToWrap.Parent.Name))
+                    ObjectRevealed?.Invoke(objectToWrap);
                 foreach (var detail in objectToWrap.Details)
                 {
                     ObjectHidden?.Invoke(detail);

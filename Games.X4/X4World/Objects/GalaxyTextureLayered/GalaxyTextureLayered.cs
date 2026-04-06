@@ -8,7 +8,7 @@ namespace X4World.Objects
 {
     public class GalaxyTextureLayeredAggregatedData
     {
-        public const int LayerCount = 3;
+        public const int LayerCount = 1;
 
         public Color GalaxyColor { get; }
         public int ArmCount { get; }
@@ -16,6 +16,7 @@ namespace X4World.Objects
         public float Inclination { get; }
         public float SpinAngle { get; }
         public int Seed { get; }
+        public GalaxySectorDefinition[] Sectors { get; }
         public int[] LayerSeeds { get; }
         public int[] LayerStarCounts { get; }
         public GalaxyTextureData[] LayerTextures { get; }
@@ -27,6 +28,7 @@ namespace X4World.Objects
             float inclination,
             float spinAngle,
             int seed,
+            GalaxySectorDefinition[] sectors,
             int[] layerSeeds,
             int[] layerStarCounts)
         {
@@ -36,12 +38,14 @@ namespace X4World.Objects
             Inclination = inclination;
             SpinAngle = spinAngle;
             Seed = seed;
+            Sectors = sectors;
             LayerSeeds = layerSeeds;
             LayerStarCounts = layerStarCounts;
             LayerTextures = new GalaxyTextureData[LayerCount];
             for (int i = 0; i < LayerCount; i++)
                 LayerTextures[i] = new GalaxyTextureData();
         }
+
     }
 
     public class GalaxyTextureLayered : IWrappedDetails
@@ -66,8 +70,8 @@ namespace X4World.Objects
             Parent = parent;
             AggregatedData = aggregatedData;
             Name = $"{Parent.Name}_gtl{NamesGenerator.Hash(HashType.Number)}";
-            DistanceToUnwrapDetails = aggregatedData.DiskRadius * 1.25f;
-            Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.DiskRadius * 2f, 10);
+            DistanceToUnwrapDetails = aggregatedData.DiskRadius * 3f;
+            Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.DiskRadius * 4f, 10);
         }
 
         public void SetPosition(Vector3 position)

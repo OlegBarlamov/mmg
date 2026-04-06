@@ -45,8 +45,8 @@ namespace Atom.Client.Components
                 try
                 {
                     var texture = GalaxyTextureGenerator.Generate(
-                        aggData.ArmCount,
-                        aggData.Seed,
+                        aggData.ClusterPoints,
+                        aggData.DiskRadius,
                         aggData.GalaxyColor,
                         TextureGeneratorService,
                         token);

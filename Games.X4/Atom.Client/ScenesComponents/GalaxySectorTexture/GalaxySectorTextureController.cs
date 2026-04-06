@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public class GalaxyBackgroundTextureController : Controller<GalaxyBackgroundTextureViewModel3D>
+    public class GalaxySectorTextureController : Controller<GalaxySectorTextureViewModel3D>
     {
         [NotNull] private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
         [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
@@ -18,8 +18,8 @@ namespace Atom.Client.Components
         private CancellationTokenSource _cancellationTokenSource;
         private readonly object _locker = new object();
 
-        public GalaxyBackgroundTextureController(
-            [NotNull] GalaxyBackgroundTextureViewModel3D viewModel,
+        public GalaxySectorTextureController(
+            [NotNull] GalaxySectorTextureViewModel3D viewModel,
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
             [NotNull] ITextureGeneratorService textureGeneratorService)
         {
@@ -44,14 +44,10 @@ namespace Atom.Client.Components
             {
                 try
                 {
-                    var texture = GalaxyTextureGenerator.Generate(
-                        aggData.ArmCount,
-                        aggData.Seed,
-                        aggData.GalaxyColor,
+                    var texture = SectorTextureGenerator.Generate(
+                        aggData,
                         TextureGeneratorService,
-                        token,
-                        textureSize: 512,
-                        starCount: 2000);
+                        token);
 
                     token.ThrowIfCancellationRequested();
 

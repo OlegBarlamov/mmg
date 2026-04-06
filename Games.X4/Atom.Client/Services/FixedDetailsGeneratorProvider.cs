@@ -20,7 +20,9 @@ namespace Atom.Client.Services
                 {typeof(GalaxyAsPoint), new GalaxyAsPointDetailsGenerator(randomService)},
                 {typeof(GalaxyTextureFarthest), new GalaxyTextureFarthestDetailsGenerator()},
                 {typeof(GalaxyTextureLayered), new GalaxyTextureLayeredDetailsGenerator()},
+                {typeof(GalaxySectorTexture), new GalaxySectorTextureDetailsGenerator()},
                 {typeof(GalaxySector), new GalaxySectorDetailsGenerator()},
+                {typeof(GalaxySectorChunk), new GalaxySectorChunkDetailsGenerator()},
                 {typeof(StarSystemAsPoint), new StarSystemAsPointDetailsGenerator()}
             };
         }

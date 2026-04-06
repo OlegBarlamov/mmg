@@ -6,6 +6,42 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
+    public struct GalaxyClusterPoint
+    {
+        public float X;
+        public float Y;
+        public float Z;
+        public float Temperature;
+        public float Luminosity;
+
+        public GalaxyClusterPoint(float x, float y, float z, float temperature, float luminosity)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            Temperature = temperature;
+            Luminosity = luminosity;
+        }
+    }
+
+    public class GalaxySectorDefinition
+    {
+        public float CenterX { get; }
+        public float CenterZ { get; }
+        public float Radius { get; }
+        public int Seed { get; }
+        public GalaxyClusterPoint[] ClusterPoints { get; }
+
+        public GalaxySectorDefinition(float centerX, float centerZ, float radius, int seed, GalaxyClusterPoint[] clusterPoints)
+        {
+            CenterX = centerX;
+            CenterZ = centerZ;
+            Radius = radius;
+            Seed = seed;
+            ClusterPoints = clusterPoints;
+        }
+    }
+
     public class GalaxyTextureFarthestAggregatedData
     {
         public Color GalaxyColor { get; }
@@ -14,6 +50,7 @@ namespace X4World.Objects
         public float Inclination { get; }
         public float SpinAngle { get; }
         public int Seed { get; }
+        public GalaxyClusterPoint[] ClusterPoints { get; }
         public GalaxyTextureData TextureData { get; } = new GalaxyTextureData();
 
         public GalaxyTextureFarthestAggregatedData(
@@ -22,7 +59,8 @@ namespace X4World.Objects
             float diskRadius,
             float inclination,
             float spinAngle,
-            int seed)
+            int seed,
+            GalaxyClusterPoint[] brightStars)
         {
             GalaxyColor = galaxyColor;
             ArmCount = armCount;
@@ -30,6 +68,7 @@ namespace X4World.Objects
             Inclination = inclination;
             SpinAngle = spinAngle;
             Seed = seed;
+            ClusterPoints = brightStars;
         }
     }
     

@@ -7,32 +7,59 @@ namespace X4World.Objects
 {
     public class GalaxySectorDetailsGenerator : IDetailsGenerator<GalaxySector>
     {
-        private const int DimStarCount = 300;
+        private const int ChunkGridSize = 3;
 
         public void Generate(GalaxySector target)
         {
             var aggData = target.AggregatedData;
-            var rng = new Random(aggData.Seed);
-            var results = new List<IWrappedDetails>(aggData.StarCount + 1);
+            var clusterPoints = aggData.ClusterPoints;
+            var sectorRadius = aggData.SectorRadius;
 
-            var dimFieldData = new SectorDimStarFieldAggregatedData(
-                aggData.SectorRadius, DimStarCount, rng.Next());
-            results.Add(new SectorDimStarField(target, Vector3.Zero, dimFieldData));
+            var galaxyRotation = Matrix.CreateRotationX(aggData.Inclination)
+                               * Matrix.CreateRotationY(aggData.SpinAngle);
 
-            for (int i = 0; i < aggData.StarCount; i++)
+            var chunkCellSize = sectorRadius * 2f / ChunkGridSize;
+            var chunkRadius = chunkCellSize * 0.5f;
+
+            var buckets = new Dictionary<int, List<GalaxyClusterPoint>>();
+            foreach (var p in clusterPoints)
             {
-                var offsetX = (float)(rng.NextDouble() - 0.5) * 2f * aggData.SectorRadius;
-                var offsetY = (float)(rng.NextDouble() - 0.5) * 2f * aggData.SectorRadius * 0.1f;
-                var offsetZ = (float)(rng.NextDouble() - 0.5) * 2f * aggData.SectorRadius;
-                var localPos = new Vector3(offsetX, offsetY, offsetZ);
+                var col = (int)((p.X + sectorRadius) / chunkCellSize);
+                var row = (int)((p.Z + sectorRadius) / chunkCellSize);
+                col = Math.Max(0, Math.Min(col, ChunkGridSize - 1));
+                row = Math.Max(0, Math.Min(row, ChunkGridSize - 1));
 
-                var temperature = 1000f + (float)rng.NextDouble() * 9000f;
-                var luminosity = 0.3f + (float)rng.NextDouble() * 2.7f;
-                var seed = rng.Next();
+                var key = row * ChunkGridSize + col;
+                if (!buckets.TryGetValue(key, out var list))
+                {
+                    list = new List<GalaxyClusterPoint>();
+                    buckets[key] = list;
+                }
+                list.Add(p);
+            }
 
-                var starData = new StarSystemAggregatedData(temperature, luminosity, seed);
-                var starSystem = new StarSystemAsPoint(target, localPos, starData);
-                results.Add(starSystem);
+            var results = new List<IWrappedDetails>(buckets.Count);
+            foreach (var kvp in buckets)
+            {
+                var row = kvp.Key / ChunkGridSize;
+                var col = kvp.Key % ChunkGridSize;
+                var cx = -sectorRadius + (col + 0.5f) * chunkCellSize;
+                var cz = -sectorRadius + (row + 0.5f) * chunkCellSize;
+
+                var rawPoints = kvp.Value;
+                var localPoints = new GalaxyClusterPoint[rawPoints.Count];
+                for (int i = 0; i < rawPoints.Count; i++)
+                {
+                    var rp = rawPoints[i];
+                    localPoints[i] = new GalaxyClusterPoint(rp.X - cx, rp.Y, rp.Z - cz, rp.Temperature, rp.Luminosity);
+                }
+
+                var chunkPos = Vector3.Transform(new Vector3(cx, 0f, cz), galaxyRotation);
+                var chunkData = new GalaxySectorChunkAggregatedData(
+                    chunkRadius, aggData.Inclination, aggData.SpinAngle, localPoints);
+
+                var chunk = new GalaxySectorChunk(target, chunkPos, chunkRadius * 3f, chunkData);
+                results.Add(chunk);
             }
 
             target.SetGeneratedData(results);

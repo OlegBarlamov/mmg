@@ -33,9 +33,22 @@ namespace FrameworkSDK.MonoGame.Graphics.RenderingTools
         {
             _chargedPrimitiveCount = geometry.GetPrimitivesCount();
             _chargedPrimitiveType = geometry.PrimitiveType;
-            
+
+            var vertices = geometry.GetVertices();
+            var indices = geometry.GetIndices();
+            var geometryName = geometry.GetType().Name;
+
+            if (vertices.Length > _vertexBuffer.VertexCount)
+                throw new InvalidOperationException(
+                    $"Vertex buffer overflow: geometry '{geometryName}' has {vertices.Length} vertices, but buffer capacity is {_vertexBuffer.VertexCount}.");
+
+            var indexCount = indices.Length;
+            if (indexCount > _indexBuffer.IndexCount)
+                throw new InvalidOperationException(
+                    $"Index buffer overflow: geometry '{geometryName}' has {indexCount} indices, but buffer capacity is {_indexBuffer.IndexCount}.");
+
             geometry.FillVertexBuffer(_vertexBuffer);
-            RenderContext.FillIndexBuffer(_indexBuffer, geometry.GetIndices());
+            RenderContext.FillIndexBuffer(_indexBuffer, indices);
         }
 
         public void Render(int baseVertex = 0, int startIndex = 0)

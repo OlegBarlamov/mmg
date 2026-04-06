@@ -5,14 +5,14 @@ using X4World.Objects;
 
 namespace Atom.Client.Components
 {
-    public class SectorDimStarFieldViewModel3D : ViewModel3D
+    public class GalaxySectorChunkViewModel3D : ViewModel3D
     {
-        public SectorDimStarFieldAggregatedData AggregatedData { get; }
+        public GalaxySectorChunkAggregatedData AggregatedData { get; }
 
-        public SectorDimStarFieldViewModel3D(SectorDimStarField model)
+        public GalaxySectorChunkViewModel3D(GalaxySectorChunk chunk)
         {
-            AggregatedData = model.AggregatedData;
-            Position = model.GetWorldPosition();
+            AggregatedData = chunk.AggregatedData;
+            Position = chunk.GetWorldPosition();
             Scale = Vector3.One;
             GraphicsPassName = GraphicsPasses.ColoredStars;
         }

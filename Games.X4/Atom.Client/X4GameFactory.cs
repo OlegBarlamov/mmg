@@ -22,6 +22,7 @@ namespace Atom.Client
                 .AddComponent<ScenesContainerComponent>()
                 .AddServices<MainServicesModule>()
                 .UseGame<X4GameApp>()
+                .UseHighPolygonal()
                 .UseGameParameters(gameParameters)
                 .UseMvc()
                 .PreloadResourcePackage<ColorsTexturesPackage>()

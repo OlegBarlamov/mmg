@@ -5,15 +5,15 @@ using X4World.Objects;
 
 namespace Atom.Client.Components
 {
-    public class GalaxyBackgroundTextureViewModel3D : ViewModel3D
+    public class GalaxySectorTextureViewModel3D : ViewModel3D
     {
-        public GalaxyBackgroundTextureAggregatedData AggregatedData { get; }
+        public GalaxySectorTextureAggregatedData AggregatedData { get; }
 
-        public GalaxyBackgroundTextureViewModel3D(GalaxyBackgroundTexture model)
+        public GalaxySectorTextureViewModel3D(GalaxySectorTexture model)
         {
             AggregatedData = model.AggregatedData;
             Position = model.GetWorldPosition();
-            Scale = new Vector3(model.AggregatedData.DiskRadius * 2f);
+            Scale = new Vector3(model.AggregatedData.SectorRadius * 2f);
             Rotation = Matrix.CreateRotationX(model.AggregatedData.Inclination)
                      * Matrix.CreateRotationY(model.AggregatedData.SpinAngle);
             GraphicsPassName = GraphicsPasses.TexturedNoLights;
