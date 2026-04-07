@@ -79,11 +79,13 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         private Dictionary<IGraphicComponent, List<IRenderableMesh>> _meshesByComponents;
         private List<IRenderableMesh> _meshes;
         private IMeshGeometry _geometry;
+        private IMeshGeometry _lastChargedGeometry;
 
         public override void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext,
             IReadOnlyList<IGraphicComponent> associatedComponents)
         {
             graphicDeviceContext.RenderContext.GeometryRenderer.SetBuffers(VertexBuffer, IndexBuffer);
+            _lastChargedGeometry = null;
             
             // TODO get rid of foreaches here. It leads collection changed exceptinos.
             foreach (var meshesByGeometryName in _meshesByGeometryType)
@@ -96,8 +98,12 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
                     _meshes = meshByComponent.Value;
                     _geometry = _meshes[0].Geometry;
-                    
-                    graphicDeviceContext.RenderContext.GeometryRenderer.Charge(_geometry);
+
+                    if (!ReferenceEquals(_geometry, _lastChargedGeometry))
+                    {
+                        graphicDeviceContext.RenderContext.GeometryRenderer.Charge(_geometry);
+                        _lastChargedGeometry = _geometry;
+                    }
 
                     for (_meshesIndex = 0; _meshesIndex < _meshes.Count; _meshesIndex++)
                     {

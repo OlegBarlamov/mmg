@@ -13,7 +13,7 @@ namespace Atom.Client.Components
         {
             AggregatedData = model.AggregatedData;
             Position = model.GetWorldPosition();
-            Scale = new Vector3(model.AggregatedData.DiskRadius);
+            Scale = new Vector3(model.AggregatedData.DiskRadius * 2f);
             Rotation = Matrix.CreateRotationX(model.AggregatedData.Inclination)
                      * Matrix.CreateRotationY(model.AggregatedData.SpinAngle);
             GraphicsPassName = GraphicsPasses.TexturedNoLights;

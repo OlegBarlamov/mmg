@@ -17,12 +17,14 @@ namespace Atom.Client.Services
             _dictionary = new Dictionary<Type, IDetailsGenerator>
             {
                 {typeof(WorldMapCellContent), new WorldMapCellContentDetailsGenerator()},
+                {typeof(GalaxiesBatch), new GalaxiesBatchDetailsGenerator()},
                 {typeof(GalaxyAsPoint), new GalaxyAsPointDetailsGenerator(randomService)},
                 {typeof(GalaxyTextureFarthest), new GalaxyTextureFarthestDetailsGenerator()},
                 {typeof(GalaxyTextureLayered), new GalaxyTextureLayeredDetailsGenerator()},
                 {typeof(GalaxySectorTexture), new GalaxySectorTextureDetailsGenerator()},
                 {typeof(GalaxySector), new GalaxySectorDetailsGenerator()},
                 {typeof(GalaxySectorChunk), new GalaxySectorChunkDetailsGenerator()},
+                {typeof(StarSystemsBatch), new StarSystemsBatchDetailsGenerator()},
                 {typeof(StarSystemAsPoint), new StarSystemAsPointDetailsGenerator()}
             };
         }

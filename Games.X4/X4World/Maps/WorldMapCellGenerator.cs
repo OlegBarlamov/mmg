@@ -42,8 +42,9 @@ namespace X4World.Maps
                     new Vector3(-WorldConstants.WorldMapCellSize / 2),
                     new Vector3(WorldConstants.WorldMapCellSize / 2));
                 var temperature = RandomService.NextFloat(1000, 10000);
+                var power = RandomService.NextFloat(0.3f, 1.0f);
 
-                var pointData = new WorldMapCellAggregatedData.GalaxyPointData(position, temperature);
+                var pointData = new WorldMapCellAggregatedData.GalaxyPointData(position, temperature, power);
                 result.Add(pointData);
             } 
             

@@ -11,5 +11,14 @@ namespace NetExtensions.Collections
                 list.Remove(itemToBeRemoved);
             }
         }
+
+        public static void SwapAndPopRemove<T>(this List<T> list, T item)
+        {
+            var idx = list.IndexOf(item);
+            if (idx < 0) return;
+            var last = list.Count - 1;
+            list[idx] = list[last];
+            list.RemoveAt(last);
+        }
     }
 }

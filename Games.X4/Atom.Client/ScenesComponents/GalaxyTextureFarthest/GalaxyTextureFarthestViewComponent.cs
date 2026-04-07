@@ -25,8 +25,16 @@ namespace Atom.Client.Components
         {
             base.OnAttached(scene);
 
+            var aggData = DataModel.AggregatedData;
+            var starViewModel = new GalaxyAsPointViewModel3D(
+                DataModel.Position,
+                aggData.GalaxyColor,
+                1.0f,
+                aggData.DiskRadius * 2f);
+            AddChild(starViewModel);
+
             OnTextureChanged();
-            DataModel.AggregatedData.TextureData.TextureChanged += OnTextureChanged;
+            aggData.TextureData.TextureChanged += OnTextureChanged;
         }
 
         protected override void OnDetached(SceneBase scene)

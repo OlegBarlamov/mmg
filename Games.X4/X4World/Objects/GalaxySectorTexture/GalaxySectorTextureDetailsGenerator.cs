@@ -31,7 +31,8 @@ namespace X4World.Objects
         private static GalaxyClusterPoint[] ExpandClusterPoints(
             GalaxyClusterPoint[] originals, float sectorRadius, Random rng)
         {
-            var expanded = new List<GalaxyClusterPoint>(originals.Length * (1 + FillStarsPerPoint));
+            var fillCount = FillStarsPerPoint;
+            var expanded = new List<GalaxyClusterPoint>(originals.Length * (1 + fillCount));
             var spread = sectorRadius * FillSpreadFraction;
 
             foreach (var p in originals)
@@ -39,7 +40,7 @@ namespace X4World.Objects
                 expanded.Add(new GalaxyClusterPoint(
                     p.X, p.Y * DiskThicknessScale, p.Z, p.Temperature, p.Luminosity));
 
-                for (int i = 0; i < FillStarsPerPoint; i++)
+                for (int i = 0; i < fillCount; i++)
                 {
                     var ox = p.X + (float)(rng.NextDouble() - 0.5) * 2f * spread;
                     var oy = (p.Y + (float)(rng.NextDouble() - 0.5) * 2f * sectorRadius * 0.08f) * DiskThicknessScale;

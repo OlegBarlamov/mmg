@@ -11,11 +11,13 @@ namespace X4World.Objects
         {
             public Vector3 LocalPositionFromCenter { get; }
             public float Temperature { get; }
+            public float Power { get; }
 
-            public GalaxyPointData(Vector3 localPositionFromCenter, float temperature)
+            public GalaxyPointData(Vector3 localPositionFromCenter, float temperature, float power)
             {
                 LocalPositionFromCenter = localPositionFromCenter;
                 Temperature = temperature;
+                Power = power;
             }
         } 
         

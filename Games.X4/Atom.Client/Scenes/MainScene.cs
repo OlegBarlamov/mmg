@@ -152,6 +152,8 @@ namespace Atom.Client.Scenes
         {
             switch (obj)
             {
+                case GalaxiesBatch galaxiesBatch:
+                    return new GalaxiesBatchViewModel3D(galaxiesBatch);
                 case GalaxyAsPoint galaxy:
                     return new GalaxyAsPointViewModel3D(galaxy);
                 case GalaxyTextureFarthest gt:
@@ -164,6 +166,8 @@ namespace Atom.Client.Scenes
                     return new GalaxySectorViewModel3D(sector);
                 case GalaxySectorChunk chunk:
                     return new GalaxySectorChunkViewModel3D(chunk);
+                case StarSystemsBatch batch:
+                    return new StarSystemsBatchViewModel3D(batch);
                 case StarSystemAsPoint ss:
                     return new StarSystemAsPointViewModel3D(ss);
                 default:

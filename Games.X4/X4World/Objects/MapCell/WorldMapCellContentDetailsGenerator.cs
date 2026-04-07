@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
-using NetExtensions.Collections;
 using X4World.Maps;
 
 namespace X4World.Objects
@@ -10,17 +10,13 @@ namespace X4World.Objects
         public void Generate(WorldMapCellContent target)
         {
             var aggregatedData = target.WorldMapCellAggregatedData;
-            var objects = new List<GalaxyAsPoint>();
+            var galaxyPoints = aggregatedData.GalaxiesPoints.ToArray();
+            var cellSize = WorldConstants.WorldMapCellSize;
 
-            foreach (var dataGalaxiesPoint in aggregatedData.GalaxiesPoints)
-            {
-                var color = GalaxyAsPointAggregatedData.ColorFromTemperature(dataGalaxiesPoint.Temperature);
-                var itemAggregatedData = new GalaxyAsPointAggregatedData(1, color);
-                var item = new GalaxyAsPoint(target, dataGalaxiesPoint.LocalPositionFromCenter, itemAggregatedData);
-                objects.Add(item);
-            }
+            var batchData = new GalaxiesBatchAggregatedData(cellSize, galaxyPoints);
+            var batch = new GalaxiesBatch(target, Vector3.Zero, cellSize * 1.5f, batchData);
 
-            target.SetGeneratedData(objects);
+            target.SetGeneratedData(new List<IWrappedDetails> { batch });
         }
 
         void IDetailsGenerator.Generate(IGeneratorTarget target)

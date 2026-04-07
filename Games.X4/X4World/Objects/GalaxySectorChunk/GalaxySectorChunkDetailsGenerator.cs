@@ -9,23 +9,13 @@ namespace X4World.Objects
         public void Generate(GalaxySectorChunk target)
         {
             var aggData = target.AggregatedData;
-            var clusterPoints = aggData.ClusterPoints;
-            var results = new List<IWrappedDetails>(clusterPoints.Length);
+            var batchData = new StarSystemsBatchAggregatedData(
+                aggData.ChunkRadius, aggData.Inclination, aggData.SpinAngle, aggData.ClusterPoints);
 
-            var galaxyRotation = Matrix.CreateRotationX(aggData.Inclination)
-                               * Matrix.CreateRotationY(aggData.SpinAngle);
+            var batch = new StarSystemsBatch(target, Vector3.Zero,
+                aggData.ChunkRadius * 2.0f, batchData);
 
-            for (int i = 0; i < clusterPoints.Length; i++)
-            {
-                var p = clusterPoints[i];
-                var localPos = Vector3.Transform(new Vector3(p.X, p.Y, p.Z), galaxyRotation);
-
-                var starData = new StarSystemAggregatedData(p.Temperature, p.Luminosity, i);
-                var starSystem = new StarSystemAsPoint(target, localPos, starData);
-                results.Add(starSystem);
-            }
-
-            target.SetGeneratedData(results);
+            target.SetGeneratedData(new List<IWrappedDetails> { batch });
         }
 
         void IDetailsGenerator.Generate(IGeneratorTarget target)

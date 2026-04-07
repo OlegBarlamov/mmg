@@ -25,7 +25,7 @@ namespace X4World.Objects
         
         public Point3D MapPoint { get; }
 
-        public float DistanceToUnwrapDetails { get; } = WorldConstants.WorldMapCellSize * 2;
+        public float DistanceToUnwrapDetails { get; } = WorldConstants.WorldMapCellSize * 4;
         
         public bool IsDetailsGenerated { get; private set; }
         public IObjectsSpace<Vector3, IWrappedDetails> Details { get; }

@@ -29,7 +29,10 @@ namespace Atom.Client.Components
 
         protected override BoundingBox? ConstructBoundingBox()
         {
-            return null;
+            var pos = DataModel.Position;
+            var r = DataModel.AggregatedData.SectorRadius;
+            var extent = new Vector3(r, r, r);
+            return new BoundingBox(pos - extent, pos + extent);
         }
     }
 }

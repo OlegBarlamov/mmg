@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Atom.Client.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using NetExtensions.Collections;
 using X4World;
 
 namespace Atom.Client.Controllers
@@ -36,19 +37,22 @@ namespace Atom.Client.Controllers
             _lastPlayerPosition = playerPosition;
             foreach (var unwrappedObject in _unwrappedObjects)
             {
-                if ((unwrappedObject.GetWorldPosition() - playerPosition).Length() >
-                    unwrappedObject.DistanceToUnwrapDetails)
+                var unwrapDist = unwrappedObject.DistanceToUnwrapDetails;
+                if ((unwrappedObject.GetWorldPosition() - playerPosition).LengthSquared() >
+                    unwrapDist * unwrapDist)
                 {
                     _objectsToWrap.Enqueue(unwrappedObject);
                 }
                 else
                 {
                     var localPlayerPosition = playerPosition - unwrappedObject.GetWorldPosition();
-                    var potentialObjectsToUnwrap = unwrappedObject.Details.GetInRadius(localPlayerPosition, unwrappedObject.DistanceToUnwrapDetails / 2);
+                    var potentialObjectsToUnwrap = unwrappedObject.Details.GetInRadius(localPlayerPosition, unwrapDist / 2);
                     foreach (var potentialObjectToUnwrap in potentialObjectsToUnwrap)
                     {
-                        if (!_unwrappedHashtable.ContainsKey(potentialObjectToUnwrap.Name) && (potentialObjectToUnwrap.Position - localPlayerPosition).Length() <
-                            potentialObjectToUnwrap.DistanceToUnwrapDetails)
+                        var childDist = potentialObjectToUnwrap.DistanceToUnwrapDetails;
+                        if (!_unwrappedHashtable.ContainsKey(potentialObjectToUnwrap.Name) &&
+                            (potentialObjectToUnwrap.Position - localPlayerPosition).LengthSquared() <
+                            childDist * childDist)
                         {
                             _objectsToUnwrap.Enqueue(potentialObjectToUnwrap);
                         }
@@ -60,7 +64,8 @@ namespace Atom.Client.Controllers
             {
                 var wrappedObject = _wrappedObjectsWithoutParent[index];
                 var worldPosition = wrappedObject.GetWorldPosition();
-                if ((playerPosition - worldPosition).Length() < wrappedObject.DistanceToUnwrapDetails)
+                var wrapDist = wrappedObject.DistanceToUnwrapDetails;
+                if ((playerPosition - worldPosition).LengthSquared() < wrapDist * wrapDist)
                 {
                     _wrappedObjectsWithoutParent.Remove(wrappedObject);
                     _objectsToUnwrap.Enqueue(wrappedObject);
@@ -72,7 +77,7 @@ namespace Atom.Client.Controllers
             {
                 var objectToWrap = _objectsToWrap.Dequeue();
                 _unwrappedHashtable.Remove(objectToWrap.Name);
-                _unwrappedObjects.Remove(objectToWrap);
+                _unwrappedObjects.SwapAndPopRemove(objectToWrap);
                 if (objectToWrap.Parent == null || _unwrappedHashtable.ContainsKey(objectToWrap.Parent.Name))
                     ObjectRevealed?.Invoke(objectToWrap);
                 foreach (var detail in objectToWrap.Details)
@@ -132,7 +137,7 @@ namespace Atom.Client.Controllers
         public void RemoveUnwrappedObject(IWrappedDetails wrappedDetails)
         {
             _unwrappedHashtable.Remove(wrappedDetails.Name);
-            _unwrappedObjects.Remove(wrappedDetails);
+            _unwrappedObjects.SwapAndPopRemove(wrappedDetails);
             foreach (var detail in wrappedDetails.Details)
             {
                 if (_unwrappedHashtable.ContainsKey(detail.Name))
