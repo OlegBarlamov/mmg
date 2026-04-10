@@ -136,7 +136,7 @@ namespace Atom.Client.Scenes
         {
             if (details.Count == 0) return;
 
-            var firstDetail = details[0];
+            var parent = details[0].Parent;
             var actions = new List<Action>(details.Count);
             foreach (var obj in details)
             {
@@ -149,7 +149,7 @@ namespace Atom.Client.Scenes
 
             MainUpdatesTasksProcessor.EnqueueTask(new BatchDelayedTask(
                 actions,
-                () => !_wrappedObjectsController.IsObjectRevealed(firstDetail)));
+                () => parent != null && !_wrappedObjectsController.IsObjectUnwrapped(parent)));
         }
 
         private void RevealObject(IWrappedDetails obj)

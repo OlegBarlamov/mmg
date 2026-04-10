@@ -19,5 +19,6 @@ namespace Atom.Client.Controllers
         void RemoveUnwrappedObject(IWrappedDetails wrappedDetails);
 
         bool IsObjectRevealed(IWrappedDetails details);
+        bool IsObjectUnwrapped(IWrappedDetails details);
     }
 }

@@ -163,6 +163,11 @@ namespace Atom.Client.Controllers
             return true;
         }
 
+        public bool IsObjectUnwrapped(IWrappedDetails details)
+        {
+            return _unwrappedHashtable.ContainsKey(details.Name);
+        }
+
         public void RemoveUnwrappedObject(IWrappedDetails wrappedDetails)
         {
             _unwrappedHashtable.Remove(wrappedDetails.Name);
