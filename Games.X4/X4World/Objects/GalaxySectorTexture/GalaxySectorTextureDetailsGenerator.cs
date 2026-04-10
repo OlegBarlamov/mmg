@@ -24,7 +24,7 @@ namespace X4World.Objects
                 aggData.Inclination, aggData.SpinAngle,
                 expanded);
 
-            var sector = new GalaxySector(target, Vector3.Zero, aggData.SectorRadius * 3f, sectorData);
+            var sector = new GalaxySector(target, Vector3.Zero, sectorData);
             target.SetGeneratedData(new List<IWrappedDetails> { sector });
         }
 

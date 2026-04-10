@@ -70,7 +70,7 @@ namespace X4World.Objects
             Parent = parent;
             AggregatedData = aggregatedData;
             Name = $"{Parent.Name}_gtl{NamesGenerator.Hash(HashType.Number)}";
-            DistanceToUnwrapDetails = aggregatedData.DiskRadius * 3f;
+            DistanceToUnwrapDetails = aggregatedData.DiskRadius * 7f;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.DiskRadius * 4f, 10);
         }
 

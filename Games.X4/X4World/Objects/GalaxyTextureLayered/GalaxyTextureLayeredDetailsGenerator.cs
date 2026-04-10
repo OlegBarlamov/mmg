@@ -16,8 +16,6 @@ namespace X4World.Objects
             var galaxyRotation = Matrix.CreateRotationX(aggData.Inclination)
                                * Matrix.CreateRotationY(aggData.SpinAngle);
 
-            var unwrapDistance = aggData.DiskRadius * 1.5f;
-
             for (int i = 0; i < sectors.Length; i++)
             {
                 var sector = sectors[i];
@@ -28,7 +26,7 @@ namespace X4World.Objects
                     sector.CenterX, sector.CenterZ,
                     aggData.Inclination, aggData.SpinAngle,
                     sector.Seed, sector.ClusterPoints);
-                var sectorTexture = new GalaxySectorTexture(target, localPos, unwrapDistance, sectorTextureData);
+                var sectorTexture = new GalaxySectorTexture(target, localPos, sectorTextureData);
                 results.Add(sectorTexture);
             }
 

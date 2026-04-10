@@ -101,46 +101,69 @@ namespace Atom.Client.Scenes
             _globalWorldMapController.CellRevealed += GlobalWorldMapControllerOnCellRevealed;
             _globalWorldMapController.CellHidden += GlobalWorldMapControllerOnCellHidden;
             _wrappedObjectsController = new WrappedObjectsController(DetailsGeneratorProvider);
-            _wrappedObjectsController.ObjectRevealed += WrappedObjectsControllerOnObjectRevealed; 
-            _wrappedObjectsController.ObjectHidden += WrappedObjectsControllerOnObjectHidden; 
+            _wrappedObjectsController.ObjectRevealed += WrappedObjectsControllerOnObjectRevealed;
+            _wrappedObjectsController.ObjectsRevealedBatch += WrappedObjectsControllerOnObjectsRevealedBatch;
+            _wrappedObjectsController.ObjectsHidden += WrappedObjectsControllerOnObjectsHidden; 
         }
 
-        private void WrappedObjectsControllerOnObjectHidden(IWrappedDetails obj)
+        private void WrappedObjectsControllerOnObjectsHidden(IReadOnlyList<IWrappedDetails> objects)
         {
-            MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
+            foreach (var obj in objects)
             {
                 if (_viewModels.TryGetValue(obj, out var viewModel))
                 {
                     RemoveView(viewModel);
                     viewModel.Dispose();
                     _viewModels.Remove(obj);
+                    TrackLayerCount(obj, -1);
                 }
-                else
-                {
-                    RemoveView(obj);
-                }
-
-                TrackLayerCount(obj, -1);
-            }, CancellationToken.None));
+                
+            }
         }
 
         private void WrappedObjectsControllerOnObjectRevealed(IWrappedDetails obj)
         {
             MainUpdatesTasksProcessor.EnqueueTask(new SimpleDelayedTask(g =>
             {
-                var viewModel = CreateViewModel(obj);
-                if (viewModel != null)
-                {
-                    _viewModels[obj] = viewModel;
-                    AddView(viewModel);
-                }
-                else
-                {
-                    AddView(obj);
-                }
+                if (!_wrappedObjectsController.IsObjectRevealed(obj))
+                    return;
 
-                TrackLayerCount(obj, 1);
+                RevealObject(obj);
             }, CancellationToken.None));
+        }
+
+        private void WrappedObjectsControllerOnObjectsRevealedBatch(IReadOnlyList<IWrappedDetails> details)
+        {
+            if (details.Count == 0) return;
+
+            var firstDetail = details[0];
+            var actions = new List<Action>(details.Count);
+            foreach (var obj in details)
+            {
+                actions.Add(() =>
+                {
+                    if (_wrappedObjectsController.IsObjectRevealed(obj))
+                        RevealObject(obj);
+                });
+            }
+
+            MainUpdatesTasksProcessor.EnqueueTask(new BatchDelayedTask(
+                actions,
+                () => !_wrappedObjectsController.IsObjectRevealed(firstDetail)));
+        }
+
+        private void RevealObject(IWrappedDetails obj)
+        {
+            if (_viewModels.ContainsKey(obj))
+                return;
+
+            var viewModel = CreateViewModel(obj);
+            if (viewModel == null)
+                return;
+
+            _viewModels[obj] = viewModel;
+            AddView(viewModel);
+            TrackLayerCount(obj, 1);
         }
 
         private void TrackLayerCount(IWrappedDetails obj, int delta)
@@ -243,6 +266,8 @@ namespace Atom.Client.Scenes
             _wrappedObjectsController.Update(playerPosition, gameTime);
 
             MainUpdatesTasksProcessor.Update(gameTime);
+            _lodStats.PendingTasks = MainUpdatesTasksProcessor.PendingTasksCount;
+            _lodStats.TotalViews = _viewModels.Count;
         }
 
         public override void Dispose()

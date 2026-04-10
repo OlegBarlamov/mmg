@@ -31,6 +31,12 @@ namespace X4World.Maps
 
         private byte[,,] GenerateData()
         {
+            if (WorldConstants.DebugSingleGalaxy)
+            {
+                var data = new byte[1, 1, 1];
+                data[0, 0, 0] = 1;
+                return data;
+            }
             return ArrayGenerator.GetRandomArray(10, 50, 100, 100, 100, RandomSeedProvider.Seed, i => (byte)i);
         }
     }

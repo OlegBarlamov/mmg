@@ -20,6 +20,8 @@ namespace Atom.Client.Components
         private readonly Dictionary<string, int> _counts = new Dictionary<string, int>();
 
         public IReadOnlyDictionary<string, int> Counts => _counts;
+        public int PendingTasks { get; set; }
+        public int TotalViews { get; set; }
 
         public void Track(string typeName, int delta)
         {
@@ -43,6 +45,19 @@ namespace Atom.Client.Components
             base.Draw(gameTime, context);
 
             var position = DataModel.Position;
+
+            var tasksText = $"Tasks: {DataModel.PendingTasks}";
+            var tasksSize = DataModel.Font.MeasureString(tasksText);
+            context.DrawString(DataModel.Font, tasksText, new Vector2(position.X - tasksSize.X, position.Y),
+                DataModel.PendingTasks > 20 ? Color.Red : DataModel.FontColor);
+            position.Y += DataModel.LineHeight;
+
+            var viewsText = $"Views: {DataModel.TotalViews}";
+            var viewsSize = DataModel.Font.MeasureString(viewsText);
+            context.DrawString(DataModel.Font, viewsText, new Vector2(position.X - viewsSize.X, position.Y), DataModel.FontColor);
+            position.Y += DataModel.LineHeight;
+
+            position.Y += DataModel.LineHeight * 0.5f;
 
             foreach (var kvp in DataModel.Counts)
             {

@@ -25,7 +25,15 @@ namespace Atom.Client.Components
         {
             base.OnAttached(scene);
 
-            var textures = DataModel.AggregatedData.LayerTextures;
+            var aggData = DataModel.AggregatedData;
+            var starViewModel = new GalaxyAsPointViewModel3D(
+                DataModel.Position,
+                aggData.GalaxyColor,
+                0.5f,
+                aggData.DiskRadius);
+            AddChild(starViewModel);
+
+            var textures = aggData.LayerTextures;
             for (int i = 0; i < textures.Length; i++)
             {
                 var index = i;

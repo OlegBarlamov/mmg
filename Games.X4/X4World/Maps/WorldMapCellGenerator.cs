@@ -36,6 +36,13 @@ namespace X4World.Maps
         {
             var result = new List<WorldMapCellAggregatedData.GalaxyPointData>();
 
+            if (WorldConstants.DebugSingleGalaxy)
+            {
+                result.Add(new WorldMapCellAggregatedData.GalaxyPointData(
+                    new Vector3(-1000, 10, 10), 6000f, 0.8f));
+                return result;
+            }
+
             for (byte i = 0; i < data; i++)
             {
                 var position = RandomService.NextVector3(

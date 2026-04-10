@@ -52,12 +52,12 @@ namespace X4World.Objects
 
         public GalaxySectorTextureAggregatedData AggregatedData { get; }
 
-        public GalaxySectorTexture(IWrappedDetails parent, Vector3 localPosition, float unwrapDistance, GalaxySectorTextureAggregatedData aggregatedData)
+        public GalaxySectorTexture(IWrappedDetails parent, Vector3 localPosition, GalaxySectorTextureAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            DistanceToUnwrapDetails = unwrapDistance;
+            DistanceToUnwrapDetails = aggregatedData.DiskRadius * 3f;
             Name = $"{Parent.Name}_stx{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.SectorRadius * 2f, 10);
         }

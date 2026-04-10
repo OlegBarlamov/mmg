@@ -40,12 +40,12 @@ namespace X4World.Objects
 
         public GalaxySectorAggregatedData AggregatedData { get; }
 
-        public GalaxySector(IWrappedDetails parent, Vector3 localPosition, float unwrapDistance, GalaxySectorAggregatedData aggregatedData)
+        public GalaxySector(IWrappedDetails parent, Vector3 localPosition, GalaxySectorAggregatedData aggregatedData)
         {
             Position = localPosition;
             Parent = parent;
             AggregatedData = aggregatedData;
-            DistanceToUnwrapDetails = unwrapDistance;
+            DistanceToUnwrapDetails = aggregatedData.SectorRadius * 6f;
             Name = $"{Parent.Name}_sec{NamesGenerator.Hash(HashType.Number)}";
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.SectorRadius * 4f, 10);
         }

@@ -10,8 +10,8 @@ namespace Atom.Client.Components
         public StarSystemAsPointViewModel3D(StarSystemAsPoint starSystem)
         {
             Position = starSystem.GetWorldPosition();
-            Scale = new Vector3(starSystem.AggregatedData.Luminosity * 0.5f);
-            MeshMaterial = new StarMaterial(starSystem.AggregatedData.Color, MathHelper.Clamp(starSystem.AggregatedData.Luminosity * 0.4f, 0.1f, 1f));
+            Scale = new Vector3(starSystem.AggregatedData.Luminosity * 1.5f);
+            MeshMaterial = new StarMaterial(starSystem.AggregatedData.Color, MathHelper.Clamp(starSystem.AggregatedData.Luminosity * 0.8f, 0.3f, 1f));
             GraphicsPassName = GraphicsPasses.Stars;
         }
     }

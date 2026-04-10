@@ -20,11 +20,12 @@ namespace Atom.Client.Components
             GalaxySectorViewModel3D viewModel, ICamera3DProvider camera3DProvider)
         {
             var agg = viewModel.AggregatedData;
-            var cameraPos = camera3DProvider.GetActiveCamera().GetPosition();
-            var localCameraDir = cameraPos - viewModel.Position;
             var galaxyRotation = Matrix.CreateRotationX(agg.Inclination)
                                * Matrix.CreateRotationY(agg.SpinAngle);
-            return new SectorStarFieldGeometry(agg.ClusterPoints, agg.SectorRadius, localCameraDir, galaxyRotation);
+            return new SectorStarFieldGeometry(
+                agg.ClusterPoints, agg.SectorRadius, galaxyRotation,
+                () => camera3DProvider.GetActiveCamera().GetPosition(),
+                viewModel.Position);
         }
 
         protected override BoundingBox? ConstructBoundingBox()

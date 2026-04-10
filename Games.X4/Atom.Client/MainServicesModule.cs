@@ -32,7 +32,7 @@ namespace Atom.Client
             serviceRegistrator.RegisterFactory<IScenesResolver>((locator, type) => locator.Resolve<ScenesResolverHolder>().ScenesResolver);
             serviceRegistrator.RegisterType<IExecutableCommandsCollection, ExecutableCommandsCollection>();
             
-            serviceRegistrator.RegisterInstance<IMainUpdatesTasksProcessor>(new FixedVelocityTasksProcessor(5));
+            serviceRegistrator.RegisterInstance<IMainUpdatesTasksProcessor>(new FixedVelocityTasksProcessor(10));
             serviceRegistrator.RegisterType<IBackgroundTasksProcessor, ThreadPoolTasksProcessor>();
             
             serviceRegistrator.RegisterType<MainResourcePackage, MainResourcePackage>();

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using FrameworkSDK.MonoGame.Core;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
@@ -9,7 +9,8 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
     public class FixedVelocityTasksProcessor : IMainUpdatesTasksProcessor, IDisposable
     {
         public int Velocity { get; }
-        private readonly ConcurrentQueue<IDelayedTask> _tasks = new ConcurrentQueue<IDelayedTask>();
+        public int PendingTasksCount => _tasks.Count;
+        private readonly Queue<IDelayedTask> _tasks = new Queue<IDelayedTask>();
 
         public FixedVelocityTasksProcessor(int velocity = 1)
         {
@@ -24,25 +25,35 @@ namespace FrameworkSDK.MonoGame.Services.Implementations
 
         public void Update(GameTime gameTime)
         {
-            for (int i = 0; i < Velocity; i++)
+            for (int i = 0; i < Velocity;)
             {
-                if (_tasks.TryDequeue(out var task))
-                {
-                    if (!task.Cancelled)
-                        task.Execute();
-                }
-                else
-                {
+                if (!_tasks.TryPeek(out var task))
                     break;
+
+                if (task.Cancelled)
+                {
+                    _tasks.Dequeue();
+                    continue;
                 }
+
+                if (task is BatchDelayedTask batch)
+                {
+                    batch.Execute();
+                    i++;
+                    if (batch.IsCompleted || batch.Cancelled)
+                        _tasks.Dequeue();
+                    continue;
+                }
+
+                _tasks.Dequeue();
+                task.Execute();
+                i++;
             }
         }
 
         public void Dispose()
         {
-            while (_tasks.TryDequeue(out _))
-            {
-            }
+            _tasks.Clear();
         }
     }
 }

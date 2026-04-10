@@ -7,35 +7,86 @@ using X4World.Objects;
 
 namespace Atom.Client.Components
 {
-    public class GalaxySectorChunkGeometry : StaticMeshGeometry<VertexPositionColor>
+    public class GalaxySectorChunkGeometry : MeshGeometryBase<VertexPositionColor>
     {
         private const int CircleSides = 12;
+        private const float RebuildDotThreshold = 0.985f;
+
+        private readonly GalaxyClusterPoint[] _clusterPoints;
+        private readonly Matrix _galaxyRotation;
+        private readonly Func<Vector3> _getCameraPosition;
+        private readonly Vector3 _worldPosition;
+
+        private VertexPositionColor[] _cachedVertices;
+        private Array _cachedIndices;
+        private int _cachedPrimitiveCount;
+        private Vector3 _lastCameraDir;
 
         public GalaxySectorChunkGeometry(GalaxyClusterPoint[] clusterPoints, float chunkRadius,
-            Vector3 localCameraDirection, Matrix galaxyRotation)
-            : base(
-                VertexPositionColor.VertexDeclaration,
-                PrimitiveType.TriangleList,
-                CreateVertices(clusterPoints, chunkRadius, localCameraDirection, galaxyRotation, out var indices),
-                indices,
-                indices.Length / 3)
+            Matrix galaxyRotation, Func<Vector3> getCameraPosition, Vector3 worldPosition)
+            : base(VertexPositionColor.VertexDeclaration, PrimitiveType.TriangleList)
         {
+            _clusterPoints = clusterPoints;
+            _galaxyRotation = galaxyRotation;
+            _getCameraPosition = getCameraPosition;
+            _worldPosition = worldPosition;
         }
 
-        private static VertexPositionColor[] CreateVertices(
-            GalaxyClusterPoint[] clusterPoints, float chunkRadius,
-            Vector3 lookDir, Matrix galaxyRotation, out int[] indices)
+        public override VertexPositionColor[] GetVertices()
         {
-            if (clusterPoints.Length == 0)
+            EnsureUpToDate();
+            return _cachedVertices;
+        }
+
+        public override Array GetIndices()
+        {
+            EnsureUpToDate();
+            return _cachedIndices;
+        }
+
+        public override int GetPrimitivesCount()
+        {
+            EnsureUpToDate();
+            return _cachedPrimitiveCount;
+        }
+
+        private void EnsureUpToDate()
+        {
+            var cameraDir = _getCameraPosition() - _worldPosition;
+            if (_cachedVertices != null)
             {
-                indices = new int[] { 0, 0, 0 };
-                return new[] { new VertexPositionColor(Vector3.Zero, Color.Transparent) };
+                var len = cameraDir.LengthSquared();
+                if (len > 0.0001f)
+                {
+                    var newNorm = cameraDir * (1f / (float)Math.Sqrt(len));
+                    var oldLen = _lastCameraDir.LengthSquared();
+                    if (oldLen > 0.0001f)
+                    {
+                        var oldNorm = _lastCameraDir * (1f / (float)Math.Sqrt(oldLen));
+                        if (Vector3.Dot(newNorm, oldNorm) > RebuildDotThreshold)
+                            return;
+                    }
+                }
+            }
+
+            _lastCameraDir = cameraDir;
+            Rebuild(cameraDir);
+        }
+
+        private void Rebuild(Vector3 lookDir)
+        {
+            if (_clusterPoints.Length == 0)
+            {
+                _cachedVertices = new[] { new VertexPositionColor(Vector3.Zero, Color.Transparent) };
+                _cachedIndices = IndicesBuffersFactory.CreateIndicesArray(new[] { 0, 0, 0 });
+                _cachedPrimitiveCount = 1;
+                return;
             }
 
             var vertsPerStar = 1 + CircleSides + CircleSides;
             var idxPerStar = CircleSides * 3 + CircleSides * 6;
-            var verts = new List<VertexPositionColor>(clusterPoints.Length * vertsPerStar);
-            var idx = new List<int>(clusterPoints.Length * idxPerStar);
+            var verts = new List<VertexPositionColor>(_clusterPoints.Length * vertsPerStar);
+            var idx = new List<int>(_clusterPoints.Length * idxPerStar);
 
             if (lookDir.LengthSquared() < 0.001f)
                 lookDir = Vector3.Forward;
@@ -45,10 +96,10 @@ namespace Atom.Client.Components
             var right = Vector3.Normalize(Vector3.Cross(worldUp, lookDir));
             var up = Vector3.Cross(lookDir, right);
 
-            for (int i = 0; i < clusterPoints.Length; i++)
+            for (int i = 0; i < _clusterPoints.Length; i++)
             {
-                var p = clusterPoints[i];
-                var center = Vector3.Transform(new Vector3(p.X, p.Y, p.Z), galaxyRotation);
+                var p = _clusterPoints[i];
+                var center = Vector3.Transform(new Vector3(p.X, p.Y, p.Z), _galaxyRotation);
 
                 var starColor = GalaxyAsPointAggregatedData.ColorFromTemperature(p.Temperature);
                 var brightness = MathHelper.Clamp(0.4f + p.Luminosity * 0.8f, 0.2f, 1f);
@@ -64,14 +115,15 @@ namespace Atom.Client.Components
                     starColor.B / 255f * glowAlpha,
                     0f);
 
-                var coreRadius = chunkRadius * (0.006f + p.Luminosity * 0.012f);
+                var coreRadius = 0.015f + p.Luminosity * 0.025f;
                 var glowRadius = coreRadius * 2f;
 
                 AddGlowStar(verts, idx, center, coreRadius, glowRadius, right, up, coreColor, glowColor);
             }
 
-            indices = idx.ToArray();
-            return verts.ToArray();
+            _cachedVertices = verts.ToArray();
+            _cachedIndices = IndicesBuffersFactory.CreateIndicesArray(idx.ToArray());
+            _cachedPrimitiveCount = idx.Count / 3;
         }
 
         private static void AddGlowStar(

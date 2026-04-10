@@ -90,7 +90,7 @@ namespace X4World.Objects
             var chunkData = new GalaxySectorChunkAggregatedData(
                 chunkRadius, aggData.Inclination, aggData.SpinAngle, localPoints);
 
-            result.Add(new GalaxySectorChunk(parent, chunkPos, chunkRadius * 3f, chunkData));
+            result.Add(new GalaxySectorChunk(parent, chunkPos, aggData.SectorRadius * 3f, chunkData));
         }
 
         void IDetailsGenerator.Generate(IGeneratorTarget target)
