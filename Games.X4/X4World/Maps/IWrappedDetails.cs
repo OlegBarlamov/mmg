@@ -8,6 +8,7 @@ namespace X4World
 {
     public interface IWrappedDetails : ILocatable3D, IGeneratorTarget, INamed
     {
+        string LayerName { get; }
         Vector3 GetWorldPosition();
         IWrappedDetails Parent { get; }
         

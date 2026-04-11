@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using MonoGameExtensions.DataStructures;
 using MonoGameExtensions.Geometry;
 using NetExtensions.Geometry;
+using X4World.Generation;
 using Point3DExtensions = MonoGameExtensions.Geometry.Point3DExtensions;
 
 namespace X4World.Maps
@@ -22,15 +23,16 @@ namespace X4World.Maps
 
         public static Point3D MapPointFromWorld(Vector3 worldPoint)
         {
+            var cellSize = GalaxyConfig.Instance.MapCell.CellSize;
             return Point3DExtensions.Point3DFromVector3(new Vector3(
-                (worldPoint.X + Math.Sign(worldPoint.X) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
-                (worldPoint.Y + Math.Sign(worldPoint.Y) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize,
-                (worldPoint.Z + Math.Sign(worldPoint.Z) * WorldConstants.WorldMapCellSize / 2) / WorldConstants.WorldMapCellSize));
+                (worldPoint.X + Math.Sign(worldPoint.X) * cellSize / 2) / cellSize,
+                (worldPoint.Y + Math.Sign(worldPoint.Y) * cellSize / 2) / cellSize,
+                (worldPoint.Z + Math.Sign(worldPoint.Z) * cellSize / 2) / cellSize));
         }
-        
+
         public static Vector3 WorldFromMapPoint(Point3D mapPoint)
         {
-            return mapPoint.ToVector3() * WorldConstants.WorldMapCellSize;
+            return mapPoint.ToVector3() * GalaxyConfig.Instance.MapCell.CellSize;
         }
 
         public override GlobalWorldMapCell GetCell(Point3D point)

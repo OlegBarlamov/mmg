@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using MonoGameExtensions.DataStructures;
 using NetExtensions.Geometry;
 using NetExtensions.Helpers;
+using X4World.Generation;
 
 namespace X4World.Maps
 {
@@ -31,7 +32,7 @@ namespace X4World.Maps
 
         private byte[,,] GenerateData()
         {
-            if (WorldConstants.DebugSingleGalaxy)
+            if (GalaxyConfig.Instance.MapCell.Debug.SingleGalaxy)
             {
                 var data = new byte[1, 1, 1];
                 data[0, 0, 0] = 1;

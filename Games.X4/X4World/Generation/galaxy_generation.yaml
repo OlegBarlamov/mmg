@@ -1,0 +1,108 @@
+# ============================================================
+# Galaxy Generation Configuration
+# unwrapDistanceMultiplier — multiplied by a reference size to
+#   determine when the layer reveals its children.
+# octreeSizeMultiplier / octreeDepth — spatial index parameters.
+# ============================================================
+
+# Layer 0 — World map cell (top-level spatial grid)
+# Generator: WorldMapCellContentDetailsGenerator
+mapCell:
+  cellSize: 5000                    # world-units per cell side
+  unwrapDistanceMultiplier: 4       # × cellSize
+  octreeDepth: 10
+  galaxyGeneration:
+    temperatureMin: 1000            # Kelvin, coolest galaxies (reddish)
+    temperatureMax: 10000           # Kelvin, hottest galaxies (bluish)
+    powerMin: 0.3                   # min galaxy power (affects size, star count)
+    powerMax: 1.0
+  debug:
+    singleGalaxy: false             # true = spawn one galaxy for testing
+    position: [-1000, 10, 10]
+    temperature: 6000
+    power: 0.8
+
+# Layer 1 — Galaxies batch (groups galaxies inside a cell)
+# Generator: GalaxiesBatchDetailsGenerator
+galaxiesBatch:
+  unwrapDistanceMultiplier: 1.5     # × cellSize
+  octreeSizeMultiplier: 1.5         # × cellSize
+  baseGalaxyHalfSize: 30            # billboard half-size for distant galaxies
+
+# Layer 2 — Galaxy as point (single galaxy, generates spiral structure)
+# Generator: GalaxyAsPointDetailsGenerator
+galaxyAsPoint:
+  unwrapDistance: 2000              # absolute distance to reveal texture layer
+  octreeSize: 100
+  visualScaleMultiplier: 150        # billboard scale = power × this
+  # Spiral arm generation
+  baseArmCount: 2                   # armCount = base + power × scale
+  armCountPowerScale: 4
+  baseDiskRadius: 20                # diskRadius = base + power × scale
+  diskRadiusPowerScale: 40
+  # Initial cluster (star) points
+  baseClusterCount: 2000            # clusterCount = base + power × scale
+  clusterCountPowerScale: 8000      # max ~10 000 initial stars
+  scatterScaleMin: 0.5              # scatter lerp(max→min, power)
+  scatterScaleMax: 1.5
+  diskThicknessRatio: 0.05          # Y spread as fraction of diskRadius
+  spiralWindFactor: 1.5             # how tightly arms wind
+  radialExtentFactor: 0.9           # radial reach as fraction of diskRadius
+  # Per-star luminosity & temperature
+  baseLuminosityScale: 0.3
+  luminosityPowerScale: 2.0
+  luminosityRandomBase: 0.5
+  temperatureBlend: 0.4             # blend toward galaxy-wide temperature
+
+# Layer 3 — Galaxy texture farthest (expands clusters, partitions into sectors)
+# Generator: GalaxyTextureFarthestDetailsGenerator
+galaxyTextureFarthest:
+  subClustersPerPoint: 2            # extra sub-stars spawned per cluster point
+  subClusterSpread: 0.08            # spread as fraction of diskRadius
+  subClusterLuminosityScale: 0.4    # sub-star luminosity relative to parent
+  sectorGridSize: 5                 # NxN grid for sector partitioning
+  unwrapDistanceMultiplier: 15      # × diskRadius
+  octreeSizeMultiplier: 2           # × diskRadius
+
+# Layer 4 — Galaxy texture layered (intermediate texture LOD, per-sector view)
+# Generator: GalaxyTextureLayeredDetailsGenerator
+galaxyTextureLayered:
+  unwrapDistanceMultiplier: 7       # × diskRadius
+  octreeSizeMultiplier: 4           # × diskRadius
+
+# Layer 5 — Galaxy sector texture (per-sector texture before dots)
+# Generator: GalaxySectorTextureDetailsGenerator
+galaxySectorTexture:
+  diskThicknessScale: 2.5           # Y-axis exaggeration for 3D feel
+  unwrapDistanceMultiplier: 3       # × diskRadius
+  octreeSizeMultiplier: 2           # × sectorRadius
+
+# Layer 6 — Galaxy sector (adaptive quadtree split into chunks)
+# Generator: GalaxySectorDetailsGenerator
+galaxySector:
+  maxPointsPerChunk: 150            # split threshold
+  maxSplitDepth: 5
+  unwrapDistanceMultiplier: 6       # × sectorRadius
+  octreeSizeMultiplier: 4           # × sectorRadius
+
+# Layer 7 — Galaxy sector chunk (further split into star batches)
+# Generator: GalaxySectorChunkDetailsGenerator
+galaxySectorChunk:
+  maxPointsPerBatch: 30             # split threshold
+  maxSplitDepth: 3
+  unwrapDistanceMultiplier: 3       # × sectorRadius
+  octreeSizeMultiplier: 10          # × chunkRadius
+
+# Layer 8 — Star systems batch (group of individual stars)
+# Generator: StarSystemsBatchDetailsGenerator
+starSystemsBatch:
+  unwrapDistanceMultiplier: 1.5     # × sectorRadius
+  octreeSizeMultiplier: 2.5         # × computed max extent
+
+# Layer 9 — Star system as point (individual star rendering)
+# Generator: StarSystemAsPointDetailsGenerator
+starSystemAsPoint:
+  visualScaleMultiplier: 0.15       # dot scale = luminosity × this
+  brightnessMultiplier: 0.8         # material brightness = luminosity × this
+  brightnessMin: 0.3                # clamp range
+  brightnessMax: 1.0

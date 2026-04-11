@@ -168,7 +168,7 @@ namespace Atom.Client.Scenes
 
         private void TrackLayerCount(IWrappedDetails obj, int delta)
         {
-            _lodStats.Track(obj.GetType().Name, delta);
+            _lodStats.Track(obj.LayerName, delta);
         }
 
         private ViewModel3D CreateViewModel(IWrappedDetails obj)
@@ -213,11 +213,6 @@ namespace Atom.Client.Scenes
 
         protected override void Initialize()
         {
-            // AddView(new Grid3DComponentView<FunctionController<Grid3DComponentData>>(new Grid3DComponentData
-            // {
-            //     GraphicsPassName = GraphicsPasses.Grouped,
-            // }));
-
             AddView(new DebugInfoComponentData
             {
                 Font = DataModel.MainResourcePackage.DebugInfoFont,

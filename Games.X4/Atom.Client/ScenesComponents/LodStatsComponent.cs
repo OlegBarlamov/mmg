@@ -17,7 +17,7 @@ namespace Atom.Client.Components
         public float LineHeight = 20f;
         public Color FontColor = Color.White;
 
-        private readonly Dictionary<string, int> _counts = new Dictionary<string, int>();
+        private readonly SortedDictionary<string, int> _counts = new SortedDictionary<string, int>();
 
         public IReadOnlyDictionary<string, int> Counts => _counts;
         public int PendingTasks { get; set; }

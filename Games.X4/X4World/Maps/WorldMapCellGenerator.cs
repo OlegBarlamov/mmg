@@ -5,6 +5,7 @@ using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using NetExtensions.Geometry;
+using X4World.Generation;
 using X4World.Objects;
 
 namespace X4World.Maps
@@ -24,37 +25,40 @@ namespace X4World.Maps
         }
         public GlobalWorldMapCell Generate(Point3D point, byte data)
         {
-            var map = GenerateData(data);
+            var cfg = GalaxyConfig.Instance.MapCell;
+            var map = GenerateData(data, cfg);
             var aggregatedData = new WorldMapCellAggregatedData(map);
             var position = GlobalWorldMap.WorldFromMapPoint(point);
-            
-            var content = new WorldMapCellContent(point, position, WorldConstants.WorldMapCellSize, aggregatedData);
+
+            var content = new WorldMapCellContent(point, position, cfg.CellSize, aggregatedData);
             return new GlobalWorldMapCell(point, content);
         }
 
-        private IReadOnlyCollection<WorldMapCellAggregatedData.GalaxyPointData> GenerateData(byte data)
+        private IReadOnlyCollection<WorldMapCellAggregatedData.GalaxyPointData> GenerateData(byte data, MapCellConfig cfg)
         {
             var result = new List<WorldMapCellAggregatedData.GalaxyPointData>();
 
-            if (WorldConstants.DebugSingleGalaxy)
+            if (cfg.Debug.SingleGalaxy)
             {
+                var pos = cfg.Debug.Position;
                 result.Add(new WorldMapCellAggregatedData.GalaxyPointData(
-                    new Vector3(-1000, 10, 10), 6000f, 0.8f));
+                    new Vector3(pos[0], pos[1], pos[2]), cfg.Debug.Temperature, cfg.Debug.Power));
                 return result;
             }
 
+            var gen = cfg.GalaxyGeneration;
             for (byte i = 0; i < data; i++)
             {
+                var halfSize = cfg.CellSize / 2;
                 var position = RandomService.NextVector3(
-                    new Vector3(-WorldConstants.WorldMapCellSize / 2),
-                    new Vector3(WorldConstants.WorldMapCellSize / 2));
-                var temperature = RandomService.NextFloat(1000, 10000);
-                var power = RandomService.NextFloat(0.3f, 1.0f);
+                    new Vector3(-halfSize),
+                    new Vector3(halfSize));
+                var temperature = RandomService.NextFloat(gen.TemperatureMin, gen.TemperatureMax);
+                var power = RandomService.NextFloat(gen.PowerMin, gen.PowerMax);
 
-                var pointData = new WorldMapCellAggregatedData.GalaxyPointData(position, temperature, power);
-                result.Add(pointData);
-            } 
-            
+                result.Add(new WorldMapCellAggregatedData.GalaxyPointData(position, temperature, power));
+            }
+
             return result;
         }
     }

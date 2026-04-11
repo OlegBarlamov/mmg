@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using MonoGameExtensions.DataStructures;
 using MonoGameExtensions.Geometry;
 using NetExtensions.Geometry;
+using X4World.Generation;
 using X4World.Objects;
 
 namespace X4World.Maps
@@ -13,17 +14,15 @@ namespace X4World.Maps
         public Point3D MapPoint { get; }
 
         public Vector3 PositionCenter { get; }
-        
-        /// <summary>
-        /// Width/Height/Depth of the cell
-        /// </summary>
-        public float Side { get; } = WorldConstants.WorldMapCellSize;
-        
+
+        public float Side { get; }
+
         public WorldMapCellContent Content { get; }
 
         public GlobalWorldMapCell(Point3D mapPoint, [NotNull] WorldMapCellContent content)
         {
             MapPoint = mapPoint;
+            Side = GalaxyConfig.Instance.MapCell.CellSize;
             PositionCenter = mapPoint.ToVector3() * Side;
             Content = content ?? throw new ArgumentNullException(nameof(content));
         }
@@ -35,9 +34,10 @@ namespace X4World.Maps
 
         public bool ContainsPoint(Vector3 point)
         {
-            return point.X > PositionCenter.X - WorldConstants.WorldMapCellSize / 2 && point.X < PositionCenter.X + WorldConstants.WorldMapCellSize / 2 &&
-                   point.Y > PositionCenter.Y - WorldConstants.WorldMapCellSize / 2 && point.Y < PositionCenter.Y + WorldConstants.WorldMapCellSize / 2 &&
-                   point.Z > PositionCenter.Z - WorldConstants.WorldMapCellSize / 2 && point.Z < PositionCenter.Z + WorldConstants.WorldMapCellSize / 2;
+            var half = Side / 2;
+            return point.X > PositionCenter.X - half && point.X < PositionCenter.X + half &&
+                   point.Y > PositionCenter.Y - half && point.Y < PositionCenter.Y + half &&
+                   point.Z > PositionCenter.Z - half && point.Z < PositionCenter.Z + half;
         }
     }
 }
