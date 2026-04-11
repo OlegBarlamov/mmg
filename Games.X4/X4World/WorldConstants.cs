@@ -42,6 +42,6 @@ namespace X4World
     {
         public const float WorldMapCellSize = 5000f;
         
-        public const bool DebugSingleGalaxy = true;
+        public const bool DebugSingleGalaxy = false;
     }
 }

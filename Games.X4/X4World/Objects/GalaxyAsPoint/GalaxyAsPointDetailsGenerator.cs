@@ -20,12 +20,12 @@ namespace X4World.Objects
             var power = target.AggregatedData.Power;
             var galaxyColor = target.AggregatedData.Color;
             var armCount = 2 + (int)(power * 4);
-            var diskRadius = 10f + power * 20f;
+            var diskRadius = 20f + power * 40f;
             var inclination = RandomService.NextFloat(0f, MathHelper.Pi);
             var spinAngle = RandomService.NextFloat(0f, MathHelper.TwoPi);
             var seed = RandomService.NextInteger(0, int.MaxValue);
 
-            var clusterCount = 100 + (int)(power * 400);
+            var clusterCount = 500 + (int)(power * 1500);
             var clusterPoints = GenerateClusterPoints(armCount, diskRadius, power, galaxyColor, seed, clusterCount);
 
             var aggregatedData = new GalaxyTextureFarthestAggregatedData(

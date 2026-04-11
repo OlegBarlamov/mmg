@@ -7,11 +7,9 @@ namespace X4World.Objects
 {
     public class GalaxyTextureFarthestDetailsGenerator : IDetailsGenerator<GalaxyTextureFarthest>
     {
-        private const int SubClustersPerPoint = 8;
-        private const float SubClusterSpread = 0.1f;
+        private const int SubClustersPerPoint = 2;
+        private const float SubClusterSpread = 0.08f;
         private const float SubClusterLuminosityScale = 0.4f;
-        private const float FillClusterLuminosityMax = 0.3f;
-        private const int FillClusterMultiplier = 3;
         private const int SectorGridSize = 5;
 
         public void Generate(GalaxyTextureFarthest target)
@@ -19,7 +17,7 @@ namespace X4World.Objects
             var aggData = target.AggregatedData;
             var rng = new Random(aggData.Seed);
 
-            var expandedPoints = ExpandClusterPoints(aggData.ClusterPoints, aggData.DiskRadius, aggData.ArmCount, rng);
+            var expandedPoints = ExpandClusterPoints(aggData.ClusterPoints, aggData.DiskRadius, rng);
             var sectors = PartitionIntoSectors(expandedPoints, aggData.DiskRadius, rng);
 
             var sectorSeed = rng.Next();
@@ -91,9 +89,9 @@ namespace X4World.Objects
         }
 
         private static GalaxyClusterPoint[] ExpandClusterPoints(
-            GalaxyClusterPoint[] originals, float diskRadius, int armCount, Random rng)
+            GalaxyClusterPoint[] originals, float diskRadius, Random rng)
         {
-            var expanded = new List<GalaxyClusterPoint>(originals.Length * (1 + SubClustersPerPoint) + originals.Length * FillClusterMultiplier);
+            var expanded = new List<GalaxyClusterPoint>(originals.Length * (1 + SubClustersPerPoint));
 
             foreach (var cluster in originals)
             {
@@ -112,28 +110,6 @@ namespace X4World.Objects
 
                     expanded.Add(new GalaxyClusterPoint(ox, oy, oz, subTemp, subLum));
                 }
-            }
-
-            var fillCount = originals.Length * FillClusterMultiplier;
-            for (int i = 0; i < fillCount; i++)
-            {
-                var arm = i % armCount;
-                var armBaseAngle = arm * MathHelper.TwoPi / armCount;
-
-                var radialFraction = (float)(rng.NextDouble() * rng.NextDouble());
-                var r = radialFraction * diskRadius * 0.9f;
-                var windAngle = radialFraction * MathHelper.TwoPi * 1.5f;
-                var scatter = (float)(rng.NextDouble() - 0.5) * 2f * (1f + r * 0.05f);
-
-                var angle = armBaseAngle + windAngle;
-                var x = r * (float)Math.Cos(angle) + scatter;
-                var z = r * (float)Math.Sin(angle) + scatter;
-                var y = (float)(rng.NextDouble() - 0.5) * 2f * diskRadius * 0.05f;
-
-                var temperature = 1000f + (float)rng.NextDouble() * 9000f;
-                var luminosity = (float)rng.NextDouble() * FillClusterLuminosityMax;
-
-                expanded.Add(new GalaxyClusterPoint(x, y, z, temperature, luminosity));
             }
 
             return expanded.ToArray();
