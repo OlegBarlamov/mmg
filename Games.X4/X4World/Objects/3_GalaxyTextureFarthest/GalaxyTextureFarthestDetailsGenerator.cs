@@ -10,7 +10,7 @@ namespace X4World.Objects
     {
         public void Generate(GalaxyTextureFarthest target)
         {
-            var cfg = GalaxyConfig.Instance.GalaxyTextureFarthest;
+            var cfg = GalaxyConfig.Instance.GalaxyTextureFarthest.Generation;
             var aggData = target.AggregatedData;
             var rng = new Random(aggData.Seed);
 
@@ -82,7 +82,7 @@ namespace X4World.Objects
         }
 
         private static GalaxyClusterPoint[] ExpandClusterPoints(
-            GalaxyClusterPoint[] originals, float diskRadius, Random rng, GalaxyTextureFarthestConfig cfg)
+            GalaxyClusterPoint[] originals, float diskRadius, Random rng, GalaxyTextureFarthestGenerationConfig cfg)
         {
             var expanded = new List<GalaxyClusterPoint>(originals.Length * (1 + cfg.SubClustersPerPoint));
 

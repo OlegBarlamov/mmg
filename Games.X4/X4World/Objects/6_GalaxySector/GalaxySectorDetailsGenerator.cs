@@ -11,7 +11,7 @@ namespace X4World.Objects
 
         public void Generate(GalaxySector target)
         {
-            var cfg = GalaxyConfig.Instance.GalaxySector;
+            var cfg = GalaxyConfig.Instance.GalaxySector.Generation;
             var aggData = target.AggregatedData;
             var clusterPoints = aggData.ClusterPoints;
             var sectorRadius = aggData.SectorRadius;

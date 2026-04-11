@@ -24,7 +24,7 @@ namespace X4World.Objects
             GalaxiesBatchAggregatedData aggregatedData)
             : base(parent, localPosition, aggregatedData)
         {
-            var cfg = GalaxyConfig.Instance.GalaxiesBatch;
+            var cfg = GalaxyConfig.Instance.GalaxiesBatch.Node;
             LayerName = "1_GalaxiesBatch";
             Name = $"{parent.Name}_gb{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = aggregatedData.CellSize * cfg.UnwrapDistanceMultiplier;

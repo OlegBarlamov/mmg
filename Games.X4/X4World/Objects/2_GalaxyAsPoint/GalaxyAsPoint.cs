@@ -40,7 +40,7 @@ namespace X4World.Objects
             GalaxyAsPointAggregatedData aggregatedData)
             : base(parent, localPosition, aggregatedData)
         {
-            var cfg = GalaxyConfig.Instance.GalaxyAsPoint;
+            var cfg = GalaxyConfig.Instance.GalaxyAsPoint.Node;
             LayerName = "2_GalaxyAsPoint";
             Name = $"{parent.Name}_g{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = cfg.UnwrapDistance;

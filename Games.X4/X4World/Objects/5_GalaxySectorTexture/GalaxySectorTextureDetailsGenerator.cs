@@ -25,7 +25,7 @@ namespace X4World.Objects
 
         private static GalaxyClusterPoint[] ScaleThickness(GalaxyClusterPoint[] originals)
         {
-            var thicknessScale = GalaxyConfig.Instance.GalaxySectorTexture.DiskThicknessScale;
+            var thicknessScale = GalaxyConfig.Instance.GalaxySectorTexture.Generation.DiskThicknessScale;
             var result = new GalaxyClusterPoint[originals.Length];
             for (int i = 0; i < originals.Length; i++)
             {

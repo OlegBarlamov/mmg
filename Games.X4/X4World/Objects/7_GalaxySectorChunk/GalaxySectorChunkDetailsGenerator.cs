@@ -11,7 +11,7 @@ namespace X4World.Objects
 
         public void Generate(GalaxySectorChunk target)
         {
-            var cfg = GalaxyConfig.Instance.GalaxySectorChunk;
+            var cfg = GalaxyConfig.Instance.GalaxySectorChunk.Generation;
             var aggData = target.AggregatedData;
             var chunkRadius = aggData.ChunkRadius;
 

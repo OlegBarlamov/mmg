@@ -39,7 +39,7 @@ namespace X4World.Objects
             Size = new Vector3(size);
             WorldMapCellAggregatedData = worldMapCellAggregatedData ?? throw new ArgumentNullException(nameof(worldMapCellAggregatedData));
 
-            var cfg = GalaxyConfig.Instance.MapCell;
+            var cfg = GalaxyConfig.Instance.MapCell.Node;
             DistanceToUnwrapDetails = cfg.CellSize * cfg.UnwrapDistanceMultiplier;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, size, cfg.OctreeDepth);
         }

@@ -30,7 +30,7 @@ namespace X4World.Maps
             var aggregatedData = new WorldMapCellAggregatedData(map);
             var position = GlobalWorldMap.WorldFromMapPoint(point);
 
-            var content = new WorldMapCellContent(point, position, cfg.CellSize, aggregatedData);
+            var content = new WorldMapCellContent(point, position, cfg.Node.CellSize, aggregatedData);
             return new GlobalWorldMapCell(point, content);
         }
 
@@ -46,10 +46,10 @@ namespace X4World.Maps
                 return result;
             }
 
-            var gen = cfg.GalaxyGeneration;
+            var gen = cfg.Generation;
             for (byte i = 0; i < data; i++)
             {
-                var halfSize = cfg.CellSize / 2;
+                var halfSize = cfg.Node.CellSize / 2;
                 var position = RandomService.NextVector3(
                     new Vector3(-halfSize),
                     new Vector3(halfSize));

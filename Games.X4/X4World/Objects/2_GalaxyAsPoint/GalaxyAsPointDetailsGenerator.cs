@@ -18,7 +18,7 @@ namespace X4World.Objects
         
         public void Generate(GalaxyAsPoint target)
         {
-            var cfg = GalaxyConfig.Instance.GalaxyAsPoint;
+            var cfg = GalaxyConfig.Instance.GalaxyAsPoint.Generation;
             var power = target.AggregatedData.Power;
             var galaxyColor = target.AggregatedData.Color;
             var armCount = cfg.BaseArmCount + (int)(power * cfg.ArmCountPowerScale);
@@ -39,7 +39,7 @@ namespace X4World.Objects
         }
 
         private static GalaxyClusterPoint[] GenerateClusterPoints(
-            GalaxyAsPointConfig cfg, int armCount, float diskRadius, float power, Color galaxyColor, int seed, int clusterCount)
+            GalaxyAsPointGenerationConfig cfg, int armCount, float diskRadius, float power, Color galaxyColor, int seed, int clusterCount)
         {
             var rng = new Random(seed);
             var clusters = new GalaxyClusterPoint[clusterCount];

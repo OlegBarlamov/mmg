@@ -22,7 +22,7 @@ namespace X4World.Maps
         public GlobalWorldMapCell(Point3D mapPoint, [NotNull] WorldMapCellContent content)
         {
             MapPoint = mapPoint;
-            Side = GalaxyConfig.Instance.MapCell.CellSize;
+            Side = GalaxyConfig.Instance.MapCell.Node.CellSize;
             PositionCenter = mapPoint.ToVector3() * Side;
             Content = content ?? throw new ArgumentNullException(nameof(content));
         }

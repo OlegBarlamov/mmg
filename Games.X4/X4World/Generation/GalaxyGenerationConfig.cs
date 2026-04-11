@@ -35,7 +35,21 @@ namespace X4World.Generation
         public StarSystemAsPointConfig StarSystemAsPoint { get; set; }
     }
 
+    // --- Layer 0: MapCell ---
+
     public class MapCellConfig
+    {
+        [YamlMember(Alias = "node")]
+        public MapCellNodeConfig Node { get; set; }
+
+        [YamlMember(Alias = "generation")]
+        public MapCellGenerationConfig Generation { get; set; }
+
+        [YamlMember(Alias = "debug")]
+        public DebugConfig Debug { get; set; }
+    }
+
+    public class MapCellNodeConfig
     {
         [YamlMember(Alias = "cellSize")]
         public float CellSize { get; set; }
@@ -45,15 +59,9 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "octreeDepth")]
         public int OctreeDepth { get; set; }
-
-        [YamlMember(Alias = "galaxyGeneration")]
-        public GalaxyGenerationParams GalaxyGeneration { get; set; }
-
-        [YamlMember(Alias = "debug")]
-        public DebugConfig Debug { get; set; }
     }
 
-    public class GalaxyGenerationParams
+    public class MapCellGenerationConfig
     {
         [YamlMember(Alias = "temperatureMin")]
         public float TemperatureMin { get; set; }
@@ -83,7 +91,15 @@ namespace X4World.Generation
         public float Power { get; set; }
     }
 
+    // --- Layer 1: GalaxiesBatch ---
+
     public class GalaxiesBatchConfig
+    {
+        [YamlMember(Alias = "node")]
+        public GalaxiesBatchNodeConfig Node { get; set; }
+    }
+
+    public class GalaxiesBatchNodeConfig
     {
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
@@ -95,7 +111,18 @@ namespace X4World.Generation
         public float BaseGalaxyHalfSize { get; set; }
     }
 
+    // --- Layer 2: GalaxyAsPoint ---
+
     public class GalaxyAsPointConfig
+    {
+        [YamlMember(Alias = "node")]
+        public GalaxyAsPointNodeConfig Node { get; set; }
+
+        [YamlMember(Alias = "generation")]
+        public GalaxyAsPointGenerationConfig Generation { get; set; }
+    }
+
+    public class GalaxyAsPointNodeConfig
     {
         [YamlMember(Alias = "unwrapDistance")]
         public float UnwrapDistance { get; set; }
@@ -105,7 +132,10 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "visualScaleMultiplier")]
         public float VisualScaleMultiplier { get; set; }
+    }
 
+    public class GalaxyAsPointGenerationConfig
+    {
         [YamlMember(Alias = "baseArmCount")]
         public int BaseArmCount { get; set; }
 
@@ -152,7 +182,27 @@ namespace X4World.Generation
         public float TemperatureBlend { get; set; }
     }
 
+    // --- Layer 3: GalaxyTextureFarthest ---
+
     public class GalaxyTextureFarthestConfig
+    {
+        [YamlMember(Alias = "node")]
+        public GalaxyTextureFarthestNodeConfig Node { get; set; }
+
+        [YamlMember(Alias = "generation")]
+        public GalaxyTextureFarthestGenerationConfig Generation { get; set; }
+    }
+
+    public class GalaxyTextureFarthestNodeConfig
+    {
+        [YamlMember(Alias = "unwrapDistanceMultiplier")]
+        public float UnwrapDistanceMultiplier { get; set; }
+
+        [YamlMember(Alias = "octreeSizeMultiplier")]
+        public float OctreeSizeMultiplier { get; set; }
+    }
+
+    public class GalaxyTextureFarthestGenerationConfig
     {
         [YamlMember(Alias = "subClustersPerPoint")]
         public int SubClustersPerPoint { get; set; }
@@ -165,28 +215,38 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "sectorGridSize")]
         public int SectorGridSize { get; set; }
-
-        [YamlMember(Alias = "unwrapDistanceMultiplier")]
-        public float UnwrapDistanceMultiplier { get; set; }
-
-        [YamlMember(Alias = "octreeSizeMultiplier")]
-        public float OctreeSizeMultiplier { get; set; }
     }
+
+    // --- Layer 4: GalaxyTextureLayered ---
 
     public class GalaxyTextureLayeredConfig
     {
+        [YamlMember(Alias = "node")]
+        public GalaxyTextureLayeredNodeConfig Node { get; set; }
+    }
+
+    public class GalaxyTextureLayeredNodeConfig
+    {
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
     }
+
+    // --- Layer 5: GalaxySectorTexture ---
 
     public class GalaxySectorTextureConfig
     {
-        [YamlMember(Alias = "diskThicknessScale")]
-        public float DiskThicknessScale { get; set; }
+        [YamlMember(Alias = "node")]
+        public GalaxySectorTextureNodeConfig Node { get; set; }
 
+        [YamlMember(Alias = "generation")]
+        public GalaxySectorTextureGenerationConfig Generation { get; set; }
+    }
+
+    public class GalaxySectorTextureNodeConfig
+    {
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
@@ -194,14 +254,54 @@ namespace X4World.Generation
         public float OctreeSizeMultiplier { get; set; }
     }
 
+    public class GalaxySectorTextureGenerationConfig
+    {
+        [YamlMember(Alias = "diskThicknessScale")]
+        public float DiskThicknessScale { get; set; }
+    }
+
+    // --- Layer 6: GalaxySector ---
+
     public class GalaxySectorConfig
+    {
+        [YamlMember(Alias = "node")]
+        public GalaxySectorNodeConfig Node { get; set; }
+
+        [YamlMember(Alias = "generation")]
+        public GalaxySectorGenerationConfig Generation { get; set; }
+    }
+
+    public class GalaxySectorNodeConfig
+    {
+        [YamlMember(Alias = "unwrapDistanceMultiplier")]
+        public float UnwrapDistanceMultiplier { get; set; }
+
+        [YamlMember(Alias = "octreeSizeMultiplier")]
+        public float OctreeSizeMultiplier { get; set; }
+    }
+
+    public class GalaxySectorGenerationConfig
     {
         [YamlMember(Alias = "maxPointsPerChunk")]
         public int MaxPointsPerChunk { get; set; }
 
         [YamlMember(Alias = "maxSplitDepth")]
         public int MaxSplitDepth { get; set; }
+    }
 
+    // --- Layer 7: GalaxySectorChunk ---
+
+    public class GalaxySectorChunkConfig
+    {
+        [YamlMember(Alias = "node")]
+        public GalaxySectorChunkNodeConfig Node { get; set; }
+
+        [YamlMember(Alias = "generation")]
+        public GalaxySectorChunkGenerationConfig Generation { get; set; }
+    }
+
+    public class GalaxySectorChunkNodeConfig
+    {
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
@@ -209,22 +309,24 @@ namespace X4World.Generation
         public float OctreeSizeMultiplier { get; set; }
     }
 
-    public class GalaxySectorChunkConfig
+    public class GalaxySectorChunkGenerationConfig
     {
         [YamlMember(Alias = "maxPointsPerBatch")]
         public int MaxPointsPerBatch { get; set; }
 
         [YamlMember(Alias = "maxSplitDepth")]
         public int MaxSplitDepth { get; set; }
-
-        [YamlMember(Alias = "unwrapDistanceMultiplier")]
-        public float UnwrapDistanceMultiplier { get; set; }
-
-        [YamlMember(Alias = "octreeSizeMultiplier")]
-        public float OctreeSizeMultiplier { get; set; }
     }
 
+    // --- Layer 8: StarSystemsBatch ---
+
     public class StarSystemsBatchConfig
+    {
+        [YamlMember(Alias = "node")]
+        public StarSystemsBatchNodeConfig Node { get; set; }
+    }
+
+    public class StarSystemsBatchNodeConfig
     {
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
@@ -233,7 +335,15 @@ namespace X4World.Generation
         public float OctreeSizeMultiplier { get; set; }
     }
 
+    // --- Layer 9: StarSystemAsPoint ---
+
     public class StarSystemAsPointConfig
+    {
+        [YamlMember(Alias = "node")]
+        public StarSystemAsPointNodeConfig Node { get; set; }
+    }
+
+    public class StarSystemAsPointNodeConfig
     {
         [YamlMember(Alias = "visualScaleMultiplier")]
         public float VisualScaleMultiplier { get; set; }

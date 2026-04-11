@@ -10,7 +10,7 @@ namespace Atom.Client.Components
     {
         public StarSystemAsPointViewModel3D(StarSystemAsPoint starSystem)
         {
-            var cfg = GalaxyConfig.Instance.StarSystemAsPoint;
+            var cfg = GalaxyConfig.Instance.StarSystemAsPoint.Node;
             Position = starSystem.GetWorldPosition();
             Scale = new Vector3(starSystem.AggregatedData.Luminosity * cfg.VisualScaleMultiplier);
             MeshMaterial = new StarMaterial(starSystem.AggregatedData.Color,

@@ -30,7 +30,7 @@ namespace X4World.Objects
             GalaxySectorAggregatedData aggregatedData)
             : base(parent, localPosition, aggregatedData)
         {
-            var cfg = GalaxyConfig.Instance.GalaxySector;
+            var cfg = GalaxyConfig.Instance.GalaxySector.Node;
             LayerName = "6_GalaxySector";
             Name = $"{parent.Name}_sec{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = aggregatedData.SectorRadius * cfg.UnwrapDistanceMultiplier;

@@ -23,7 +23,7 @@ namespace X4World.Maps
 
         public static Point3D MapPointFromWorld(Vector3 worldPoint)
         {
-            var cellSize = GalaxyConfig.Instance.MapCell.CellSize;
+            var cellSize = GalaxyConfig.Instance.MapCell.Node.CellSize;
             return Point3DExtensions.Point3DFromVector3(new Vector3(
                 (worldPoint.X + Math.Sign(worldPoint.X) * cellSize / 2) / cellSize,
                 (worldPoint.Y + Math.Sign(worldPoint.Y) * cellSize / 2) / cellSize,
@@ -32,7 +32,7 @@ namespace X4World.Maps
 
         public static Vector3 WorldFromMapPoint(Point3D mapPoint)
         {
-            return mapPoint.ToVector3() * GalaxyConfig.Instance.MapCell.CellSize;
+            return mapPoint.ToVector3() * GalaxyConfig.Instance.MapCell.Node.CellSize;
         }
 
         public override GlobalWorldMapCell GetCell(Point3D point)

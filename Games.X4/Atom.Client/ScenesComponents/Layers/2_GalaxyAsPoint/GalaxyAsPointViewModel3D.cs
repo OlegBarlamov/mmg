@@ -11,7 +11,7 @@ namespace Atom.Client.Components
         public GalaxyAsPointViewModel3D(GalaxyAsPoint galaxy)
         {
             Position = galaxy.GetWorldPosition();
-            Scale = new Vector3(galaxy.AggregatedData.Power * GalaxyConfig.Instance.GalaxyAsPoint.VisualScaleMultiplier);
+            Scale = new Vector3(galaxy.AggregatedData.Power * GalaxyConfig.Instance.GalaxyAsPoint.Node.VisualScaleMultiplier);
             MeshMaterial = new StarMaterial(galaxy.AggregatedData.Color, galaxy.AggregatedData.Power);
             GraphicsPassName = GraphicsPasses.Stars;
         }

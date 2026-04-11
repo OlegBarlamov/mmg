@@ -12,7 +12,7 @@ namespace X4World.Objects
         {
             var aggregatedData = target.WorldMapCellAggregatedData;
             var galaxyPoints = aggregatedData.GalaxiesPoints.ToArray();
-            var cellSize = GalaxyConfig.Instance.MapCell.CellSize;
+            var cellSize = GalaxyConfig.Instance.MapCell.Node.CellSize;
 
             var batchData = new GalaxiesBatchAggregatedData(cellSize, galaxyPoints);
             var batch = new GalaxiesBatch(target, Vector3.Zero, batchData);

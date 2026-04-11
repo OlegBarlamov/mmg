@@ -53,7 +53,7 @@ namespace Atom.Client.ScenesComponents.WorldMapCellContent
                     var uTextureCoordinateLength = Vector3.Dot(u, projectedPoint - cellCenter);
                     var vTextureCoordinateLength = Vector3.Dot(v, projectedPoint - cellCenter);
 
-                    var cellSize = GalaxyConfig.Instance.MapCell.CellSize;
+                    var cellSize = GalaxyConfig.Instance.MapCell.Node.CellSize;
                     var uTextureCoordinate = (uTextureCoordinateLength + cellSize / 2) /
                         cellSize * TextureSize;
                     var vTextureCoordinate = (vTextureCoordinateLength + cellSize / 2) /

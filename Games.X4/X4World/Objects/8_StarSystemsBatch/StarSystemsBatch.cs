@@ -31,7 +31,7 @@ namespace X4World.Objects
             StarSystemsBatchAggregatedData aggregatedData)
             : base(parent, localPosition, aggregatedData)
         {
-            var cfg = GalaxyConfig.Instance.StarSystemsBatch;
+            var cfg = GalaxyConfig.Instance.StarSystemsBatch.Node;
             LayerName = "8_StarSystemsBatch";
             Name = $"{parent.Name}_sb{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = aggregatedData.SectorRadius * cfg.UnwrapDistanceMultiplier;

@@ -59,7 +59,7 @@ namespace Atom.Client.Components
                     starColor.B / 255f * 0.15f,
                     0f);
 
-                var halfSize = GalaxyConfig.Instance.GalaxiesBatch.BaseGalaxyHalfSize * gp.Power;
+                var halfSize = GalaxyConfig.Instance.GalaxiesBatch.Node.BaseGalaxyHalfSize * gp.Power;
                 AddBillboardQuad(verts, idx, center, halfSize, right, up, coreColor, edgeColor);
             }
 
