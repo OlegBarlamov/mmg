@@ -16,8 +16,10 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
         private IDebugInfoService DebugInfoService { get; }
         private IDisplayService DisplayService { get; }
 
-        private const float Speed = 0.01f;
+        private const float BaseSpeed = 0.01f;
         private const float RotationSpeed = 0.003f;
+
+        private int _speedZone;
         
         private IInputService InputService { get; }
         
@@ -35,23 +37,16 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
 
         public override void Update(GameTime gameTime)
         {
-            var speed = Speed;
-            if (InputService.Keyboard.Key(Keys.LeftShift))
-            {
+            if (InputService.Keyboard.KeyPressedOnce(Keys.OemPlus))
+                _speedZone++;
+            if (InputService.Keyboard.KeyPressedOnce(Keys.OemMinus))
+                _speedZone--;
+
+            var speed = BaseSpeed * (float)Math.Pow(10, _speedZone);
+            if (InputService.Keyboard.Key(Keys.LeftShift) || InputService.Keyboard.Key(Keys.RightShift))
                 speed *= 5;
-            }
-            if (InputService.Keyboard.Key(Keys.RightShift))
-            {
-                speed *= 5;
-            }
-            if (InputService.Keyboard.Key(Keys.LeftControl))
-            {
+            if (InputService.Keyboard.Key(Keys.LeftControl) || InputService.Keyboard.Key(Keys.RightControl))
                 speed *= 25;
-            }
-            if (InputService.Keyboard.Key(Keys.RightControl))
-            {
-                speed *= 25;
-            }
             if (InputService.Keyboard.Key(Keys.W))
             {
                 var delta = GetForwardDirection() * gameTime.ElapsedGameTime.Milliseconds * speed;
@@ -109,6 +104,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
                 DisplayService.PreferredBackBufferHeight / 2));
             
             DebugInfoService.SetLabel("camera_pos", TargetCamera.Position.ToString());
+            DebugInfoService.SetLabel("base_speed", (BaseSpeed * (float)Math.Pow(10, _speedZone)).ToString("G3"));
             
             base.Update(gameTime);
         }

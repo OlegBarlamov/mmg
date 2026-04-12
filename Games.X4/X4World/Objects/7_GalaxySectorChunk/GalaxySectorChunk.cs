@@ -34,9 +34,9 @@ namespace X4World.Objects
             : base(parent, localPosition, aggregatedData)
         {
             var cfg = GalaxyConfig.Instance.GalaxySectorChunk.Node;
-            LayerName = "7_GalaxySectorChunk";
+            LayerName = "07_GalaxySectorChunk";
             Name = $"{parent.Name}_ch{NamesGenerator.Hash(HashType.Number)}";
-            DistanceToUnwrapDetails = Math.Max(aggregatedData.CellRadius * cfg.UnwrapDistanceMultiplier, cfg.MinUnwrapDistance);
+            DistanceToUnwrapDetails = aggregatedData.SectorRadius * cfg.UnwrapDistanceMultiplier;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.ChunkRadius * cfg.OctreeSizeMultiplier, 10);
         }
     }

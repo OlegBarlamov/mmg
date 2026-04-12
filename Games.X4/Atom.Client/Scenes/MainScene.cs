@@ -191,8 +191,10 @@ namespace Atom.Client.Scenes
                     return new GalaxySectorChunkViewModel3D(chunk);
                 case StarSystemsBatch batch:
                     return new StarSystemsBatchViewModel3D(batch);
-                case StarSystemAsPoint ss:
-                    return new StarSystemAsPointViewModel3D(ss);
+                case StarSystemAsPoint sp:
+                    return new StarSystemAsPointViewModel3D(sp);
+                case StarSystemAsLightPoint slp:
+                    return new StarSystemAsLightPointViewModel3D(slp);
                 default:
                     return null;
             }

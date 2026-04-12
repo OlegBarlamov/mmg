@@ -34,9 +34,9 @@ namespace X4World.Objects
             : base(parent, localPosition, aggregatedData)
         {
             var cfg = GalaxyConfig.Instance.StarSystemsBatch.Node;
-            LayerName = "8_StarSystemsBatch";
+            LayerName = "08_StarSystemsBatch";
             Name = $"{parent.Name}_sb{NamesGenerator.Hash(HashType.Number)}";
-            DistanceToUnwrapDetails = Math.Max(aggregatedData.SectorRadius * cfg.UnwrapDistanceMultiplier, cfg.MinUnwrapDistance);
+            DistanceToUnwrapDetails = aggregatedData.SectorRadius * cfg.UnwrapDistanceMultiplier;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, ComputeOctreeSize(aggregatedData, cfg.OctreeSizeMultiplier), 10);
         }
 

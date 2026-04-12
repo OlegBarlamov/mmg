@@ -1,18 +1,18 @@
-using System.Collections.Generic;
 using FrameworkSDK.Common;
 using Microsoft.Xna.Framework;
+using X4World.Generation;
 using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class StarSystemAggregatedData
+    public class StarSystemAsPointAggregatedData
     {
         public float Temperature { get; }
         public float Luminosity { get; }
         public Color Color { get; }
         public int Seed { get; }
 
-        public StarSystemAggregatedData(float temperature, float luminosity, int seed)
+        public StarSystemAsPointAggregatedData(float temperature, float luminosity, int seed)
         {
             Temperature = temperature;
             Luminosity = luminosity;
@@ -21,20 +21,17 @@ namespace X4World.Objects
         }
     }
 
-    public class StarSystemAsPoint : WrappedDetailsBase<StarSystemAggregatedData>
+    public class StarSystemAsPoint : WrappedDetailsBase<StarSystemAsPointAggregatedData>
     {
         public StarSystemAsPoint(IWrappedDetails parent, Vector3 localPosition,
-            StarSystemAggregatedData aggregatedData)
+            StarSystemAsPointAggregatedData aggregatedData)
             : base(parent, localPosition, aggregatedData)
         {
-            LayerName = "9_StarSystemAsPoint";
-            Name = $"{parent.Name}_ss{NamesGenerator.Hash(HashType.Number)}";
-            DistanceToUnwrapDetails = 0f;
+            var cfg = GalaxyConfig.Instance.StarSystemAsPoint.Node;
+            LayerName = "09_StarSystemAsPoint";
+            Name = $"{parent.Name}_sp{NamesGenerator.Hash(HashType.Number)}";
+            DistanceToUnwrapDetails = cfg.UnwrapDistance;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, 1f, 10);
-        }
-
-        public override void SetGeneratedData(IReadOnlyCollection<IWrappedDetails> objects)
-        {
         }
     }
 }

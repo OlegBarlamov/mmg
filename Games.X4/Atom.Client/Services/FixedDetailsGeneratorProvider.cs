@@ -25,7 +25,8 @@ namespace Atom.Client.Services
                 {typeof(GalaxySector), new GalaxySectorDetailsGenerator()},
                 {typeof(GalaxySectorChunk), new GalaxySectorChunkDetailsGenerator()},
                 {typeof(StarSystemsBatch), new StarSystemsBatchDetailsGenerator()},
-                {typeof(StarSystemAsPoint), new StarSystemAsPointDetailsGenerator()}
+                {typeof(StarSystemAsPoint), new StarSystemAsPointDetailsGenerator()},
+                {typeof(StarSystemAsLightPoint), new StarSystemAsLightPointDetailsGenerator()}
             };
         }
         

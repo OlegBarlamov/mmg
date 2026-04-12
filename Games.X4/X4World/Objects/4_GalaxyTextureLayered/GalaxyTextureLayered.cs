@@ -42,7 +42,7 @@ namespace X4World.Objects
             : base(parent, localPosition, aggregatedData)
         {
             var cfg = GalaxyConfig.Instance.GalaxyTextureLayered.Node;
-            LayerName = "4_GalaxyTextureLayered";
+            LayerName = "04_GalaxyTextureLayered";
             Name = $"{parent.Name}_gtl{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = aggregatedData.DiskRadius * cfg.UnwrapDistanceMultiplier;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.DiskRadius * cfg.OctreeSizeMultiplier, 10);

@@ -5,10 +5,10 @@ using JetBrains.Annotations;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public class StarSystemAsPointController : BillboardController<StarSystemAsPointViewModel3D>
+    public class StarSystemAsLightPointController : BillboardController<StarSystemAsLightPointViewModel3D>
     {
-        public StarSystemAsPointController(
-            [NotNull] StarSystemAsPointViewModel3D viewModel,
+        public StarSystemAsLightPointController(
+            [NotNull] StarSystemAsLightPointViewModel3D viewModel,
             [NotNull] ICamera3DProvider camera3DProvider)
             : base(viewModel, camera3DProvider)
         {

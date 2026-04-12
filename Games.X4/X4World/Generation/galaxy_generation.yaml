@@ -126,8 +126,7 @@ galaxySector:
 # Generator: GalaxySectorChunkDetailsGenerator
 galaxySectorChunk:
   node:
-    unwrapDistanceMultiplier: 3      # × cellRadius
-    minUnwrapDistance: 2.0           # floor so deep splits don't get too close
+    unwrapDistanceMultiplier: 1    # × sectorRadius (consistent across all chunk depths)
     octreeSizeMultiplier: 3          # × chunkRadius (3D extent)
     dotBaseRadius: 0.03
     dotRadiusScale: 0.05
@@ -143,8 +142,7 @@ galaxySectorChunk:
 # Generator: StarSystemsBatchDetailsGenerator
 starSystemsBatch:
   node:
-    unwrapDistanceMultiplier: 1.5     # × sectorRadius
-    minUnwrapDistance: 1.0            # floor for dense batches
+    unwrapDistanceMultiplier: 0.5     # × sectorRadius
     octreeSizeMultiplier: 2.5         # × computed max extent
     dotBaseRadius: 0.015
     dotRadiusScale: 0.01
@@ -155,11 +153,22 @@ starSystemsBatch:
     dotGlowAlphaScale: 0.4           # glow alpha = brightness × this
     dotGlowRadiusScale: 2.0          # glow radius = coreRadius × this
 
-# Layer 9 — Star system as point (individual star rendering)
+# Layer 9 — Star system as point (individual star dot, intermediate LOD)
 # Generator: StarSystemAsPointDetailsGenerator
 starSystemAsPoint:
   node:
-    visualScaleMultiplier: 0.4       # dot scale = luminosity × this
+    unwrapDistance: 2.0               # distance to unwrap into full light point
+    dotBaseRadius: 0.015              # minimum dot radius (world units)
+    dotRadiusScale: 0.025             # additional radius per unit of luminosity
+    dotBaseBrightness: 0.5
+    dotBrightnessScale: 0.9
+    dotEdgeBrightness: 0.2            # edge color as fraction of center color
+
+# Layer 10 — Star system as light point (full billboard star, future star system)
+# Generator: StarSystemAsLightPointDetailsGenerator
+starSystemAsLightPoint:
+  node:
+    visualScaleMultiplier: 0.4        # billboard scale = luminosity × this
     brightnessMultiplier: 0.8         # material brightness = luminosity × this
     brightnessMin: 0.3                # clamp range
     brightnessMax: 1.0

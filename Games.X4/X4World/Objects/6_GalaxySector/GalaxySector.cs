@@ -31,7 +31,7 @@ namespace X4World.Objects
             : base(parent, localPosition, aggregatedData)
         {
             var cfg = GalaxyConfig.Instance.GalaxySector.Node;
-            LayerName = "6_GalaxySector";
+            LayerName = "06_GalaxySector";
             Name = $"{parent.Name}_sec{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = aggregatedData.SectorRadius * cfg.UnwrapDistanceMultiplier;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.SectorRadius * cfg.OctreeSizeMultiplier, 10);

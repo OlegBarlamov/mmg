@@ -33,6 +33,9 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "starSystemAsPoint")]
         public StarSystemAsPointConfig StarSystemAsPoint { get; set; }
+
+        [YamlMember(Alias = "starSystemAsLightPoint")]
+        public StarSystemAsLightPointConfig StarSystemAsLightPoint { get; set; }
     }
 
     // --- Layer 0: MapCell ---
@@ -395,9 +398,6 @@ namespace X4World.Generation
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
-        [YamlMember(Alias = "minUnwrapDistance")]
-        public float MinUnwrapDistance { get; set; }
-
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
 
@@ -442,9 +442,6 @@ namespace X4World.Generation
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
-        [YamlMember(Alias = "minUnwrapDistance")]
-        public float MinUnwrapDistance { get; set; }
-
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
 
@@ -473,7 +470,7 @@ namespace X4World.Generation
         public float DotGlowRadiusScale { get; set; }
     }
 
-    // --- Layer 9: StarSystemAsPoint ---
+    // --- Layer 9: StarSystemAsPoint (intermediate dot) ---
 
     public class StarSystemAsPointConfig
     {
@@ -482,6 +479,35 @@ namespace X4World.Generation
     }
 
     public class StarSystemAsPointNodeConfig
+    {
+        [YamlMember(Alias = "unwrapDistance")]
+        public float UnwrapDistance { get; set; }
+
+        [YamlMember(Alias = "dotBaseRadius")]
+        public float DotBaseRadius { get; set; }
+
+        [YamlMember(Alias = "dotRadiusScale")]
+        public float DotRadiusScale { get; set; }
+
+        [YamlMember(Alias = "dotBaseBrightness")]
+        public float DotBaseBrightness { get; set; }
+
+        [YamlMember(Alias = "dotBrightnessScale")]
+        public float DotBrightnessScale { get; set; }
+
+        [YamlMember(Alias = "dotEdgeBrightness")]
+        public float DotEdgeBrightness { get; set; }
+    }
+
+    // --- Layer 10: StarSystemAsLightPoint (full billboard star) ---
+
+    public class StarSystemAsLightPointConfig
+    {
+        [YamlMember(Alias = "node")]
+        public StarSystemAsLightPointNodeConfig Node { get; set; }
+    }
+
+    public class StarSystemAsLightPointNodeConfig
     {
         [YamlMember(Alias = "visualScaleMultiplier")]
         public float VisualScaleMultiplier { get; set; }

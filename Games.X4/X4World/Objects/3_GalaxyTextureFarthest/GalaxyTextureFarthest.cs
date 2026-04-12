@@ -78,7 +78,7 @@ namespace X4World.Objects
             : base(parent, localPosition, aggregatedData)
         {
             var cfg = GalaxyConfig.Instance.GalaxyTextureFarthest.Node;
-            LayerName = "3_GalaxyTextureFarthest";
+            LayerName = "03_GalaxyTextureFarthest";
             Name = $"{parent.Name}_gt{NamesGenerator.Hash(HashType.Number)}";
             DistanceToUnwrapDetails = aggregatedData.DiskRadius * cfg.UnwrapDistanceMultiplier;
             Details = new OctreeBasedObjectsSpace(Vector3.Zero, aggregatedData.DiskRadius * cfg.OctreeSizeMultiplier, 10);

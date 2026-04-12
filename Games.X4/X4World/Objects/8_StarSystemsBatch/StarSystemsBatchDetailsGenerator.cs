@@ -19,7 +19,7 @@ namespace X4World.Objects
             {
                 var p = clusterPoints[i];
                 var localPos = Vector3.Transform(new Vector3(p.X, p.Y, p.Z), galaxyRotation);
-                var starData = new StarSystemAggregatedData(p.Temperature, p.Luminosity, i);
+                var starData = new StarSystemAsPointAggregatedData(p.Temperature, p.Luminosity, i);
                 results.Add(new StarSystemAsPoint(target, localPos, starData));
             }
 
