@@ -77,18 +77,21 @@ namespace X4World.Objects
         {
             var cx = minX + sizeX * 0.5f;
             var cz = minZ + sizeZ * 0.5f;
-            var chunkRadius = Math.Max(sizeX, sizeZ) * 0.5f;
 
+            var cellRadius = Math.Max(sizeX, sizeZ) * 0.5f;
             var localPoints = new GalaxyClusterPoint[points.Length];
+            float maxExtent = cellRadius;
             for (int i = 0; i < points.Length; i++)
             {
                 var rp = points[i];
                 localPoints[i] = new GalaxyClusterPoint(rp.X - cx, rp.Y, rp.Z - cz, rp.Temperature, rp.Luminosity);
+                var v = Vector3.Transform(new Vector3(rp.X - cx, rp.Y, rp.Z - cz), galaxyRotation);
+                maxExtent = Math.Max(maxExtent, Math.Max(Math.Abs(v.X), Math.Max(Math.Abs(v.Y), Math.Abs(v.Z))));
             }
 
             var chunkPos = Vector3.Transform(new Vector3(cx, 0f, cz), galaxyRotation);
             var chunkData = new GalaxySectorChunkAggregatedData(
-                chunkRadius, aggData.SectorRadius, aggData.Inclination, aggData.SpinAngle, localPoints);
+                maxExtent, cellRadius, aggData.SectorRadius, aggData.Inclination, aggData.SpinAngle, localPoints);
 
             result.Add(new GalaxySectorChunk(parent, chunkPos, chunkData));
         }

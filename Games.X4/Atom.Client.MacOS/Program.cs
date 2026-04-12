@@ -17,7 +17,7 @@ namespace Atom.Client.MacOS
         {
             var gameParameters = new DefaultGameParameters
             {
-                BackBufferSize = new SizeInt(1280, 768),
+                BackBufferSize = new SizeInt(1600, 900),
                 IsMouseVisible = false,
             };
             using (var gameFactory = X4GameFactory.GetFactory(IsDebug, gameParameters).Construct())

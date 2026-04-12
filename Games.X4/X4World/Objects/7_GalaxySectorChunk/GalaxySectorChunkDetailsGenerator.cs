@@ -77,18 +77,21 @@ namespace X4World.Objects
         {
             var cx = minX + sizeX * 0.5f;
             var cz = minZ + sizeZ * 0.5f;
-            var batchRadius = Math.Max(sizeX, sizeZ) * 0.5f;
 
+            var cellRadius = Math.Max(sizeX, sizeZ) * 0.5f;
             var localPoints = new GalaxyClusterPoint[points.Length];
+            float maxExtent = cellRadius;
             for (int i = 0; i < points.Length; i++)
             {
                 var p = points[i];
                 localPoints[i] = new GalaxyClusterPoint(p.X - cx, p.Y, p.Z - cz, p.Temperature, p.Luminosity);
+                var v = Vector3.Transform(new Vector3(p.X - cx, p.Y, p.Z - cz), galaxyRotation);
+                maxExtent = Math.Max(maxExtent, Math.Max(Math.Abs(v.X), Math.Max(Math.Abs(v.Y), Math.Abs(v.Z))));
             }
 
             var batchPos = Vector3.Transform(new Vector3(cx, 0f, cz), galaxyRotation);
             var batchData = new StarSystemsBatchAggregatedData(
-                batchRadius, aggData.SectorRadius, aggData.Inclination, aggData.SpinAngle, localPoints);
+                maxExtent, cellRadius, aggData.SectorRadius, aggData.Inclination, aggData.SpinAngle, localPoints);
 
             result.Add(new StarSystemsBatch(parent, batchPos, batchData));
         }

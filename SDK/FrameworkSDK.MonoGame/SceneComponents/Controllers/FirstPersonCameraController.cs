@@ -14,6 +14,7 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
     {
         private DirectionalCamera3D TargetCamera { get; }
         private IDebugInfoService DebugInfoService { get; }
+        private IDisplayService DisplayService { get; }
 
         private const float Speed = 0.01f;
         private const float RotationSpeed = 0.003f;
@@ -23,11 +24,13 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
         public FirstPersonCameraController(
             [NotNull] IInputService inputService,
             [NotNull] DirectionalCamera3D targetCamera,
-            [NotNull] IDebugInfoService debugInfoService)
+            [NotNull] IDebugInfoService debugInfoService,
+            [NotNull] IDisplayService displayService)
         {
             InputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
             TargetCamera = targetCamera ?? throw new ArgumentNullException(nameof(targetCamera));
             DebugInfoService = debugInfoService ?? throw new ArgumentNullException(nameof(debugInfoService));
+            DisplayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
         }
 
         public override void Update(GameTime gameTime)
@@ -101,7 +104,9 @@ namespace FrameworkSDK.MonoGame.SceneComponents.Controllers
                 RotateDownUp(-InputService.Mouse.PositionDelta.Y * RotationSpeed);
             }
             
-            InputService.Mouse.SetPosition(new Point());
+            InputService.Mouse.SetPosition(new Point(
+                DisplayService.PreferredBackBufferWidth / 2,
+                DisplayService.PreferredBackBufferHeight / 2));
             
             DebugInfoService.SetLabel("camera_pos", TargetCamera.Position.ToString());
             

@@ -1,8 +1,10 @@
+using System;
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using X4World.Generation;
 
 namespace Atom.Client.Components
 {
@@ -16,16 +18,21 @@ namespace Atom.Client.Components
         {
         }
 
-        private static GalaxySectorChunkGeometry CreateGeometry(
+        private static SectorStarFieldGeometry CreateGeometry(
             GalaxySectorChunkViewModel3D viewModel, ICamera3DProvider camera3DProvider)
         {
             var agg = viewModel.AggregatedData;
+            var cfg = GalaxyConfig.Instance.GalaxySectorChunk.Node;
             var galaxyRotation = Matrix.CreateRotationX(agg.Inclination)
                                * Matrix.CreateRotationY(agg.SpinAngle);
-            return new GalaxySectorChunkGeometry(
-                agg.ClusterPoints, agg.ChunkRadius, galaxyRotation,
+            var brightnessMultiplier = (float)Math.Sqrt(cfg.DensityDampingReference / Math.Max(1, agg.ClusterPoints.Length));
+            return new SectorStarFieldGeometry(
+                agg.ClusterPoints, galaxyRotation,
                 () => camera3DProvider.GetActiveCamera().GetPosition(),
-                viewModel.Position);
+                viewModel.Position,
+                cfg.DotBaseRadius, cfg.DotRadiusScale,
+                cfg.DotBaseBrightness, cfg.DotBrightnessScale, cfg.DotEdgeBrightness,
+                brightnessMultiplier);
         }
 
         protected override BoundingBox? ConstructBoundingBox()

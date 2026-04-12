@@ -96,7 +96,7 @@ namespace Atom.Client.Scenes
 
             Camera3DService.SetActiveCamera(_camera);
 
-            _cameraController = new FirstPersonCameraController(inputService, _camera, DebugInfoService);
+            _cameraController = new FirstPersonCameraController(inputService, _camera, DebugInfoService, DisplayService);
             _globalWorldMapController = new GlobalWorldMapController(DataModel.GlobalWorldMap, debugInfoService);
             _globalWorldMapController.CellRevealed += GlobalWorldMapControllerOnCellRevealed;
             _globalWorldMapController.CellHidden += GlobalWorldMapControllerOnCellHidden;

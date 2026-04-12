@@ -14,8 +14,9 @@ namespace X4World.Objects
             var aggData = target.AggregatedData;
             var rng = new Random(aggData.Seed);
 
+            var layeredCfg = GalaxyConfig.Instance.GalaxyTextureLayered.Generation;
             var expandedPoints = ExpandClusterPoints(aggData.ClusterPoints, aggData.DiskRadius, rng, cfg);
-            var sectors = PartitionIntoSectors(expandedPoints, aggData.DiskRadius, rng, cfg.SectorGridSize);
+            var sectors = PartitionIntoSectors(expandedPoints, aggData.DiskRadius, rng, layeredCfg.SectorGridSize);
 
             var sectorSeed = rng.Next();
 

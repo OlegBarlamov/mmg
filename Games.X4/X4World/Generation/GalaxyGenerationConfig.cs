@@ -200,6 +200,36 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
+
+        [YamlMember(Alias = "textureBrightnessScale")]
+        public float TextureBrightnessScale { get; set; }
+
+        [YamlMember(Alias = "textureStarAlpha")]
+        public int TextureStarAlpha { get; set; }
+
+        [YamlMember(Alias = "textureStarRadius")]
+        public int TextureStarRadius { get; set; }
+
+        [YamlMember(Alias = "textureBlurRadius")]
+        public int TextureBlurRadius { get; set; }
+
+        [YamlMember(Alias = "diffuseDiskBrightness")]
+        public float DiffuseDiskBrightness { get; set; }
+
+        [YamlMember(Alias = "diffuseDiskAlpha")]
+        public int DiffuseDiskAlpha { get; set; }
+
+        [YamlMember(Alias = "diffuseDiskExtent")]
+        public float DiffuseDiskExtent { get; set; }
+
+        [YamlMember(Alias = "bulgeExtent")]
+        public float BulgeExtent { get; set; }
+
+        [YamlMember(Alias = "bulgeIntensity")]
+        public float BulgeIntensity { get; set; }
+
+        [YamlMember(Alias = "bulgeAlphaScale")]
+        public int BulgeAlphaScale { get; set; }
     }
 
     public class GalaxyTextureFarthestGenerationConfig
@@ -212,9 +242,6 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "subClusterLuminosityScale")]
         public float SubClusterLuminosityScale { get; set; }
-
-        [YamlMember(Alias = "sectorGridSize")]
-        public int SectorGridSize { get; set; }
     }
 
     // --- Layer 4: GalaxyTextureLayered ---
@@ -223,6 +250,9 @@ namespace X4World.Generation
     {
         [YamlMember(Alias = "node")]
         public GalaxyTextureLayeredNodeConfig Node { get; set; }
+
+        [YamlMember(Alias = "generation")]
+        public GalaxyTextureLayeredGenerationConfig Generation { get; set; }
     }
 
     public class GalaxyTextureLayeredNodeConfig
@@ -232,6 +262,51 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
+
+        [YamlMember(Alias = "textureBrightnessScale")]
+        public float TextureBrightnessScale { get; set; }
+
+        [YamlMember(Alias = "textureStarAlpha")]
+        public int TextureStarAlpha { get; set; }
+
+        [YamlMember(Alias = "textureStarRadius")]
+        public int TextureStarRadius { get; set; }
+
+        [YamlMember(Alias = "textureBlurRadius")]
+        public int TextureBlurRadius { get; set; }
+
+        [YamlMember(Alias = "diffuseDiskBrightness")]
+        public float DiffuseDiskBrightness { get; set; }
+
+        [YamlMember(Alias = "diffuseDiskAlpha")]
+        public int DiffuseDiskAlpha { get; set; }
+
+        [YamlMember(Alias = "diffuseDiskExtent")]
+        public float DiffuseDiskExtent { get; set; }
+
+        [YamlMember(Alias = "bulgeExtent")]
+        public float BulgeExtent { get; set; }
+
+        [YamlMember(Alias = "bulgeIntensity")]
+        public float BulgeIntensity { get; set; }
+
+        [YamlMember(Alias = "bulgeAlphaScale")]
+        public int BulgeAlphaScale { get; set; }
+    }
+
+    public class GalaxyTextureLayeredGenerationConfig
+    {
+        [YamlMember(Alias = "sectorGridSize")]
+        public int SectorGridSize { get; set; }
+
+        [YamlMember(Alias = "subClustersPerPoint")]
+        public int SubClustersPerPoint { get; set; }
+
+        [YamlMember(Alias = "subClusterSpread")]
+        public float SubClusterSpread { get; set; }
+
+        [YamlMember(Alias = "subClusterLuminosityScale")]
+        public float SubClusterLuminosityScale { get; set; }
     }
 
     // --- Layer 5: GalaxySectorTexture ---
@@ -278,6 +353,21 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
+
+        [YamlMember(Alias = "dotBaseRadius")]
+        public float DotBaseRadius { get; set; }
+
+        [YamlMember(Alias = "dotRadiusScale")]
+        public float DotRadiusScale { get; set; }
+
+        [YamlMember(Alias = "dotBaseBrightness")]
+        public float DotBaseBrightness { get; set; }
+
+        [YamlMember(Alias = "dotBrightnessScale")]
+        public float DotBrightnessScale { get; set; }
+
+        [YamlMember(Alias = "dotEdgeBrightness")]
+        public float DotEdgeBrightness { get; set; }
     }
 
     public class GalaxySectorGenerationConfig
@@ -305,8 +395,29 @@ namespace X4World.Generation
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
+        [YamlMember(Alias = "minUnwrapDistance")]
+        public float MinUnwrapDistance { get; set; }
+
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
+
+        [YamlMember(Alias = "dotBaseRadius")]
+        public float DotBaseRadius { get; set; }
+
+        [YamlMember(Alias = "dotRadiusScale")]
+        public float DotRadiusScale { get; set; }
+
+        [YamlMember(Alias = "dotBaseBrightness")]
+        public float DotBaseBrightness { get; set; }
+
+        [YamlMember(Alias = "dotBrightnessScale")]
+        public float DotBrightnessScale { get; set; }
+
+        [YamlMember(Alias = "dotEdgeBrightness")]
+        public float DotEdgeBrightness { get; set; }
+
+        [YamlMember(Alias = "densityDampingReference")]
+        public float DensityDampingReference { get; set; }
     }
 
     public class GalaxySectorChunkGenerationConfig
@@ -331,8 +442,35 @@ namespace X4World.Generation
         [YamlMember(Alias = "unwrapDistanceMultiplier")]
         public float UnwrapDistanceMultiplier { get; set; }
 
+        [YamlMember(Alias = "minUnwrapDistance")]
+        public float MinUnwrapDistance { get; set; }
+
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
+
+        [YamlMember(Alias = "dotBaseRadius")]
+        public float DotBaseRadius { get; set; }
+
+        [YamlMember(Alias = "dotRadiusScale")]
+        public float DotRadiusScale { get; set; }
+
+        [YamlMember(Alias = "dotBaseBrightness")]
+        public float DotBaseBrightness { get; set; }
+
+        [YamlMember(Alias = "dotBrightnessScale")]
+        public float DotBrightnessScale { get; set; }
+
+        [YamlMember(Alias = "dotBrightnessMin")]
+        public float DotBrightnessMin { get; set; }
+
+        [YamlMember(Alias = "dotBrightnessMax")]
+        public float DotBrightnessMax { get; set; }
+
+        [YamlMember(Alias = "dotGlowAlphaScale")]
+        public float DotGlowAlphaScale { get; set; }
+
+        [YamlMember(Alias = "dotGlowRadiusScale")]
+        public float DotGlowRadiusScale { get; set; }
     }
 
     // --- Layer 9: StarSystemAsPoint ---

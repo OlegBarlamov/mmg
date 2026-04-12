@@ -17,19 +17,36 @@ namespace Atom.Client.Components
         private readonly Func<Vector3> _getCameraPosition;
         private readonly Vector3 _worldPosition;
 
+        private readonly float _dotBaseRadius;
+        private readonly float _dotRadiusScale;
+        private readonly float _dotBaseBrightness;
+        private readonly float _dotBrightnessScale;
+        private readonly float _dotEdgeBrightness;
+        private readonly float _brightnessMultiplier;
+
         private VertexPositionColor[] _cachedVertices;
         private Array _cachedIndices;
         private int _cachedPrimitiveCount;
         private Vector3 _lastCameraDir;
 
-        public SectorStarFieldGeometry(GalaxyClusterPoint[] clusterPoints, float sectorRadius,
-            Matrix galaxyRotation, Func<Vector3> getCameraPosition, Vector3 worldPosition)
+        public SectorStarFieldGeometry(GalaxyClusterPoint[] clusterPoints,
+            Matrix galaxyRotation, Func<Vector3> getCameraPosition, Vector3 worldPosition,
+            float dotBaseRadius, float dotRadiusScale,
+            float dotBaseBrightness, float dotBrightnessScale, float dotEdgeBrightness,
+            float brightnessMultiplier = 1f)
             : base(VertexPositionColor.VertexDeclaration, PrimitiveType.TriangleList)
         {
             _clusterPoints = clusterPoints;
             _galaxyRotation = galaxyRotation;
             _getCameraPosition = getCameraPosition;
             _worldPosition = worldPosition;
+
+            _dotBaseRadius = dotBaseRadius;
+            _dotRadiusScale = dotRadiusScale;
+            _dotBaseBrightness = dotBaseBrightness;
+            _dotBrightnessScale = dotBrightnessScale;
+            _dotEdgeBrightness = dotEdgeBrightness;
+            _brightnessMultiplier = brightnessMultiplier;
         }
 
         public override VertexPositionColor[] GetVertices()
@@ -52,7 +69,8 @@ namespace Atom.Client.Components
 
         private void EnsureUpToDate()
         {
-            var cameraDir = _getCameraPosition() - _worldPosition;
+            var cameraPos = _getCameraPosition();
+            var cameraDir = cameraPos - _worldPosition;
             if (_cachedVertices != null)
             {
                 var len = cameraDir.LengthSquared();
@@ -70,10 +88,10 @@ namespace Atom.Client.Components
             }
 
             _lastCameraDir = cameraDir;
-            Rebuild(cameraDir);
+            Rebuild(cameraPos);
         }
 
-        private void Rebuild(Vector3 lookDir)
+        private void Rebuild(Vector3 cameraPos)
         {
             if (_clusterPoints.Length == 0)
             {
@@ -86,32 +104,33 @@ namespace Atom.Client.Components
             var verts = new List<VertexPositionColor>(_clusterPoints.Length * (HexSides + 1));
             var idx = new List<int>(_clusterPoints.Length * HexSides * 3);
 
-            if (lookDir.LengthSquared() < 0.001f)
-                lookDir = Vector3.Forward;
-            lookDir.Normalize();
-
-            var worldUp = Math.Abs(Vector3.Dot(lookDir, Vector3.Up)) > 0.99f ? Vector3.Forward : Vector3.Up;
-            var right = Vector3.Normalize(Vector3.Cross(worldUp, lookDir));
-            var up = Vector3.Cross(lookDir, right);
-
             for (int i = 0; i < _clusterPoints.Length; i++)
             {
                 var p = _clusterPoints[i];
                 var center = Vector3.Transform(new Vector3(p.X, p.Y, p.Z), _galaxyRotation);
 
+                var lookDir = cameraPos - (_worldPosition + center);
+                if (lookDir.LengthSquared() < 0.001f)
+                    lookDir = Vector3.Forward;
+                lookDir.Normalize();
+
+                var refUp = Math.Abs(Vector3.Dot(lookDir, Vector3.Up)) > 0.99f ? Vector3.Forward : Vector3.Up;
+                var right = Vector3.Normalize(Vector3.Cross(refUp, lookDir));
+                var up = Vector3.Cross(lookDir, right);
+
                 var starColor = GalaxyAsPointAggregatedData.ColorFromTemperature(p.Temperature);
-                var brightness = 0.3f + p.Luminosity * 0.7f;
+                var brightness = (_dotBaseBrightness + p.Luminosity * _dotBrightnessScale) * _brightnessMultiplier;
                 starColor = new Color(
                     starColor.R / 255f * brightness,
                     starColor.G / 255f * brightness,
                     starColor.B / 255f * brightness);
 
                 var edgeColor = new Color(
-                    starColor.R / 255f * 0.15f,
-                    starColor.G / 255f * 0.15f,
-                    starColor.B / 255f * 0.15f);
+                    starColor.R / 255f * _dotEdgeBrightness,
+                    starColor.G / 255f * _dotEdgeBrightness,
+                    starColor.B / 255f * _dotEdgeBrightness);
 
-                var radius = 0.03f + p.Luminosity * 0.05f;
+                var radius = _dotBaseRadius + p.Luminosity * _dotRadiusScale;
 
                 AddHexStar(verts, idx, center, radius, right, up, starColor, edgeColor);
             }
