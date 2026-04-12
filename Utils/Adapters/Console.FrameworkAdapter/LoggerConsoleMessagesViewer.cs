@@ -17,9 +17,13 @@ namespace Console.FrameworkAdapter
         
         public void Dispose()
         {
+            ConsoleShowed = null;
+            ConsoleHidden = null;
         }
 
         public bool IsShowed { get; } = false;
+        public event Action ConsoleShowed;
+        public event Action ConsoleHidden;
         public void Show()
         {
         }

@@ -8,6 +8,8 @@ namespace Console.Core.Implementations.ExternalProcess
     public class ExternalProcessConsoleController : IConsoleController
     {
         public bool IsShowed { get; private set; }
+        public event Action ConsoleShowed;
+        public event Action ConsoleHidden;
         private IConsoleMessagesProvider MessagesProvider { get; }
         private IConsoleCommandExecutor CommandExecutor { get; }
 
@@ -34,6 +36,8 @@ namespace Console.Core.Implementations.ExternalProcess
             IsShowed = false;
             
             _processWrapper.Dispose();
+            ConsoleShowed = null;
+            ConsoleHidden = null;
         }
         
         public void Show()
@@ -45,6 +49,7 @@ namespace Console.Core.Implementations.ExternalProcess
             
             _processWrapper.SendShowCommand();
             IsShowed = true;
+            ConsoleShowed?.Invoke();
         }
 
         public void Hide()
@@ -55,6 +60,7 @@ namespace Console.Core.Implementations.ExternalProcess
             }
 
             IsShowed = false;
+            ConsoleHidden?.Invoke();
         }
 
         public void ClearCurrent()

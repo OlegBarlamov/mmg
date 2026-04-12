@@ -11,6 +11,8 @@ namespace Console.Core.Implementations.Terminal
     public class TerminalConsoleViewer : IConsoleController
     {
         public bool IsShowed => true;
+        public event Action ConsoleShowed;
+        public event Action ConsoleHidden;
 
         public ConsoleLogLevelHelper LogLevelHelper { get; } = new ConsoleLogLevelHelper();
         
@@ -67,6 +69,8 @@ namespace Console.Core.Implementations.Terminal
             {
                 _messagesForWrite.TryDequeue(out _);
             }
+            ConsoleShowed = null;
+            ConsoleHidden = null;
         }
         
         public void Show()

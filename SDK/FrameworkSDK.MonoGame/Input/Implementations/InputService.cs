@@ -22,6 +22,11 @@ namespace FrameworkSDK.MonoGame.InputManagement.Implementations
             
             _gamePadProvider = new GamePadProvider(logger);
         }
+
+        internal void SetMouseVisibilityProvider(IMouseVisibilityProvider provider)
+        {
+            _mouseProvider.SetMouseVisibilityProvider(provider);
+        }
         
         public void Update(GameTime gameTime)
         {

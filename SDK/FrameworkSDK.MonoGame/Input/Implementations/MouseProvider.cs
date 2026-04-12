@@ -18,6 +18,19 @@ namespace FrameworkSDK.MonoGame.InputManagement.Implementations
         public Point PositionDelta { get; private set; }
         public Point Position { get; private set; }
 
+        public bool IsMouseVisible
+        {
+            get => _mouseVisibilityProvider?.IsMouseVisible ?? false;
+            set { if (_mouseVisibilityProvider != null) _mouseVisibilityProvider.IsMouseVisible = value; }
+        }
+
+        private IMouseVisibilityProvider _mouseVisibilityProvider;
+
+        internal void SetMouseVisibilityProvider(IMouseVisibilityProvider provider)
+        {
+            _mouseVisibilityProvider = provider;
+        }
+
         public void SetPosition(Point point)
         {
             Mouse.SetPosition(point.X, point.Y);

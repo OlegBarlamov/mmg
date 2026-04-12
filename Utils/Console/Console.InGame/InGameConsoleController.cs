@@ -13,6 +13,8 @@ namespace Console.InGame
     public class InGameConsoleController : IConsoleController
     {
         public bool IsShowed => _isShowed;
+        public event Action ConsoleShowed;
+        public event Action ConsoleHidden;
 
         internal RenderingMessagesFilter RenderingMessagesFilter { get; }
         private IConsoleMessagesProvider ConsoleMessagesProvider { get; }
@@ -85,6 +87,8 @@ namespace Console.InGame
             _view.HideAnimationFinished -= ViewOnHideAnimationFinished;
             _view.Dispose();
             _model.Dispose();
+            ConsoleShowed = null;
+            ConsoleHidden = null;
         }
 
         public void RegisterDataRenderer<TData>(IDataRenderer renderer)
@@ -111,6 +115,7 @@ namespace Console.InGame
             _isDrawEnabled = true;
             _view.Show();
             _model.OnShow();
+            ConsoleShowed?.Invoke();
         }
 
         public void Hide()
@@ -120,6 +125,7 @@ namespace Console.InGame
             _isShowed = false;
             _model.IsAllowControl = false;
             _view.Hide();
+            ConsoleHidden?.Invoke();
         }
 
         public void ClearCurrent()

@@ -3,6 +3,8 @@ using FrameworkSDK.DependencyInjection;
 using FrameworkSDK.Logging;
 using FrameworkSDK.MonoGame.Config;
 using FrameworkSDK.MonoGame.Core;
+using FrameworkSDK.MonoGame.InputManagement;
+using FrameworkSDK.MonoGame.InputManagement.Implementations;
 using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.Services;
 using FrameworkSDK.MonoGame.Services.Implementations;
@@ -13,7 +15,7 @@ using NetExtensions.Exceptions;
 namespace FrameworkSDK.MonoGame
 {
     [UsedImplicitly]
-	internal sealed class GameHeart : Microsoft.Xna.Framework.Game, IGameHeart
+	internal sealed class GameHeart : Microsoft.Xna.Framework.Game, IGameHeart, IMouseVisibilityProvider
 	{
 		public event Action ResourceLoading;
 		public event Action ResourceUnloading;
@@ -66,6 +68,9 @@ namespace FrameworkSDK.MonoGame
 		    try
 		    {
 			    ((GameHeartServicesHolder)GameHeartServices).Initialize(this, GraphicsDeviceManager, Content, Services);
+
+			    var inputService = AppContext.ServiceLocator.Resolve<InputService>();
+			    inputService.SetMouseVisibilityProvider(this);
 
 			    GameApp = CreateGameAppInstance();
 			    GameApp.DisposedEvent += GameHostOnDisposed;

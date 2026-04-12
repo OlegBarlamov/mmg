@@ -20,6 +20,11 @@ namespace Logging
             return loggerConfiguration.WriteTo.RollingFile(logFilePathFormatted, outputTemplate: "{Message}{NewLine}");
         }
 
+        public static LoggerConfiguration WriteToConsole(this LoggerConfiguration loggerConfiguration)
+        {
+            return loggerConfiguration.WriteTo.Console(outputTemplate: "{Message}{NewLine}");
+        }
+
         public static LoggerConfiguration WriteToLoggers(this LoggerConfiguration loggerConfiguration, params Logger[] loggers)
         {
             var config = loggerConfiguration;

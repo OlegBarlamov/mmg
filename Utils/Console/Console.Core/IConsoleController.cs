@@ -6,6 +6,9 @@ namespace Console.Core
     public interface IConsoleController : IDisposable
     {
         bool IsShowed { get; }
+
+        event Action ConsoleShowed;
+        event Action ConsoleHidden;
         
         void Show();
 

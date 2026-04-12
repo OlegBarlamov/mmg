@@ -24,6 +24,8 @@ namespace FrameworkSDK.MonoGame.InputManagement
         
         Point Position { get; }
 
+        bool IsMouseVisible { get; set; }
+
         void SetPosition(Point point);
     }
 }

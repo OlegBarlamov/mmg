@@ -73,7 +73,8 @@ namespace Logging
         private LoggerConfiguration SetupNewLogger(string categoryName)
         {
             var config = CreateBaseConfig()
-                .WriteToLoggers(_systemLoggers);
+                .WriteToLoggers(_systemLoggers)
+                .WriteToConsole();
 
             return AddWriteToFileOption(config, categoryName);
         }
