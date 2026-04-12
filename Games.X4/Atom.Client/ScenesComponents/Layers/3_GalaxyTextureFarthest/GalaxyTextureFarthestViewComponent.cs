@@ -5,6 +5,7 @@ using FrameworkSDK.MonoGame.Mvc;
 using FrameworkSDK.MonoGame.SceneComponents.Geometries;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using X4World.Generation;
 
 namespace Atom.Client.Components
 {
@@ -26,11 +27,12 @@ namespace Atom.Client.Components
             base.OnAttached(scene);
 
             var aggData = DataModel.AggregatedData;
+            var cfg = GalaxyConfig.Instance.GalaxyTextureFarthest.Node;
             var starViewModel = new GalaxyAsPointViewModel3D(
                 DataModel.Position,
                 aggData.GalaxyColor,
-                1.0f,
-                aggData.DiskRadius * 2f);
+                cfg.CenterStarIntensity,
+                aggData.DiskRadius * cfg.CenterStarScaleMultiplier);
             AddChild(starViewModel);
 
             OnTextureChanged();

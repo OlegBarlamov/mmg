@@ -50,6 +50,7 @@ galaxyAsPoint:
     diskThicknessRatio: 0.05          # Y spread as fraction of diskRadius
     spiralWindFactor: 1.5             # how tightly arms wind
     radialExtentFactor: 0.9           # radial reach as fraction of diskRadius
+    radialPowerExponent: 0.7          # controls center concentration (0.5 = uniform, 1.0 = mild, 2.0 = heavy)
     baseLuminosityScale: 0.3
     luminosityPowerScale: 2.0
     luminosityRandomBase: 0.5
@@ -71,6 +72,8 @@ galaxyTextureFarthest:
     bulgeExtent: 0.35                 # bulge radius as fraction of texture center
     bulgeIntensity: 0.15              # bulge color intensity
     bulgeAlphaScale: 60               # bulge alpha scale (0–255)
+    centerStarIntensity: 0.75          # shader intensity for the central star billboard
+    centerStarScaleMultiplier: 1.25    # scale = diskRadius × this
   generation:
     subClustersPerPoint: 4            # extra sub-stars spawned per cluster point
     subClusterSpread: 0.04            # spread as fraction of diskRadius
@@ -81,7 +84,7 @@ galaxyTextureFarthest:
 galaxyTextureLayered:
   node:
     unwrapDistanceMultiplier: 7       # × diskRadius
-    octreeSizeMultiplier: 2           # × diskRadius
+    octreeSizeMultiplier: 3           # × diskRadius (must be ≥ 2√2 ≈ 2.83 to fit rotated corner sectors)
     textureBrightnessScale: 1.0       # multiplier on per-star brightness in texture
     textureStarAlpha: 50              # alpha added per star to the texture (0–255)
     textureStarRadius: 2              # pixel radius per star (0 = single pixel)
@@ -92,6 +95,8 @@ galaxyTextureLayered:
     bulgeExtent: 0.4                  # bulge radius as fraction of texture center
     bulgeIntensity: 0.4               # bulge color intensity
     bulgeAlphaScale: 140              # bulge alpha scale (0–255)
+    centerStarIntensity: 0.5          # shader intensity for the central star billboard
+    centerStarScaleMultiplier: 1.0    # scale = diskRadius × this
   generation:
     sectorGridSize: 5                 # NxN grid for sector partitioning
     subClustersPerPoint: 4            # extra sub-stars spawned per sector point
@@ -104,6 +109,14 @@ galaxySectorTexture:
   node:
     unwrapDistanceMultiplier: 3       # × diskRadius
     octreeSizeMultiplier: 3           # × sectorRadius
+    cloudSpriteRadius: 0.022          # per-star sprite radius as fraction of sectorRadius
+    cloudSpriteBrightness: 1.2        # per-star sprite brightness
+    cloudYScale: 2.0                  # vertical exaggeration of cloud sprite positions
+    cloudGalaxyTintBlend: 0.3         # blend toward galaxy color (0 = temperature only, 1 = galaxy tint only)
+    slabBrightness: 0.8               # raymarched slab brightness (background glow)
+    slabFalloffSharpness: 10.0        # vertical density falloff sharpness
+    slabThicknessScale: 5.0           # Y-scale multiplier for the bounding box
+    slabEdgeFadeStart: 0.35           # radial distance (0–0.5 in object space) where edge fade begins
   generation:
     diskThicknessScale: 2.5           # Y-axis exaggeration for 3D feel
 

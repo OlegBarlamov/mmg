@@ -15,6 +15,7 @@ namespace X4World.Objects
         public int Seed { get; }
         public GalaxySectorDefinition[] Sectors { get; }
         public GalaxyTextureData TextureData { get; } = new GalaxyTextureData();
+        public GalaxyTextureData SlabTextureData { get; } = new GalaxyTextureData();
 
         public GalaxyTextureLayeredAggregatedData(
             Color galaxyColor,

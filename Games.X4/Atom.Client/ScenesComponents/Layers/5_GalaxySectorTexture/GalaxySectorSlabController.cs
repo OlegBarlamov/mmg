@@ -10,16 +10,15 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Atom.Client.Components
 {
     [UsedImplicitly]
-    public class GalaxySectorTextureController : Controller<GalaxySectorTextureViewModel3D>
+    public class GalaxySectorSlabController : Controller<GalaxySectorSlabViewModel3D>
     {
         [NotNull] private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
         [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
 
         private CancellationTokenSource _cancellationTokenSource;
-        private readonly object _locker = new object();
 
-        public GalaxySectorTextureController(
-            [NotNull] GalaxySectorTextureViewModel3D viewModel,
+        public GalaxySectorSlabController(
+            [NotNull] GalaxySectorSlabViewModel3D viewModel,
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
             [NotNull] ITextureGeneratorService textureGeneratorService)
         {
@@ -32,32 +31,44 @@ namespace Atom.Client.Components
         {
             base.OnAttached(scene);
 
+            var parentAgg = DataModel.ParentAggregatedData;
+            var slabTextureData = parentAgg.SlabTextureData;
+
+            if (slabTextureData.Texture != null)
+            {
+                DataModel.OnSlabTextureAvailable(slabTextureData.Texture);
+                return;
+            }
+
             using (_cancellationTokenSource)
             {
                 _cancellationTokenSource?.Cancel();
             }
 
             _cancellationTokenSource = new CancellationTokenSource();
-            var aggData = DataModel.AggregatedData;
 
             BackgroundTasksProcessor.EnqueueTask(new SimpleDelayedTask((time, token) =>
             {
                 try
                 {
-                    var texture = SectorTextureGenerator.Generate(
-                        aggData,
+                    if (slabTextureData.Texture != null)
+                        return;
+
+                    var texture = GalaxyTextureGenerator.Generate(
+                        parentAgg.Sectors,
+                        parentAgg.DiskRadius,
+                        parentAgg.GalaxyColor,
                         TextureGeneratorService,
-                        token);
+                        token,
+                        textureSize: 256,
+                        extraBlurRadius: 4);
 
                     token.ThrowIfCancellationRequested();
 
-                    Texture2D oldTexture;
-                    lock (_locker)
-                    {
-                        oldTexture = aggData.TextureData.Texture;
-                        aggData.TextureData.AssignTexture(texture);
-                    }
-                    oldTexture?.Dispose();
+                    if (slabTextureData.Texture == null)
+                        slabTextureData.AssignTexture(texture);
+                    else
+                        texture.Dispose();
                 }
                 catch (OperationCanceledException)
                 {

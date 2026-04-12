@@ -1,6 +1,7 @@
 using FrameworkSDK.MonoGame.Graphics.Camera3D;
 using FrameworkSDK.MonoGame.Graphics.Meshes;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
+using FrameworkSDK.MonoGame.Mvc;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using X4World.Generation;
@@ -15,6 +16,16 @@ namespace Atom.Client.Components
             [NotNull] ICamera3DProvider camera3DProvider)
             : base(new FixedSimpleMesh(CreateGeometry(viewModel, camera3DProvider)), viewModel)
         {
+        }
+
+        protected override void OnAttached(SceneBase scene)
+        {
+            base.OnAttached(scene);
+
+            AddChild(new GalaxySectorSlabViewModel3D(
+                DataModel.SectorTextureAggregatedData,
+                DataModel.GalaxyAggregatedData,
+                DataModel.Position));
         }
 
         private static SectorStarFieldGeometry CreateGeometry(

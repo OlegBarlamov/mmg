@@ -52,7 +52,7 @@ namespace X4World.Objects
                 var arm = i % armCount;
                 var armBaseAngle = arm * MathHelper.TwoPi / armCount;
 
-                var radialFraction = (float)(rng.NextDouble() * rng.NextDouble());
+                var radialFraction = (float)Math.Pow(rng.NextDouble(), cfg.RadialPowerExponent);
                 var r = radialFraction * diskRadius * cfg.RadialExtentFactor;
                 var windAngle = radialFraction * MathHelper.TwoPi * cfg.SpiralWindFactor;
                 var scatter = (float)(rng.NextDouble() - 0.5) * 2f * (1f + r * 0.05f) * scatterScale;

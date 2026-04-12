@@ -58,7 +58,8 @@ namespace Atom.Client.Components
             Color galaxyColor,
             ITextureGeneratorService textureGeneratorService,
             CancellationToken cancellationToken,
-            int textureSize = 64)
+            int textureSize = 64,
+            int extraBlurRadius = 0)
         {
             var cfg = GalaxyConfig.Instance.GalaxyTextureLayered.Node;
             var texture = textureGeneratorService.EmptyTexture(textureSize, textureSize);
@@ -79,7 +80,7 @@ namespace Atom.Client.Components
                 }
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ApplyBlur(colors, textureSize, cfg.TextureBlurRadius);
+                ApplyBlur(colors, textureSize, cfg.TextureBlurRadius + extraBlurRadius);
                 cancellationToken.ThrowIfCancellationRequested();
 
                 RenderBulge(colors, textureSize, galaxyColor,

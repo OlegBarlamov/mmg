@@ -59,7 +59,9 @@ namespace Atom.Client.Scenes
         private BasicEffect _texturesShader;
         private BasicEffect _texturesShaderNoLights;
         private BasicEffect _coloredShader;
+        private BasicEffect _cloudShader;
         private Graphics.StarEffect _starShader;
+        private Graphics.GalaxySlabEffect _galaxySlabShader;
 
         public MainScene(
             MainSceneDataModel model,
@@ -117,7 +119,6 @@ namespace Atom.Client.Scenes
                     _viewModels.Remove(obj);
                     TrackLayerCount(obj, -1);
                 }
-                
             }
         }
 
@@ -184,7 +185,7 @@ namespace Atom.Client.Scenes
                 case GalaxyTextureLayered gtl:
                     return new GalaxyTextureLayeredViewModel3D(gtl);
                 case GalaxySectorTexture sectorTexture:
-                    return new GalaxySectorTextureViewModel3D(sectorTexture);
+                    return new GalaxySectorCloudViewModel3D(sectorTexture);
                 case GalaxySector sector:
                     return new GalaxySectorViewModel3D(sector);
                 case GalaxySectorChunk chunk:
@@ -246,6 +247,9 @@ namespace Atom.Client.Scenes
                 {
                     DebugServicesOnlyForDebug.DebugVariablesService.SetValue("free_camera",value);
                 }));
+
+            ConsoleController.ConsoleShowed += () => InputService.Mouse.IsMouseVisible = true;
+            ConsoleController.ConsoleHidden += () => InputService.Mouse.IsMouseVisible = false;
         }
         
         protected override void Update(GameTime gameTime)
@@ -274,7 +278,9 @@ namespace Atom.Client.Scenes
             _texturesShader?.Dispose();
             _coloredShader?.Dispose();
             _texturesShaderNoLights?.Dispose();
+            _cloudShader?.Dispose();
             _starShader?.Dispose();
+            _galaxySlabShader?.Dispose();
         }
 
         protected override IGraphicsPipeline BuildGraphicsPipeline(IGraphicsPipelineBuilder graphicsPipelineBuilder)
@@ -296,7 +302,13 @@ namespace Atom.Client.Scenes
                 VertexColorEnabled = false, TextureEnabled = true
             };
 
+            _cloudShader = new BasicEffect(GameHeartServices.GraphicsDeviceManager.GraphicsDevice)
+            {
+                VertexColorEnabled = true, TextureEnabled = true, LightingEnabled = false
+            };
+
             _starShader = DataModel.MainResourcePackage.StarShader;
+            _galaxySlabShader = DataModel.MainResourcePackage.GalaxySlabShader;
 
             var vertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 100);
             var indexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(200);
@@ -313,6 +325,12 @@ namespace Atom.Client.Scenes
             var coloredStarVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 512000);
             var coloredStarIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(1024000);
 
+            var cloudVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColorTexture.VertexDeclaration, 48000);
+            var cloudIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(72000);
+
+            var slabVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
+            var slabIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(5000);
+
             return graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
@@ -321,6 +339,12 @@ namespace Atom.Client.Scenes
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.DepthRead, RasterizerStates.NoCull)
                 .ApplyActiveCameraToShader(_texturesShaderNoLights)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3, GraphicsPasses.TexturedNoLights)
+                .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.DepthRead, RasterizerStates.NoCull)
+                .ApplyActiveCameraToShader(_galaxySlabShader)
+                .RenderGrouped<VertexPositionNormalTexture>(_galaxySlabShader, slabVertexBuffer, slabIndexBuffer, GraphicsPasses.GalaxySlab)
+                .SetRenderingConfigs(BlendState.Additive, DepthStencilState.DepthRead, RasterizerStates.NoCull)
+                .ApplyActiveCameraToShader(_cloudShader)
+                .RenderGrouped<VertexPositionColorTexture>(_cloudShader, cloudVertexBuffer, cloudIndexBuffer, GraphicsPasses.CloudSprites)
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .ApplyActiveCameraToShader(_texturesShader)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShader, vertexBuffer2, indexBuffer2, GraphicsPasses.Textured)

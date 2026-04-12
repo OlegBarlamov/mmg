@@ -172,6 +172,9 @@ namespace X4World.Generation
         [YamlMember(Alias = "radialExtentFactor")]
         public float RadialExtentFactor { get; set; }
 
+        [YamlMember(Alias = "radialPowerExponent")]
+        public float RadialPowerExponent { get; set; }
+
         [YamlMember(Alias = "baseLuminosityScale")]
         public float BaseLuminosityScale { get; set; }
 
@@ -233,6 +236,12 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "bulgeAlphaScale")]
         public int BulgeAlphaScale { get; set; }
+
+        [YamlMember(Alias = "centerStarIntensity")]
+        public float CenterStarIntensity { get; set; }
+
+        [YamlMember(Alias = "centerStarScaleMultiplier")]
+        public float CenterStarScaleMultiplier { get; set; }
     }
 
     public class GalaxyTextureFarthestGenerationConfig
@@ -295,6 +304,12 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "bulgeAlphaScale")]
         public int BulgeAlphaScale { get; set; }
+
+        [YamlMember(Alias = "centerStarIntensity")]
+        public float CenterStarIntensity { get; set; }
+
+        [YamlMember(Alias = "centerStarScaleMultiplier")]
+        public float CenterStarScaleMultiplier { get; set; }
     }
 
     public class GalaxyTextureLayeredGenerationConfig
@@ -330,6 +345,30 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "octreeSizeMultiplier")]
         public float OctreeSizeMultiplier { get; set; }
+
+        [YamlMember(Alias = "cloudSpriteRadius")]
+        public float CloudSpriteRadius { get; set; }
+
+        [YamlMember(Alias = "cloudSpriteBrightness")]
+        public float CloudSpriteBrightness { get; set; }
+
+        [YamlMember(Alias = "cloudYScale")]
+        public float CloudYScale { get; set; }
+
+        [YamlMember(Alias = "cloudGalaxyTintBlend")]
+        public float CloudGalaxyTintBlend { get; set; }
+
+        [YamlMember(Alias = "slabBrightness")]
+        public float SlabBrightness { get; set; }
+
+        [YamlMember(Alias = "slabFalloffSharpness")]
+        public float SlabFalloffSharpness { get; set; }
+
+        [YamlMember(Alias = "slabThicknessScale")]
+        public float SlabThicknessScale { get; set; }
+
+        [YamlMember(Alias = "slabEdgeFadeStart")]
+        public float SlabEdgeFadeStart { get; set; }
     }
 
     public class GalaxySectorTextureGenerationConfig

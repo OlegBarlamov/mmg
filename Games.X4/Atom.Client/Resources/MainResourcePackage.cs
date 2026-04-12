@@ -13,6 +13,7 @@ namespace Atom.Client.Resources
         public Texture2D StarTexture { get; private set; }
         public Texture2D GalaxyTexture { get; private set; }
         public StarEffect StarShader { get; private set; }
+        public GalaxySlabEffect GalaxySlabShader { get; private set; }
         
         public Texture2D White { get; private set; }
         
@@ -24,6 +25,9 @@ namespace Atom.Client.Resources
 
             var rawEffect = content.Load<Effect>("StarBeam");
             StarShader = new StarEffect(rawEffect);
+
+            var slabEffect = content.Load<Effect>("GalaxySlab");
+            GalaxySlabShader = new GalaxySlabEffect(slabEffect);
 
             White = content.DiffuseColor(Color.White);
         }
