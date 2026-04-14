@@ -12,15 +12,18 @@ namespace X4World.Objects
         public float Inclination { get; }
         public float SpinAngle { get; }
         public GalaxyClusterPoint[] ClusterPoints { get; }
+        public bool IsHalo { get; }
 
         public GalaxySectorAggregatedData(Color clusterColor, float sectorRadius,
-            float inclination, float spinAngle, GalaxyClusterPoint[] clusterPoints)
+            float inclination, float spinAngle, GalaxyClusterPoint[] clusterPoints,
+            bool isHalo = false)
         {
             ClusterColor = clusterColor;
             SectorRadius = sectorRadius;
             Inclination = inclination;
             SpinAngle = spinAngle;
             ClusterPoints = clusterPoints;
+            IsHalo = isHalo;
         }
     }
 

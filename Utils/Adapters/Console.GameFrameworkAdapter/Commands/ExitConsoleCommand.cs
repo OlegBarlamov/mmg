@@ -4,14 +4,13 @@ using Console.Core.Commands;
 using FrameworkSDK.MonoGame.Services;
 using JetBrains.Annotations;
 
-namespace Atom.Client.ConsoleCommands
+namespace Console.GameFrameworkAdapter.Commands
 {
     [RegisterConsoleCommand]
-    public class ExitConsoleCommand : ParametrizedExecutableConsoleCommand
+    public class ExitConsoleCommand : FixedTypedExecutableConsoleCommand
     {
         public override string Text { get; } = "exit";
         public override string Description { get; } = "Exit the application";
-        public override string Title { get; } = "Exit";
         
         private IAppTerminator AppTerminator { get; }
 
@@ -20,7 +19,7 @@ namespace Atom.Client.ConsoleCommands
             AppTerminator = appTerminator ?? throw new ArgumentNullException(nameof(appTerminator));
         }
         
-        protected override Task ExecuteAsyncWithParameters(string[] parameters)
+        protected override Task ExecuteAsync()
         {
             AppTerminator.Terminate();
             return Task.CompletedTask;

@@ -31,6 +31,8 @@ namespace Atom.Client.Scenes
 {
     public class MainScene : Scene
     {
+        private const bool EnableDebugBoundingBoxes = true;
+
         private MainSceneDataModel DataModel { get; }
         public IInputService InputService { get; }
         private ICamera3DService Camera3DService { get; }
@@ -54,7 +56,14 @@ namespace Atom.Client.Scenes
         private readonly IGlobalWorldMapController _globalWorldMapController;
         private readonly IWrappedObjectsController _wrappedObjectsController;
         private readonly Dictionary<IWrappedDetails, ViewModel3D> _viewModels = new Dictionary<IWrappedDetails, ViewModel3D>();
+        private readonly Dictionary<object, IView> _viewByDataModel = new Dictionary<object, IView>();
         private readonly LodStatsComponentData _lodStats = new LodStatsComponentData();
+
+        private IWrappedDetails _selectedObject;
+        private DrawLabelComponentDataModel _pickLabel;
+
+        private DebugBoundingBoxesView _debugBBView;
+        private IGraphicsPipelineAction _debugBBAction;
 
         private BasicEffect _texturesShader;
         private BasicEffect _texturesShaderNoLights;
@@ -105,7 +114,12 @@ namespace Atom.Client.Scenes
             _wrappedObjectsController = new WrappedObjectsController(DetailsGeneratorProvider);
             _wrappedObjectsController.ObjectRevealed += WrappedObjectsControllerOnObjectRevealed;
             _wrappedObjectsController.ObjectsRevealedBatch += WrappedObjectsControllerOnObjectsRevealedBatch;
-            _wrappedObjectsController.ObjectsHidden += WrappedObjectsControllerOnObjectsHidden; 
+            _wrappedObjectsController.ObjectsHidden += WrappedObjectsControllerOnObjectsHidden;
+
+            if (EnableDebugBoundingBoxes)
+            {
+                _debugBBView = new DebugBoundingBoxesView(GraphicsPasses.DebugBoundingBoxes);
+            }
         }
 
         private void WrappedObjectsControllerOnObjectsHidden(IReadOnlyList<IWrappedDetails> objects)
@@ -119,6 +133,7 @@ namespace Atom.Client.Scenes
                     _viewModels.Remove(obj);
                     TrackLayerCount(obj, -1);
                 }
+                
             }
         }
 
@@ -176,6 +191,8 @@ namespace Atom.Client.Scenes
         {
             switch (obj)
             {
+                case WorldMapCellContent cell:
+                    return new WorldMapCellContentViewModel3D(cell);
                 case GalaxiesBatch galaxiesBatch:
                     return new GalaxiesBatchViewModel3D(galaxiesBatch);
                 case GalaxyAsPoint galaxy:
@@ -248,8 +265,30 @@ namespace Atom.Client.Scenes
                     DebugServicesOnlyForDebug.DebugVariablesService.SetValue("free_camera",value);
                 }));
 
-            ConsoleController.ConsoleShowed += () => InputService.Mouse.IsMouseVisible = true;
-            ConsoleController.ConsoleHidden += () => InputService.Mouse.IsMouseVisible = false;
+            if (EnableDebugBoundingBoxes)
+            {
+                ExecutableCommandsCollection.AddCommand(new FixedTypedExecutableConsoleCommandDelegate<bool>("debug_bb", "Toggle debug bounding boxes",
+                    value =>
+                    {
+                        var attached = ((ISceneComponent)_debugBBView).OwnedScene != null;
+                        if (value && !attached)
+                            AddView(_debugBBView);
+                        else if (!value && attached)
+                            RemoveView(_debugBBView);
+                    }));
+            }
+
+            ConsoleController.ConsoleShowed += OnConsoleShowed;
+            ConsoleController.ConsoleHidden += OnConsoleHidden;
+
+            _pickLabel = new DrawLabelComponentDataModel
+            {
+                Font = DataModel.MainResourcePackage.DebugInfoFont,
+                Text = string.Empty,
+                Color = Color.Yellow,
+                GraphicsPassName = GraphicsPasses.Debug
+            };
+            AddView(_pickLabel);
         }
         
         protected override void Update(GameTime gameTime)
@@ -260,6 +299,13 @@ namespace Atom.Client.Scenes
             {
                 _cameraController.Update(gameTime);
                 PlayerProvider.Update(gameTime);
+
+                _selectedObject = null;
+                _pickLabel.Text = string.Empty;
+            }
+            else if (InputService.Mouse.LeftButtonPressedOnce)
+            {
+                ProcessObjectPicking();
             }
 
             var playerPosition = PlayerProvider.GetPlayerPosition();
@@ -271,10 +317,76 @@ namespace Atom.Client.Scenes
             _lodStats.TotalViews = _viewModels.Count;
         }
 
+        private void OnConsoleShowed() => InputService.Mouse.IsMouseVisible = true;
+        private void OnConsoleHidden() => InputService.Mouse.IsMouseVisible = false;
+
+        private void ProcessObjectPicking()
+        {
+            var viewport = GameHeartServices.GraphicsDeviceManager.GraphicsDevice.Viewport;
+            var ray = _camera.CreatePickRay(InputService.Mouse.Position, viewport);
+
+            IWrappedDetails closest = null;
+            var closestDistance = float.MaxValue;
+
+            foreach (var kvp in _viewModels)
+            {
+                var obj = kvp.Key;
+
+                if (_wrappedObjectsController.IsObjectUnwrapped(obj))
+                    continue;
+
+                if (!_viewByDataModel.TryGetValue(kvp.Value, out var view))
+                    continue;
+
+                if (view.BoundingBox == null)
+                    continue;
+
+                var distance = ray.Intersects(view.BoundingBox.Value);
+                if (!distance.HasValue)
+                    continue;
+
+                var dist = float.IsNaN(distance.Value) ? 0f : distance.Value;
+                if (dist < closestDistance)
+                {
+                    closestDistance = dist;
+                    closest = obj;
+                }
+            }
+
+            _selectedObject = closest;
+
+            if (_selectedObject != null)
+            {
+                _pickLabel.Text = _selectedObject.Name;
+                _pickLabel.Position = InputService.Mouse.Position.ToVector2() + new Vector2(15, 15);
+            }
+            else
+            {
+                _pickLabel.Text = string.Empty;
+            }
+        }
+
+        protected override void OnViewAttached(IView view)
+        {
+            _viewByDataModel[view.DataModel] = view;
+
+            _debugBBView?.TrackView(view);
+        }
+
+        protected override void OnViewDetached(IView view)
+        {
+            _viewByDataModel.Remove(view.DataModel);
+
+            _debugBBView?.UntrackView(view);
+        }
+
         public override void Dispose()
         {
             base.Dispose();
-            
+
+            ConsoleController.ConsoleShowed -= OnConsoleShowed;
+            ConsoleController.ConsoleHidden -= OnConsoleHidden;
+
             _texturesShader?.Dispose();
             _coloredShader?.Dispose();
             _texturesShaderNoLights?.Dispose();
@@ -331,11 +443,23 @@ namespace Atom.Client.Scenes
             var slabVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionNormalTexture.VertexDeclaration, 1000);
             var slabIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(5000);
 
-            return graphicsPipelineBuilder
+            if (EnableDebugBoundingBoxes)
+            {
+                var debugBBVertexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateVertexBugger(VertexPositionColor.VertexDeclaration, 50000);
+                var debugBBIndexBuffer = graphicsPipelineBuilder.VideoBuffersFactoryService.CreateIndexBuffer(100000);
+                _debugBBAction = new SimpleRenderInstancedMeshes<VertexPositionColor>(GraphicsPasses.DebugBoundingBoxes, _coloredShader, debugBBVertexBuffer, debugBBIndexBuffer);
+            }
+
+            var pipelineBuilder = graphicsPipelineBuilder
                 .Clear(Color.Black)
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.Default, RasterizerStates.Default)
                 .ApplyActiveCameraToShader(_coloredShader)
-                .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer, GraphicsPasses.Grouped)
+                .RenderGrouped<VertexPositionColor>(_coloredShader, vertexBuffer, indexBuffer, GraphicsPasses.Grouped);
+
+            if (EnableDebugBoundingBoxes)
+                pipelineBuilder = pipelineBuilder.AddAction(_debugBBAction);
+
+            return pipelineBuilder
                 .SetRenderingConfigs(BlendState.AlphaBlend, DepthStencilState.DepthRead, RasterizerStates.NoCull)
                 .ApplyActiveCameraToShader(_texturesShaderNoLights)
                 .RenderGrouped<VertexPositionNormalTexture>(_texturesShaderNoLights, vertexBuffer3, indexBuffer3, GraphicsPasses.TexturedNoLights)

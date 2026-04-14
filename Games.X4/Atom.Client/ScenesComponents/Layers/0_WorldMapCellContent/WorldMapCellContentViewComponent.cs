@@ -2,34 +2,32 @@ using Atom.Client.Graphics;
 using FrameworkSDK.MonoGame.Graphics.Materials;
 using FrameworkSDK.MonoGame.Graphics.RenderableComponents;
 using FrameworkSDK.MonoGame.Mvc;
-using X4World.Objects;
 
 namespace Atom.Client.Components
 {
-    public sealed class WorldMapCellContentViewComponent : BillboardPrimitive<WorldMapCellContent, WorldMapCellContentController>
+    public sealed class WorldMapCellContentViewComponent : BillboardPrimitive<WorldMapCellContentViewModel3D, WorldMapCellContentController>
     {
-        public WorldMapCellContentViewComponent(WorldMapCellContent model)
-            : base(model, GraphicsPasses.TexturedNoLights)
+        public WorldMapCellContentViewComponent(WorldMapCellContentViewModel3D viewModel)
+            : base(viewModel, GraphicsPasses.TexturedNoLights)
         {
-            DataModel.Scale = model.Size;
         }
 
         protected override void OnAttached(SceneBase scene)
         {
             base.OnAttached(scene);
             
-            WorldMapCellTextureDataOnTextureChanged();
-            DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.TextureChanged += WorldMapCellTextureDataOnTextureChanged;
+            OnTextureChanged();
+            DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.TextureChanged += OnTextureChanged;
         }
 
         protected override void OnDetached(SceneBase scene)
         {
             base.OnDetached(scene);
             
-            DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.TextureChanged -= WorldMapCellTextureDataOnTextureChanged;
+            DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.TextureChanged -= OnTextureChanged;
         }
 
-        private void WorldMapCellTextureDataOnTextureChanged()
+        private void OnTextureChanged()
         {
             var texture = DataModel.WorldMapCellAggregatedData.WorldMapCellTextureData.Texture; 
             if (texture != null)

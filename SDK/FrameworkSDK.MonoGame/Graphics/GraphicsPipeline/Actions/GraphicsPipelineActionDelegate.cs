@@ -11,6 +11,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
     {
         public string Name { get; }
         public bool IsDisabled { get; set; }
+        public int AttachedComponentCount => AttachedComponents.Count;
 
         protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();
         

@@ -11,11 +11,10 @@ using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using X4World.Maps;
-using X4World.Objects;
 
 namespace Atom.Client.Components
 {
-    public class WorldMapCellContentController : BillboardController<WorldMapCellContent>
+    public class WorldMapCellContentController : BillboardController<WorldMapCellContentViewModel3D>
     {
         [NotNull] private IBackgroundTasksProcessor BackgroundTasksProcessor { get; }
         [NotNull] private ITextureGeneratorService TextureGeneratorService { get; }
@@ -27,7 +26,7 @@ namespace Atom.Client.Components
         protected override bool ContinuouslyUpdateRotation => false;
 
         public WorldMapCellContentController(
-            [NotNull] WorldMapCellContent model,
+            [NotNull] WorldMapCellContentViewModel3D model,
             [NotNull] IBackgroundTasksProcessor backgroundTasksProcessor,
             [NotNull] ICamera3DProvider camera3DProvider,
             [NotNull] ITextureGeneratorService textureGeneratorService)
@@ -57,7 +56,7 @@ namespace Atom.Client.Components
                     var mapPoint = GlobalWorldMap.MapPointFromWorld(cameraPosition);
                     
                     var texture = MapCellTextureGenerator.GenerateAsync(
-                        DataModel.GetWorldPosition(),
+                        DataModel.WorldPosition,
                         GlobalWorldMap.WorldFromMapPoint(mapPoint),
                         DataModel.WorldMapCellAggregatedData.GalaxiesPoints,
                         TextureGeneratorService, token);

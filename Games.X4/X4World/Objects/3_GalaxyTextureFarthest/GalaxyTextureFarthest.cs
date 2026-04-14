@@ -30,14 +30,17 @@ namespace X4World.Objects
         public float Radius { get; }
         public int Seed { get; }
         public GalaxyClusterPoint[] ClusterPoints { get; }
+        public int HaloYCount { get; }
 
-        public GalaxySectorDefinition(float centerX, float centerZ, float radius, int seed, GalaxyClusterPoint[] clusterPoints)
+        public GalaxySectorDefinition(float centerX, float centerZ, float radius, int seed,
+            GalaxyClusterPoint[] clusterPoints, int haloYCount = 0)
         {
             CenterX = centerX;
             CenterZ = centerZ;
             Radius = radius;
             Seed = seed;
             ClusterPoints = clusterPoints;
+            HaloYCount = haloYCount;
         }
     }
 

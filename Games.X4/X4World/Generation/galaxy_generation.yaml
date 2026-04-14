@@ -102,13 +102,16 @@ galaxyTextureLayered:
     subClustersPerPoint: 4            # extra sub-stars spawned per sector point
     subClusterSpread: 0.2            # spread as fraction of sectorRadius
     subClusterLuminosityScale: 0.4    # sub-star luminosity relative to parent
+    haloCenterYCount: 6               # halo Y-layers for center sectors
+    haloEdgeYCount: 2                 # halo Y-layers for edge/corner sectors
+    haloOuterRing: true               # add empty sectors surrounding the grid
 
 # Layer 5 — Galaxy sector texture (per-sector texture before dots)
 # Generator: GalaxySectorTextureDetailsGenerator
 galaxySectorTexture:
   node:
     unwrapDistanceMultiplier: 3       # × diskRadius
-    octreeSizeMultiplier: 3           # × sectorRadius
+    octreeSizeMultiplier: 16          # × sectorRadius (must fit halo sectors: 2 × haloCenterYCount × haloYOffset)
     cloudSpriteRadius: 0.022          # per-star sprite radius as fraction of sectorRadius
     cloudSpriteBrightness: 1.2        # per-star sprite brightness
     cloudYScale: 2.0                  # vertical exaggeration of cloud sprite positions
@@ -119,6 +122,9 @@ galaxySectorTexture:
     slabEdgeFadeStart: 0.35           # radial distance (0–0.5 in object space) where edge fade begins
   generation:
     diskThicknessScale: 2.5           # Y-axis exaggeration for 3D feel
+    haloStarsPerSector: 30            # stars per halo sector
+    haloYOffset: 1.2                  # Y offset per layer as fraction of sectorRadius
+    haloLuminosityScale: 1.5          # brightness relative to disk stars
 
 # Layer 6 — Galaxy sector (adaptive quadtree split into chunks)
 # Generator: GalaxySectorDetailsGenerator

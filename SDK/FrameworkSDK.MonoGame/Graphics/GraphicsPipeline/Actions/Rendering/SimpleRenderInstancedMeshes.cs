@@ -29,6 +29,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         public override void OnComponentAttached(IGraphicComponent attachingComponent)
         {
+            base.OnComponentAttached(attachingComponent);
             var meshes = attachingComponent.MeshesByPass[Name];
             foreach (var mesh in meshes)
             {
@@ -47,6 +48,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
 
         public override void OnComponentDetached(IGraphicComponent detachingComponent)
         {
+            base.OnComponentDetached(detachingComponent);
             var meshes = detachingComponent.MeshesByPass[Name];
             foreach (var mesh in meshes)
             {

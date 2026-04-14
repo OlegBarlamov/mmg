@@ -22,10 +22,13 @@ namespace Atom.Client.Components
         {
             base.OnAttached(scene);
 
-            AddChild(new GalaxySectorSlabViewModel3D(
-                DataModel.SectorTextureAggregatedData,
-                DataModel.GalaxyAggregatedData,
-                DataModel.Position));
+            if (!DataModel.AggregatedData.IsHalo)
+            {
+                AddChild(new GalaxySectorSlabViewModel3D(
+                    DataModel.SectorTextureAggregatedData,
+                    DataModel.GalaxyAggregatedData,
+                    DataModel.Position));
+            }
         }
 
         private static SectorStarFieldGeometry CreateGeometry(

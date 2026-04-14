@@ -18,6 +18,8 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         internal const string DebugInfoRenderingVertices = "render_vertices";
         internal const string DebugInfoDrawComponents = "draw_comps";
         
+        public int AttachedComponentCount => AttachedComponents.Count;
+
         protected List<IGraphicComponent> AttachedComponents { get; } = new List<IGraphicComponent>();
         
         protected GraphicsPipelineActionBase([NotNull] string name)

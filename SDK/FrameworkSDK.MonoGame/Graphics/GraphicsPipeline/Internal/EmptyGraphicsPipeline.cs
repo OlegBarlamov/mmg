@@ -13,6 +13,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
         }
 
         public IReadOnlyList<IGraphicsPipelineAction> Actions { get; } = Array.Empty<IGraphicsPipelineAction>();
+        public void RequestDump() { }
         public void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext)
         {
         }

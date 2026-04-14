@@ -10,6 +10,7 @@ namespace FrameworkSDK.MonoGame.Graphics.GraphicsPipeline
     public interface IGraphicsPipelineAction : INamed, IDisposable
     {
         bool IsDisabled { get; set; }
+        int AttachedComponentCount { get; }
         
         void Process(GameTime gameTime, IGraphicDeviceContext graphicDeviceContext);
 

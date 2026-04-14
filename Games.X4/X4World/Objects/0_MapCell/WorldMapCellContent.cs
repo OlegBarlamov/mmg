@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FrameworkSDK.MonoGame.Graphics.RenderableComponents.Models;
-using FrameworkSDK.MonoGame.Resources;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using MonoGameExtensions.DataStructures;
@@ -11,17 +9,20 @@ using X4World.Maps;
 
 namespace X4World.Objects
 {
-    public class WorldMapCellContent : ViewModel3D, IWrappedDetails
+    public class WorldMapCellContent : IWrappedDetails
     {
         public IWrappedDetails Parent { get; } = null;
 
-        public override void SetPosition(Vector3 position)
+        public Vector3 Position { get; private set; }
+
+        public void SetPosition(Vector3 position)
         {
+            Position = position;
         }
 
         object IWrappedDetails.AggregatedData => WorldMapCellAggregatedData;
 
-        public Vector3 Size { get; }
+        public float Size { get; }
         public WorldMapCellAggregatedData WorldMapCellAggregatedData { get; }
         
         public Point3D MapPoint { get; }
@@ -36,7 +37,7 @@ namespace X4World.Objects
             MapPoint = point;
             Name = $"{point.X},{point.Y},{point.Z}";
             Position = position;
-            Size = new Vector3(size);
+            Size = size;
             WorldMapCellAggregatedData = worldMapCellAggregatedData ?? throw new ArgumentNullException(nameof(worldMapCellAggregatedData));
 
             var cfg = GalaxyConfig.Instance.MapCell.Node;

@@ -16,7 +16,7 @@ namespace X4World.Objects
 
             var layeredCfg = GalaxyConfig.Instance.GalaxyTextureLayered.Generation;
             var expandedPoints = ExpandClusterPoints(aggData.ClusterPoints, aggData.DiskRadius, rng, cfg);
-            var sectors = PartitionIntoSectors(expandedPoints, aggData.DiskRadius, rng, layeredCfg.SectorGridSize);
+            var sectors = PartitionIntoSectors(expandedPoints, aggData.DiskRadius, rng, layeredCfg);
 
             var sectorSeed = rng.Next();
 
@@ -35,8 +35,10 @@ namespace X4World.Objects
         }
 
         private static GalaxySectorDefinition[] PartitionIntoSectors(
-            GalaxyClusterPoint[] points, float diskRadius, Random rng, int sectorGridSize)
+            GalaxyClusterPoint[] points, float diskRadius, Random rng,
+            GalaxyTextureLayeredGenerationConfig layeredCfg)
         {
+            var sectorGridSize = layeredCfg.SectorGridSize;
             var cellSize = diskRadius * 2f / sectorGridSize;
             var halfDisk = diskRadius;
             var buckets = new Dictionary<int, List<GalaxyClusterPoint>>();
@@ -59,6 +61,7 @@ namespace X4World.Objects
 
             var sectors = new List<GalaxySectorDefinition>(buckets.Count);
             var sectorRadius = cellSize * 0.5f;
+            var halfGrid = (sectorGridSize - 1) * 0.5f;
 
             foreach (var kvp in buckets)
             {
@@ -76,10 +79,46 @@ namespace X4World.Objects
                     localPoints[i] = new GalaxyClusterPoint(p.X - cx, p.Y, p.Z - cz, p.Temperature, p.Luminosity);
                 }
 
-                sectors.Add(new GalaxySectorDefinition(cx, cz, sectorRadius, seed, localPoints));
+                var radialDist = (float)Math.Sqrt(cx * cx + cz * cz);
+                var radialFraction = MathHelper.Clamp(radialDist / halfDisk, 0f, 1f);
+                var haloY = (int)MathHelper.Lerp(layeredCfg.HaloCenterYCount, layeredCfg.HaloEdgeYCount,
+                    radialFraction);
+
+                sectors.Add(new GalaxySectorDefinition(cx, cz, sectorRadius, seed, localPoints, haloY));
             }
 
+            if (layeredCfg.HaloOuterRing)
+                AddOuterRingSectors(sectors, sectorGridSize, cellSize, halfDisk, sectorRadius, rng, layeredCfg);
+
             return sectors.ToArray();
+        }
+
+        private static void AddOuterRingSectors(
+            List<GalaxySectorDefinition> sectors, int gridSize, float cellSize,
+            float halfDisk, float sectorRadius, Random rng,
+            GalaxyTextureLayeredGenerationConfig cfg)
+        {
+            var outerLimit = halfDisk + cellSize * 1.5f;
+
+            for (int row = -1; row <= gridSize; row++)
+            {
+                for (int col = -1; col <= gridSize; col++)
+                {
+                    if (row >= 0 && row < gridSize && col >= 0 && col < gridSize)
+                        continue;
+
+                    var cx = -halfDisk + (col + 0.5f) * cellSize;
+                    var cz = -halfDisk + (row + 0.5f) * cellSize;
+                    var radialDist = (float)Math.Sqrt(cx * cx + cz * cz);
+
+                    if (radialDist > outerLimit)
+                        continue;
+
+                    var seed = rng.Next();
+                    sectors.Add(new GalaxySectorDefinition(cx, cz, sectorRadius, seed,
+                        Array.Empty<GalaxyClusterPoint>(), cfg.HaloEdgeYCount));
+                }
+            }
         }
 
         private static GalaxyClusterPoint[] ExpandClusterPoints(

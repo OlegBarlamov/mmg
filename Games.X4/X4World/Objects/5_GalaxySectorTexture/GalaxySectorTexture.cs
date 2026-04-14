@@ -16,13 +16,15 @@ namespace X4World.Objects
         public float SpinAngle { get; }
         public int Seed { get; }
         public GalaxyClusterPoint[] ClusterPoints { get; }
+        public int HaloYCount { get; }
         public GalaxyTextureData TextureData { get; } = new GalaxyTextureData();
 
         public GalaxySectorTextureAggregatedData(
             Color galaxyColor, float sectorRadius, float diskRadius,
             float sectorCenterX, float sectorCenterZ,
             float inclination, float spinAngle,
-            int seed, GalaxyClusterPoint[] clusterPoints)
+            int seed, GalaxyClusterPoint[] clusterPoints,
+            int haloYCount = 0)
         {
             GalaxyColor = galaxyColor;
             SectorRadius = sectorRadius;
@@ -33,6 +35,7 @@ namespace X4World.Objects
             SpinAngle = spinAngle;
             Seed = seed;
             ClusterPoints = clusterPoints;
+            HaloYCount = haloYCount;
         }
     }
 

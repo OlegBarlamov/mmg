@@ -325,6 +325,15 @@ namespace X4World.Generation
 
         [YamlMember(Alias = "subClusterLuminosityScale")]
         public float SubClusterLuminosityScale { get; set; }
+
+        [YamlMember(Alias = "haloCenterYCount")]
+        public int HaloCenterYCount { get; set; }
+
+        [YamlMember(Alias = "haloEdgeYCount")]
+        public int HaloEdgeYCount { get; set; }
+
+        [YamlMember(Alias = "haloOuterRing")]
+        public bool HaloOuterRing { get; set; }
     }
 
     // --- Layer 5: GalaxySectorTexture ---
@@ -375,6 +384,15 @@ namespace X4World.Generation
     {
         [YamlMember(Alias = "diskThicknessScale")]
         public float DiskThicknessScale { get; set; }
+
+        [YamlMember(Alias = "haloStarsPerSector")]
+        public int HaloStarsPerSector { get; set; }
+
+        [YamlMember(Alias = "haloYOffset")]
+        public float HaloYOffset { get; set; }
+
+        [YamlMember(Alias = "haloLuminosityScale")]
+        public float HaloLuminosityScale { get; set; }
     }
 
     // --- Layer 6: GalaxySector ---

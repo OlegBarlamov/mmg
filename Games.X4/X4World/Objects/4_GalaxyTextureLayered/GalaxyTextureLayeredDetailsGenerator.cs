@@ -31,7 +31,8 @@ namespace X4World.Objects
                     aggData.GalaxyColor, sector.Radius, aggData.DiskRadius,
                     sector.CenterX, sector.CenterZ,
                     aggData.Inclination, aggData.SpinAngle,
-                    sector.Seed, expandedPoints);
+                    sector.Seed, expandedPoints,
+                    sector.HaloYCount);
                 var sectorTexture = new GalaxySectorTexture(target, localPos, sectorTextureData);
                 results.Add(sectorTexture);
             }

@@ -29,6 +29,7 @@ namespace FrameworkSDK.MonoGame.Mvc
         private IController _controller;
 
         private readonly List<IView> _children = new List<IView>();
+        private List<object> _pendingChildren;
 
         protected View()
         {
@@ -87,7 +88,11 @@ namespace FrameworkSDK.MonoGame.Mvc
 
             var scene = OwnedScene;
             if (scene == null)
-                throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
+            {
+                _pendingChildren ??= new List<object>();
+                _pendingChildren.Add(childView);
+                return;
+            }
 
             scene.AddView(childView);
             _children.Add(childView);
@@ -100,7 +105,11 @@ namespace FrameworkSDK.MonoGame.Mvc
 
             var scene = OwnedScene;
             if (scene == null)
-                throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
+            {
+                _pendingChildren ??= new List<object>();
+                _pendingChildren.Add(model);
+                return null;
+            }
 
             var view = scene.AddView(model);
             _children.Add(view);
@@ -113,7 +122,10 @@ namespace FrameworkSDK.MonoGame.Mvc
 
             var scene = OwnedScene;
             if (scene == null)
-                throw new ScenesException(Strings.Exceptions.Scenes.SceneComponentNotAttached, this);
+            {
+                _pendingChildren?.Remove(childView);
+                return;
+            }
 
             if (!_children.Contains(childView))
                 throw new ScenesException(Strings.Exceptions.Scenes.ChildComponentNotExists, this, childView);
@@ -130,6 +142,18 @@ namespace FrameworkSDK.MonoGame.Mvc
         void ISceneComponent.OnAddedToScene(SceneBase scene)
         {
             OwnedScene = scene ?? throw new ArgumentNullException(nameof(scene));
+
+            if (_pendingChildren != null)
+            {
+                foreach (var pending in _pendingChildren)
+                {
+                    if (pending is IView childView)
+                        AddChild(childView);
+                    else
+                        AddChild(pending);
+                }
+                _pendingChildren = null;
+            }
 
             OnAttached(OwnedScene);
         }

@@ -36,7 +36,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 		[NotNull, ItemNotNull] private UpdatableCollection<IController> Controllers { get; }
 		[NotNull, ItemNotNull] private UpdatableCollection<ViewMapping> Views { get; }
 
-		IGraphicsPipeline IScene.GraphicsPipeline => GetGraphicsPipeline();
+		public IGraphicsPipeline GraphicsPipeline => GetGraphicsPipeline();
 
 		object IScene.DataModel
 	    {
@@ -295,7 +295,7 @@ namespace FrameworkSDK.MonoGame.Mvc
 
 	    protected virtual IGraphicsPipeline GetGraphicsPipeline()
 	    {
-		    return GraphicsPipeline.Empty;
+		    return Graphics.GraphicsPipeline.GraphicsPipeline.Empty;
 	    }
 
 	    protected virtual void CloseRequest()
